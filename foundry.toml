@@ -1,0 +1,28 @@
+[profile.default]
+src = 'contracts'
+out = 'out'
+test = 'test/foundry'
+libs = ['node_modules', 'lib']
+script = 'scripts/foundry'
+cache_path = 'cache-forge'
+gas_reports = ["*"]
+
+# solc_version = '0.8.14'
+
+ffi = true
+
+[fuzz]
+runs = 500
+
+[invariant]
+runs = 500
+
+[rpc_endpoints]
+mainnet = "${ETH_NODE_URI_MAINNET}"
+polygon = "${ETH_NODE_URI_POLYGON}"
+goerli = "${ETH_NODE_URI_GOERLI}"
+
+[etherscan]
+mainnet = { key = "$MAINNET_ETHERSCAN_API_KEY}" }
+polygon = { key = "${POLYGON_ETHERSCAN_API_KEY}" }
+goerli = { key = "${GOERLI_ETHERSCAN_API_KEY}" }
