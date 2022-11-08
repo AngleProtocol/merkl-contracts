@@ -19,7 +19,7 @@ struct MerkleTree {
 }
 
 /// @title OldMerkleRootDistributor
-/// @notice Allows the DAO to distribute rewards through Merkle Roots
+/// @notice Old pre-upgrade version of the MerkleRootDistributor contract
 /// @author Angle Core Team
 contract OldMerkleRootDistributor is Initializable {
     using SafeERC20 for IERC20;

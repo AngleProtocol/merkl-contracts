@@ -19,8 +19,11 @@ struct MerkleTree {
 }
 
 /// @title MerkleRootDistributor
-/// @notice Allows the DAO to distribute rewards through Merkle Roots
-/// @author Angle Core Team
+/// @notice Allows DAOs to distribute rewards through Merkle Roots
+/// @author Angle Labs. Inc
+/// @dev This contract relies on `trusted` or Angle-governance controlled addresses which can update the Merkle root
+/// for reward distribution. After each tree update, there is a dispute period, during which the Angle DAO can possibly
+/// fallback to the old version of the Merkle root
 contract MerkleRootDistributor is Initializable {
     using SafeERC20 for IERC20;
 
@@ -33,7 +36,7 @@ contract MerkleRootDistributor is Initializable {
     /// @notice Mapping user -> token -> amount to track claimed amounts
     mapping(address => mapping(address => uint256)) public claimed;
 
-    /// @notice Trusted EOAs to update the merkle root
+    /// @notice Trusted EOAs to update the Merkle root
     mapping(address => uint256) public trusted;
 
     /// @notice Whether or not to enable permissionless claiming
@@ -51,7 +54,7 @@ contract MerkleRootDistributor is Initializable {
     /// @notice Tree that was in place in the contract before the last `tree` update
     MerkleTree public pastTree;
 
-    uint256[41] private __gap;
+    uint256[40] private __gap;
 
     // =================================== EVENTS ==================================
 
