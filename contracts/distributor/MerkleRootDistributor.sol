@@ -42,18 +42,28 @@ contract MerkleRootDistributor is Initializable {
     /// @notice user -> operator -> authorisation to claim
     mapping(address => mapping(address => uint256)) public operators;
 
-    uint256[44] private __gap;
+    /// @notice Time before which a change in a tree becomes effective
+    uint256 public disputePeriod;
 
-    // ================================== Events ===================================
+    /// @notice Last time the `tree` was updated
+    uint256 public lastTreeUpdate;
 
-    event TrustedToggled(address indexed eoa, bool trust);
+    /// @notice Tree that was in place in the contract before the last `tree` update
+    MerkleTree public pastTree;
+
+    uint256[41] private __gap;
+
+    // =================================== EVENTS ==================================
+
+    event Claimed(address user, address token, uint256 amount);
+    event DisputePeriodUpdated(uint256 _disputePeriod);
+    event OperatorToggled(address user, address operator, bool isWhitelisted);
     event Recovered(address indexed token, address indexed to, uint256 amount);
     event TreeUpdated(bytes32 merkleRoot, bytes32 ipfsHash);
-    event Claimed(address user, address token, uint256 amount);
+    event TrustedToggled(address indexed eoa, bool trust);
     event WhitelistToggled(address user, bool isEnabled);
-    event OperatorToggled(address user, address operator, bool isWhitelisted);
 
-    // ================================== Errors ===================================
+    // =================================== ERRORS ==================================
 
     error InvalidLengths();
     error InvalidProof();
@@ -62,7 +72,7 @@ contract MerkleRootDistributor is Initializable {
     error ZeroAddress();
     error NotWhitelisted();
 
-    // ================================= Modifiers =================================
+    // ================================= MODIFIERS =================================
 
     /// @notice Checks whether the `msg.sender` has the governor role or the guardian role
     modifier onlyGovernorOrGuardian() {
@@ -76,7 +86,7 @@ contract MerkleRootDistributor is Initializable {
         _;
     }
 
-    // ============================ Constructor ====================================
+    // ================================ CONSTRUCTOR ================================
 
     constructor() initializer {}
 
@@ -85,7 +95,7 @@ contract MerkleRootDistributor is Initializable {
         treasury = _treasury;
     }
 
-    // =========================== Main Function ===================================
+    // =============================== MAIN FUNCTION ===============================
 
     /// @notice Claims rewards for a given set of users
     /// @dev Anyone may call this function for anyone else, funds go to destination regardless, it's just a question of
@@ -128,7 +138,14 @@ contract MerkleRootDistributor is Initializable {
         }
     }
 
-    // =========================== Governance Functions ============================
+    /// @notice Returns the MerkleRoot that is currently live for the contract
+    function getMerkleRoot() public view returns (bytes32) {
+        uint256 lastUpdate = lastTreeUpdate;
+        if ((block.timestamp - lastUpdate > disputePeriod) || lastUpdate == 0) return tree.merkleRoot;
+        else return pastTree.merkleRoot;
+    }
+
+    // ============================ GOVERNANCE FUNCTIONS ===========================
 
     /// @notice Pull reward amount from caller
     //solhint-disable-next-line
@@ -145,6 +162,18 @@ contract MerkleRootDistributor is Initializable {
 
     /// @notice Updates Merkle Tree
     function updateTree(MerkleTree calldata _tree) external onlyTrusted {
+        MerkleTree memory oldTree = tree;
+        tree = _tree;
+        pastTree = oldTree;
+        lastTreeUpdate = block.timestamp;
+        emit TreeUpdated(_tree.merkleRoot, _tree.ipfsHash);
+    }
+
+    /// @notice Allows the governor or the guardian of this contract to fallback to the last version of the tree
+    /// immediately
+    function revokeTree() external onlyGovernorOrGuardian {
+        MerkleTree memory _tree = pastTree;
+        lastTreeUpdate = 0;
         tree = _tree;
         emit TreeUpdated(_tree.merkleRoot, _tree.ipfsHash);
     }
@@ -175,7 +204,13 @@ contract MerkleRootDistributor is Initializable {
         emit Recovered(tokenAddress, to, amountToRecover);
     }
 
-    // =========================== Internal Functions ==============================
+    /// @notice Sets the dispute period before which a tree update becomes effective
+    function setDisputePeriod(uint256 _disputePeriod) external onlyGovernorOrGuardian {
+        disputePeriod = _disputePeriod;
+        emit DisputePeriodUpdated(_disputePeriod);
+    }
+
+    // ============================= INTERNAL FUNCTIONS ============================
 
     /// @notice Checks the validity of a proof
     /// @param leaf Hashed leaf data, the starting point of the proof
@@ -190,6 +225,6 @@ contract MerkleRootDistributor is Initializable {
                 currentHash = keccak256(abi.encode(proof[i], currentHash));
             }
         }
-        return currentHash == tree.merkleRoot;
+        return currentHash == getMerkleRoot();
     }
 }
