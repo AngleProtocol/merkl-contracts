@@ -69,6 +69,7 @@ contract MerkleRootDistributor is Initializable {
     // =================================== ERRORS ==================================
 
     error InvalidLengths();
+    error InvalidParam();
     error InvalidProof();
     error NotGovernorOrGuardian();
     error NotTrusted();
@@ -83,9 +84,10 @@ contract MerkleRootDistributor is Initializable {
         _;
     }
 
-    /// @notice Checks whether the `msg.sender` is a trusted address to change the Merkle root of the contract
-    modifier onlyTrusted() {
-        if (!treasury.isGovernorOrGuardian(msg.sender) && trusted[msg.sender] != 1) revert NotTrusted();
+    /// @notice Checks whether the `msg.sender` is the `user` address or is a trusted address
+    modifier onlyTrustedOrUser(address user) {
+        if (user != msg.sender && trusted[msg.sender] != 1 && !treasury.isGovernorOrGuardian(msg.sender))
+            revert NotTrusted();
         _;
     }
 
@@ -143,8 +145,7 @@ contract MerkleRootDistributor is Initializable {
 
     /// @notice Returns the MerkleRoot that is currently live for the contract
     function getMerkleRoot() public view returns (bytes32) {
-        uint256 lastUpdate = lastTreeUpdate;
-        if ((block.timestamp - lastUpdate > disputePeriod) || lastUpdate == 0) return tree.merkleRoot;
+        if (block.timestamp - lastTreeUpdate >= disputePeriod) return tree.merkleRoot;
         else return pastTree.merkleRoot;
     }
 
@@ -164,7 +165,13 @@ contract MerkleRootDistributor is Initializable {
     }
 
     /// @notice Updates Merkle Tree
-    function updateTree(MerkleTree calldata _tree) external onlyTrusted {
+    function updateTree(MerkleTree calldata _tree) external {
+        if (
+            // A trusted address cannot update a tree right
+            (trusted[msg.sender] != 1 || block.timestamp - lastTreeUpdate < disputePeriod) &&
+            !treasury.isGovernorOrGuardian(msg.sender)
+        ) revert NotTrusted();
+
         MerkleTree memory oldTree = tree;
         tree = _tree;
         pastTree = oldTree;
@@ -182,17 +189,13 @@ contract MerkleRootDistributor is Initializable {
     }
 
     /// @notice Toggles permissionless claiming for a given user
-    function toggleWhitelist(address user) external {
-        if (user != msg.sender && !treasury.isGovernorOrGuardian(msg.sender) && trusted[msg.sender] != 1)
-            revert NotTrusted();
+    function toggleWhitelist(address user) external onlyTrustedOrUser(user) {
         whitelist[user] = 1 - whitelist[user];
         emit WhitelistToggled(user, whitelist[user] == 1);
     }
 
     /// @notice Toggles whitelisting for a given user and a given operator
-    function toggleOperator(address user, address operator) external {
-        if (user != msg.sender && !treasury.isGovernorOrGuardian(msg.sender) && trusted[msg.sender] != 1)
-            revert NotTrusted();
+    function toggleOperator(address user, address operator) external onlyTrustedOrUser(user) {
         operators[user][operator] = 1 - operators[user][operator];
         emit OperatorToggled(user, operator, operators[user][operator] == 1);
     }
@@ -209,6 +212,7 @@ contract MerkleRootDistributor is Initializable {
 
     /// @notice Sets the dispute period before which a tree update becomes effective
     function setDisputePeriod(uint256 _disputePeriod) external onlyGovernorOrGuardian {
+        if (_disputePeriod > block.timestamp) revert InvalidParam();
         disputePeriod = _disputePeriod;
         emit DisputePeriodUpdated(_disputePeriod);
     }
