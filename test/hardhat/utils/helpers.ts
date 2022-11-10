@@ -1,4 +1,3 @@
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
 import { BigNumber, BigNumberish, BytesLike, Contract, ContractFactory, Signer } from 'ethers';
 import { parseUnits } from 'ethers/lib/utils';
@@ -163,11 +162,6 @@ function expectApprox(value: BigNumberish, target: BigNumberish, error: number):
       .div(100 * 1e10),
   );
 }
-
-type Call = {
-  action: number;
-  data: BytesLike;
-};
 
 type MerkleTreeType = {
   merkleRoot: BytesLike;

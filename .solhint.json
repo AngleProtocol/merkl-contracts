@@ -9,7 +9,7 @@
     "contract-name-camelcase": "warn",
     "imports-on-top": "warn",
     "prettier/prettier": "warn",
-    "ordering": "warn",
+    "ordering": "off",
     "mark-callable-contracts": "off",
     "no-empty-blocks": "off",
     "not-rely-on-time": "off",
