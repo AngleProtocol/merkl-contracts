@@ -107,7 +107,7 @@ contract OldMerkleRootDistributor is Initializable {
             users.length != proofs.length
         ) revert InvalidLengths();
 
-        for (uint256 i = 0; i < users.length; i++) {
+        for (uint256 i; i < users.length; i++) {
             address user = users[i];
             address token = tokens[i];
             uint256 amount = amounts[i];
@@ -183,7 +183,7 @@ contract OldMerkleRootDistributor is Initializable {
     /// @return true If proof is correct, else false
     function _verifyProof(bytes32 leaf, bytes32[] memory proof) internal view returns (bool) {
         bytes32 currentHash = leaf;
-        for (uint256 i = 0; i < proof.length; i += 1) {
+        for (uint256 i; i < proof.length; i += 1) {
             if (currentHash < proof[i]) {
                 currentHash = keccak256(abi.encode(currentHash, proof[i]));
             } else {

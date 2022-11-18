@@ -95,7 +95,7 @@ contract MerkleRootDistributor is Initializable {
 
     constructor() initializer {}
 
-    function initialize(ITreasury _treasury) public initializer {
+    function initialize(ITreasury _treasury) external initializer {
         if (address(_treasury) == address(0)) revert ZeroAddress();
         treasury = _treasury;
     }
@@ -114,15 +114,16 @@ contract MerkleRootDistributor is Initializable {
         address[] calldata tokens,
         uint256[] calldata amounts,
         bytes32[][] calldata proofs
-    ) public {
+    ) external {
+        uint256 usersLength = users.length;
         if (
-            users.length == 0 ||
-            users.length != tokens.length ||
-            users.length != amounts.length ||
-            users.length != proofs.length
+            usersLength == 0 ||
+            usersLength != tokens.length ||
+            usersLength != amounts.length ||
+            usersLength != proofs.length
         ) revert InvalidLengths();
 
-        for (uint256 i = 0; i < users.length; i++) {
+        for (uint256 i; i < usersLength; ) {
             address user = users[i];
             address token = tokens[i];
             uint256 amount = amounts[i];
@@ -140,6 +141,9 @@ contract MerkleRootDistributor is Initializable {
 
             IERC20(token).safeTransfer(user, toSend);
             emit Claimed(user, token, toSend);
+            unchecked {
+                ++i;
+            }
         }
     }
 
@@ -225,7 +229,8 @@ contract MerkleRootDistributor is Initializable {
     /// @return true If proof is correct, else false
     function _verifyProof(bytes32 leaf, bytes32[] memory proof) internal view returns (bool) {
         bytes32 currentHash = leaf;
-        for (uint256 i = 0; i < proof.length; i += 1) {
+        uint256 proofLength = proof.length;
+        for (uint256 i; i < proofLength; i += 1) {
             if (currentHash < proof[i]) {
                 currentHash = keccak256(abi.encode(currentHash, proof[i]));
             } else {

@@ -9,12 +9,6 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "../interfaces/external/uniswap/IUniswapV3Pool.sol";
 import "../interfaces/ICoreBorrow.sol";
 
-/* TODO for the script
-- check whether the uniV3 pool is actually one or not
-- automatically ERC20 token addresses which own the position
-- what happens if rewards sent to a pool with no fees accruing in the week at all
-*/
-
 struct RewardDistribution {
     // Address of the UniswapV3 pool that needs to be incentivized
     address uniV3Pool;
@@ -103,7 +97,7 @@ abstract contract MerkleRewardManager is Initializable {
         ICoreBorrow _coreBorrow,
         address _merkleRootDistributor,
         uint256 _fees
-    ) public initializer {
+    ) external initializer {
         if (address(_coreBorrow) == address(0) || _merkleRootDistributor == address(0)) revert ZeroAddress();
         if (_fees > 10**9) revert InvalidParam();
         merkleRootDistributor = _merkleRootDistributor;
@@ -126,8 +120,9 @@ abstract contract MerkleRewardManager is Initializable {
     /// @notice Same as the function above but for multiple rewards at once
     /// @return List of all the reward amounts actually deposited for each `reward` in the `rewards` list
     function depositRewards(RewardDistribution[] memory rewards) external returns (uint256[] memory) {
-        uint256[] memory rewardAmounts = new uint256[](rewards.length);
-        for (uint256 i = 0; i < rewards.length; ) {
+        uint256 rewardsLength = rewards.length;
+        uint256[] memory rewardAmounts = new uint256[](rewardsLength);
+        for (uint256 i; i < rewardsLength; ) {
             rewardAmounts[i] = _depositReward(rewards[i]);
             unchecked {
                 ++i;
@@ -231,8 +226,9 @@ abstract contract MerkleRewardManager is Initializable {
     }
 
     /// @notice Recovers fees accrued on the contract for a list of `tokens`
-    function recoverFees(IERC20[] memory tokens, address to) external onlyGovernorOrGuardian {
-        for (uint256 i = 0; i < tokens.length; ) {
+    function recoverFees(IERC20[] calldata tokens, address to) external onlyGovernorOrGuardian {
+        uint256 tokensLength = tokens.length;
+        for (uint256 i; i < tokensLength; ) {
             uint256 amount = tokens[i].balanceOf(address(this));
             tokens[i].safeTransfer(to, amount);
             unchecked {
@@ -264,8 +260,9 @@ abstract contract MerkleRewardManager is Initializable {
     /// @notice Gets the list of all active rewards during the epoch which started at `epochStart`
     function _getRewardsForEpoch(uint32 epochStart) internal view returns (RewardDistribution[] memory) {
         uint256 length;
-        RewardDistribution[] memory longActiveRewards = new RewardDistribution[](rewardList.length);
-        for (uint32 i = 0; i < rewardList.length; ) {
+        uint256 rewardListLength = rewardList.length;
+        RewardDistribution[] memory longActiveRewards = new RewardDistribution[](rewardListLength);
+        for (uint32 i; i < rewardListLength; ) {
             RewardDistribution storage reward = rewardList[i];
             if (_isRewardLiveForEpoch(reward, epochStart)) {
                 longActiveRewards[length] = reward;
@@ -276,7 +273,7 @@ abstract contract MerkleRewardManager is Initializable {
             }
         }
         RewardDistribution[] memory activeRewards = new RewardDistribution[](length);
-        for (uint32 i = 0; i < length; ) {
+        for (uint32 i; i < length; ) {
             activeRewards[i] = longActiveRewards[i];
             unchecked {
                 ++i;
@@ -292,8 +289,9 @@ abstract contract MerkleRewardManager is Initializable {
         returns (RewardDistribution[] memory)
     {
         uint256 length;
-        RewardDistribution[] memory longActiveRewards = new RewardDistribution[](rewardList.length);
-        for (uint32 i = 0; i < rewardList.length; ) {
+        uint256 rewardListLength = rewardList.length;
+        RewardDistribution[] memory longActiveRewards = new RewardDistribution[](rewardListLength);
+        for (uint32 i; i < rewardListLength; ) {
             RewardDistribution storage reward = rewardList[i];
             if (reward.uniV3Pool == uniV3Pool && _isRewardLiveForEpoch(reward, epochStart)) {
                 longActiveRewards[length] = reward;
@@ -305,7 +303,7 @@ abstract contract MerkleRewardManager is Initializable {
         }
 
         RewardDistribution[] memory activeRewards = new RewardDistribution[](length);
-        for (uint32 i = 0; i < length; ) {
+        for (uint32 i; i < length; ) {
             activeRewards[i] = longActiveRewards[i];
             unchecked {
                 ++i;
