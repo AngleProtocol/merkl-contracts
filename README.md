@@ -25,7 +25,7 @@ forge i
 In order to interact with non local networks, you must create an `.env` that has:
 
 - `MNEMONIC`
-- network key (eg. )
+- network key
 - `ETHERSCAN_API_KEY`
 
 For additional keys, you can check the `.env.example` file.
@@ -37,7 +37,7 @@ Warning: always keep your confidential information safe.
 Contracts in this repo rely on Hardhat tests. You can run tests as follows:
 
 ```bash
-yarn hardhat:test ./test/hardhat/bridgeERC20/tokenSideChainMultiBridge.test.ts
+yarn hardhat:test ./test/hardhat/distributor/merkleRootDistributor.test.ts
 ```
 
 You can also check the coverage of the tests with:
@@ -57,8 +57,6 @@ yarn hardhat:coverage
 ```bash
 yarn deploy mainnet
 ```
-
-Make sure to change the tag corresponding to the file you're deploying, and to adapt the `CoreBorrow`, `Treasury` and `ProxyAdmin` to your use case.
 
 ## Foundry Installation
 
