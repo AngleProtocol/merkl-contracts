@@ -42,12 +42,12 @@ async function main() {
   // Uncomment to check all valid build names
   // console.log((await artifacts.getAllFullyQualifiedNames()));
 
-  testUpgradeability('MerkleRootDistributor', 'contracts/distributor/MerkleRootDistributor.sol');
+  testUpgradeability('MockAgEURUpgradeable', 'contracts/example/MockAgEURUpgradeable.sol');
   testStorage(
-    'OldMerkleRootDistributor',
-    'contracts/deprecated/OldMerkleRootDistributor.sol',
-    'MerkleRootDistributor',
-    'contracts/distributor/MerkleRootDistributor.sol',
+    'MockAgEURUpgradeable2',
+    'contracts/example/MockAgEURUpgradeable2.sol',
+    'MockAgEURUpgradeable',
+    'contracts/example/MockAgEURUpgradeable.sol',
   );
 }
 

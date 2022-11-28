@@ -1,79 +1,34 @@
 module.exports = {
-  parser: '@typescript-eslint/parser',
+  env: {
+    browser: true,
+    es2021: true,
+  },
   extends: [
+    'eslint:recommended',
     'standard',
     'plugin:promise/recommended',
     'plugin:@typescript-eslint/eslint-recommended',
     'plugin:@typescript-eslint/recommended',
-    'plugin:prettier/recommended',
+    'prettier',
   ],
-  plugins: ['mocha-no-only', 'promise', 'prettier', '@typescript-eslint', 'simple-import-sort', 'mocha'],
-  env: {
-    browser: true,
-    node: true,
-    mocha: true,
-    jest: true,
-  },
-  globals: {
-    artifacts: false,
-    contract: false,
-    assert: false,
-    web3: false,
-    usePlugin: false,
-    extendEnvironment: false,
+  plugins: ['simple-import-sort', 'import', 'promise', 'prettier', '@typescript-eslint'],
+  parser: '@typescript-eslint/parser',
+  parserOptions: {
+    ecmaFeatures: {
+      jsx: true,
+    },
+    ecmaVersion: 'latest',
+    sourceType: 'module',
   },
   rules: {
-    // Strict mode
-    strict: ['error', 'global'],
     'prettier/prettier': 'error',
-    // Code style
-    'array-bracket-spacing': ['off'],
-    camelcase: ['error', { properties: 'always', allow: ['(.*?)__factory'] }],
-    'comma-dangle': ['error', 'always-multiline'],
-    'comma-spacing': ['error', { before: false, after: true }],
-    'dot-notation': ['error', { allowKeywords: true, allowPattern: '' }],
-    'eol-last': ['error', 'always'],
-    eqeqeq: ['error', 'smart'],
-    'generator-star-spacing': ['error', 'before'],
-    'linebreak-style': ['error', 'unix'],
-    'max-len': ['error', 150, 2, { ignoreComments: true }],
-    'no-debugger': 'off',
-    'no-dupe-args': 'error',
-    'no-dupe-keys': 'error',
-    'no-mixed-spaces-and-tabs': ['error', 'smart-tabs'],
-    'no-redeclare': ['error', { builtinGlobals: true }],
-    'no-trailing-spaces': ['error', { skipBlankLines: false }],
-    'no-unused-expressions': 'off',
-    'no-non-null-asserted-optional-chain': 'off',
-    'no-undef': 'error',
-    'no-use-before-define': 'off',
-    'no-var': 'error',
-    'object-curly-spacing': ['error', 'always'],
-    'prefer-const': 'error',
     semi: ['error', 'always'],
-    'space-before-function-paren': 0,
-    '@typescript-eslint/no-non-null-assertion': 0,
+
+    camelcase: ['error', { properties: 'always', allow: ['(.*?)__factory'] }],
     'simple-import-sort/imports': 'error',
     'simple-import-sort/exports': 'error',
-    'mocha-no-only/mocha-no-only': ['error'],
-    'promise/always-return': 'off',
-    'promise/avoid-new': 'off',
-  },
-  overrides: [
-    {
-      files: ['*.js'],
-      rules: {
-        '@typescript-eslint/no-var-requires': [0],
-      },
-    },
-    {
-      files: ['./test/**/*'],
-      rules: {
-        camelcase: [0],
-      },
-    },
-  ],
-  parserOptions: {
-    ecmaVersion: 2018,
+    'import/first': 'error',
+    'import/newline-after-import': 'error',
+    'import/no-duplicates': 'error',
   },
 };
