@@ -10,6 +10,10 @@ import 'hardhat-abi-exporter';
 import '@nomicfoundation/hardhat-chai-matchers'; /** NEW FEATURE - https://hardhat.org/hardhat-chai-matchers/docs/reference#.revertedwithcustomerror */
 import '@nomicfoundation/hardhat-toolbox'; /** NEW FEATURE */
 import '@openzeppelin/hardhat-upgrades';
+import '@nomiclabs/hardhat-truffle5';
+import '@nomiclabs/hardhat-solhint';
+import '@tenderly/hardhat-tenderly';
+import '@typechain/hardhat';
 
 import { TASK_COMPILE_SOLIDITY_GET_SOURCE_PATHS } from 'hardhat/builtin-tasks/task-names';
 import { HardhatUserConfig, subtask } from 'hardhat/config';
@@ -59,6 +63,33 @@ const config: HardhatUserConfig = {
       blockGasLimit: 125e5,
       initialBaseFeePerGas: 0,
       hardfork: 'london',
+      forking: {
+        enabled: argv.fork || false,
+        // Mainnet
+        url: nodeUrl('fork'),
+        blockNumber: 15868074,
+        // Polygon
+        /*
+        url: nodeUrl('forkpolygon'),
+        blockNumber: 31505333,
+        */
+        // Optimism
+        /*
+        url: nodeUrl('optimism'),
+        blockNumber: 17614765,
+        */
+        // Arbitrum
+        /*
+        url: nodeUrl('arbitrum'),
+        blockNumber: 19356874,
+        */
+      },
+      mining: argv.disableAutoMining
+        ? {
+            auto: false,
+            interval: 1000,
+          }
+        : { auto: true },
       chainId: 1337,
     },
     polygon: {
@@ -167,8 +198,13 @@ const config: HardhatUserConfig = {
     cache: 'cache-hh',
   },
   namedAccounts: {
-    bob: 0,
-    alice: 1,
+    deployer: 0,
+    guardian: 1,
+    governor: 2,
+    proxyAdmin: 3,
+    alice: 4,
+    bob: 5,
+    charlie: 6,
   },
   contractSizer: {
     alphaSort: true,
