@@ -81,26 +81,29 @@ struct RewardDistribution {
 /// @notice Manages the distribution of rewards across different UniswapV3 pools
 /// @dev This contract is mostly a helper for APIs getting built on top and helping in Angle
 /// UniswapV3 incentivization scheme
-abstract contract MerkleRewardManager is Initializable {
+contract MerkleRewardManager is Initializable {
     using SafeERC20 for IERC20;
 
     // ============================ CONSTANT / VARIABLES ===========================
     /// @notice Epoch duration
-    uint32 public constant EPOCH_DURATION = 24 * 3600 * 7;
+    uint32 public constant EPOCH_DURATION = 3600;
 
     /// @notice `CoreBorrow` contract handling access control
     ICoreBorrow public coreBorrow;
     /// @notice User contract for distributing rewards
     address public merkleRootDistributor;
+    /// @notice Value (in base 10**9) of the fees taken when adding rewards for a pool which do not
+    /// have a whitelisted token in it
+    uint256 public fees;
     /// @notice List of all rewards ever distributed or to be distributed in the contract
     RewardDistribution[] public rewardList;
-    /// @notice Value (in base 10**9) of the fees taken when adding rewards for a pool which does not
-    /// have agEUR in it
-    uint256 public fees;
-    /// @notice Maps an address to the rebate
+    /// @notice Maps an address to its fee rebate
     mapping(address => uint256) public feeRebate;
+    /// @notice Maps a token to whether it is whitelisted or not. No fees are to be paid for incentives given
+    /// on pools with whitelisted tokens
+    mapping(address => uint256) public isWhitelistedToken;
 
-    uint256[47] private __gap;
+    uint256[44] private __gap;
 
     // ============================== ERRORS / EVENTS ==============================
 
@@ -108,6 +111,7 @@ abstract contract MerkleRewardManager is Initializable {
     event MerkleRootDistributorUpdated(address indexed _merkleRootDistributor);
     event NewReward(RewardDistribution reward, address indexed sender);
     event FeeRebateUpdated(address indexed user, uint256 userFeeRebate);
+    event TokenWhitelistToggled(address indexed token, uint256 toggleStatus);
 
     error InvalidReward();
     error InvalidParam();
@@ -182,13 +186,12 @@ abstract contract MerkleRewardManager is Initializable {
             (reward.boostingAddress != address(0) && reward.boostedReward < 10**4)
         ) revert InvalidReward();
         rewardAmount = reward.amount;
-        address agEURAddress = _agEUR();
-        // Computing fees: these are waive for whitelisted addresses and if there is agEUR in a pool
+        // Computing fees: these are waived for whitelisted addresses and if there is agEUR in a pool
         uint256 userFeeRebate = feeRebate[msg.sender];
         if (
             userFeeRebate < 10**9 &&
-            IUniswapV3Pool(reward.uniV3Pool).token0() != agEURAddress &&
-            IUniswapV3Pool(reward.uniV3Pool).token1() != agEURAddress
+            isWhitelistedToken[IUniswapV3Pool(reward.uniV3Pool).token0()] == 0 &&
+            isWhitelistedToken[IUniswapV3Pool(reward.uniV3Pool).token1()] == 0
         ) {
             uint256 _fees = (fees * (10**9 - userFeeRebate)) / 10**9;
             uint256 rewardAmountMinusFees = (rewardAmount * (10**9 - _fees)) / 10**9;
@@ -258,6 +261,12 @@ abstract contract MerkleRewardManager is Initializable {
         emit FeeRebateUpdated(user, userFeeRebate);
     }
 
+    function toggleTokenWhitelist(address token) external onlyGovernorOrGuardian {
+        uint256 toggleStatus = 1 - isWhitelistedToken[token];
+        isWhitelistedToken[token] = toggleStatus;
+        emit TokenWhitelistToggled(token, toggleStatus);
+    }
+
     /// @notice Recovers fees accrued on the contract for a list of `tokens`
     function recoverFees(IERC20[] calldata tokens, address to) external onlyGovernorOrGuardian {
         uint256 tokensLength = tokens.length;
@@ -271,9 +280,6 @@ abstract contract MerkleRewardManager is Initializable {
     }
 
     // ============================== INTERNAL HELPERS =============================
-
-    /// @notice Returns the agEUR address on the corresponding chain
-    function _agEUR() internal view virtual returns (address);
 
     /// @notice Rounds an `epoch` timestamp to the start of the corresponding period
     function _getRoundedEpoch(uint32 epoch) internal pure returns (uint32) {
