@@ -42,28 +42,19 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "../interfaces/external/uniswap/IUniswapV3Pool.sol";
 import "../interfaces/ICoreBorrow.sol";
 
-// TODO: add a reward ID and change the type of position wrapper so you can specify who is who
-// getRewards after a same timestamp
-// deploy on Polygon
-
-struct PositionWrapper {
-    // Type of the wrapper (Arrakis, Gamma, ...) encoded as a `uint64`. Mappings between wrapper types and their
-    // corresponding `uint64` value can be found in Angle Docs
-    uint64 wrapperType;
-    // Address of the Uniswap V3 position wrapper to consider for the contract
-    address wrapperAddress;
-}
-
 struct RewardParameters {
     // Address of the UniswapV3 pool that needs to be incentivized
     address uniV3Pool;
     // Address of the reward token for the incentives
     address token;
-    // List of all UniV3 position wrappers to consider for this contract
-    // (this can include addresses of Arrakis or Gamma smart contracts for instance)
-    PositionWrapper[] positionWrappers;
     // Amount of `token` to distribute
     uint256 amount;
+    // List of all UniV3 position wrappers to consider for this contract
+    // (this can include addresses of Arrakis or Gamma smart contracts for instance)
+    address[] positionWrappers;
+    // Type (Arrakis, Gamma, ...) encoded as a `uint32` for each wrapper in the list above. Mapping between wrapper types and their
+    // corresponding `uint32` value can be found in Angle Docs
+    uint32[] wrapperTypes;
     // In the incentivization formula, how much of the fees should go to holders of token1
     // in base 10**4
     uint32 propToken1;
@@ -201,7 +192,9 @@ contract MerkleRewardManager is Initializable {
             // if the reward parameters are not correctly specified
             reward.propFees + reward.propToken1 + reward.propToken2 != 1e4 ||
             // if boosted addresses get less than non-boosted addresses in case of
-            (reward.boostingAddress != address(0) && reward.boostedReward < 1e4)
+            (reward.boostingAddress != address(0) && reward.boostedReward < 1e4) ||
+            // if the type of the position wrappers is not well specified
+            reward.positionWrappers.length != reward.wrapperTypes.length
         ) revert InvalidReward();
         rewardAmount = reward.amount;
         // Computing fees: these are waived for whitelisted addresses and if there is a whitelisted token in a pool
