@@ -39,7 +39,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
-import "../interfaces/ITreasury.sol";
+import "../interfaces/ICoreBorrow.sol";
 
 struct MerkleTree {
     // Root of a Merkle tree which leaves are (address user, address token, uint amount)
@@ -64,7 +64,7 @@ contract MerkleRootDistributor is Initializable {
     MerkleTree public tree;
 
     /// @notice Treasury contract handling access control
-    ITreasury public treasury;
+    ICoreBorrow public coreBorrow;
 
     /// @notice Mapping user -> token -> amount to track claimed amounts
     mapping(address => mapping(address => uint256)) public claimed;
@@ -113,13 +113,13 @@ contract MerkleRootDistributor is Initializable {
 
     /// @notice Checks whether the `msg.sender` has the governor role or the guardian role
     modifier onlyGovernorOrGuardian() {
-        if (!treasury.isGovernorOrGuardian(msg.sender)) revert NotGovernorOrGuardian();
+        if (!coreBorrow.isGovernorOrGuardian(msg.sender)) revert NotGovernorOrGuardian();
         _;
     }
 
     /// @notice Checks whether the `msg.sender` is the `user` address or is a trusted address
     modifier onlyTrustedOrUser(address user) {
-        if (user != msg.sender && trusted[msg.sender] != 1 && !treasury.isGovernorOrGuardian(msg.sender))
+        if (user != msg.sender && trusted[msg.sender] != 1 && !coreBorrow.isGovernorOrGuardian(msg.sender))
             revert NotTrusted();
         _;
     }
@@ -128,9 +128,9 @@ contract MerkleRootDistributor is Initializable {
 
     constructor() initializer {}
 
-    function initialize(ITreasury _treasury) external initializer {
-        if (address(_treasury) == address(0)) revert ZeroAddress();
-        treasury = _treasury;
+    function initialize(ICoreBorrow _coreBorrow) external initializer {
+        if (address(_coreBorrow) == address(0)) revert ZeroAddress();
+        coreBorrow = _coreBorrow;
     }
 
     // =============================== MAIN FUNCTION ===============================
@@ -188,12 +188,6 @@ contract MerkleRootDistributor is Initializable {
 
     // ============================ GOVERNANCE FUNCTIONS ===========================
 
-    /// @notice Pull reward amount from caller
-    //solhint-disable-next-line
-    function deposit_reward_token(IERC20 token, uint256 amount) external {
-        token.transferFrom(msg.sender, address(this), amount);
-    }
-
     /// @notice Adds or removes trusted EOA
     function toggleTrusted(address eoa) external onlyGovernorOrGuardian {
         uint256 trustedStatus = 1 - trusted[eoa];
@@ -204,9 +198,9 @@ contract MerkleRootDistributor is Initializable {
     /// @notice Updates Merkle Tree
     function updateTree(MerkleTree calldata _tree) external {
         if (
-            // A trusted address cannot update a tree right
+            // A trusted address cannot update a tree right after another tree update
             (trusted[msg.sender] != 1 || block.timestamp - lastTreeUpdate < disputePeriod) &&
-            !treasury.isGovernorOrGuardian(msg.sender)
+            !coreBorrow.isGovernorOrGuardian(msg.sender)
         ) revert NotTrusted();
 
         MerkleTree memory oldTree = tree;

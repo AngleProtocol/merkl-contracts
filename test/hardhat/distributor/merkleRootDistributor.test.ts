@@ -8,10 +8,10 @@ import { MerkleTree } from 'merkletreejs';
 import {
   MerkleRootDistributor,
   MerkleRootDistributor__factory,
+  MockCoreBorrow,
+  MockCoreBorrow__factory,
   MockToken,
   MockToken__factory,
-  MockTreasury,
-  MockTreasury__factory,
 } from '../../../typechain';
 import { inReceipt } from '../utils/expectEvent';
 import {
@@ -32,31 +32,26 @@ contract('MerkleRootDistributor', () => {
   let angle: MockToken;
 
   let distributor: MerkleRootDistributor;
-  let treasury: MockTreasury;
+  let coreBorrow: MockCoreBorrow;
   let merkleTree: MerkleTreeType;
   const emptyBytes = '0x0000000000000000000000000000000000000000000000000000000000000000';
 
   beforeEach(async () => {
     [deployer, alice, bob, governor, guardian] = await ethers.getSigners();
     angle = (await new MockToken__factory(deployer).deploy('ANGLE', 'ANGLE', 18)) as MockToken;
-    treasury = await new MockTreasury__factory(deployer).deploy(
-      angle.address,
-      governor.address,
-      guardian.address,
-      ZERO_ADDRESS,
-      ZERO_ADDRESS,
-      ZERO_ADDRESS,
-    );
+    coreBorrow = (await new MockCoreBorrow__factory(deployer).deploy()) as MockCoreBorrow;
+    await coreBorrow.toggleGuardian(guardian.address);
+    await coreBorrow.toggleGovernor(governor.address);
     distributor = (await deployUpgradeable(new MerkleRootDistributor__factory(deployer))) as MerkleRootDistributor;
-    await distributor.initialize(treasury.address);
+    await distributor.initialize(coreBorrow.address);
     merkleTree = { merkleRoot: web3.utils.keccak256('MERKLE_ROOT'), ipfsHash: web3.utils.keccak256('IPFS_HASH') };
   });
   describe('initializer', () => {
-    it('success - treasury', async () => {
-      expect(await distributor.treasury()).to.be.equal(treasury.address);
+    it('success - coreBorrow', async () => {
+      expect(await distributor.coreBorrow()).to.be.equal(coreBorrow.address);
     });
     it('reverts - already initialized', async () => {
-      await expect(distributor.initialize(treasury.address)).to.be.revertedWith(
+      await expect(distributor.initialize(coreBorrow.address)).to.be.revertedWith(
         'Initializable: contract is already initialized',
       );
     });
@@ -390,15 +385,6 @@ contract('MerkleRootDistributor', () => {
       inReceipt(receipt, 'DisputePeriodUpdated', {
         _disputePeriod: 86400,
       });
-    });
-  });
-  describe('deposit_reward_token', () => {
-    it('success - token deposited', async () => {
-      await angle.mint(alice.address, parseEther('13'));
-      await angle.connect(alice).approve(distributor.address, MAX_UINT256);
-      await distributor.connect(alice).deposit_reward_token(angle.address, parseEther('2'));
-      expect(await angle.balanceOf(distributor.address)).to.be.equal(parseEther('2'));
-      expect(await angle.balanceOf(alice.address)).to.be.equal(parseEther('11'));
     });
   });
   describe('claim', () => {
