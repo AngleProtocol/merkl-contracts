@@ -59,6 +59,8 @@ struct MerkleTree {
 contract MerkleRootDistributor is UUPSHelper {
     using SafeERC20 for IERC20;
 
+    // ============================ CONSTANT / VARIABLES ===========================
+
     /// @notice Tree of claimable tokens through this contract
     MerkleTree public tree;
 
@@ -96,7 +98,7 @@ contract MerkleRootDistributor is UUPSHelper {
     /// @notice user -> operator -> authorisation to claim
     mapping(address => mapping(address => uint256)) public operators;
 
-    uint256[40] private __gap;
+    uint256[38] private __gap;
 
     // =================================== EVENTS ==================================
 

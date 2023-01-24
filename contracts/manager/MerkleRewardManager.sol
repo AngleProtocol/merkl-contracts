@@ -101,6 +101,7 @@ contract MerkleRewardManager is UUPSHelper, ReentrancyGuardUpgradeable {
     using SafeERC20 for IERC20;
 
     // ============================ CONSTANT / VARIABLES ===========================
+
     /// @notice Epoch duration
     uint32 public constant EPOCH_DURATION = 3600;
     /// @notice Base for fee computation
