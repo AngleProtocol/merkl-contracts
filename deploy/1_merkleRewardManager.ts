@@ -32,9 +32,9 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
     log: !argv.ci,
   });
 
-  const coreBorrowImplementation = (await ethers.getContract('MerkleRewardManager_Implementation')).address;
+  const implementationAddress = (await ethers.getContract('MerkleRewardManager_Implementation')).address;
 
-  console.log(`Successfully deployed the implementation for CoreBorrow at ${coreBorrowImplementation}`);
+  console.log(`Successfully deployed the implementation for MerkleRewardManager at ${implementationAddress}`);
   console.log('');
 
   const coreBorrowInterface = MerkleRewardManager__factory.createInterface();

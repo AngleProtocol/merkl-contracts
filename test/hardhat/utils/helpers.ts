@@ -3,7 +3,7 @@ import { BigNumber, BigNumberish, BytesLike, Contract, ContractFactory, Signer }
 import { parseUnits } from 'ethers/lib/utils';
 import hre, { ethers } from 'hardhat';
 
-import { TransparentUpgradeableProxy__factory } from '../../../typechain';
+import { ERC1967Proxy__factory, TransparentUpgradeableProxy__factory } from '../../../typechain';
 
 const BASE_PARAMS = parseUnits('1', 'gwei');
 
@@ -139,6 +139,15 @@ async function deployUpgradeable(factory: ContractFactory, ...args: any[]): Prom
   return new Contract(Proxy.address, factory.interface, alice);
 }
 
+async function deployUpgradeableUUPS(factory: ContractFactory, ...args: any[]): Promise<Contract> {
+  const { deployer, alice } = await ethers.getNamedSigners();
+
+  const Implementation = args.length === 0 ? await factory.deploy() : await factory.deploy(args[0], args[1]);
+  const Proxy = await new ERC1967Proxy__factory(deployer).deploy(Implementation.address, '0x');
+
+  return new Contract(Proxy.address, factory.interface, alice);
+}
+
 async function expectApproxDelta(actual: BigNumber, expected: BigNumber, delta: BigNumber): Promise<void> {
   const margin = expected.div(delta);
   if (actual.isNegative()) {
@@ -172,6 +181,7 @@ export {
   balance,
   BASE_PARAMS,
   deployUpgradeable,
+  deployUpgradeableUUPS,
   expectApprox,
   expectApproxDelta,
   getImpersonatedSigner,

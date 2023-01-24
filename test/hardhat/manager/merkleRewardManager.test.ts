@@ -15,7 +15,7 @@ import {
 } from '../../../typechain';
 import { parseAmount } from '../../../utils/bignumber';
 import { inReceipt } from '../utils/expectEvent';
-import { deployUpgradeable, latestTime, MAX_UINT256, ZERO_ADDRESS } from '../utils/helpers';
+import { deployUpgradeableUUPS, latestTime, MAX_UINT256, ZERO_ADDRESS } from '../utils/helpers';
 
 contract('MerkleRewardManager', () => {
   let deployer: SignerWithAddress;
@@ -40,7 +40,7 @@ contract('MerkleRewardManager', () => {
     pool = (await new MockUniswapV3Pool__factory(deployer).deploy()) as MockUniswapV3Pool;
     await coreBorrow.toggleGuardian(guardian.address);
     await coreBorrow.toggleGovernor(governor.address);
-    manager = (await deployUpgradeable(new MerkleRewardManager__factory(deployer))) as MerkleRewardManager;
+    manager = (await deployUpgradeableUUPS(new MerkleRewardManager__factory(deployer))) as MerkleRewardManager;
     await manager.initialize(coreBorrow.address, bob.address, parseAmount.gwei('0.1'));
     startTime = await latestTime();
     params = {
@@ -63,6 +63,7 @@ contract('MerkleRewardManager', () => {
     await angle.mint(alice.address, parseEther('1000'));
     await angle.connect(alice).approve(manager.address, MAX_UINT256);
     await manager.connect(guardian).toggleTokenWhitelist(agEUR);
+    await manager.connect(guardian).toggleSigningWhitelist(alice.address);
   });
   describe('initializer', () => {
     it('success - treasury', async () => {
@@ -77,7 +78,7 @@ contract('MerkleRewardManager', () => {
       );
     });
     it('reverts - zero address', async () => {
-      const managerRevert = (await deployUpgradeable(
+      const managerRevert = (await deployUpgradeableUUPS(
         new MerkleRewardManager__factory(deployer),
       )) as MerkleRewardManager;
       await expect(
@@ -166,6 +167,22 @@ contract('MerkleRewardManager', () => {
         toggleStatus: 0,
       });
       expect(await manager.isWhitelistedToken(agEUR)).to.be.equal(0);
+    });
+  });
+  describe('toggleSigningWhitelist', () => {
+    it('success - value updated', async () => {
+      const receipt = await (await manager.connect(guardian).toggleSigningWhitelist(deployer.address)).wait();
+      inReceipt(receipt, 'UserSigningWhitelistToggled', {
+        user: deployer.address,
+        toggleStatus: 1,
+      });
+      expect((await manager.userSigningData(deployer.address)).whitelistStatus).to.be.equal(1);
+      const receipt2 = await (await manager.connect(guardian).toggleSigningWhitelist(alice.address)).wait();
+      inReceipt(receipt2, 'UserSigningWhitelistToggled', {
+        user: agEUR,
+        toggleStatus: 0,
+      });
+      expect((await manager.userSigningData(deployer.address)).whitelistStatus).to.be.equal(0);
     });
   });
   describe('recoverFees', () => {

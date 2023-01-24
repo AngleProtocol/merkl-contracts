@@ -15,7 +15,7 @@ import {
 } from '../../../typechain';
 import { inReceipt } from '../utils/expectEvent';
 import {
-  deployUpgradeable,
+  deployUpgradeableUUPS,
   increaseTime,
   latestTime,
   MAX_UINT256,
@@ -42,7 +42,7 @@ contract('MerkleRootDistributor', () => {
     coreBorrow = (await new MockCoreBorrow__factory(deployer).deploy()) as MockCoreBorrow;
     await coreBorrow.toggleGuardian(guardian.address);
     await coreBorrow.toggleGovernor(governor.address);
-    distributor = (await deployUpgradeable(new MerkleRootDistributor__factory(deployer))) as MerkleRootDistributor;
+    distributor = (await deployUpgradeableUUPS(new MerkleRootDistributor__factory(deployer))) as MerkleRootDistributor;
     await distributor.initialize(coreBorrow.address);
     merkleTree = { merkleRoot: web3.utils.keccak256('MERKLE_ROOT'), ipfsHash: web3.utils.keccak256('IPFS_HASH') };
   });
@@ -56,7 +56,7 @@ contract('MerkleRootDistributor', () => {
       );
     });
     it('reverts - zero address', async () => {
-      const distributorRevert = (await deployUpgradeable(
+      const distributorRevert = (await deployUpgradeableUUPS(
         new MerkleRootDistributor__factory(deployer),
       )) as MerkleRootDistributor;
       await expect(distributorRevert.initialize(ZERO_ADDRESS)).to.be.reverted;

@@ -35,12 +35,13 @@
 
 pragma solidity 0.8.12;
 
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 
 import "../interfaces/external/uniswap/IUniswapV3Pool.sol";
-import "../interfaces/ICoreBorrow.sol";
+import "../utils/UUPSHelper.sol";
 
 struct RewardParameters {
     // Address of the UniswapV3 pool that needs to be incentivized
@@ -81,12 +82,21 @@ struct RewardParameters {
     bytes32 rewardId;
 }
 
+struct SigningData {
+    // Last message that was signed by a user
+    bytes26 lastSignedMessage;
+    // Whether the user is whitelisted not to give any signature on the message
+    uint48 whitelistStatus;
+}
+
 /// @title MerkleRewardManager
 /// @author Angle Labs, Inc.
 /// @notice Manages the distribution of rewards across different UniswapV3 pools
 /// @dev This contract is mostly a helper for APIs getting built on top and helping in Angle
 /// UniswapV3 incentivization scheme
-contract MerkleRewardManager is Initializable {
+/// @dev People depositing rewards should have signed a `message` with the conditions for using the
+/// product
+contract MerkleRewardManager is UUPSHelper, ReentrancyGuardUpgradeable {
     using SafeERC20 for IERC20;
 
     // ============================ CONSTANT / VARIABLES ===========================
@@ -102,6 +112,10 @@ contract MerkleRewardManager is Initializable {
     /// @notice Value (in base 10**9) of the fees taken when adding rewards for a pool which do not
     /// have a whitelisted token in it
     uint256 public fees;
+    /// @notice Message that needs to be acknowledged by users depositing rewards
+    string public message;
+    /// @notice Hash of the message that needs to be signed
+    bytes26 public messageHash;
     /// @notice List of all rewards ever distributed or to be distributed in the contract
     RewardParameters[] public rewardList;
     /// @notice Maps an address to its fee rebate
@@ -111,21 +125,20 @@ contract MerkleRewardManager is Initializable {
     mapping(address => uint256) public isWhitelistedToken;
     /// @notice Maps an address to its nonce for depositing a reward
     mapping(address => uint256) public nonces;
+    /// @notice Maps an address to its signing data
+    mapping(address => SigningData) public userSigningData;
 
-    uint256[44] private __gap;
+    uint256[40] private __gap;
 
     // ============================== ERRORS / EVENTS ==============================
 
     event FeesSet(uint256 _fees);
     event MerkleRootDistributorUpdated(address indexed _merkleRootDistributor);
+    event MessageUpdated(bytes26 messageHash);
     event NewReward(RewardParameters reward, address indexed sender);
     event FeeRebateUpdated(address indexed user, uint256 userFeeRebate);
     event TokenWhitelistToggled(address indexed token, uint256 toggleStatus);
-
-    error InvalidReward();
-    error InvalidParam();
-    error NotGovernorOrGuardian();
-    error ZeroAddress();
+    event UserSigningWhitelistToggled(address indexed user, uint48 toggleStatus);
 
     // ================================== MODIFIER =================================
 
@@ -135,9 +148,14 @@ contract MerkleRewardManager is Initializable {
         _;
     }
 
-    // ================================ CONSTRUCTOR ================================
+    /// @notice Checks whether an address has signed the message or not
+    modifier hasSigned() {
+        SigningData storage userData = userSigningData[msg.sender];
+        if (userData.whitelistStatus == 0 && userData.lastSignedMessage != messageHash) revert NotSigned();
+        _;
+    }
 
-    constructor() initializer {}
+    // ================================ CONSTRUCTOR ================================
 
     function initialize(
         ICoreBorrow _coreBorrow,
@@ -151,6 +169,9 @@ contract MerkleRewardManager is Initializable {
         fees = _fees;
     }
 
+    /// @inheritdoc UUPSUpgradeable
+    function _authorizeUpgrade(address) internal view override onlyGuardianUpgrader(coreBorrow) {}
+
     // ============================== DEPOSIT FUNCTION =============================
 
     /// @notice Deposits a reward `reward` to incentivize a given UniswapV3 pool for a specific period of time
@@ -159,13 +180,15 @@ contract MerkleRewardManager is Initializable {
     /// otherwise they will not be handled by the distribution script and rewards may be lost
     /// @dev The `positionWrappers` specified in the `reward` struct need to be supported by the script
     /// @dev If the pool incentivized contains agEUR, then no fees are taken on the rewards
-    function depositReward(RewardParameters memory reward) external returns (uint256 rewardAmount) {
+    /// @dev This function will revert if the user has not signed the message `messageHash` once through one of
+    /// the functions enabling to sign
+    function depositReward(RewardParameters memory reward) external hasSigned returns (uint256 rewardAmount) {
         return _depositReward(reward);
     }
 
     /// @notice Same as the function above but for multiple rewards at once
     /// @return List of all the reward amounts actually deposited for each `reward` in the `rewards` list
-    function depositRewards(RewardParameters[] memory rewards) external returns (uint256[] memory) {
+    function depositRewards(RewardParameters[] memory rewards) external hasSigned returns (uint256[] memory) {
         uint256 rewardsLength = rewards.length;
         uint256[] memory rewardAmounts = new uint256[](rewardsLength);
         for (uint256 i; i < rewardsLength; ) {
@@ -177,8 +200,25 @@ contract MerkleRewardManager is Initializable {
         return rewardAmounts;
     }
 
+    /// @notice Checks whether the `msg.sender`'s `signature` is compatible with the message
+    /// to sign and stores the fact that signing was done
+    /// @dev If you signed the message once, and the message has not been modified, then you do not
+    /// need to sign again
+    function sign(bytes calldata signature) external {
+        _sign(signature);
+    }
+
+    /// @notice Combines signing the message and depositing a reward
+    function signAndDepositReward(RewardParameters memory reward, bytes calldata signature)
+        external
+        returns (uint256 rewardAmount)
+    {
+        _sign(signature);
+        return _depositReward(reward);
+    }
+
     /// @notice Internal version of `depositReward`
-    function _depositReward(RewardParameters memory reward) internal returns (uint256 rewardAmount) {
+    function _depositReward(RewardParameters memory reward) internal nonReentrant returns (uint256 rewardAmount) {
         uint32 epochStart = _getRoundedEpoch(reward.epochStart);
         reward.epochStart = epochStart;
         // Reward will not be accepted in the following conditions:
@@ -217,6 +257,14 @@ contract MerkleRewardManager is Initializable {
         reward.rewardId = bytes32(keccak256(abi.encodePacked(msg.sender, senderNonce)));
         rewardList.push(reward);
         emit NewReward(reward, msg.sender);
+    }
+
+    /// @notice Internal version of the `sign` function
+    function _sign(bytes calldata signature) internal {
+        bytes26 _messageHash = messageHash;
+        if (ECDSA.recover(_messageHash, signature) != msg.sender) revert InvalidSignature();
+        SigningData storage userData = userSigningData[msg.sender];
+        userData.lastSignedMessage = _messageHash;
     }
 
     // ================================= UI HELPERS ================================
@@ -323,6 +371,23 @@ contract MerkleRewardManager is Initializable {
                 ++i;
             }
         }
+    }
+
+    /// @notice Sets the message that needs to be signed by users before posting rewards
+    function setMessage(string memory _message) external onlyGovernorOrGuardian {
+        message = _message;
+        bytes26 _messageHash = bytes26(ECDSA.toEthSignedMessageHash(bytes(_message)));
+        messageHash = _messageHash;
+        emit MessageUpdated(_messageHash);
+    }
+
+    /// @notice Toggles the whitelist status for `user` when it comes to signing messages before depositing
+    /// rewards
+    function toggleSigningWhitelist(address user) external onlyGovernorOrGuardian {
+        SigningData storage userData = userSigningData[user];
+        uint48 whitelistStatus = 1 - userData.whitelistStatus;
+        userData.whitelistStatus = whitelistStatus;
+        emit UserSigningWhitelistToggled(user, whitelistStatus);
     }
 
     // ============================== INTERNAL HELPERS =============================

@@ -35,11 +35,10 @@
 
 pragma solidity 0.8.12;
 
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
-import "../interfaces/ICoreBorrow.sol";
+import "../utils/UUPSHelper.sol";
 
 struct MerkleTree {
     // Root of a Merkle tree which leaves are (address user, address token, uint amount)
@@ -57,7 +56,7 @@ struct MerkleTree {
 /// @dev This contract relies on `trusted` or Angle-governance controlled addresses which can update the Merkle root
 /// for reward distribution. After each tree update, there is a dispute period, during which the Angle DAO can possibly
 /// fallback to the old version of the Merkle root
-contract MerkleRootDistributor is Initializable {
+contract MerkleRootDistributor is UUPSHelper {
     using SafeERC20 for IERC20;
 
     /// @notice Tree of claimable tokens through this contract
@@ -99,16 +98,6 @@ contract MerkleRootDistributor is Initializable {
     event TrustedToggled(address indexed eoa, bool trust);
     event WhitelistToggled(address user, bool isEnabled);
 
-    // =================================== ERRORS ==================================
-
-    error InvalidLengths();
-    error InvalidParam();
-    error InvalidProof();
-    error NotGovernorOrGuardian();
-    error NotTrusted();
-    error ZeroAddress();
-    error NotWhitelisted();
-
     // ================================= MODIFIERS =================================
 
     /// @notice Checks whether the `msg.sender` has the governor role or the guardian role
@@ -132,6 +121,9 @@ contract MerkleRootDistributor is Initializable {
         if (address(_coreBorrow) == address(0)) revert ZeroAddress();
         coreBorrow = _coreBorrow;
     }
+
+    /// @inheritdoc UUPSUpgradeable
+    function _authorizeUpgrade(address) internal view override onlyGuardianUpgrader(coreBorrow) {}
 
     // =============================== MAIN FUNCTION ===============================
 
