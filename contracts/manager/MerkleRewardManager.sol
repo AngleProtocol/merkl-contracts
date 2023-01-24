@@ -104,29 +104,39 @@ contract MerkleRewardManager is UUPSHelper, ReentrancyGuardUpgradeable {
 
     /// @notice Epoch duration
     uint32 public constant EPOCH_DURATION = 3600;
+
     /// @notice Base for fee computation
     uint256 public constant BASE_9 = 1e9;
 
     /// @notice `CoreBorrow` contract handling access control
     ICoreBorrow public coreBorrow;
+
     /// @notice User contract for distributing rewards
     address public merkleRootDistributor;
+
     /// @notice Value (in base 10**9) of the fees taken when adding rewards for a pool which do not
     /// have a whitelisted token in it
     uint256 public fees;
+
     /// @notice Message that needs to be acknowledged by users depositing rewards
     string public message;
+
     /// @notice Hash of the message that needs to be signed
     bytes26 public messageHash;
+
     /// @notice List of all rewards ever distributed or to be distributed in the contract
     RewardParameters[] public rewardList;
+
     /// @notice Maps an address to its fee rebate
     mapping(address => uint256) public feeRebate;
+
     /// @notice Maps a token to whether it is whitelisted or not. No fees are to be paid for incentives given
     /// on pools with whitelisted tokens
     mapping(address => uint256) public isWhitelistedToken;
+
     /// @notice Maps an address to its nonce for depositing a reward
     mapping(address => uint256) public nonces;
+
     /// @notice Maps an address to its signing data
     mapping(address => SigningData) public userSigningData;
 
