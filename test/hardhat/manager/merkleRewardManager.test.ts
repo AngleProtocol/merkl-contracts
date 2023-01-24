@@ -69,10 +69,7 @@ contract('MerkleRewardManager', () => {
   describe('sign', () => {
     it('success - correct signature', async () => {
       await manager.connect(guardian).setMessage('hello');
-      const msgHash = await manager.messageHash();
-      console.log(msgHash);
-      const signature = await alice.signMessage(msgHash + '000000000000');
-      console.log(signature);
+      const signature = await alice.signMessage('hello');
       await manager.connect(alice).sign(signature);
     });
   });

@@ -85,7 +85,7 @@ struct RewardParameters {
 
 struct SigningData {
     // Last message that was signed by a user
-    bytes26 lastSignedMessage;
+    bytes32 lastSignedMessage;
     // Whether the user is whitelisted not to give any signature on the message
     uint48 whitelistStatus;
 }
@@ -116,7 +116,7 @@ contract MerkleRewardManager is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @notice Message that needs to be acknowledged by users depositing rewards
     string public message;
     /// @notice Hash of the message that needs to be signed
-    bytes26 public messageHash;
+    bytes32 public messageHash;
     /// @notice List of all rewards ever distributed or to be distributed in the contract
     RewardParameters[] public rewardList;
     /// @notice Maps an address to its fee rebate
@@ -135,11 +135,11 @@ contract MerkleRewardManager is UUPSHelper, ReentrancyGuardUpgradeable {
 
     event FeesSet(uint256 _fees);
     event MerkleRootDistributorUpdated(address indexed _merkleRootDistributor);
-    event MessageUpdated(bytes26 _messageHash);
+    event MessageUpdated(bytes32 _messageHash);
     event NewReward(RewardParameters reward, address indexed sender);
     event FeeRebateUpdated(address indexed user, uint256 userFeeRebate);
     event TokenWhitelistToggled(address indexed token, uint256 toggleStatus);
-    event UserSigned(bytes26 messageHash, address indexed user);
+    event UserSigned(bytes32 messageHash, address indexed user);
     event UserSigningWhitelistToggled(address indexed user, uint48 toggleStatus);
 
     // ================================== MODIFIER =================================
@@ -263,12 +263,8 @@ contract MerkleRewardManager is UUPSHelper, ReentrancyGuardUpgradeable {
 
     /// @notice Internal version of the `sign` function
     function _sign(bytes calldata signature) internal {
-        bytes26 _messageHash = messageHash;
-        console.logBytes26(_messageHash);
-        console.logBytes32(_messageHash);
-        console.log(ECDSA.recover(_messageHash, signature));
-        console.log(msg.sender);
-        // if (ECDSA.recover(_messageHash, signature) != msg.sender) revert InvalidSignature();
+        bytes32 _messageHash = messageHash;
+        if (ECDSA.recover(_messageHash, signature) != msg.sender) revert InvalidSignature();
         SigningData storage userData = userSigningData[msg.sender];
         userData.lastSignedMessage = _messageHash;
         emit UserSigned(_messageHash, msg.sender);
@@ -383,7 +379,7 @@ contract MerkleRewardManager is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @notice Sets the message that needs to be signed by users before posting rewards
     function setMessage(string memory _message) external onlyGovernorOrGuardian {
         message = _message;
-        bytes26 _messageHash = bytes26(ECDSA.toEthSignedMessageHash(bytes(_message)));
+        bytes32 _messageHash = ECDSA.toEthSignedMessageHash(bytes(_message));
         messageHash = _messageHash;
         emit MessageUpdated(_messageHash);
     }
