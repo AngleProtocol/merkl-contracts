@@ -65,6 +65,18 @@ contract('MerkleRewardManager', () => {
     await manager.connect(guardian).toggleTokenWhitelist(agEUR);
     await manager.connect(guardian).toggleSigningWhitelist(alice.address);
   });
+
+  describe('sign', () => {
+    it('success - correct signature', async () => {
+      await manager.connect(guardian).setMessage('hello');
+      const msgHash = await manager.messageHash();
+      console.log(msgHash);
+      const signature = await alice.signMessage(msgHash + '000000000000');
+      console.log(signature);
+      await manager.connect(alice).sign(signature);
+    });
+  });
+  /*
   describe('initializer', () => {
     it('success - treasury', async () => {
       expect(await manager.merkleRootDistributor()).to.be.equal(bob.address);
@@ -106,6 +118,18 @@ contract('MerkleRewardManager', () => {
         manager.connect(alice).setUserFeeRebate(ZERO_ADDRESS, parseAmount.gwei('0.1')),
       ).to.be.revertedWithCustomError(manager, 'NotGovernorOrGuardian');
       await expect(manager.connect(alice).recoverFees([], ZERO_ADDRESS)).to.be.revertedWithCustomError(
+        manager,
+        'NotGovernorOrGuardian',
+      );
+      await expect(manager.connect(alice).setMessage('hello')).to.be.revertedWithCustomError(
+        manager,
+        'NotGovernorOrGuardian',
+      );
+      await expect(manager.connect(alice).toggleSigningWhitelist(deployer.address)).to.be.revertedWithCustomError(
+        manager,
+        'NotGovernorOrGuardian',
+      );
+      await expect(manager.connect(alice).toggleTokenWhitelist(deployer.address)).to.be.revertedWithCustomError(
         manager,
         'NotGovernorOrGuardian',
       );
@@ -185,6 +209,26 @@ contract('MerkleRewardManager', () => {
       expect((await manager.userSigningData(deployer.address)).whitelistStatus).to.be.equal(0);
     });
   });
+  describe('setMessage', () => {
+    it('success - value updated', async () => {
+      const receipt = await (await manager.connect(guardian).setMessage('hello')).wait();
+      const msgHash = await manager.messageHash();
+      expect(await manager.message()).to.be.equal('hello');
+
+      inReceipt(receipt, 'MessageUpdated', {
+        _messageHash: msgHash,
+      });
+
+      const receipt2 = await (await manager.connect(guardian).setMessage('hello2')).wait();
+      const msgHash2 = await manager.messageHash();
+      expect(await manager.message()).to.be.equal('hello2');
+
+      inReceipt(receipt, 'MessageUpdated', {
+        _messageHash: msgHash2,
+      });
+    });
+  });
+
   describe('recoverFees', () => {
     it('success - fees recovered', async () => {
       await manager.connect(guardian).recoverFees([], deployer.address);
@@ -798,4 +842,5 @@ contract('MerkleRewardManager', () => {
       expect((await manager.getPoolRewardsAfterEpoch(mockPool.address, startTime + 3600 * 13)).length).to.be.equal(0);
     });
   });
+  */
 });

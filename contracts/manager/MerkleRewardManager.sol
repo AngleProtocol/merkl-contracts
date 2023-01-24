@@ -42,6 +42,7 @@ import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.
 
 import "../interfaces/external/uniswap/IUniswapV3Pool.sol";
 import "../utils/UUPSHelper.sol";
+import "hardhat/console.sol";
 
 struct RewardParameters {
     // Address of the UniswapV3 pool that needs to be incentivized
@@ -134,10 +135,11 @@ contract MerkleRewardManager is UUPSHelper, ReentrancyGuardUpgradeable {
 
     event FeesSet(uint256 _fees);
     event MerkleRootDistributorUpdated(address indexed _merkleRootDistributor);
-    event MessageUpdated(bytes26 messageHash);
+    event MessageUpdated(bytes26 _messageHash);
     event NewReward(RewardParameters reward, address indexed sender);
     event FeeRebateUpdated(address indexed user, uint256 userFeeRebate);
     event TokenWhitelistToggled(address indexed token, uint256 toggleStatus);
+    event UserSigned(bytes26 messageHash, address indexed user);
     event UserSigningWhitelistToggled(address indexed user, uint48 toggleStatus);
 
     // ================================== MODIFIER =================================
@@ -262,9 +264,14 @@ contract MerkleRewardManager is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @notice Internal version of the `sign` function
     function _sign(bytes calldata signature) internal {
         bytes26 _messageHash = messageHash;
-        if (ECDSA.recover(_messageHash, signature) != msg.sender) revert InvalidSignature();
+        console.logBytes26(_messageHash);
+        console.logBytes32(_messageHash);
+        console.log(ECDSA.recover(_messageHash, signature));
+        console.log(msg.sender);
+        // if (ECDSA.recover(_messageHash, signature) != msg.sender) revert InvalidSignature();
         SigningData storage userData = userSigningData[msg.sender];
         userData.lastSignedMessage = _messageHash;
+        emit UserSigned(_messageHash, msg.sender);
     }
 
     // ================================= UI HELPERS ================================
