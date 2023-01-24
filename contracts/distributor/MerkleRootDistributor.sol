@@ -230,6 +230,7 @@ contract MerkleRootDistributor is UUPSHelper {
             IERC20(disputeToken).safeTransfer(disputer, disputeAmount);
             _revokeTree();
         } else {
+            IERC20(disputeToken).safeTransfer(msg.sender, disputeAmount);
             lastTreeUpdate = block.timestamp;
         }
         disputer = address(0);
