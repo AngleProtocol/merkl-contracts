@@ -1,7 +1,7 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
-import { parseEther } from 'ethers/lib/utils';
-import { contract, ethers } from 'hardhat';
+import { parseEther, solidityKeccak256 } from 'ethers/lib/utils';
+import { contract, ethers, web3 } from 'hardhat';
 
 import {
   MerkleRewardManager,
@@ -47,6 +47,7 @@ contract('MerkleRewardManager', () => {
       uniV3Pool: pool.address,
       token: angle.address,
       positionWrappers: [alice.address, bob.address, deployer.address],
+      wrapperTypes: [0, 1, 2],
       amount: parseEther('1'),
       propToken1: 4000,
       propToken2: 2000,
@@ -56,6 +57,7 @@ contract('MerkleRewardManager', () => {
       numEpoch: 1,
       boostedReward: 0,
       boostingAddress: ZERO_ADDRESS,
+      rewardId: web3.utils.soliditySha3('TEST') as string,
     };
     agEUR = '0x1a7e4e63778B4f12a199C062f3eFdD288afCBce8';
     await angle.mint(alice.address, parseEther('1000'));
@@ -191,6 +193,7 @@ contract('MerkleRewardManager', () => {
         uniV3Pool: pool.address,
         token: angle.address,
         positionWrappers: [alice.address, bob.address, deployer.address],
+        wrapperTypes: [0, 0, 0],
         amount: parseEther('1'),
         propToken1: 4000,
         propToken2: 2000,
@@ -200,11 +203,13 @@ contract('MerkleRewardManager', () => {
         numEpoch: 1,
         boostedReward: 0,
         boostingAddress: ZERO_ADDRESS,
+        rewardId: web3.utils.soliditySha3('TEST') as string,
       };
       const param1 = {
         uniV3Pool: pool.address,
         token: angle.address,
         positionWrappers: [alice.address, bob.address, deployer.address],
+        wrapperTypes: [0, 0, 0],
         amount: parseEther('1'),
         propToken1: 4000,
         propToken2: 2000,
@@ -214,11 +219,13 @@ contract('MerkleRewardManager', () => {
         numEpoch: 0,
         boostedReward: 0,
         boostingAddress: ZERO_ADDRESS,
+        rewardId: web3.utils.soliditySha3('TEST') as string,
       };
       const param2 = {
         uniV3Pool: pool.address,
         token: angle.address,
         positionWrappers: [alice.address, bob.address, deployer.address],
+        wrapperTypes: [0, 0, 0],
         amount: 0,
         propToken1: 4000,
         propToken2: 2000,
@@ -228,11 +235,13 @@ contract('MerkleRewardManager', () => {
         numEpoch: 1,
         boostedReward: 0,
         boostingAddress: ZERO_ADDRESS,
+        rewardId: web3.utils.soliditySha3('TEST') as string,
       };
       const param3 = {
         uniV3Pool: pool.address,
         token: angle.address,
         positionWrappers: [alice.address, bob.address, deployer.address],
+        wrapperTypes: [0, 0, 0],
         amount: parseEther('1'),
         propToken1: 4000,
         propToken2: 2001,
@@ -242,11 +251,13 @@ contract('MerkleRewardManager', () => {
         numEpoch: 1,
         boostedReward: 0,
         boostingAddress: ZERO_ADDRESS,
+        rewardId: web3.utils.soliditySha3('TEST') as string,
       };
       const param4 = {
         uniV3Pool: pool.address,
         token: angle.address,
         positionWrappers: [alice.address, bob.address, deployer.address],
+        wrapperTypes: [0, 0, 0],
         amount: parseEther('1'),
         propToken1: 4000,
         propToken2: 2000,
@@ -256,11 +267,13 @@ contract('MerkleRewardManager', () => {
         numEpoch: 1,
         boostedReward: 0,
         boostingAddress: ZERO_ADDRESS,
+        rewardId: web3.utils.soliditySha3('TEST') as string,
       };
       const param5 = {
         uniV3Pool: pool.address,
         token: angle.address,
         positionWrappers: [alice.address, bob.address, deployer.address],
+        wrapperTypes: [0, 0, 0],
         amount: parseEther('1'),
         propToken1: 4000,
         propToken2: 2000,
@@ -270,6 +283,23 @@ contract('MerkleRewardManager', () => {
         numEpoch: 1,
         boostedReward: 9999,
         boostingAddress: bob.address,
+        rewardId: web3.utils.soliditySha3('TEST') as string,
+      };
+      const params6 = {
+        uniV3Pool: pool.address,
+        token: angle.address,
+        positionWrappers: [alice.address, bob.address, deployer.address],
+        wrapperTypes: [0, 0],
+        amount: parseEther('1'),
+        propToken1: 4000,
+        propToken2: 2000,
+        propFees: 4000,
+        outOfRangeIncentivized: 0,
+        epochStart: startTime,
+        numEpoch: 10,
+        boostedReward: 0,
+        boostingAddress: ZERO_ADDRESS,
+        rewardId: web3.utils.soliditySha3('TEST') as string,
       };
       await expect(manager.connect(alice).depositReward(param0)).to.be.revertedWithCustomError(
         manager,
@@ -295,9 +325,15 @@ contract('MerkleRewardManager', () => {
         manager,
         'InvalidReward',
       );
+      await expect(manager.connect(alice).depositReward(params6)).to.be.revertedWithCustomError(
+        manager,
+        'InvalidReward',
+      );
     });
     it('success - when no fee rebate or agEUR pool', async () => {
+      expect(await manager.nonces(alice.address)).to.be.equal(0);
       await manager.connect(alice).depositReward(params);
+      expect(await manager.nonces(alice.address)).to.be.equal(1);
       expect(await angle.balanceOf(manager.address)).to.be.equal(parseEther('0.1'));
       expect(await angle.balanceOf(bob.address)).to.be.equal(parseEther('0.9'));
       const reward = await manager.rewardList(0);
@@ -312,11 +348,15 @@ contract('MerkleRewardManager', () => {
       expect(reward.numEpoch).to.be.equal(1);
       expect(reward.boostedReward).to.be.equal(0);
       expect(reward.boostingAddress).to.be.equal(ZERO_ADDRESS);
+      const rewardId = solidityKeccak256(['address', 'uint256'], [alice.address, 0]);
+      expect(reward.rewardId).to.be.equal(rewardId);
     });
     it('success - when a fee rebate for the specific address 1/2', async () => {
       // 50% rebate on fee
       await manager.connect(guardian).setUserFeeRebate(alice.address, parseAmount.gwei('0.5'));
+      expect(await manager.nonces(alice.address)).to.be.equal(0);
       await manager.connect(alice).depositReward(params);
+      expect(await manager.nonces(alice.address)).to.be.equal(1);
       expect(await angle.balanceOf(manager.address)).to.be.equal(parseEther('0.05'));
       expect(await angle.balanceOf(bob.address)).to.be.equal(parseEther('0.95'));
       const reward = await manager.rewardList(0);
@@ -335,7 +375,9 @@ contract('MerkleRewardManager', () => {
     it('success - when a fee rebate for the specific address 2/2', async () => {
       // 50% rebate on fee
       await manager.connect(guardian).setUserFeeRebate(alice.address, parseAmount.gwei('1.1'));
+      expect(await manager.nonces(alice.address)).to.be.equal(0);
       await manager.connect(alice).depositReward(params);
+      expect(await manager.nonces(alice.address)).to.be.equal(1);
       expect(await angle.balanceOf(manager.address)).to.be.equal(parseEther('0'));
       expect(await angle.balanceOf(bob.address)).to.be.equal(parseEther('1'));
       const reward = await manager.rewardList(0);
@@ -354,7 +396,9 @@ contract('MerkleRewardManager', () => {
     it('success - when agEUR is a token 1/2', async () => {
       // 50% rebate on fee
       await pool.setToken(agEUR, 0);
+      expect(await manager.nonces(alice.address)).to.be.equal(0);
       await manager.connect(alice).depositReward(params);
+      expect(await manager.nonces(alice.address)).to.be.equal(1);
       expect(await angle.balanceOf(manager.address)).to.be.equal(parseEther('0'));
       expect(await angle.balanceOf(bob.address)).to.be.equal(parseEther('1'));
       const reward = await manager.rewardList(0);
@@ -373,7 +417,9 @@ contract('MerkleRewardManager', () => {
     it('success - when agEUR is a token 2/2', async () => {
       // 50% rebate on fee
       await pool.setToken(agEUR, 1);
+      expect(await manager.nonces(alice.address)).to.be.equal(0);
       await manager.connect(alice).depositReward(params);
+      expect(await manager.nonces(alice.address)).to.be.equal(1);
       expect(await angle.balanceOf(manager.address)).to.be.equal(parseEther('0'));
       expect(await angle.balanceOf(bob.address)).to.be.equal(parseEther('1'));
       const reward = await manager.rewardList(0);
@@ -392,7 +438,9 @@ contract('MerkleRewardManager', () => {
     it('success - view functions check', async () => {
       // 50% rebate on fee
       await pool.setToken(agEUR, 0);
+      expect(await manager.nonces(alice.address)).to.be.equal(0);
       await manager.connect(alice).depositReward(params);
+      expect(await manager.nonces(alice.address)).to.be.equal(1);
       const allRewards = await manager.getAllRewards();
       expect(allRewards.length).to.be.equal(1);
       const reward = allRewards[0];
@@ -410,6 +458,9 @@ contract('MerkleRewardManager', () => {
       expect(allRewards[0].positionWrappers[0]).to.be.equal(alice.address);
       expect(allRewards[0].positionWrappers[1]).to.be.equal(bob.address);
       expect(allRewards[0].positionWrappers[2]).to.be.equal(deployer.address);
+      expect(allRewards[0].wrapperTypes[0]).to.be.equal(0);
+      expect(allRewards[0].wrapperTypes[1]).to.be.equal(1);
+      expect(allRewards[0].wrapperTypes[2]).to.be.equal(2);
 
       const activeRewards = await manager.getActiveRewards();
       expect(activeRewards.length).to.be.equal(1);
@@ -417,11 +468,18 @@ contract('MerkleRewardManager', () => {
       expect(activeRewards[0].positionWrappers[1]).to.be.equal(bob.address);
       expect(activeRewards[0].positionWrappers[2]).to.be.equal(deployer.address);
 
+      expect(activeRewards[0].wrapperTypes[0]).to.be.equal(0);
+      expect(activeRewards[0].wrapperTypes[1]).to.be.equal(1);
+      expect(activeRewards[0].wrapperTypes[2]).to.be.equal(2);
+
       const rewardsForEpoch = await manager.getRewardsForEpoch(startTime);
       expect(rewardsForEpoch.length).to.be.equal(1);
       expect(rewardsForEpoch[0].positionWrappers[0]).to.be.equal(alice.address);
       expect(rewardsForEpoch[0].positionWrappers[1]).to.be.equal(bob.address);
       expect(rewardsForEpoch[0].positionWrappers[2]).to.be.equal(deployer.address);
+      expect(rewardsForEpoch[0].wrapperTypes[0]).to.be.equal(0);
+      expect(rewardsForEpoch[0].wrapperTypes[1]).to.be.equal(1);
+      expect(rewardsForEpoch[0].wrapperTypes[2]).to.be.equal(2);
       expect((await manager.getRewardsForEpoch(startTime + 3600)).length).to.be.equal(0);
 
       const poolRewards = await manager.getActivePoolRewards(pool.address);
@@ -429,6 +487,9 @@ contract('MerkleRewardManager', () => {
       expect(poolRewards[0].positionWrappers[0]).to.be.equal(alice.address);
       expect(poolRewards[0].positionWrappers[1]).to.be.equal(bob.address);
       expect(poolRewards[0].positionWrappers[2]).to.be.equal(deployer.address);
+      expect(poolRewards[0].wrapperTypes[0]).to.be.equal(0);
+      expect(poolRewards[0].wrapperTypes[1]).to.be.equal(1);
+      expect(poolRewards[0].wrapperTypes[2]).to.be.equal(2);
       expect((await manager.getActivePoolRewards(bob.address)).length).to.be.equal(0);
 
       const poolRewardsForEpoch = await manager.getPoolRewardsForEpoch(pool.address, startTime);
@@ -436,6 +497,9 @@ contract('MerkleRewardManager', () => {
       expect(poolRewardsForEpoch[0].positionWrappers[0]).to.be.equal(alice.address);
       expect(poolRewardsForEpoch[0].positionWrappers[1]).to.be.equal(bob.address);
       expect(poolRewardsForEpoch[0].positionWrappers[2]).to.be.equal(deployer.address);
+      expect(poolRewardsForEpoch[0].wrapperTypes[0]).to.be.equal(0);
+      expect(poolRewardsForEpoch[0].wrapperTypes[1]).to.be.equal(1);
+      expect(poolRewardsForEpoch[0].wrapperTypes[2]).to.be.equal(2);
       expect((await manager.getPoolRewardsForEpoch(pool.address, startTime + 3600)).length).to.be.equal(0);
     });
     it('success - when spans over several epochs', async () => {
@@ -444,6 +508,7 @@ contract('MerkleRewardManager', () => {
         uniV3Pool: pool.address,
         token: angle.address,
         positionWrappers: [alice.address, bob.address, deployer.address],
+        wrapperTypes: [0, 0, 0],
         amount: parseEther('1'),
         propToken1: 4000,
         propToken2: 2000,
@@ -451,9 +516,9 @@ contract('MerkleRewardManager', () => {
         outOfRangeIncentivized: 0,
         epochStart: startTime,
         numEpoch: 10,
-
         boostedReward: 0,
         boostingAddress: ZERO_ADDRESS,
+        rewardId: web3.utils.soliditySha3('TEST') as string,
       };
       await manager.connect(alice).depositReward(params2);
       const poolRewardsForEpoch = await manager.getPoolRewardsForEpoch(pool.address, startTime);
@@ -472,6 +537,47 @@ contract('MerkleRewardManager', () => {
       expect((await manager.getRewardsForEpoch(startTime + 3600)).length).to.be.equal(1);
       expect((await manager.getRewardsForEpoch(startTime + 3600 * 9)).length).to.be.equal(1);
       expect((await manager.getRewardsForEpoch(startTime + 3600 * 10)).length).to.be.equal(0);
+
+      expect((await manager.getRewardsBetweenEpochs(startTime + 3600 * 9, startTime + 3600 * 10)).length).to.be.equal(
+        1,
+      );
+      expect((await manager.getRewardsBetweenEpochs(startTime + 3600 * 10, startTime + 3600 * 13)).length).to.be.equal(
+        0,
+      );
+      expect((await manager.getRewardsBetweenEpochs(startTime - 1, startTime)).length).to.be.equal(0);
+      expect((await manager.getRewardsBetweenEpochs(startTime - 1, startTime + 3600)).length).to.be.equal(1);
+      expect((await manager.getRewardsBetweenEpochs(startTime - 1, startTime + 3600 * 11)).length).to.be.equal(1);
+      expect((await manager.getRewardsBetweenEpochs(startTime + 3600 * 4, startTime + 3600 * 9)).length).to.be.equal(1);
+      expect((await manager.getPoolRewardsBetweenEpochs(pool.address, startTime - 1, startTime)).length).to.be.equal(0);
+      expect(
+        (await manager.getPoolRewardsBetweenEpochs(pool.address, startTime - 1, startTime + 3600)).length,
+      ).to.be.equal(1);
+      expect(
+        (await manager.getPoolRewardsBetweenEpochs(pool.address, startTime - 1, startTime + 3600 * 11)).length,
+      ).to.be.equal(1);
+      expect(
+        (await manager.getPoolRewardsBetweenEpochs(pool.address, startTime + 3600 * 4, startTime + 3600 * 9)).length,
+      ).to.be.equal(1);
+      expect(
+        (await manager.getPoolRewardsBetweenEpochs(alice.address, startTime - 1, startTime + 3600)).length,
+      ).to.be.equal(0);
+      expect(
+        (await manager.getPoolRewardsBetweenEpochs(alice.address, startTime - 1, startTime + 3600 * 11)).length,
+      ).to.be.equal(0);
+      expect(
+        (await manager.getPoolRewardsBetweenEpochs(alice.address, startTime + 3600 * 4, startTime + 3600 * 9)).length,
+      ).to.be.equal(0);
+      expect((await manager.getRewardsAfterEpoch(startTime)).length).to.be.equal(1);
+      expect((await manager.getRewardsAfterEpoch(0)).length).to.be.equal(1);
+      expect((await manager.getRewardsAfterEpoch(startTime + 3600 * 9)).length).to.be.equal(1);
+      expect((await manager.getRewardsAfterEpoch(startTime + 3600 * 10)).length).to.be.equal(0);
+      expect((await manager.getPoolRewardsAfterEpoch(pool.address, startTime)).length).to.be.equal(1);
+      expect((await manager.getPoolRewardsAfterEpoch(pool.address, 0)).length).to.be.equal(1);
+      expect((await manager.getPoolRewardsAfterEpoch(pool.address, startTime + 3600 * 9)).length).to.be.equal(1);
+      expect((await manager.getPoolRewardsAfterEpoch(pool.address, startTime + 3600 * 10)).length).to.be.equal(0);
+      expect((await manager.getPoolRewardsAfterEpoch(alice.address, startTime)).length).to.be.equal(0);
+      expect((await manager.getPoolRewardsAfterEpoch(alice.address, 0)).length).to.be.equal(0);
+      expect((await manager.getPoolRewardsAfterEpoch(alice.address, startTime + 3600 * 9)).length).to.be.equal(0);
     });
   });
   describe('depositRewards', () => {
@@ -481,6 +587,7 @@ contract('MerkleRewardManager', () => {
         uniV3Pool: pool.address,
         token: angle.address,
         positionWrappers: [alice.address, bob.address, deployer.address],
+        wrapperTypes: [0, 0, 0],
         amount: parseEther('1'),
         propToken1: 4000,
         propToken2: 2000,
@@ -488,14 +595,15 @@ contract('MerkleRewardManager', () => {
         outOfRangeIncentivized: 0,
         epochStart: startTime,
         numEpoch: 3,
-
         boostedReward: 0,
         boostingAddress: ZERO_ADDRESS,
+        rewardId: web3.utils.soliditySha3('TEST') as string,
       };
       const params1 = {
         uniV3Pool: mockPool.address,
         token: angle.address,
         positionWrappers: [alice.address, bob.address, deployer.address],
+        wrapperTypes: [0, 0, 0],
         amount: parseEther('2'),
         propToken1: 4000,
         propToken2: 2000,
@@ -505,11 +613,13 @@ contract('MerkleRewardManager', () => {
         numEpoch: 1,
         boostedReward: 0,
         boostingAddress: ZERO_ADDRESS,
+        rewardId: web3.utils.soliditySha3('TEST') as string,
       };
       const params2 = {
         uniV3Pool: pool.address,
         token: angle.address,
         positionWrappers: [alice.address, bob.address, deployer.address],
+        wrapperTypes: [0, 0, 0],
         amount: parseEther('3'),
         propToken1: 4000,
         propToken2: 2000,
@@ -520,11 +630,13 @@ contract('MerkleRewardManager', () => {
 
         boostedReward: 0,
         boostingAddress: ZERO_ADDRESS,
+        rewardId: web3.utils.soliditySha3('TEST') as string,
       };
       const params3 = {
         uniV3Pool: mockPool.address,
         token: angle.address,
         positionWrappers: [alice.address, bob.address, deployer.address],
+        wrapperTypes: [0, 0, 0],
         amount: parseEther('4'),
         propToken1: 4000,
         propToken2: 2000,
@@ -534,6 +646,7 @@ contract('MerkleRewardManager', () => {
         numEpoch: 3,
         boostedReward: 0,
         boostingAddress: ZERO_ADDRESS,
+        rewardId: web3.utils.soliditySha3('TEST') as string,
       };
       await manager.connect(alice).depositRewards([params0, params1, params2, params3]);
       // 10% of 1+2+3+4
@@ -543,6 +656,19 @@ contract('MerkleRewardManager', () => {
       expect((await manager.rewardList(1)).amount).to.be.equal(parseEther('1.8'));
       expect((await manager.rewardList(2)).amount).to.be.equal(parseEther('2.7'));
       expect((await manager.rewardList(3)).amount).to.be.equal(parseEther('3.6'));
+      expect((await manager.rewardList(0)).rewardId).to.be.equal(
+        solidityKeccak256(['address', 'uint256'], [alice.address, 0]),
+      );
+      expect((await manager.rewardList(1)).rewardId).to.be.equal(
+        solidityKeccak256(['address', 'uint256'], [alice.address, 1]),
+      );
+      expect((await manager.rewardList(2)).rewardId).to.be.equal(
+        solidityKeccak256(['address', 'uint256'], [alice.address, 2]),
+      );
+      expect((await manager.rewardList(3)).rewardId).to.be.equal(
+        solidityKeccak256(['address', 'uint256'], [alice.address, 3]),
+      );
+      expect(await manager.nonces(alice.address)).to.be.equal(4);
 
       expect((await manager.getAllRewards()).length).to.be.equal(4);
 
@@ -602,6 +728,57 @@ contract('MerkleRewardManager', () => {
       const poolRewards31 = await manager.getPoolRewardsForEpoch(mockPool.address, startTime + 3600 * 10);
       expect(poolRewards31.length).to.be.equal(1);
       expect(poolRewards31[0].amount).to.be.equal(parseEther('3.6'));
+
+      expect((await manager.getRewardsBetweenEpochs(startTime + 3600 * 9, startTime + 3600 * 10)).length).to.be.equal(
+        0,
+      );
+      expect((await manager.getRewardsBetweenEpochs(startTime, startTime + 3600 * 2)).length).to.be.equal(2);
+      expect((await manager.getRewardsBetweenEpochs(startTime, startTime + 3600 * 3)).length).to.be.equal(3);
+      expect((await manager.getRewardsBetweenEpochs(startTime + 3600 * 2, startTime + 3600 * 3)).length).to.be.equal(2);
+      expect((await manager.getRewardsBetweenEpochs(startTime + 3600 * 4, startTime + 3600 * 11)).length).to.be.equal(
+        2,
+      );
+      expect((await manager.getRewardsBetweenEpochs(startTime + 3600 * 4, startTime + 3600 * 10)).length).to.be.equal(
+        1,
+      );
+      expect((await manager.getRewardsBetweenEpochs(startTime + 3600 * 10, startTime + 3600 * 12)).length).to.be.equal(
+        1,
+      );
+      expect((await manager.getRewardsAfterEpoch(startTime)).length).to.be.equal(4);
+      expect((await manager.getRewardsAfterEpoch(startTime + 3600 * 2)).length).to.be.equal(3);
+      expect((await manager.getRewardsAfterEpoch(startTime + 3600 * 3)).length).to.be.equal(2);
+      expect((await manager.getRewardsAfterEpoch(startTime + 3600 * 5)).length).to.be.equal(1);
+      expect((await manager.getRewardsAfterEpoch(startTime + 3600 * 13)).length).to.be.equal(0);
+      expect((await manager.getPoolRewardsBetweenEpochs(pool.address, startTime, startTime + 3600)).length).to.be.equal(
+        1,
+      );
+      expect(
+        (await manager.getPoolRewardsBetweenEpochs(pool.address, startTime, startTime + 2 * 3600)).length,
+      ).to.be.equal(1);
+      expect(
+        (await manager.getPoolRewardsBetweenEpochs(mockPool.address, startTime, startTime + 2 * 3600)).length,
+      ).to.be.equal(1);
+      expect(
+        (await manager.getPoolRewardsBetweenEpochs(mockPool.address, startTime + 3 * 3600, startTime + 10 * 3600))
+          .length,
+      ).to.be.equal(0);
+      expect(
+        (await manager.getPoolRewardsBetweenEpochs(pool.address, startTime, startTime + 3 * 3600)).length,
+      ).to.be.equal(2);
+      expect(
+        (await manager.getPoolRewardsBetweenEpochs(pool.address, startTime + 3 * 3600, startTime + 100 * 3600)).length,
+      ).to.be.equal(1);
+      expect(
+        (await manager.getPoolRewardsBetweenEpochs(mockPool.address, startTime + 3 * 3600, startTime + 100 * 3600))
+          .length,
+      ).to.be.equal(1);
+      expect((await manager.getPoolRewardsAfterEpoch(pool.address, startTime)).length).to.be.equal(2);
+      expect((await manager.getPoolRewardsAfterEpoch(pool.address, startTime + 3600 * 2)).length).to.be.equal(2);
+      expect((await manager.getPoolRewardsAfterEpoch(pool.address, startTime + 3600 * 3)).length).to.be.equal(1);
+      expect((await manager.getPoolRewardsAfterEpoch(pool.address, startTime + 3600 * 5)).length).to.be.equal(0);
+      expect((await manager.getPoolRewardsAfterEpoch(mockPool.address, startTime + 3600 * 1)).length).to.be.equal(2);
+      expect((await manager.getPoolRewardsAfterEpoch(mockPool.address, startTime + 3600 * 2)).length).to.be.equal(1);
+      expect((await manager.getPoolRewardsAfterEpoch(mockPool.address, startTime + 3600 * 13)).length).to.be.equal(0);
     });
   });
 });
