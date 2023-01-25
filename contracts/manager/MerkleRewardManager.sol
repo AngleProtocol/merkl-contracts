@@ -33,7 +33,7 @@
           ▓▓▓        ▓▓      ▓▓▓    ▓▓▓       ▓▓▓▓▓▓▓▓▓▓        ▓▓▓▓▓▓▓▓▓▓       ▓▓▓▓▓▓▓▓▓▓          
 */
 
-pragma solidity 0.8.12;
+pragma solidity 0.8.17;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
@@ -94,13 +94,16 @@ contract MerkleRewardManager is UUPSHelper, ReentrancyGuardUpgradeable {
     using SafeERC20 for IERC20;
 
     // ============================ CONSTANT / VARIABLES ===========================
+
     /// @notice Epoch duration
     uint32 public constant EPOCH_DURATION = 3600;
+
     /// @notice Base for fee computation
     uint256 public constant BASE_9 = 1e9;
 
     /// @notice `CoreBorrow` contract handling access control
     ICoreBorrow public coreBorrow;
+
     /// @notice User contract for distributing rewards
     address public merkleRootDistributor;
     /// @notice Address to which fees will be forwarded
@@ -108,19 +111,27 @@ contract MerkleRewardManager is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @notice Value (in base 10**9) of the fees taken when adding rewards for a pool which do not
     /// have a whitelisted token in it
     uint256 public fees;
+
     /// @notice Message that needs to be acknowledged by users depositing rewards
     string public message;
+
     /// @notice Hash of the message that needs to be signed
+
     bytes32 public messageHash;
+
     /// @notice List of all rewards ever distributed or to be distributed in the contract
     RewardParameters[] public rewardList;
+
     /// @notice Maps an address to its fee rebate
     mapping(address => uint256) public feeRebate;
+
     /// @notice Maps a token to whether it is whitelisted or not. No fees are to be paid for incentives given
     /// on pools with whitelisted tokens
     mapping(address => uint256) public isWhitelistedToken;
+
     /// @notice Maps an address to its nonce for depositing a reward
     mapping(address => uint256) public nonces;
+
     /// @notice Maps an address to the last valid hash signed
     mapping(address => bytes32) public userSignatures;
     /// @notice Maps a user to whether it is whitelisted for not signing
