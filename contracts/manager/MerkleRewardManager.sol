@@ -83,13 +83,6 @@ struct RewardParameters {
     bytes32 rewardId;
 }
 
-struct SigningData {
-    // Last message that was signed by a user
-    bytes26 lastSignedMessage;
-    // Whether the user is whitelisted not to give any signature on the message
-    uint48 whitelistStatus;
-}
-
 /// @title MerkleRewardManager
 /// @author Angle Labs, Inc.
 /// @notice Manages the distribution of rewards across different UniswapV3 pools
@@ -122,7 +115,8 @@ contract MerkleRewardManager is UUPSHelper, ReentrancyGuardUpgradeable {
     string public message;
 
     /// @notice Hash of the message that needs to be signed
-    bytes26 public messageHash;
+
+    bytes32 public messageHash;
 
     /// @notice List of all rewards ever distributed or to be distributed in the contract
     RewardParameters[] public rewardList;
@@ -137,8 +131,10 @@ contract MerkleRewardManager is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @notice Maps an address to its nonce for depositing a reward
     mapping(address => uint256) public nonces;
 
-    /// @notice Maps an address to its signing data
-    mapping(address => SigningData) public userSigningData;
+    /// @notice Maps an address to the last valid hash signed
+    mapping(address => bytes32) public userSignatures;
+    /// @notice Maps a user to whether it is whitelisted for not signing
+    mapping(address => uint256) public userSignatureWhitelist;
 
     uint256[40] private __gap;
 
@@ -146,12 +142,12 @@ contract MerkleRewardManager is UUPSHelper, ReentrancyGuardUpgradeable {
 
     event FeesSet(uint256 _fees);
     event MerkleRootDistributorUpdated(address indexed _merkleRootDistributor);
-    event MessageUpdated(bytes26 _messageHash);
+    event MessageUpdated(bytes32 _messageHash);
     event NewReward(RewardParameters reward, address indexed sender);
     event FeeRebateUpdated(address indexed user, uint256 userFeeRebate);
     event TokenWhitelistToggled(address indexed token, uint256 toggleStatus);
-    event UserSigned(bytes26 messageHash, address indexed user);
-    event UserSigningWhitelistToggled(address indexed user, uint48 toggleStatus);
+    event UserSigned(bytes32 messageHash, address indexed user);
+    event UserSigningWhitelistToggled(address indexed user, uint256 toggleStatus);
 
     // ================================== MODIFIER =================================
 
@@ -163,8 +159,7 @@ contract MerkleRewardManager is UUPSHelper, ReentrancyGuardUpgradeable {
 
     /// @notice Checks whether an address has signed the message or not
     modifier hasSigned() {
-        SigningData storage userData = userSigningData[msg.sender];
-        if (userData.whitelistStatus == 0 && userData.lastSignedMessage != messageHash) revert NotSigned();
+        if (userSignatureWhitelist[msg.sender] == 0 && userSignatures[msg.sender] != messageHash) revert NotSigned();
         _;
     }
 
@@ -274,14 +269,9 @@ contract MerkleRewardManager is UUPSHelper, ReentrancyGuardUpgradeable {
 
     /// @notice Internal version of the `sign` function
     function _sign(bytes calldata signature) internal {
-        bytes26 _messageHash = messageHash;
-        console.logBytes26(_messageHash);
-        console.logBytes32(_messageHash);
-        console.log(ECDSA.recover(_messageHash, signature));
-        console.log(msg.sender);
-        // if (ECDSA.recover(_messageHash, signature) != msg.sender) revert InvalidSignature();
-        SigningData storage userData = userSigningData[msg.sender];
-        userData.lastSignedMessage = _messageHash;
+        bytes32 _messageHash = messageHash;
+        if (ECDSA.recover(_messageHash, signature) != msg.sender) revert InvalidSignature();
+        userSignatures[msg.sender] = _messageHash;
         emit UserSigned(_messageHash, msg.sender);
     }
 
@@ -394,7 +384,7 @@ contract MerkleRewardManager is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @notice Sets the message that needs to be signed by users before posting rewards
     function setMessage(string memory _message) external onlyGovernorOrGuardian {
         message = _message;
-        bytes26 _messageHash = bytes26(ECDSA.toEthSignedMessageHash(bytes(_message)));
+        bytes32 _messageHash = ECDSA.toEthSignedMessageHash(bytes(_message));
         messageHash = _messageHash;
         emit MessageUpdated(_messageHash);
     }
@@ -402,9 +392,8 @@ contract MerkleRewardManager is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @notice Toggles the whitelist status for `user` when it comes to signing messages before depositing
     /// rewards
     function toggleSigningWhitelist(address user) external onlyGovernorOrGuardian {
-        SigningData storage userData = userSigningData[user];
-        uint48 whitelistStatus = 1 - userData.whitelistStatus;
-        userData.whitelistStatus = whitelistStatus;
+        uint256 whitelistStatus = 1 - userSignatureWhitelist[user];
+        userSignatureWhitelist[user] = whitelistStatus;
         emit UserSigningWhitelistToggled(user, whitelistStatus);
     }
 
