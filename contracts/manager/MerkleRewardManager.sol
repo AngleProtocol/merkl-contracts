@@ -103,6 +103,8 @@ contract MerkleRewardManager is UUPSHelper, ReentrancyGuardUpgradeable {
     ICoreBorrow public coreBorrow;
     /// @notice User contract for distributing rewards
     address public merkleRootDistributor;
+    /// @notice Address to which fees will be forwarded
+    address public feeRecipient;
     /// @notice Value (in base 10**9) of the fees taken when adding rewards for a pool which do not
     /// have a whitelisted token in it
     uint256 public fees;
@@ -129,6 +131,7 @@ contract MerkleRewardManager is UUPSHelper, ReentrancyGuardUpgradeable {
     // ============================== ERRORS / EVENTS ==============================
 
     event FeesSet(uint256 _fees);
+    event FeeRecipientUpdated(address indexed _feeRecipient);
     event MerkleRootDistributorUpdated(address indexed _merkleRootDistributor);
     event MessageUpdated(bytes32 _messageHash);
     event NewReward(RewardParameters reward, address indexed sender);
@@ -242,7 +245,9 @@ contract MerkleRewardManager is UUPSHelper, ReentrancyGuardUpgradeable {
         ) {
             uint256 _fees = (fees * (BASE_9 - userFeeRebate)) / BASE_9;
             uint256 rewardAmountMinusFees = (rewardAmount * (BASE_9 - _fees)) / BASE_9;
-            IERC20(reward.token).safeTransferFrom(msg.sender, address(this), rewardAmount - rewardAmountMinusFees);
+            address _feeRecipient = feeRecipient;
+            _feeRecipient = _feeRecipient == address(0) ? address(this) : _feeRecipient;
+            IERC20(reward.token).safeTransferFrom(msg.sender, _feeRecipient, rewardAmount - rewardAmountMinusFees);
             rewardAmount = rewardAmountMinusFees;
             reward.amount = rewardAmount;
         }
@@ -367,6 +372,12 @@ contract MerkleRewardManager is UUPSHelper, ReentrancyGuardUpgradeable {
                 ++i;
             }
         }
+    }
+
+    /// @notice Sets a new address to receive fees
+    function setFeeRecipient(address _feeRecipient) external onlyGovernorOrGuardian {
+        feeRecipient = _feeRecipient;
+        emit FeeRecipientUpdated(_feeRecipient);
     }
 
     /// @notice Sets the message that needs to be signed by users before posting rewards
