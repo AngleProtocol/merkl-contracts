@@ -9,5 +9,5 @@
   "editor.codeActionsOnSave": {
     "source.fixAll": true
   },
-  "solidity.compileUsingRemoteVersion": "v0.8.12+commit.f00d7308"
+  "solidity.compileUsingRemoteVersion": "v0.8.17+commit.8df45f5f"
 }

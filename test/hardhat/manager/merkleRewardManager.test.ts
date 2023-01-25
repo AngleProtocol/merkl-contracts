@@ -1,6 +1,6 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
-import { parseEther, solidityKeccak256 } from 'ethers/lib/utils';
+import { formatBytes32String, parseEther, solidityKeccak256 } from 'ethers/lib/utils';
 import { contract, ethers, web3 } from 'hardhat';
 
 import {
@@ -13,6 +13,7 @@ import {
   MockUniswapV3Pool,
   MockUniswapV3Pool__factory,
 } from '../../../typechain';
+import { ERC1967Proxy } from '../../../typechain/contracts/external';
 import { parseAmount } from '../../../utils/bignumber';
 import { inReceipt } from '../utils/expectEvent';
 import { deployUpgradeableUUPS, latestTime, MAX_UINT256, ZERO_ADDRESS } from '../utils/helpers';
@@ -66,14 +67,6 @@ contract('MerkleRewardManager', () => {
     await manager.connect(guardian).toggleSigningWhitelist(alice.address);
   });
 
-  describe('sign', () => {
-    it('success - correct signature', async () => {
-      await manager.connect(guardian).setMessage('hello');
-      const signature = await alice.signMessage('hello');
-      await manager.connect(alice).sign(signature);
-    });
-  });
-  /*
   describe('initializer', () => {
     it('success - treasury', async () => {
       expect(await manager.merkleRootDistributor()).to.be.equal(bob.address);
@@ -99,6 +92,39 @@ contract('MerkleRewardManager', () => {
       await expect(
         managerRevert.initialize(coreBorrow.address, bob.address, parseAmount.gwei('1.1')),
       ).to.be.revertedWithCustomError(managerRevert, 'InvalidParam');
+    });
+  });
+  describe('upgrade', () => {
+    it('success - upgrades to new implementation', async () => {
+      const newImplementation = await new MerkleRewardManager__factory(deployer).deploy();
+      await manager.connect(governor).upgradeTo(newImplementation.address);
+      /*
+      console.log(
+        await ethers.provider.getStorageAt(
+          manager.address,
+          '0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc',
+        ),
+        newImplementation.address,
+      );
+      */
+      const newImplementation2 = await new MerkleRewardManager__factory(deployer).deploy();
+      await manager.connect(guardian).upgradeTo(newImplementation2.address);
+      /*
+      console.log(
+        await ethers.provider.getStorageAt(
+          manager.address,
+          '0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc',
+        ),
+        newImplementation2.address,
+      );
+      */
+    });
+    it('reverts - when called by unallowed address', async () => {
+      const newImplementation = await new MerkleRewardManager__factory(deployer).deploy();
+      await expect(manager.connect(alice).upgradeTo(newImplementation.address)).to.be.revertedWithCustomError(
+        manager,
+        'NotGovernorOrGuardian',
+      );
     });
   });
   describe('Access Control', () => {
@@ -127,6 +153,10 @@ contract('MerkleRewardManager', () => {
         'NotGovernorOrGuardian',
       );
       await expect(manager.connect(alice).toggleTokenWhitelist(deployer.address)).to.be.revertedWithCustomError(
+        manager,
+        'NotGovernorOrGuardian',
+      );
+      await expect(manager.connect(alice).setFeeRecipient(deployer.address)).to.be.revertedWithCustomError(
         manager,
         'NotGovernorOrGuardian',
       );
@@ -160,6 +190,16 @@ contract('MerkleRewardManager', () => {
         _fees: parseAmount.gwei('0.13'),
       });
       expect(await manager.fees()).to.be.equal(parseAmount.gwei('0.13'));
+    });
+  });
+  describe('setFeeRecipient', () => {
+    it('success - value updated', async () => {
+      expect(await manager.feeRecipient()).to.be.equal(ZERO_ADDRESS);
+      const receipt = await (await manager.connect(guardian).setFeeRecipient(deployer.address)).wait();
+      inReceipt(receipt, 'FeeRecipientUpdated', {
+        _feeRecipient: deployer.address,
+      });
+      expect(await manager.feeRecipient()).to.be.equal(deployer.address);
     });
   });
   describe('setUserFeeRebate', () => {
@@ -197,13 +237,13 @@ contract('MerkleRewardManager', () => {
         user: deployer.address,
         toggleStatus: 1,
       });
-      expect((await manager.userSigningData(deployer.address)).whitelistStatus).to.be.equal(1);
+      expect(await manager.userSignatureWhitelist(deployer.address)).to.be.equal(1);
       const receipt2 = await (await manager.connect(guardian).toggleSigningWhitelist(alice.address)).wait();
       inReceipt(receipt2, 'UserSigningWhitelistToggled', {
-        user: agEUR,
+        user: alice.address,
         toggleStatus: 0,
       });
-      expect((await manager.userSigningData(deployer.address)).whitelistStatus).to.be.equal(0);
+      expect(await manager.userSignatureWhitelist(alice.address)).to.be.equal(0);
     });
   });
   describe('setMessage', () => {
@@ -220,7 +260,7 @@ contract('MerkleRewardManager', () => {
       const msgHash2 = await manager.messageHash();
       expect(await manager.message()).to.be.equal('hello2');
 
-      inReceipt(receipt, 'MessageUpdated', {
+      inReceipt(receipt2, 'MessageUpdated', {
         _messageHash: msgHash2,
       });
     });
@@ -243,6 +283,64 @@ contract('MerkleRewardManager', () => {
       expect(await angle.balanceOf(deployer.address)).to.be.equal(parseAmount.gwei('200'));
       expect(await usdc.balanceOf(manager.address)).to.be.equal(parseAmount.gwei('0'));
       expect(await usdc.balanceOf(deployer.address)).to.be.equal(parseAmount.gwei('33'));
+    });
+  });
+  describe('sign', () => {
+    it('success - correct signature', async () => {
+      await manager.connect(guardian).setMessage('hello');
+      const signature = await alice.signMessage('hello');
+      const receipt = await (await manager.connect(alice).sign(signature)).wait();
+      const messageHash = await manager.messageHash();
+      expect(await manager.userSignatures(alice.address)).to.be.equal(messageHash);
+      inReceipt(receipt, 'UserSigned', {
+        messageHash: messageHash,
+        user: alice.address,
+      });
+    });
+    it('reverts - invalid signature', async () => {
+      await manager.connect(guardian).setMessage('hello');
+      const signature = await alice.signMessage('hello2');
+      await expect(manager.connect(alice).sign(signature)).to.be.revertedWithCustomError(manager, 'InvalidSignature');
+    });
+  });
+  describe('signAndDepositReward', () => {
+    it('success - correct signature', async () => {
+      await manager.connect(guardian).toggleSigningWhitelist(alice.address);
+      await manager.connect(guardian).setMessage('hello');
+      const signature = await alice.signMessage('hello');
+      const receipt = await (await manager.connect(alice).signAndDepositReward(params, signature)).wait();
+      const messageHash = await manager.messageHash();
+      expect(await manager.userSignatures(alice.address)).to.be.equal(messageHash);
+      inReceipt(receipt, 'UserSigned', {
+        messageHash: messageHash,
+        user: alice.address,
+      });
+      expect(await manager.nonces(alice.address)).to.be.equal(1);
+      expect(await angle.balanceOf(manager.address)).to.be.equal(parseEther('0.1'));
+      expect(await angle.balanceOf(bob.address)).to.be.equal(parseEther('0.9'));
+      const reward = await manager.rewardList(0);
+      expect(reward.uniV3Pool).to.be.equal(pool.address);
+      expect(reward.token).to.be.equal(angle.address);
+      expect(reward.amount).to.be.equal(parseEther('0.9'));
+      expect(reward.propToken1).to.be.equal(4000);
+      expect(reward.propToken2).to.be.equal(2000);
+      expect(reward.propFees).to.be.equal(4000);
+      expect(reward.outOfRangeIncentivized).to.be.equal(0);
+      expect(reward.epochStart).to.be.equal(await pool.round(startTime));
+      expect(reward.numEpoch).to.be.equal(1);
+      expect(reward.boostedReward).to.be.equal(0);
+      expect(reward.boostingAddress).to.be.equal(ZERO_ADDRESS);
+      const rewardId = solidityKeccak256(['address', 'uint256'], [alice.address, 0]);
+      expect(reward.rewardId).to.be.equal(rewardId);
+    });
+    it('reverts - invalid signature', async () => {
+      await manager.connect(guardian).toggleSigningWhitelist(alice.address);
+      await manager.connect(guardian).setMessage('hello');
+      const signature = await alice.signMessage('hello2');
+      await expect(manager.connect(alice).signAndDepositReward(params, signature)).to.be.revertedWithCustomError(
+        manager,
+        'InvalidSignature',
+      );
     });
   });
   describe('depositReward', () => {
@@ -388,11 +486,80 @@ contract('MerkleRewardManager', () => {
         'InvalidReward',
       );
     });
+    it('reverts - has not signed', async () => {
+      await manager.connect(guardian).setMessage('hello');
+      await expect(manager.connect(deployer).depositReward(params)).to.be.revertedWithCustomError(manager, 'NotSigned');
+      await expect(manager.connect(deployer).depositRewards([params])).to.be.revertedWithCustomError(
+        manager,
+        'NotSigned',
+      );
+    });
+    it('reverts - has signed but an old message', async () => {
+      await manager.connect(guardian).setMessage('hello');
+      const signature = await deployer.signMessage('hello');
+      const receipt = await (await manager.connect(deployer).sign(signature)).wait();
+      const messageHash = await manager.messageHash();
+      expect(await manager.userSignatures(deployer.address)).to.be.equal(messageHash);
+      inReceipt(receipt, 'UserSigned', {
+        messageHash: messageHash,
+        user: deployer.address,
+      });
+      await manager.connect(guardian).setMessage('hello2');
+      await expect(manager.connect(deployer).depositReward(params)).to.be.revertedWithCustomError(manager, 'NotSigned');
+      await expect(manager.connect(deployer).depositRewards([params])).to.be.revertedWithCustomError(
+        manager,
+        'NotSigned',
+      );
+    });
+    it('success - has not signed but no message to sign', async () => {
+      await manager.connect(guardian).toggleSigningWhitelist(alice.address);
+      await manager.connect(alice).depositReward(params);
+      expect(await manager.nonces(alice.address)).to.be.equal(1);
+      expect(await angle.balanceOf(manager.address)).to.be.equal(parseEther('0.1'));
+      expect(await angle.balanceOf(bob.address)).to.be.equal(parseEther('0.9'));
+      const reward = await manager.rewardList(0);
+      expect(reward.uniV3Pool).to.be.equal(pool.address);
+      expect(reward.token).to.be.equal(angle.address);
+      expect(reward.amount).to.be.equal(parseEther('0.9'));
+      expect(reward.propToken1).to.be.equal(4000);
+      expect(reward.propToken2).to.be.equal(2000);
+      expect(reward.propFees).to.be.equal(4000);
+      expect(reward.outOfRangeIncentivized).to.be.equal(0);
+      expect(reward.epochStart).to.be.equal(await pool.round(startTime));
+      expect(reward.numEpoch).to.be.equal(1);
+      expect(reward.boostedReward).to.be.equal(0);
+      expect(reward.boostingAddress).to.be.equal(ZERO_ADDRESS);
+      const rewardId = solidityKeccak256(['address', 'uint256'], [alice.address, 0]);
+      expect(reward.rewardId).to.be.equal(rewardId);
+    });
     it('success - when no fee rebate or agEUR pool', async () => {
       expect(await manager.nonces(alice.address)).to.be.equal(0);
       await manager.connect(alice).depositReward(params);
       expect(await manager.nonces(alice.address)).to.be.equal(1);
       expect(await angle.balanceOf(manager.address)).to.be.equal(parseEther('0.1'));
+      expect(await angle.balanceOf(bob.address)).to.be.equal(parseEther('0.9'));
+      const reward = await manager.rewardList(0);
+      expect(reward.uniV3Pool).to.be.equal(pool.address);
+      expect(reward.token).to.be.equal(angle.address);
+      expect(reward.amount).to.be.equal(parseEther('0.9'));
+      expect(reward.propToken1).to.be.equal(4000);
+      expect(reward.propToken2).to.be.equal(2000);
+      expect(reward.propFees).to.be.equal(4000);
+      expect(reward.outOfRangeIncentivized).to.be.equal(0);
+      expect(reward.epochStart).to.be.equal(await pool.round(startTime));
+      expect(reward.numEpoch).to.be.equal(1);
+      expect(reward.boostedReward).to.be.equal(0);
+      expect(reward.boostingAddress).to.be.equal(ZERO_ADDRESS);
+      const rewardId = solidityKeccak256(['address', 'uint256'], [alice.address, 0]);
+      expect(reward.rewardId).to.be.equal(rewardId);
+    });
+    it('success - when no fee rebate or agEUR pool and a fee recipient', async () => {
+      expect(await manager.nonces(alice.address)).to.be.equal(0);
+      await manager.connect(guardian).setFeeRecipient(deployer.address);
+      await manager.connect(alice).depositReward(params);
+      expect(await manager.nonces(alice.address)).to.be.equal(1);
+      expect(await angle.balanceOf(manager.address)).to.be.equal(parseEther('0'));
+      expect(await angle.balanceOf(deployer.address)).to.be.equal(parseEther('0.1'));
       expect(await angle.balanceOf(bob.address)).to.be.equal(parseEther('0.9'));
       const reward = await manager.rewardList(0);
       expect(reward.uniV3Pool).to.be.equal(pool.address);
@@ -839,5 +1006,4 @@ contract('MerkleRewardManager', () => {
       expect((await manager.getPoolRewardsAfterEpoch(mockPool.address, startTime + 3600 * 13)).length).to.be.equal(0);
     });
   });
-  */
 });

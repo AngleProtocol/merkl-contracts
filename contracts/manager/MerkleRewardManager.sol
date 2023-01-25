@@ -33,7 +33,7 @@
           ▓▓▓        ▓▓      ▓▓▓    ▓▓▓       ▓▓▓▓▓▓▓▓▓▓        ▓▓▓▓▓▓▓▓▓▓       ▓▓▓▓▓▓▓▓▓▓          
 */
 
-pragma solidity 0.8.17;
+pragma solidity ^0.8.17;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
@@ -116,7 +116,6 @@ contract MerkleRewardManager is UUPSHelper, ReentrancyGuardUpgradeable {
     string public message;
 
     /// @notice Hash of the message that needs to be signed
-
     bytes32 public messageHash;
 
     /// @notice List of all rewards ever distributed or to be distributed in the contract
@@ -134,6 +133,7 @@ contract MerkleRewardManager is UUPSHelper, ReentrancyGuardUpgradeable {
 
     /// @notice Maps an address to the last valid hash signed
     mapping(address => bytes32) public userSignatures;
+
     /// @notice Maps a user to whether it is whitelisted for not signing
     mapping(address => uint256) public userSignatureWhitelist;
 
@@ -289,13 +289,13 @@ contract MerkleRewardManager is UUPSHelper, ReentrancyGuardUpgradeable {
 
     /// @notice Returns the list of all currently active rewards on UniswapV3 pool
     function getActiveRewards() external view returns (RewardParameters[] memory) {
-        return _getRewardsForEpoch(_getRoundedEpoch(uint32(block.timestamp)));
+        return _getPoolRewardsForEpoch(address(0), _getRoundedEpoch(uint32(block.timestamp)));
     }
 
     /// @notice Returns the list of all the rewards that were or that are going to be live at
     /// a specific epoch
     function getRewardsForEpoch(uint32 epoch) external view returns (RewardParameters[] memory) {
-        return _getRewardsForEpoch(_getRoundedEpoch(epoch));
+        return _getPoolRewardsForEpoch(address(0), _getRoundedEpoch(epoch));
     }
 
     /// @notice Gets the rewards that were or will be live at some point between `epochStart` (included) and `epochEnd` (excluded)
@@ -306,12 +306,12 @@ contract MerkleRewardManager is UUPSHelper, ReentrancyGuardUpgradeable {
         view
         returns (RewardParameters[] memory)
     {
-        return _getRewardsBetweenEpochs(_getRoundedEpoch(epochStart), _getRoundedEpoch(epochEnd));
+        return _getPoolRewardsBetweenEpochs(address(0), _getRoundedEpoch(epochStart), _getRoundedEpoch(epochEnd));
     }
 
     /// @notice Returns the list of all rewards that were or will be live after `epochStart` (included)
     function getRewardsAfterEpoch(uint32 epochStart) external view returns (RewardParameters[] memory) {
-        return _getRewardsBetweenEpochs(_getRoundedEpoch(epochStart), type(uint32).max);
+        return _getPoolRewardsBetweenEpochs(address(0), _getRoundedEpoch(epochStart), type(uint32).max);
     }
 
     /// @notice Returns the list of all currently active rewards for a specific UniswapV3 pool
@@ -431,61 +431,8 @@ contract MerkleRewardManager is UUPSHelper, ReentrancyGuardUpgradeable {
             rewardEpochStart < roundedEpochEnd);
     }
 
-    /// @notice Gets the list of all active rewards during the epoch which started at `epochStart`
-    function _getRewardsForEpoch(uint32 epochStart) internal view returns (RewardParameters[] memory) {
-        uint256 length;
-        uint256 rewardListLength = rewardList.length;
-        RewardParameters[] memory longActiveRewards = new RewardParameters[](rewardListLength);
-        for (uint32 i; i < rewardListLength; ) {
-            RewardParameters storage reward = rewardList[i];
-            if (_isRewardLiveForEpoch(reward, epochStart)) {
-                longActiveRewards[length] = reward;
-                length += 1;
-            }
-            unchecked {
-                ++i;
-            }
-        }
-        RewardParameters[] memory activeRewards = new RewardParameters[](length);
-        for (uint32 i; i < length; ) {
-            activeRewards[i] = longActiveRewards[i];
-            unchecked {
-                ++i;
-            }
-        }
-        return activeRewards;
-    }
-
-    /// @notice Gets the list of rewards that have been active at some point between `epochStart` and `epochEnd` (excluded)
-    function _getRewardsBetweenEpochs(uint32 epochStart, uint32 epochEnd)
-        internal
-        view
-        returns (RewardParameters[] memory)
-    {
-        uint256 length;
-        uint256 rewardListLength = rewardList.length;
-        RewardParameters[] memory longActiveRewards = new RewardParameters[](rewardListLength);
-        for (uint32 i; i < rewardListLength; ) {
-            RewardParameters storage reward = rewardList[i];
-            if (_isRewardLiveBetweenEpochs(reward, epochStart, epochEnd)) {
-                longActiveRewards[length] = reward;
-                length += 1;
-            }
-            unchecked {
-                ++i;
-            }
-        }
-        RewardParameters[] memory activeRewards = new RewardParameters[](length);
-        for (uint32 i; i < length; ) {
-            activeRewards[i] = longActiveRewards[i];
-            unchecked {
-                ++i;
-            }
-        }
-        return activeRewards;
-    }
-
     /// @notice Gets the list of all active rewards for `uniV3Pool` during the epoch which started at `epochStart`
+    /// @dev If the `uniV3Pool` parameter is equal to 0, then this function will return the rewards for all pools
     function _getPoolRewardsForEpoch(address uniV3Pool, uint32 epochStart)
         internal
         view
@@ -496,7 +443,9 @@ contract MerkleRewardManager is UUPSHelper, ReentrancyGuardUpgradeable {
         RewardParameters[] memory longActiveRewards = new RewardParameters[](rewardListLength);
         for (uint32 i; i < rewardListLength; ) {
             RewardParameters storage reward = rewardList[i];
-            if (reward.uniV3Pool == uniV3Pool && _isRewardLiveForEpoch(reward, epochStart)) {
+            if (
+                _isRewardLiveForEpoch(reward, epochStart) && (uniV3Pool == address(0) || reward.uniV3Pool == uniV3Pool)
+            ) {
                 longActiveRewards[length] = reward;
                 length += 1;
             }
@@ -516,6 +465,7 @@ contract MerkleRewardManager is UUPSHelper, ReentrancyGuardUpgradeable {
     }
 
     /// @notice Gets the list of all the rewards for `uniV3Pool` that have been active between `epochStart` and `epochEnd` (excluded)
+    /// @dev If the `uniV3Pool` parameter is equal to 0, then this function will return the rewards for all pools
     function _getPoolRewardsBetweenEpochs(
         address uniV3Pool,
         uint32 epochStart,
@@ -526,7 +476,10 @@ contract MerkleRewardManager is UUPSHelper, ReentrancyGuardUpgradeable {
         RewardParameters[] memory longActiveRewards = new RewardParameters[](rewardListLength);
         for (uint32 i; i < rewardListLength; ) {
             RewardParameters storage reward = rewardList[i];
-            if (reward.uniV3Pool == uniV3Pool && _isRewardLiveBetweenEpochs(reward, epochStart, epochEnd)) {
+            if (
+                _isRewardLiveBetweenEpochs(reward, epochStart, epochEnd) &&
+                (uniV3Pool == address(0) || reward.uniV3Pool == uniV3Pool)
+            ) {
                 longActiveRewards[length] = reward;
                 length += 1;
             }
