@@ -42,7 +42,12 @@ import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.
 
 import "../interfaces/external/uniswap/IUniswapV3Pool.sol";
 import "../utils/UUPSHelper.sol";
-import "hardhat/console.sol";
+
+/** 
+* TODO: 
+- Which helpers do we keep in the contract?
+- Do we improve gas wise the rewards that are sent
+ */
 
 struct RewardParameters {
     // Address of the UniswapV3 pool that needs to be incentivized

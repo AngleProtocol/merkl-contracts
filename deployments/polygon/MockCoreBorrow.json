@@ -1,0 +1,194 @@
+{
+  "address": "0xBB755240596530be0c1DE5DFD77ec6398471561d",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "governors",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "guardians",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "admin",
+          "type": "address"
+        }
+      ],
+      "name": "isGovernor",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "admin",
+          "type": "address"
+        }
+      ],
+      "name": "isGovernorOrGuardian",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "admin",
+          "type": "address"
+        }
+      ],
+      "name": "toggleGovernor",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "admin",
+          "type": "address"
+        }
+      ],
+      "name": "toggleGuardian",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "transactionHash": "0x42c6a2bfefadd482dc2c6df843af40a206beabc092939a950a8065aaa3fc11ee",
+  "receipt": {
+    "to": null,
+    "from": "0xfdA462548Ce04282f4B6D6619823a7C64Fdc0185",
+    "contractAddress": "0xBB755240596530be0c1DE5DFD77ec6398471561d",
+    "transactionIndex": 3,
+    "gasUsed": "245603",
+    "logsBloom": "0x00000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000800000000000000000000100000000000000000000000000000000000000000000000000000000000080000004000000000000000000000000000000000000000000000002000000000000000000000000200000000000000000000000000000000000000000000000000000000000005000000000000000000001000000000000000800000000000000100000000000000000000000040000000000000000000000000000000000000000000000100000",
+    "blockHash": "0xf09cad942c744979d4199e44fcfbd0b6cdf0bf0899c3fdd19b5204d05e90140e",
+    "transactionHash": "0x42c6a2bfefadd482dc2c6df843af40a206beabc092939a950a8065aaa3fc11ee",
+    "logs": [
+      {
+        "transactionIndex": 3,
+        "blockNumber": 38515305,
+        "transactionHash": "0x42c6a2bfefadd482dc2c6df843af40a206beabc092939a950a8065aaa3fc11ee",
+        "address": "0x0000000000000000000000000000000000001010",
+        "topics": [
+          "0x4dfe1bbbcf077ddc3e01291eea2d5c70c2b422b415d95645b9adcfd678cb1d63",
+          "0x0000000000000000000000000000000000000000000000000000000000001010",
+          "0x000000000000000000000000fda462548ce04282f4b6d6619823a7c64fdc0185",
+          "0x000000000000000000000000bdbd4347b082d9d6bdf2da4555a37ce52a2e2120"
+        ],
+        "data": "0x000000000000000000000000000000000000000000000000008b32b959eaf7a7000000000000000000000000000000000000000000000002d034283aba39201d0000000000000000000000000000000000000000000001c2be6ee6e33df63c70000000000000000000000000000000000000000000000002cfa8f581604e28760000000000000000000000000000000000000000000001c2befa199c97e13417",
+        "logIndex": 10,
+        "blockHash": "0xf09cad942c744979d4199e44fcfbd0b6cdf0bf0899c3fdd19b5204d05e90140e"
+      }
+    ],
+    "blockNumber": 38515305,
+    "cumulativeGasUsed": "451145",
+    "status": 1,
+    "byzantium": true
+  },
+  "args": [],
+  "numDeployments": 1,
+  "solcInputHash": "2533a87bc13ae2d4e5088f7ee794e57c",
+  "metadata": "{\"compiler\":{\"version\":\"0.8.17+commit.8df45f5f\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"governors\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"guardians\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"admin\",\"type\":\"address\"}],\"name\":\"isGovernor\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"admin\",\"type\":\"address\"}],\"name\":\"isGovernorOrGuardian\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"admin\",\"type\":\"address\"}],\"name\":\"toggleGovernor\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"admin\",\"type\":\"address\"}],\"name\":\"toggleGuardian\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/mock/MockCoreBorrow.sol\":\"MockCoreBorrow\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\",\"useLiteralContent\":true},\"optimizer\":{\"enabled\":true,\"runs\":1000000},\"remappings\":[],\"viaIR\":true},\"sources\":{\"contracts/mock/MockCoreBorrow.sol\":{\"content\":\"// SPDX-License-Identifier: GPL-3.0\\n\\npragma solidity 0.8.17;\\n\\ncontract MockCoreBorrow {\\n    mapping(address => bool) public governors;\\n    mapping(address => bool) public guardians;\\n\\n    function isGovernor(address admin) external view returns (bool) {\\n        return governors[admin];\\n    }\\n\\n    function isGovernorOrGuardian(address admin) external view returns (bool) {\\n        return governors[admin] || guardians[admin];\\n    }\\n\\n    function toggleGovernor(address admin) external {\\n        governors[admin] = !governors[admin];\\n    }\\n\\n    function toggleGuardian(address admin) external {\\n        guardians[admin] = !guardians[admin];\\n    }\\n}\\n\",\"keccak256\":\"0x4eb30991152bc22e419a2b85349d6603e84294ca39c1480c7dde6c8d849b460c\",\"license\":\"GPL-3.0\"}},\"version\":1}",
+  "bytecode": "0x608080604052346100165761037a908161001c8239f35b600080fdfe6080604081815260048036101561001557600080fd5b600092833560e01c9081630633b14a146102d957508063521d4de9146102505780635480278b146101c35780636166632d14610136578063e3eece26146100cf5763e43581b81461006557600080fd5b346100cb5760207ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffc3601126100cb573573ffffffffffffffffffffffffffffffffffffffff81168091036100cb57818360ff926020955280855220541690519015158152f35b8280fd5b50346100cb5760207ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffc3601126100cb573573ffffffffffffffffffffffffffffffffffffffff81168091036100cb57818360ff926020955280855220541690519015158152f35b50346100cb5760207ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffc3601126100cb57359073ffffffffffffffffffffffffffffffffffffffff82168092036100cb5790825260208290528120805460ff81811615167fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0090911617905580f35b50346100cb5760207ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffc3601126100cb57359073ffffffffffffffffffffffffffffffffffffffff82168092036100cb5790825260016020528120805460ff81811615167fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0090911617905580f35b508290346102d55760207ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffc3601126102d557359173ffffffffffffffffffffffffffffffffffffffff83168093036102d557602092825281835260ff81832054169182156102c2575b50519015158152f35b600184528190205460ff169150836102b9565b5080fd5b92919050346103405760207ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffc360112610340573573ffffffffffffffffffffffffffffffffffffffff81168091036103405783526001602090815292205460ff1615158152f35b8380fdfea26469706673582212200700185e522e09c45e47d1527f86389c70e06236f265e9ac86430acd283416e764736f6c63430008110033",
+  "deployedBytecode": "0x6080604081815260048036101561001557600080fd5b600092833560e01c9081630633b14a146102d957508063521d4de9146102505780635480278b146101c35780636166632d14610136578063e3eece26146100cf5763e43581b81461006557600080fd5b346100cb5760207ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffc3601126100cb573573ffffffffffffffffffffffffffffffffffffffff81168091036100cb57818360ff926020955280855220541690519015158152f35b8280fd5b50346100cb5760207ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffc3601126100cb573573ffffffffffffffffffffffffffffffffffffffff81168091036100cb57818360ff926020955280855220541690519015158152f35b50346100cb5760207ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffc3601126100cb57359073ffffffffffffffffffffffffffffffffffffffff82168092036100cb5790825260208290528120805460ff81811615167fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0090911617905580f35b50346100cb5760207ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffc3601126100cb57359073ffffffffffffffffffffffffffffffffffffffff82168092036100cb5790825260016020528120805460ff81811615167fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0090911617905580f35b508290346102d55760207ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffc3601126102d557359173ffffffffffffffffffffffffffffffffffffffff83168093036102d557602092825281835260ff81832054169182156102c2575b50519015158152f35b600184528190205460ff169150836102b9565b5080fd5b92919050346103405760207ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffc360112610340573573ffffffffffffffffffffffffffffffffffffffff81168091036103405783526001602090815292205460ff1615158152f35b8380fdfea26469706673582212200700185e522e09c45e47d1527f86389c70e06236f265e9ac86430acd283416e764736f6c63430008110033",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {},
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "version": 1
+  },
+  "storageLayout": {
+    "storage": [
+      {
+        "astId": 8285,
+        "contract": "contracts/mock/MockCoreBorrow.sol:MockCoreBorrow",
+        "label": "governors",
+        "offset": 0,
+        "slot": "0",
+        "type": "t_mapping(t_address,t_bool)"
+      },
+      {
+        "astId": 8289,
+        "contract": "contracts/mock/MockCoreBorrow.sol:MockCoreBorrow",
+        "label": "guardians",
+        "offset": 0,
+        "slot": "1",
+        "type": "t_mapping(t_address,t_bool)"
+      }
+    ],
+    "types": {
+      "t_address": {
+        "encoding": "inplace",
+        "label": "address",
+        "numberOfBytes": "20"
+      },
+      "t_bool": {
+        "encoding": "inplace",
+        "label": "bool",
+        "numberOfBytes": "1"
+      },
+      "t_mapping(t_address,t_bool)": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => bool)",
+        "numberOfBytes": "32",
+        "value": "t_bool"
+      }
+    }
+  }
+}

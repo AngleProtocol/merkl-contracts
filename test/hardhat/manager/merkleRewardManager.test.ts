@@ -1,6 +1,6 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
-import { formatBytes32String, parseEther, solidityKeccak256 } from 'ethers/lib/utils';
+import { parseEther, solidityKeccak256 } from 'ethers/lib/utils';
 import { contract, ethers, web3 } from 'hardhat';
 
 import {
@@ -13,7 +13,6 @@ import {
   MockUniswapV3Pool,
   MockUniswapV3Pool__factory,
 } from '../../../typechain';
-import { ERC1967Proxy } from '../../../typechain/contracts/external';
 import { parseAmount } from '../../../utils/bignumber';
 import { inReceipt } from '../utils/expectEvent';
 import { deployUpgradeableUUPS, latestTime, MAX_UINT256, ZERO_ADDRESS } from '../utils/helpers';

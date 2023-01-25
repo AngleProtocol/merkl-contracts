@@ -1,16 +1,14 @@
-import { ChainId, registry } from '@angleprotocol/sdk';
+import { ChainId, CONTRACTS_ADDRESSES, registry } from '@angleprotocol/sdk';
 import { DeployFunction } from 'hardhat-deploy/types';
 import yargs from 'yargs';
 
-import { MerkleRewardManager, MerkleRewardManager__factory } from '../typechain';
-import { parseAmount } from '../utils/bignumber';
+import { MerkleRootDistributor, MerkleRootDistributor__factory } from '../typechain';
 const argv = yargs.env('').boolean('ci').parseSync();
 
 const func: DeployFunction = async ({ deployments, ethers, network }) => {
   const { deploy } = deployments;
   const { deployer } = await ethers.getNamedSigners();
   let coreBorrow: string;
-  const distributor = (await deployments.get('MerkleRootDistributor')).address;
   /**
    * TODO: change this before real deployment
    */
@@ -25,44 +23,46 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
   }
   */
 
-  console.log('Now deploying MerkleRewardManager');
+  console.log('Let us get started with deployment');
+
+  console.log('Now deploying MerkleRootDistributor');
   console.log('Starting with the implementation');
 
-  await deploy('MerkleRewardManager_Implementation', {
-    contract: 'MerkleRewardManager',
+  await deploy('MerkleRootDistributor_Implementation', {
+    contract: 'MerkleRootDistributor',
     from: deployer.address,
     log: !argv.ci,
   });
 
-  const implementationAddress = (await ethers.getContract('MerkleRewardManager_Implementation')).address;
+  const implementationAddress = (await ethers.getContract('MerkleRootDistributor_Implementation')).address;
 
-  console.log(`Successfully deployed the implementation for MerkleRewardManager at ${implementationAddress}`);
+  console.log(`Successfully deployed the implementation for MerkleRootDistributor at ${implementationAddress}`);
   console.log('');
 
   console.log('Now deploying the Proxy');
 
-  await deploy('MerkleRewardManager', {
+  await deploy('MerkleRootDistributor', {
     contract: 'ERC1967Proxy',
     from: deployer.address,
     args: [implementationAddress, '0x'],
     log: !argv.ci,
   });
 
-  const manager = (await deployments.get('MerkleRewardManager')).address;
-  console.log(`Successfully deployed contract at the address ${manager}`);
+  const distributor = (await deployments.get('MerkleRootDistributor')).address;
+  console.log(`Successfully deployed contract at the address ${distributor}`);
   console.log('Initializing the contract');
   const contract = new ethers.Contract(
-    manager,
-    MerkleRewardManager__factory.createInterface(),
+    distributor,
+    MerkleRootDistributor__factory.createInterface(),
     deployer,
-  ) as MerkleRewardManager;
-
-  await (await contract.connect(deployer).initialize(coreBorrow, distributor, parseAmount.gwei('0.03'))).wait();
+  ) as MerkleRootDistributor;
+  await (await contract.connect(deployer).initialize(coreBorrow)).wait();
   console.log('Contract successfully initialized');
-  console.log('');
   console.log(await contract.coreBorrow());
+
+  console.log('');
 };
 
-func.tags = ['manager'];
-// func.dependencies = ['distributor'];
+func.tags = ['distributor'];
+// func.dependencies = ['mockCore'];
 export default func;
