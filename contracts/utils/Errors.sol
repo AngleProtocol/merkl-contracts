@@ -1,15 +1,17 @@
 // SPDX-License-Identifier: GPL-3.0
 
-pragma solidity ^0.8.12;
+pragma solidity ^0.8.17;
 
 error InvalidLengths();
 error InvalidParam();
 error InvalidProof();
 error InvalidReward();
 error InvalidSignature();
+error NoDispute();
 error NotGovernor();
 error NotGovernorOrGuardian();
 error NotSigned();
 error NotTrusted();
 error NotWhitelisted();
+error UnresolvedDispute();
 error ZeroAddress();
