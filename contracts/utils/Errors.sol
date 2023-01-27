@@ -5,6 +5,7 @@ pragma solidity ^0.8.17;
 error InvalidDispute();
 error InvalidLengths();
 error InvalidParam();
+error InvalidParams();
 error InvalidProof();
 error InvalidReward();
 error InvalidSignature();

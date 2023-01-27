@@ -98,7 +98,7 @@ struct RewardParameters {
 contract MerkleRewardManager is UUPSHelper, ReentrancyGuardUpgradeable {
     using SafeERC20 for IERC20;
 
-    // ============================ CONSTANT / VARIABLES ===========================
+    // =========================== CONSTANTS / VARIABLES ===========================
 
     /// @notice Epoch duration
     uint32 public constant EPOCH_DURATION = 3600;
@@ -111,8 +111,10 @@ contract MerkleRewardManager is UUPSHelper, ReentrancyGuardUpgradeable {
 
     /// @notice User contract for distributing rewards
     address public merkleRootDistributor;
+
     /// @notice Address to which fees will be forwarded
     address public feeRecipient;
+
     /// @notice Value (in base 10**9) of the fees taken when adding rewards for a pool which do not
     /// have a whitelisted token in it
     uint256 public fees;
@@ -142,7 +144,7 @@ contract MerkleRewardManager is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @notice Maps a user to whether it is whitelisted for not signing
     mapping(address => uint256) public userSignatureWhitelist;
 
-    uint256[40] private __gap;
+    uint256[38] private __gap;
 
     // ============================== ERRORS / EVENTS ==============================
 
@@ -183,6 +185,8 @@ contract MerkleRewardManager is UUPSHelper, ReentrancyGuardUpgradeable {
         coreBorrow = _coreBorrow;
         fees = _fees;
     }
+
+    constructor() initializer {}
 
     /// @inheritdoc UUPSUpgradeable
     function _authorizeUpgrade(address) internal view override onlyGuardianUpgrader(coreBorrow) {}

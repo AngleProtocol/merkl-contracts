@@ -59,7 +59,7 @@ struct MerkleTree {
 contract MerkleRootDistributor is UUPSHelper {
     using SafeERC20 for IERC20;
 
-    // ============================ CONSTANT / VARIABLES ===========================
+    // ================================= VARIABLES =================================
 
     /// @notice Tree of claimable tokens through this contract
     MerkleTree public tree;
