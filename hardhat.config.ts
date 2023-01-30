@@ -44,12 +44,13 @@ const config: HardhatUserConfig = {
   solidity: {
     compilers: [
       {
-        version: '0.8.12',
+        version: '0.8.17',
         settings: {
           optimizer: {
             enabled: true,
             runs: 1000000,
           },
+          viaIR: true,
         },
       },
     ],
@@ -67,7 +68,7 @@ const config: HardhatUserConfig = {
         enabled: argv.fork || false,
         // Mainnet
         url: nodeUrl('fork'),
-        blockNumber: 15868074,
+        blockNumber: 16519432,
         // Polygon
         /*
         url: nodeUrl('forkpolygon'),

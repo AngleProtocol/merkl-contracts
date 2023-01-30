@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "deploy": "hardhat deploy --tags merkleRewardManager --network",
+    "deploy": "hardhat deploy --tags manager --network",
     "etherscan": "hardhat etherscan-verify --network",
     "foundry:compile": "forge build --optimize --optimizer-runs 1000",
     "foundry:coverage": "forge coverage --report lcov && forge coverage",
@@ -31,7 +31,7 @@
     "url": "https://github.com/AngleProtocol/boilerplate/issues"
   },
   "devDependencies": {
-    "@angleprotocol/sdk": "1.0.100",
+    "@angleprotocol/sdk": "1.1.51",
     "@ethersproject/abi": "^5.7.0",
     "@ethersproject/providers": "^5.7.1",
     "@nomicfoundation/hardhat-chai-matchers": "^1.0.3",
@@ -42,8 +42,8 @@
     "@nomiclabs/hardhat-truffle5": "2.0.0",
     "@nomiclabs/hardhat-vyper": "^2.0.1",
     "@nomiclabs/hardhat-web3": "2.0.0",
-    "@openzeppelin/contracts": "^4.7.3",
-    "@openzeppelin/contracts-upgradeable": "4.4.2",
+    "@openzeppelin/contracts": "^4.8.1",
+    "@openzeppelin/contracts-upgradeable": "4.8.1",
     "@openzeppelin/hardhat-upgrades": "^1.20.0",
     "@openzeppelin/test-helpers": "0.5.12",
     "@openzeppelin/upgrades-core": "^1.20.0",
