@@ -182,15 +182,16 @@ contract('MerkleRewardManager', () => {
       expect(reward.rewardId).to.be.equal(web3.utils.soliditySha3('TEST') as string);
     });
   });
-  describe('notifyRewardAmount', () => {
+  describe('notifyReward', () => {
     it('reverts - invalid params', async () => {
       await pool.setToken(agEUR, 1);
       await middleman.connect(guardian).setGauge(alice.address, params);
+      await expect(middleman.connect(bob).notifyReward(ZERO_ADDRESS, parseEther('0.5'))).to.be.revertedWithCustomError(
+        middleman,
+        'InvalidParams',
+      );
       await expect(
-        middleman.connect(bob).notifyRewardAmount(ZERO_ADDRESS, parseEther('0.5')),
-      ).to.be.revertedWithCustomError(middleman, 'InvalidParams');
-      await expect(
-        middleman.connect(alice).notifyRewardAmount(ZERO_ADDRESS, parseEther('0.5')),
+        middleman.connect(alice).notifyReward(ZERO_ADDRESS, parseEther('0.5')),
       ).to.be.revertedWithCustomError(middleman, 'InvalidParams');
     });
     it('success - rewards well sent', async () => {
@@ -198,7 +199,7 @@ contract('MerkleRewardManager', () => {
       await middleman.connect(guardian).setGauge(alice.address, params);
       await angle.connect(alice).transfer(middleman.address, parseEther('0.7'));
       expect(await angle.balanceOf(middleman.address)).to.be.equal(parseEther('0.7'));
-      await middleman.connect(alice).notifyRewardAmount(alice.address, parseEther('0.7'));
+      await middleman.connect(alice).notifyReward(alice.address, parseEther('0.7'));
       expect(await manager.nonces(middleman.address)).to.be.equal(1);
       expect(await angle.balanceOf(manager.address)).to.be.equal(parseEther('0'));
       expect(await angle.balanceOf(bob.address)).to.be.equal(parseEther('0.7'));
@@ -240,9 +241,9 @@ contract('MerkleRewardManager', () => {
       await middleman.connect(guardian).setGauge(alice.address, params);
       await middleman.connect(guardian).setGauge(bob.address, params0);
       await angle.connect(alice).transfer(middleman.address, parseEther('0.7'));
-      await middleman.connect(alice).notifyRewardAmount(alice.address, parseEther('0.7'));
+      await middleman.connect(alice).notifyReward(alice.address, parseEther('0.7'));
       await angle.connect(alice).transfer(middleman.address, parseEther('0.8'));
-      await middleman.connect(alice).notifyRewardAmount(bob.address, parseEther('0.8'));
+      await middleman.connect(alice).notifyReward(bob.address, parseEther('0.8'));
 
       expect(await manager.nonces(middleman.address)).to.be.equal(2);
       expect(await angle.balanceOf(manager.address)).to.be.equal(parseEther('0'));

@@ -116,7 +116,7 @@ contract MerklGaugeMiddleman {
     /// @notice Transmits rewards from the `AngleDistributor` to the `MerkleRewardManager` with the correct
     /// parameters
     /// @dev Only callable by the `AngleDistributor` contract
-    function notifyRewardAmount(address gauge, uint256 amount) external {
+    function notifyReward(address gauge, uint256 amount) external {
         RewardParameters memory params = gaugeParams[gauge];
         if (msg.sender != angleDistributor() || params.uniV3Pool == address(0)) revert InvalidParams();
         params.epochStart = uint32(block.timestamp);
