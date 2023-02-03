@@ -38,7 +38,7 @@ pragma solidity ^0.8.17;
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
-import "../utils/UUPSHelper.sol";
+import "./utils/UUPSHelper.sol";
 
 struct MerkleTree {
     // Root of a Merkle tree which leaves are (address user, address token, uint amount)
@@ -50,13 +50,13 @@ struct MerkleTree {
     bytes32 ipfsHash;
 }
 
-/// @title MerkleRootDistributor
+/// @title Distributor
 /// @notice Allows AMMs LPs to claim the rewards that were distributed to them
 /// @author Angle Labs. Inc
 /// @dev This contract relies on whitelisted or Angle-governance controlled addresses to update the Merkle root
 /// for reward distribution. After each tree update, there is a dispute period, during which it is possible to
 /// fallback to the old version of the Merkle root
-contract MerkleRootDistributor is UUPSHelper {
+contract Distributor is UUPSHelper {
     using SafeERC20 for IERC20;
 
     // ================================= VARIABLES =================================

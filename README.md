@@ -6,8 +6,8 @@ This repository contains the smart contracts of the Merkl product developed by A
 
 It basically contains two contracts:
 
-- `MerkleRewardManager`: to which DAOs and individuals can deposit their rewards to incentivize a pool
-- `MerkleRootDistributor`: the contract where users can claim their rewards
+- `DistributionCreator`: to which DAOs and individuals can deposit their rewards to incentivize a pool
+- `Distributor`: the contract where users can claim their rewards
 
 ## Setup
 

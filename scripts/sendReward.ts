@@ -2,14 +2,14 @@ import { parseEther } from 'ethers/lib/utils';
 import { deployments, ethers, web3 } from 'hardhat';
 
 import { MAX_UINT256, ZERO_ADDRESS } from '../test/hardhat/utils/helpers';
-import { MerkleRewardManager, MerkleRewardManager__factory, MockToken, MockToken__factory } from '../typechain';
+import { DistributionCreator, MerkleRewardManager__factory, MockToken, MockToken__factory } from '../typechain';
 
 async function main() {
-  let manager: MerkleRewardManager;
+  let manager: DistributionCreator;
   let mockToken: MockToken;
   const { deployer } = await ethers.getNamedSigners();
 
-  const managerAddress = (await deployments.get('MerkleRewardManager')).address;
+  const managerAddress = (await deployments.get('DistributionCreator')).address;
   const mockTokenAddress = '0x02Cb0586F9252626e992B2C6c1B792d9751f2Ede';
   const uniV3agEURUSDC = '0x3fa147d6309abeb5c1316f7d8a7d8bd023e0cd80';
 
@@ -17,7 +17,7 @@ async function main() {
     managerAddress,
     MerkleRewardManager__factory.createInterface(),
     deployer,
-  ) as MerkleRewardManager;
+  ) as DistributionCreator;
   mockToken = new ethers.Contract(mockTokenAddress, MockToken__factory.createInterface(), deployer) as MockToken;
 
   const params = {
@@ -29,7 +29,7 @@ async function main() {
     propToken0: 4000,
     propToken1: 2000,
     propFees: 4000,
-    outOfRangeIncentivized: 0,
+    isOutOfRangeIncentivized: 0,
     // 25th of January at 8pm -> change this
     epochStart: 1674675727,
     numEpoch: 1000,
@@ -43,7 +43,7 @@ async function main() {
   await (await mockToken.connect(deployer).approve(manager.address, MAX_UINT256)).wait();
 
   console.log('Depositing reward');
-  await (await manager.connect(deployer).depositReward(params)).wait();
+  await (await manager.connect(deployer).createDistribution(params)).wait();
 }
 
 main().catch(error => {

@@ -2,7 +2,7 @@ import { ChainId, registry } from '@angleprotocol/sdk';
 import { DeployFunction } from 'hardhat-deploy/types';
 import yargs from 'yargs';
 
-import { MerkleRewardManager, MerkleRewardManager__factory } from '../typechain';
+import { DistributionCreator, MerkleRewardManager__factory } from '../typechain';
 import { parseAmount } from '../utils/bignumber';
 const argv = yargs.env('').boolean('ci').parseSync();
 
@@ -10,7 +10,7 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
   const { deploy } = deployments;
   const { deployer } = await ethers.getNamedSigners();
   let coreBorrow: string;
-  const distributor = (await deployments.get('MerkleRootDistributor')).address;
+  const distributor = (await deployments.get('Distributor')).address;
   /**
    * TODO: change this before real deployment
    */
@@ -25,37 +25,37 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
   }
   */
 
-  console.log('Now deploying MerkleRewardManager');
+  console.log('Now deploying DistributionCreator');
   console.log('Starting with the implementation');
 
   await deploy('MerkleRewardManager_Implementation', {
-    contract: 'MerkleRewardManager',
+    contract: 'DistributionCreator',
     from: deployer.address,
     log: !argv.ci,
   });
 
   const implementationAddress = (await ethers.getContract('MerkleRewardManager_Implementation')).address;
 
-  console.log(`Successfully deployed the implementation for MerkleRewardManager at ${implementationAddress}`);
+  console.log(`Successfully deployed the implementation for DistributionCreator at ${implementationAddress}`);
   console.log('');
 
   console.log('Now deploying the Proxy');
 
-  await deploy('MerkleRewardManager', {
+  await deploy('DistributionCreator', {
     contract: 'ERC1967Proxy',
     from: deployer.address,
     args: [implementationAddress, '0x'],
     log: !argv.ci,
   });
 
-  const manager = (await deployments.get('MerkleRewardManager')).address;
+  const manager = (await deployments.get('DistributionCreator')).address;
   console.log(`Successfully deployed contract at the address ${manager}`);
   console.log('Initializing the contract');
   const contract = new ethers.Contract(
     manager,
     MerkleRewardManager__factory.createInterface(),
     deployer,
-  ) as MerkleRewardManager;
+  ) as DistributionCreator;
 
   await (await contract.connect(deployer).initialize(coreBorrow, distributor, parseAmount.gwei('0.03'))).wait();
   console.log('Contract successfully initialized');

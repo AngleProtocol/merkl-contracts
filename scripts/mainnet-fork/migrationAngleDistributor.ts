@@ -6,9 +6,9 @@ import { deployUpgradeableUUPS, increaseTime, ZERO_ADDRESS } from '../../test/ha
 import {
   AngleDistributor,
   AngleDistributor__factory,
+  DistributionCreator,
   ERC20,
   ERC20__factory,
-  MerkleRewardManager,
   MerkleRewardManager__factory,
   MockMerklGaugeMiddleman,
   MockMerklGaugeMiddleman__factory,
@@ -20,7 +20,7 @@ import { formatAmount, parseAmount } from '../../utils/bignumber';
 const argv = yargs.env('').boolean('ci').parseSync();
 
 async function main() {
-  let manager: MerkleRewardManager;
+  let manager: DistributionCreator;
   let angleDistributor: AngleDistributor;
   let middleman: MockMerklGaugeMiddleman;
   let angle: ERC20;
@@ -31,7 +31,7 @@ async function main() {
   const proxyAdminAddress = CONTRACTS_ADDRESSES[ChainId.MAINNET].ProxyAdmin!;
   const governor = CONTRACTS_ADDRESSES[ChainId.MAINNET].Governor! as string;
   const coreBorrow = CONTRACTS_ADDRESSES[ChainId.MAINNET].CoreBorrow! as string;
-  const distributor = CONTRACTS_ADDRESSES[ChainId.MAINNET].MerkleRootDistributor! as string;
+  const distributor = CONTRACTS_ADDRESSES[ChainId.MAINNET].Distributor! as string;
   const angleDistributorAddress = CONTRACTS_ADDRESSES[ChainId.MAINNET].AngleDistributor! as string;
   const angleAddress = CONTRACTS_ADDRESSES[ChainId.MAINNET].ANGLE! as string;
   const agEURAddress = '0x1a7e4e63778B4f12a199C062f3eFdD288afCBce8';
@@ -47,7 +47,7 @@ async function main() {
     propToken0: 4000,
     propToken1: 2000,
     propFees: 4000,
-    outOfRangeIncentivized: 0,
+    isOutOfRangeIncentivized: 0,
     epochStart: 0,
     numEpoch: 168,
     boostedReward: 0,
@@ -93,7 +93,7 @@ async function main() {
   ).wait();
   console.log('Success');
 
-  manager = (await deployUpgradeableUUPS(new MerkleRewardManager__factory(deployer))) as MerkleRewardManager;
+  manager = (await deployUpgradeableUUPS(new MerkleRewardManager__factory(deployer))) as DistributionCreator;
   await manager.initialize(coreBorrow, distributor, parseAmount.gwei('0.1'));
 
   middleman = (await new MockMerklGaugeMiddleman__factory(deployer).deploy(coreBorrow)) as MockMerklGaugeMiddleman;
