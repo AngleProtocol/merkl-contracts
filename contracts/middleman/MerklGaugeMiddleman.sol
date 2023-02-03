@@ -107,7 +107,7 @@ contract MerklGaugeMiddleman {
             gauge == address(0) ||
             params.token != address(angle()) ||
             (manager.isWhitelistedToken(IUniswapV3Pool(params.uniV3Pool).token0()) == 0 &&
-                manager.isWhitelistedToken(IUniswapV3Pool(params.uniV3Pool).token1()) == 0)
+                manager.isWhitelistedToken(IUniswapV3Pool(params.uniV3Pool).token0()) == 0)
         ) revert InvalidParams();
         gaugeParams[gauge] = params;
         emit GaugeSet(gauge);

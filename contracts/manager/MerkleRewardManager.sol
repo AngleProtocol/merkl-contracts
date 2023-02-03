@@ -48,7 +48,6 @@ import "../utils/UUPSHelper.sol";
 - Which helpers do we keep in the contract?
 - Do we improve gas wise the rewards that are sent
  */
-
 struct RewardParameters {
     // Address of the UniswapV3 pool that needs to be incentivized
     address uniV3Pool;
@@ -91,6 +90,10 @@ struct RewardParameters {
     bytes additionalData;
 }
 
+struct RewardD {
+    RewardParameters storedData;
+}
+
 /// @title MerkleRewardManager
 /// @author Angle Labs, Inc.
 /// @notice Manages the distribution of rewards across different UniswapV3 pools
@@ -129,6 +132,8 @@ contract MerkleRewardManager is UUPSHelper, ReentrancyGuardUpgradeable {
     bytes32 public messageHash;
 
     /// @notice List of all rewards ever distributed or to be distributed in the contract
+    /// @dev An attacker could try to populate this list. It shouldn't be an issue as only view functions
+    /// iterate on it
     RewardParameters[] public rewardList;
 
     /// @notice Maps an address to its fee rebate

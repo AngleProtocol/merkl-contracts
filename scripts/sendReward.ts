@@ -26,8 +26,8 @@ async function main() {
     positionWrappers: [],
     wrapperTypes: [],
     amount: parseEther('1'),
-    propToken1: 4000,
-    propToken2: 2000,
+    propToken0: 4000,
+    propToken1: 2000,
     propFees: 4000,
     outOfRangeIncentivized: 0,
     // 25th of January at 8pm -> change this

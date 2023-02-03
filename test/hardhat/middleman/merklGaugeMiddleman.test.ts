@@ -55,8 +55,8 @@ contract('MerkleRewardManager', () => {
       positionWrappers: [alice.address, bob.address, deployer.address],
       wrapperTypes: [0, 1, 2],
       amount: parseEther('1'),
-      propToken1: 4000,
-      propToken2: 2000,
+      propToken0: 4000,
+      propToken1: 2000,
       propFees: 4000,
       outOfRangeIncentivized: 0,
       epochStart: startTime,
@@ -101,8 +101,8 @@ contract('MerkleRewardManager', () => {
         positionWrappers: [alice.address, bob.address, deployer.address],
         wrapperTypes: [0, 1, 2],
         amount: parseEther('1'),
-        propToken1: 4000,
-        propToken2: 2000,
+        propToken0: 4000,
+        propToken1: 2000,
         propFees: 4000,
         outOfRangeIncentivized: 0,
         epochStart: startTime,
@@ -118,8 +118,8 @@ contract('MerkleRewardManager', () => {
         positionWrappers: [alice.address, bob.address, deployer.address],
         wrapperTypes: [0, 1, 2],
         amount: parseEther('1'),
-        propToken1: 4000,
-        propToken2: 2000,
+        propToken0: 4000,
+        propToken1: 2000,
         propFees: 4000,
         outOfRangeIncentivized: 0,
         epochStart: startTime,
@@ -154,8 +154,8 @@ contract('MerkleRewardManager', () => {
       expect(reward.uniV3Pool).to.be.equal(pool.address);
       expect(reward.token).to.be.equal(angle.address);
       expect(reward.amount).to.be.equal(parseEther('1'));
-      expect(reward.propToken1).to.be.equal(4000);
-      expect(reward.propToken2).to.be.equal(2000);
+      expect(reward.propToken0).to.be.equal(4000);
+      expect(reward.propToken1).to.be.equal(2000);
       expect(reward.propFees).to.be.equal(4000);
       expect(reward.outOfRangeIncentivized).to.be.equal(0);
       expect(reward.epochStart).to.be.equal(startTime);
@@ -174,8 +174,8 @@ contract('MerkleRewardManager', () => {
       expect(reward.uniV3Pool).to.be.equal(pool.address);
       expect(reward.token).to.be.equal(angle.address);
       expect(reward.amount).to.be.equal(parseEther('1'));
-      expect(reward.propToken1).to.be.equal(4000);
-      expect(reward.propToken2).to.be.equal(2000);
+      expect(reward.propToken0).to.be.equal(4000);
+      expect(reward.propToken1).to.be.equal(2000);
       expect(reward.propFees).to.be.equal(4000);
       expect(reward.outOfRangeIncentivized).to.be.equal(0);
       expect(reward.epochStart).to.be.equal(startTime);
@@ -212,8 +212,8 @@ contract('MerkleRewardManager', () => {
       expect(reward.uniV3Pool).to.be.equal(pool.address);
       expect(reward.token).to.be.equal(angle.address);
       expect(reward.amount).to.be.equal(parseEther('0.7'));
-      expect(reward.propToken1).to.be.equal(4000);
-      expect(reward.propToken2).to.be.equal(2000);
+      expect(reward.propToken0).to.be.equal(4000);
+      expect(reward.propToken1).to.be.equal(2000);
       expect(reward.propFees).to.be.equal(4000);
       expect(reward.outOfRangeIncentivized).to.be.equal(0);
       expect(reward.epochStart).to.be.equal(await pool.round(await latestTime()));
@@ -230,8 +230,8 @@ contract('MerkleRewardManager', () => {
         positionWrappers: [],
         wrapperTypes: [],
         amount: parseEther('1'),
-        propToken1: 3000,
-        propToken2: 2000,
+        propToken0: 3000,
+        propToken1: 2000,
         propFees: 5000,
         outOfRangeIncentivized: 0,
         epochStart: startTime,
@@ -258,8 +258,8 @@ contract('MerkleRewardManager', () => {
       expect(reward.uniV3Pool).to.be.equal(pool.address);
       expect(reward.token).to.be.equal(angle.address);
       expect(reward.amount).to.be.equal(parseEther('0.7'));
-      expect(reward.propToken1).to.be.equal(4000);
-      expect(reward.propToken2).to.be.equal(2000);
+      expect(reward.propToken0).to.be.equal(4000);
+      expect(reward.propToken1).to.be.equal(2000);
       expect(reward.propFees).to.be.equal(4000);
       expect(reward.outOfRangeIncentivized).to.be.equal(0);
       expect(reward.epochStart).to.be.equal(await pool.round(await latestTime()));
@@ -273,8 +273,8 @@ contract('MerkleRewardManager', () => {
       expect(reward2.uniV3Pool).to.be.equal(pool.address);
       expect(reward2.token).to.be.equal(angle.address);
       expect(reward2.amount).to.be.equal(parseEther('0.8'));
-      expect(reward2.propToken1).to.be.equal(3000);
-      expect(reward2.propToken2).to.be.equal(2000);
+      expect(reward2.propToken0).to.be.equal(3000);
+      expect(reward2.propToken1).to.be.equal(2000);
       expect(reward2.propFees).to.be.equal(5000);
       expect(reward2.outOfRangeIncentivized).to.be.equal(0);
       expect(reward2.epochStart).to.be.equal(await pool.round(await latestTime()));
