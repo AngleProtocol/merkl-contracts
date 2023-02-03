@@ -86,6 +86,9 @@ struct RewardParameters {
     address boostingAddress;
     // ID of the reward (it is only populated once created)
     bytes32 rewardId;
+    // Additional data passed when distributing rewards. This parameter may be used in case
+    // the reward distribution script needs to look into other parameters beyond the ones above.
+    bytes additionalData;
 }
 
 /// @title MerkleRewardManager
