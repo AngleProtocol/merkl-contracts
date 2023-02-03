@@ -64,5 +64,5 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
 };
 
 func.tags = ['manager'];
-// func.dependencies = ['distributor'];
+func.dependencies = ['distributor'];
 export default func;
