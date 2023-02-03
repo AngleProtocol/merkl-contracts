@@ -53,6 +53,7 @@ async function main() {
     boostedReward: 0,
     boostingAddress: ZERO_ADDRESS,
     rewardId: web3.utils.soliditySha3('TEST') as string,
+    additionalData: web3.utils.soliditySha3('test2ng') as string,
   };
 
   await network.provider.request({

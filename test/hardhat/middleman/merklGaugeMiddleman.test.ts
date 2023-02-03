@@ -64,6 +64,7 @@ contract('MerkleRewardManager', () => {
       boostedReward: 0,
       boostingAddress: ZERO_ADDRESS,
       rewardId: web3.utils.soliditySha3('TEST') as string,
+      additionalData: web3.utils.soliditySha3('test2ng') as string,
     };
     agEUR = '0x1a7e4e63778B4f12a199C062f3eFdD288afCBce8';
     await angle.mint(alice.address, parseEther('1000'));
@@ -109,6 +110,7 @@ contract('MerkleRewardManager', () => {
         boostedReward: 0,
         boostingAddress: ZERO_ADDRESS,
         rewardId: web3.utils.soliditySha3('TEST') as string,
+        additionalData: web3.utils.soliditySha3('test2ng') as string,
       };
       const params1 = {
         uniV3Pool: alice.address,
@@ -125,6 +127,7 @@ contract('MerkleRewardManager', () => {
         boostedReward: 0,
         boostingAddress: ZERO_ADDRESS,
         rewardId: web3.utils.soliditySha3('TEST') as string,
+        additionalData: web3.utils.soliditySha3('test2ng') as string,
       };
       await expect(middleman.connect(guardian).setGauge(ZERO_ADDRESS, params)).to.be.revertedWithCustomError(
         middleman,
@@ -236,6 +239,7 @@ contract('MerkleRewardManager', () => {
         boostedReward: 0,
         boostingAddress: ZERO_ADDRESS,
         rewardId: web3.utils.soliditySha3('TEST') as string,
+        additionalData: web3.utils.soliditySha3('test2ng') as string,
       };
       await pool.setToken(agEUR, 1);
       await middleman.connect(guardian).setGauge(alice.address, params);

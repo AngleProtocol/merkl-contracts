@@ -48,7 +48,7 @@ const config: HardhatUserConfig = {
         settings: {
           optimizer: {
             enabled: true,
-            runs: 1000000,
+            runs: 50000,
           },
           viaIR: true,
         },
@@ -99,7 +99,8 @@ const config: HardhatUserConfig = {
       accounts: accounts('polygon'),
       gas: 'auto',
       chainId: 137,
-      gasPrice: 200e9,
+      gasPrice: 400e9,
+      // gasPrice: 'auto',
       verify: {
         etherscan: {
           apiKey: etherscanKey('polygon'),
