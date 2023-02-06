@@ -274,14 +274,14 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @notice Returns the list of all currently active distributions on UniswapV3 pool
     function getActiveDistributions() external view returns (ExtensiveDistributionParameters[] memory) {
         uint32 roundedEpoch = _getRoundedEpoch(uint32(block.timestamp));
-        return _getPoolDistributionsBetweenEpochs(address(0), roundedEpoch, roundedEpoch + 1);
+        return _getPoolDistributionsBetweenEpochs(address(0), roundedEpoch, roundedEpoch + EPOCH_DURATION);
     }
 
     /// @notice Returns the list of all the distributions that were or that are going to be live at
     /// a specific epoch
     function getDistributionsForEpoch(uint32 epoch) external view returns (ExtensiveDistributionParameters[] memory) {
         uint32 roundedEpoch = _getRoundedEpoch(epoch);
-        return _getPoolDistributionsBetweenEpochs(address(0), roundedEpoch, roundedEpoch + 1);
+        return _getPoolDistributionsBetweenEpochs(address(0), roundedEpoch, roundedEpoch + EPOCH_DURATION);
     }
 
     /// @notice Gets the distributions that were or will be live at some point between `epochStart` (included) and `epochEnd` (excluded)
@@ -311,7 +311,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         returns (ExtensiveDistributionParameters[] memory)
     {
         uint32 roundedEpoch = _getRoundedEpoch(uint32(block.timestamp));
-        return _getPoolDistributionsBetweenEpochs(uniV3Pool, roundedEpoch, roundedEpoch + 1);
+        return _getPoolDistributionsBetweenEpochs(uniV3Pool, roundedEpoch, roundedEpoch + EPOCH_DURATION);
     }
 
     /// @notice Returns the list of all the distributions that were or that are going to be live at a
@@ -322,7 +322,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         returns (ExtensiveDistributionParameters[] memory)
     {
         uint32 roundedEpoch = _getRoundedEpoch(epoch);
-        return _getPoolDistributionsBetweenEpochs(uniV3Pool, roundedEpoch, roundedEpoch + 1);
+        return _getPoolDistributionsBetweenEpochs(uniV3Pool, roundedEpoch, roundedEpoch + EPOCH_DURATION);
     }
 
     /// @notice Returns the list of all distributions that were or will be live between `epochStart` (included) and `epochEnd` (excluded)
@@ -414,18 +414,6 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         return (epoch / EPOCH_DURATION) * EPOCH_DURATION;
     }
 
-    /// @notice Checks whether `distribution` was live at `roundedEpoch`
-    function _isDistributionLiveForEpoch(DistributionParameters storage distribution, uint32 roundedEpoch)
-        internal
-        view
-        returns (bool)
-    {
-        uint256 distributionEpochStart = distribution.epochStart;
-        return
-            distributionEpochStart <= roundedEpoch &&
-            distributionEpochStart + distribution.numEpoch * EPOCH_DURATION > roundedEpoch;
-    }
-
     /// @notice Checks whether `distribution` was live between `roundedEpochStart` and `roundedEpochEnd`
     function _isDistributionLiveBetweenEpochs(
         DistributionParameters storage distribution,
@@ -457,7 +445,6 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     {
         extensiveParams.base = distribution;
         extensiveParams.poolFee = IUniswapV3Pool(distribution.uniV3Pool).fee();
-
         extensiveParams.token0 = _getUniswapTokenData(
             IERC20Metadata(IUniswapV3Pool(distribution.uniV3Pool).token0()),
             distribution.uniV3Pool
@@ -466,7 +453,6 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
             IERC20Metadata(IUniswapV3Pool(distribution.uniV3Pool).token1()),
             distribution.uniV3Pool
         );
-
         extensiveParams.rewardTokenSymbol = IERC20Metadata(distribution.rewardToken).symbol();
         extensiveParams.rewardTokenDecimals = IERC20Metadata(distribution.rewardToken).decimals();
     }
