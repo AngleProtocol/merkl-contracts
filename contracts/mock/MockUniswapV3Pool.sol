@@ -9,7 +9,7 @@ contract MockUniswapV3Pool {
 
     function setToken(address token, uint256 who) external {
         if (who == 0) token0 = token;
-        else token0 = token;
+        else token1 = token;
     }
 
     function round(uint256 amount) external pure returns (uint256) {
