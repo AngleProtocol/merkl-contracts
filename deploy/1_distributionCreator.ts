@@ -2,7 +2,7 @@ import { ChainId, registry } from '@angleprotocol/sdk';
 import { DeployFunction } from 'hardhat-deploy/types';
 import yargs from 'yargs';
 
-import { DistributionCreator, MerkleRewardManager__factory } from '../typechain';
+import { DistributionCreator, DistributionCreator__factory } from '../typechain';
 import { parseAmount } from '../utils/bignumber';
 const argv = yargs.env('').boolean('ci').parseSync();
 
@@ -28,13 +28,13 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
   console.log('Now deploying DistributionCreator');
   console.log('Starting with the implementation');
 
-  await deploy('MerkleRewardManager_Implementation', {
+  await deploy('DistributionCreator_Implementation', {
     contract: 'DistributionCreator',
     from: deployer.address,
     log: !argv.ci,
   });
 
-  const implementationAddress = (await ethers.getContract('MerkleRewardManager_Implementation')).address;
+  const implementationAddress = (await ethers.getContract('DistributionCreator_Implementation')).address;
 
   console.log(`Successfully deployed the implementation for DistributionCreator at ${implementationAddress}`);
   console.log('');
@@ -53,7 +53,7 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
   console.log('Initializing the contract');
   const contract = new ethers.Contract(
     manager,
-    MerkleRewardManager__factory.createInterface(),
+    DistributionCreator__factory.createInterface(),
     deployer,
   ) as DistributionCreator;
 
@@ -63,6 +63,6 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
   console.log(await contract.coreBorrow());
 };
 
-func.tags = ['manager'];
+func.tags = ['distributionCreator'];
 func.dependencies = ['distributor'];
 export default func;
