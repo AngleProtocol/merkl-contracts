@@ -37,7 +37,7 @@ Warning: always keep your confidential information safe.
 Contracts in this repo rely on Hardhat tests. You can run tests as follows:
 
 ```bash
-yarn hardhat:test ./test/hardhat/distributor/merkleRootDistributor.test.ts
+yarn hardhat:test ./test/hardhat/distributor/distributor.test.ts
 ```
 
 You can also check the coverage of the tests with:

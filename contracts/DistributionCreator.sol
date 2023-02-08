@@ -67,7 +67,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     ICoreBorrow public coreBorrow;
 
     /// @notice User contract for distributing rewards
-    address public merkleRootDistributor;
+    address public distributor;
 
     /// @notice Address to which fees will be forwarded
     address public feeRecipient;
@@ -109,7 +109,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
 
     event FeesSet(uint256 _fees);
     event FeeRecipientUpdated(address indexed _feeRecipient);
-    event MerkleRootDistributorUpdated(address indexed _merkleRootDistributor);
+    event DistributorUpdated(address indexed _distributor);
     event MessageUpdated(bytes32 _messageHash);
     event NewDistribution(DistributionParameters distribution, address indexed sender);
     event FeeRebateUpdated(address indexed user, uint256 userFeeRebate);
@@ -135,12 +135,12 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
 
     function initialize(
         ICoreBorrow _coreBorrow,
-        address _merkleRootDistributor,
+        address _distributor,
         uint256 _fees
     ) external initializer {
-        if (address(_coreBorrow) == address(0) || _merkleRootDistributor == address(0)) revert ZeroAddress();
+        if (address(_coreBorrow) == address(0) || _distributor == address(0)) revert ZeroAddress();
         if (_fees > BASE_9) revert InvalidParam();
-        merkleRootDistributor = _merkleRootDistributor;
+        distributor = _distributor;
         coreBorrow = _coreBorrow;
         fees = _fees;
     }
@@ -247,7 +247,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
             distribution.amount = distributionAmount;
         }
 
-        IERC20(distribution.rewardToken).safeTransferFrom(msg.sender, merkleRootDistributor, distributionAmount);
+        IERC20(distribution.rewardToken).safeTransferFrom(msg.sender, distributor, distributionAmount);
         uint256 senderNonce = nonces[msg.sender];
         nonces[msg.sender] = senderNonce + 1;
         distribution.rewardId = bytes32(keccak256(abi.encodePacked(msg.sender, senderNonce)));
@@ -347,11 +347,11 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
 
     // ============================ GOVERNANCE FUNCTIONS ===========================
 
-    /// @notice Sets a new `merkleRootDistributor` to which rewards should be distributed
-    function setNewMerkleRootDistributor(address _merkleRootDistributor) external onlyGovernorOrGuardian {
-        if (_merkleRootDistributor == address(0)) revert InvalidParam();
-        merkleRootDistributor = _merkleRootDistributor;
-        emit MerkleRootDistributorUpdated(_merkleRootDistributor);
+    /// @notice Sets a new `distributor` to which rewards should be distributed
+    function setNewDistributor(address _distributor) external onlyGovernorOrGuardian {
+        if (_distributor == address(0)) revert InvalidParam();
+        distributor = _distributor;
+        emit DistributorUpdated(_distributor);
     }
 
     /// @notice Sets the fees on deposit

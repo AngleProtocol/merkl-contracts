@@ -106,11 +106,10 @@ contract('DistributionCreator', () => {
       );
     });
   });
-  /*
 
   describe('initializer', () => {
     it('success - treasury', async () => {
-      expect(await manager.merkleRootDistributor()).to.be.equal(bob.address);
+      expect(await manager.distributor()).to.be.equal(bob.address);
       expect(await manager.coreBorrow()).to.be.equal(coreBorrow.address);
       expect(await manager.fees()).to.be.equal(parseAmount.gwei('0.1'));
       expect(await manager.isWhitelistedToken(agEUR.address)).to.be.equal(1);
@@ -137,7 +136,7 @@ contract('DistributionCreator', () => {
   });
   describe('Access Control', () => {
     it('reverts - not governor or guardian', async () => {
-      await expect(manager.connect(alice).setNewMerkleRootDistributor(ZERO_ADDRESS)).to.be.revertedWithCustomError(
+      await expect(manager.connect(alice).setNewDistributor(ZERO_ADDRESS)).to.be.revertedWithCustomError(
         manager,
         'NotGovernorOrGuardian',
       );
@@ -170,19 +169,19 @@ contract('DistributionCreator', () => {
       );
     });
   });
-  describe('setNewMerkleRootDistributor', () => {
+  describe('setNewDistributor', () => {
     it('reverts - zero address', async () => {
-      await expect(manager.connect(guardian).setNewMerkleRootDistributor(ZERO_ADDRESS)).to.be.revertedWithCustomError(
+      await expect(manager.connect(guardian).setNewDistributor(ZERO_ADDRESS)).to.be.revertedWithCustomError(
         manager,
         'InvalidParam',
       );
     });
     it('success - value updated', async () => {
-      const receipt = await (await manager.connect(guardian).setNewMerkleRootDistributor(alice.address)).wait();
-      inReceipt(receipt, 'MerkleRootDistributorUpdated', {
-        _merkleRootDistributor: alice.address,
+      const receipt = await (await manager.connect(guardian).setNewDistributor(alice.address)).wait();
+      inReceipt(receipt, 'DistributorUpdated', {
+        _distributor: alice.address,
       });
-      expect(await manager.merkleRootDistributor()).to.be.equal(alice.address);
+      expect(await manager.distributor()).to.be.equal(alice.address);
     });
   });
   describe('setFees', () => {
@@ -351,9 +350,7 @@ contract('DistributionCreator', () => {
       );
     });
   });
-  */
   describe('createDistribution', () => {
-    /*
     it('reverts - invalid reward', async () => {
       const param0 = {
         uniV3Pool: pool.address,
@@ -684,7 +681,6 @@ contract('DistributionCreator', () => {
       expect(reward.boostedReward).to.be.equal(0);
       expect(reward.boostingAddress).to.be.equal(ZERO_ADDRESS);
     });
-    */
     it('success - view functions check', async () => {
       // 50% rebate on fee
       await pool.setToken(agEUR.address, 0);
