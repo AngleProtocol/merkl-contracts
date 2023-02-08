@@ -52,10 +52,8 @@ struct MerkleTree {
 }
 
 struct Claim {
-    uint232 amount;
-    // Epoch where the last claim occurred
-    // 2**24*3600 is in 3048 so we're good
-    uint24 epoch;
+    uint208 amount;
+    uint48 timestamp;
 }
 
 /// @title Distributor
@@ -186,7 +184,7 @@ contract Distributor is UUPSHelper {
 
             // Closing reentrancy gate here
             uint256 toSend = amount - claimed[user][token].amount;
-            claimed[user][token] = Claim(SafeCast.toUint232(amount), uint24(block.timestamp / 3600));
+            claimed[user][token] = Claim(SafeCast.toUint208(amount), uint48(block.timestamp));
 
             IERC20(token).safeTransfer(user, toSend);
             emit Claimed(user, token, toSend);
