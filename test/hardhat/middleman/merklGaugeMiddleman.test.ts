@@ -19,7 +19,7 @@ import { parseAmount } from '../../../utils/bignumber';
 import { inReceipt } from '../utils/expectEvent';
 import { deployUpgradeableUUPS, latestTime, MAX_UINT256, ZERO_ADDRESS } from '../utils/helpers';
 
-contract('DistributionCreator', () => {
+contract('MerklGaugeMiddleman', () => {
   let deployer: SignerWithAddress;
   let alice: SignerWithAddress;
   let bob: SignerWithAddress;
