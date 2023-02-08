@@ -7,6 +7,7 @@ script = 'scripts/foundry'
 cache_path = 'cache-forge'
 gas_reports = ["*"]
 via_ir = true
+optimizer_runs=1000
 
 # solc_version = '0.8.17'
 

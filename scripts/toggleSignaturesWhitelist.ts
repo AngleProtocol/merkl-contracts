@@ -1,18 +1,18 @@
 import { deployments, ethers } from 'hardhat';
 
-import { MerkleRewardManager, MerkleRewardManager__factory } from '../typechain';
+import { DistributionCreator, MerkleRewardManager__factory } from '../typechain';
 
 async function main() {
-  let manager: MerkleRewardManager;
+  let manager: DistributionCreator;
   const { deployer } = await ethers.getNamedSigners();
 
-  const managerAddress = (await deployments.get('MerkleRewardManager')).address;
+  const managerAddress = (await deployments.get('DistributionCreator')).address;
 
   manager = new ethers.Contract(
     managerAddress,
     MerkleRewardManager__factory.createInterface(),
     deployer,
-  ) as MerkleRewardManager;
+  ) as DistributionCreator;
 
   console.log('Toggling signature whitelist');
   await (await manager.connect(deployer).toggleSigningWhitelist(deployer.address)).wait();

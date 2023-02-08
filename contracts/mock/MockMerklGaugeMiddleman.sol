@@ -7,7 +7,7 @@ import "../middleman/MerklGaugeMiddleman.sol";
 contract MockMerklGaugeMiddleman is MerklGaugeMiddleman {
     address public angleDistributorAddress;
     IERC20 public angleAddress;
-    MerkleRewardManager public manager;
+    DistributionCreator public manager;
 
     constructor(ICoreBorrow _coreBorrow) MerklGaugeMiddleman(_coreBorrow) {}
 
@@ -19,14 +19,14 @@ contract MockMerklGaugeMiddleman is MerklGaugeMiddleman {
         return angleAddress;
     }
 
-    function merkleRewardManager() public view override returns (MerkleRewardManager) {
+    function merkleRewardManager() public view override returns (DistributionCreator) {
         return manager;
     }
 
     function setAddresses(
         address _angleDistributorAddress,
         IERC20 _angleAddress,
-        MerkleRewardManager _manager
+        DistributionCreator _manager
     ) external {
         angleDistributorAddress = _angleDistributorAddress;
         angleAddress = _angleAddress;

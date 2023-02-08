@@ -6,8 +6,8 @@ import { contract, ethers, web3 } from 'hardhat';
 import { MerkleTree } from 'merkletreejs';
 
 import {
-  MerkleRootDistributor,
-  MerkleRootDistributor__factory,
+  Distributor,
+  Distributor__factory,
   MockCoreBorrow,
   MockCoreBorrow__factory,
   MockToken,
@@ -23,7 +23,7 @@ import {
   ZERO_ADDRESS,
 } from '../utils/helpers';
 
-contract('MerkleRootDistributor', () => {
+contract('Distributor', () => {
   let deployer: SignerWithAddress;
   let alice: SignerWithAddress;
   let bob: SignerWithAddress;
@@ -31,7 +31,7 @@ contract('MerkleRootDistributor', () => {
   let guardian: SignerWithAddress;
   let angle: MockToken;
 
-  let distributor: MerkleRootDistributor;
+  let distributor: Distributor;
   let coreBorrow: MockCoreBorrow;
   let merkleTree: MerkleTreeType;
   const emptyBytes = '0x0000000000000000000000000000000000000000000000000000000000000000';
@@ -42,13 +42,13 @@ contract('MerkleRootDistributor', () => {
     coreBorrow = (await new MockCoreBorrow__factory(deployer).deploy()) as MockCoreBorrow;
     await coreBorrow.toggleGuardian(guardian.address);
     await coreBorrow.toggleGovernor(governor.address);
-    distributor = (await deployUpgradeableUUPS(new MerkleRootDistributor__factory(deployer))) as MerkleRootDistributor;
+    distributor = (await deployUpgradeableUUPS(new Distributor__factory(deployer))) as Distributor;
     await distributor.initialize(coreBorrow.address);
     merkleTree = { merkleRoot: web3.utils.keccak256('MERKLE_ROOT'), ipfsHash: web3.utils.keccak256('IPFS_HASH') };
   });
   describe('upgrade', () => {
     it('success - upgrades to new implementation', async () => {
-      const newImplementation = await new MerkleRootDistributor__factory(deployer).deploy();
+      const newImplementation = await new Distributor__factory(deployer).deploy();
       await distributor.connect(governor).upgradeTo(newImplementation.address);
       /*
       console.log(
@@ -60,7 +60,7 @@ contract('MerkleRootDistributor', () => {
       );
       */
 
-      const newImplementation2 = await new MerkleRootDistributor__factory(deployer).deploy();
+      const newImplementation2 = await new Distributor__factory(deployer).deploy();
       await distributor.connect(guardian).upgradeTo(newImplementation2.address);
       /*
       console.log(
@@ -73,7 +73,7 @@ contract('MerkleRootDistributor', () => {
       */
     });
     it('reverts - when called by unallowed address', async () => {
-      const newImplementation = await new MerkleRootDistributor__factory(deployer).deploy();
+      const newImplementation = await new Distributor__factory(deployer).deploy();
       await expect(distributor.connect(alice).upgradeTo(newImplementation.address)).to.be.revertedWithCustomError(
         distributor,
         'NotGovernorOrGuardian',
@@ -91,9 +91,7 @@ contract('MerkleRootDistributor', () => {
       );
     });
     it('reverts - zero address', async () => {
-      const distributorRevert = (await deployUpgradeableUUPS(
-        new MerkleRootDistributor__factory(deployer),
-      )) as MerkleRootDistributor;
+      const distributorRevert = (await deployUpgradeableUUPS(new Distributor__factory(deployer))) as Distributor;
       await expect(distributorRevert.initialize(ZERO_ADDRESS)).to.be.reverted;
     });
   });

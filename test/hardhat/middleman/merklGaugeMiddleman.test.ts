@@ -4,8 +4,8 @@ import { parseEther, solidityKeccak256 } from 'ethers/lib/utils';
 import { contract, ethers, web3 } from 'hardhat';
 
 import {
-  MerkleRewardManager,
-  MerkleRewardManager__factory,
+  DistributionCreator,
+  DistributionCreator__factory,
   MockCoreBorrow,
   MockCoreBorrow__factory,
   MockMerklGaugeMiddleman,
@@ -19,7 +19,7 @@ import { parseAmount } from '../../../utils/bignumber';
 import { inReceipt } from '../utils/expectEvent';
 import { deployUpgradeableUUPS, latestTime, MAX_UINT256, ZERO_ADDRESS } from '../utils/helpers';
 
-contract('MerkleRewardManager', () => {
+contract('DistributionCreator', () => {
   let deployer: SignerWithAddress;
   let alice: SignerWithAddress;
   let bob: SignerWithAddress;
@@ -29,7 +29,7 @@ contract('MerkleRewardManager', () => {
   let pool: MockUniswapV3Pool;
   let agEUR: string;
 
-  let manager: MerkleRewardManager;
+  let manager: DistributionCreator;
   let middleman: MockMerklGaugeMiddleman;
   let coreBorrow: MockCoreBorrow;
   let startTime: number;
@@ -46,19 +46,19 @@ contract('MerkleRewardManager', () => {
     )) as MockMerklGaugeMiddleman;
     await coreBorrow.toggleGuardian(guardian.address);
     await coreBorrow.toggleGovernor(governor.address);
-    manager = (await deployUpgradeableUUPS(new MerkleRewardManager__factory(deployer))) as MerkleRewardManager;
+    manager = (await deployUpgradeableUUPS(new DistributionCreator__factory(deployer))) as DistributionCreator;
     await manager.initialize(coreBorrow.address, bob.address, parseAmount.gwei('0.1'));
     startTime = await latestTime();
     params = {
       uniV3Pool: pool.address,
-      token: angle.address,
+      rewardToken: angle.address,
       positionWrappers: [alice.address, bob.address, deployer.address],
       wrapperTypes: [0, 1, 2],
       amount: parseEther('1'),
-      propToken1: 4000,
-      propToken2: 2000,
+      propToken0: 4000,
+      propToken1: 2000,
       propFees: 4000,
-      outOfRangeIncentivized: 0,
+      isOutOfRangeIncentivized: 0,
       epochStart: startTime,
       numEpoch: 1,
       boostedReward: 0,
@@ -97,14 +97,14 @@ contract('MerkleRewardManager', () => {
     it('reverts - invalid params', async () => {
       const params0 = {
         uniV3Pool: pool.address,
-        token: agEUR,
+        rewardToken: agEUR,
         positionWrappers: [alice.address, bob.address, deployer.address],
         wrapperTypes: [0, 1, 2],
         amount: parseEther('1'),
-        propToken1: 4000,
-        propToken2: 2000,
+        propToken0: 4000,
+        propToken1: 2000,
         propFees: 4000,
-        outOfRangeIncentivized: 0,
+        isOutOfRangeIncentivized: 0,
         epochStart: startTime,
         numEpoch: 1,
         boostedReward: 0,
@@ -114,14 +114,14 @@ contract('MerkleRewardManager', () => {
       };
       const params1 = {
         uniV3Pool: alice.address,
-        token: angle.address,
+        rewardToken: angle.address,
         positionWrappers: [alice.address, bob.address, deployer.address],
         wrapperTypes: [0, 1, 2],
         amount: parseEther('1'),
-        propToken1: 4000,
-        propToken2: 2000,
+        propToken0: 4000,
+        propToken1: 2000,
         propFees: 4000,
-        outOfRangeIncentivized: 0,
+        isOutOfRangeIncentivized: 0,
         epochStart: startTime,
         numEpoch: 1,
         boostedReward: 0,
@@ -152,12 +152,12 @@ contract('MerkleRewardManager', () => {
       });
       const reward = await middleman.gaugeParams(alice.address);
       expect(reward.uniV3Pool).to.be.equal(pool.address);
-      expect(reward.token).to.be.equal(angle.address);
+      expect(reward.rewardToken).to.be.equal(angle.address);
       expect(reward.amount).to.be.equal(parseEther('1'));
-      expect(reward.propToken1).to.be.equal(4000);
-      expect(reward.propToken2).to.be.equal(2000);
+      expect(reward.propToken0).to.be.equal(4000);
+      expect(reward.propToken1).to.be.equal(2000);
       expect(reward.propFees).to.be.equal(4000);
-      expect(reward.outOfRangeIncentivized).to.be.equal(0);
+      expect(reward.isOutOfRangeIncentivized).to.be.equal(0);
       expect(reward.epochStart).to.be.equal(startTime);
       expect(reward.numEpoch).to.be.equal(1);
       expect(reward.boostedReward).to.be.equal(0);
@@ -172,12 +172,12 @@ contract('MerkleRewardManager', () => {
       });
       const reward = await middleman.gaugeParams(alice.address);
       expect(reward.uniV3Pool).to.be.equal(pool.address);
-      expect(reward.token).to.be.equal(angle.address);
+      expect(reward.rewardToken).to.be.equal(angle.address);
       expect(reward.amount).to.be.equal(parseEther('1'));
-      expect(reward.propToken1).to.be.equal(4000);
-      expect(reward.propToken2).to.be.equal(2000);
+      expect(reward.propToken0).to.be.equal(4000);
+      expect(reward.propToken1).to.be.equal(2000);
       expect(reward.propFees).to.be.equal(4000);
-      expect(reward.outOfRangeIncentivized).to.be.equal(0);
+      expect(reward.isOutOfRangeIncentivized).to.be.equal(0);
       expect(reward.epochStart).to.be.equal(startTime);
       expect(reward.numEpoch).to.be.equal(1);
       expect(reward.boostedReward).to.be.equal(0);
@@ -208,14 +208,14 @@ contract('MerkleRewardManager', () => {
       expect(await angle.balanceOf(bob.address)).to.be.equal(parseEther('0.7'));
       expect(await angle.balanceOf(middleman.address)).to.be.equal(parseEther('0'));
       expect(await angle.balanceOf(alice.address)).to.be.equal(parseEther('999.3'));
-      const reward = await manager.rewardList(0);
+      const reward = await manager.distributionList(0);
       expect(reward.uniV3Pool).to.be.equal(pool.address);
-      expect(reward.token).to.be.equal(angle.address);
+      expect(reward.rewardToken).to.be.equal(angle.address);
       expect(reward.amount).to.be.equal(parseEther('0.7'));
-      expect(reward.propToken1).to.be.equal(4000);
-      expect(reward.propToken2).to.be.equal(2000);
+      expect(reward.propToken0).to.be.equal(4000);
+      expect(reward.propToken1).to.be.equal(2000);
       expect(reward.propFees).to.be.equal(4000);
-      expect(reward.outOfRangeIncentivized).to.be.equal(0);
+      expect(reward.isOutOfRangeIncentivized).to.be.equal(0);
       expect(reward.epochStart).to.be.equal(await pool.round(await latestTime()));
       expect(reward.numEpoch).to.be.equal(1);
       expect(reward.boostedReward).to.be.equal(0);
@@ -226,14 +226,14 @@ contract('MerkleRewardManager', () => {
     it('success - rewards sent for different gauges at once', async () => {
       const params0 = {
         uniV3Pool: pool.address,
-        token: angle.address,
+        rewardToken: angle.address,
         positionWrappers: [],
         wrapperTypes: [],
         amount: parseEther('1'),
-        propToken1: 3000,
-        propToken2: 2000,
+        propToken0: 3000,
+        propToken1: 2000,
         propFees: 5000,
-        outOfRangeIncentivized: 0,
+        isOutOfRangeIncentivized: 0,
         epochStart: startTime,
         numEpoch: 10,
         boostedReward: 0,
@@ -254,14 +254,14 @@ contract('MerkleRewardManager', () => {
       expect(await angle.balanceOf(bob.address)).to.be.equal(parseEther('1.5'));
       expect(await angle.balanceOf(middleman.address)).to.be.equal(parseEther('0'));
       expect(await angle.balanceOf(alice.address)).to.be.equal(parseEther('998.5'));
-      const reward = await manager.rewardList(0);
+      const reward = await manager.distributionList(0);
       expect(reward.uniV3Pool).to.be.equal(pool.address);
-      expect(reward.token).to.be.equal(angle.address);
+      expect(reward.rewardToken).to.be.equal(angle.address);
       expect(reward.amount).to.be.equal(parseEther('0.7'));
-      expect(reward.propToken1).to.be.equal(4000);
-      expect(reward.propToken2).to.be.equal(2000);
+      expect(reward.propToken0).to.be.equal(4000);
+      expect(reward.propToken1).to.be.equal(2000);
       expect(reward.propFees).to.be.equal(4000);
-      expect(reward.outOfRangeIncentivized).to.be.equal(0);
+      expect(reward.isOutOfRangeIncentivized).to.be.equal(0);
       expect(reward.epochStart).to.be.equal(await pool.round(await latestTime()));
       expect(reward.numEpoch).to.be.equal(1);
       expect(reward.boostedReward).to.be.equal(0);
@@ -269,14 +269,14 @@ contract('MerkleRewardManager', () => {
       const rewardId = solidityKeccak256(['address', 'uint256'], [middleman.address, 0]);
       expect(reward.rewardId).to.be.equal(rewardId);
 
-      const reward2 = await manager.rewardList(1);
+      const reward2 = await manager.distributionList(1);
       expect(reward2.uniV3Pool).to.be.equal(pool.address);
-      expect(reward2.token).to.be.equal(angle.address);
+      expect(reward2.rewardToken).to.be.equal(angle.address);
       expect(reward2.amount).to.be.equal(parseEther('0.8'));
-      expect(reward2.propToken1).to.be.equal(3000);
-      expect(reward2.propToken2).to.be.equal(2000);
+      expect(reward2.propToken0).to.be.equal(3000);
+      expect(reward2.propToken1).to.be.equal(2000);
       expect(reward2.propFees).to.be.equal(5000);
-      expect(reward2.outOfRangeIncentivized).to.be.equal(0);
+      expect(reward2.isOutOfRangeIncentivized).to.be.equal(0);
       expect(reward2.epochStart).to.be.equal(await pool.round(await latestTime()));
       expect(reward2.numEpoch).to.be.equal(10);
       expect(reward2.boostedReward).to.be.equal(0);
