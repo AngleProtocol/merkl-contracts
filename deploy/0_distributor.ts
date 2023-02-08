@@ -28,13 +28,13 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
   console.log('Now deploying Distributor');
   console.log('Starting with the implementation');
 
-  await deploy('MerkleRootDistributor_Implementation', {
+  await deploy('Distributor_Implementation', {
     contract: 'Distributor',
     from: deployer.address,
     log: !argv.ci,
   });
 
-  const implementationAddress = (await ethers.getContract('MerkleRootDistributor_Implementation')).address;
+  const implementationAddress = (await ethers.getContract('Distributor_Implementation')).address;
 
   console.log(`Successfully deployed the implementation for Distributor at ${implementationAddress}`);
   console.log('');

@@ -72,11 +72,11 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @notice Address to which fees will be forwarded
     address public feeRecipient;
 
-    /// @notice Value (in base 10**9) of the fees taken when adding rewards for a pool which do not
+    /// @notice Value (in base 10**9) of the fees taken when creating a distribution for a pool which do not
     /// have a whitelisted token in it
     uint256 public fees;
 
-    /// @notice Message that needs to be acknowledged by users depositing rewards
+    /// @notice Message that needs to be acknowledged by users creating a distribution
     string public message;
 
     /// @notice Hash of the message that needs to be signed
@@ -94,7 +94,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// on pools with whitelisted tokens
     mapping(address => uint256) public isWhitelistedToken;
 
-    /// @notice Maps an address to its nonce for depositing a reward
+    /// @notice Maps an address to its nonce for creating a distribution
     mapping(address => uint256) public nonces;
 
     /// @notice Maps an address to the last valid hash signed
@@ -111,7 +111,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     event FeeRecipientUpdated(address indexed _feeRecipient);
     event MerkleRootDistributorUpdated(address indexed _merkleRootDistributor);
     event MessageUpdated(bytes32 _messageHash);
-    event NewReward(DistributionParameters reward, address indexed sender);
+    event NewDistribution(DistributionParameters distribution, address indexed sender);
     event FeeRebateUpdated(address indexed user, uint256 userFeeRebate);
     event TokenWhitelistToggled(address indexed token, uint256 toggleStatus);
     event UserSigned(bytes32 messageHash, address indexed user);
@@ -152,38 +152,38 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
 
     // ============================== DEPOSIT FUNCTION =============================
 
-    /// @notice Deposits a reward `reward` to incentivize a given UniswapV3 pool for a specific period of time
-    /// @return rewardAmount How many rewards are actually taken into consideration in the contract
+    /// @notice Creates a `distribution` to incentivize a given UniswapV3 pool for a specific period of time
+    /// @return distributionAmount How many reward tokens are actually taken into consideration in the contract
     /// @dev It's important to make sure that the address specified as a UniV3 pool is effectively a pool
     /// otherwise they will not be handled by the distribution script and rewards may be lost
-    /// @dev The `positionWrappers` specified in the `reward` struct need to be supported by the script
+    /// @dev The `positionWrappers` specified in the `distribution` struct need to be supported by the script
     /// @dev If the pool incentivized contains agEUR, then no fees are taken on the rewards
     /// @dev This function will revert if the user has not signed the message `messageHash` once through one of
     /// the functions enabling to sign
-    function createDistribution(DistributionParameters memory reward)
+    function createDistribution(DistributionParameters memory distribution)
         external
         hasSigned
-        returns (uint256 rewardAmount)
+        returns (uint256 distributionAmount)
     {
-        return _createDistribution(reward);
+        return _createDistribution(distribution);
     }
 
-    /// @notice Same as the function above but for multiple rewards at once
-    /// @return List of all the reward amounts actually deposited for each `reward` in the `rewards` list
-    function createDistributions(DistributionParameters[] memory rewards)
+    /// @notice Same as the function above but for multiple distributions at once
+    /// @return List of all the distribution amounts actually deposited for each `distribution` in the `distributions` list
+    function createDistributions(DistributionParameters[] memory distributions)
         external
         hasSigned
         returns (uint256[] memory)
     {
-        uint256 rewardsLength = rewards.length;
-        uint256[] memory rewardAmounts = new uint256[](rewardsLength);
-        for (uint256 i; i < rewardsLength; ) {
-            rewardAmounts[i] = _createDistribution(rewards[i]);
+        uint256 distributionsLength = distributions.length;
+        uint256[] memory distributionAmounts = new uint256[](distributionsLength);
+        for (uint256 i; i < distributionsLength; ) {
+            distributionAmounts[i] = _createDistribution(distributions[i]);
             unchecked {
                 ++i;
             }
         }
-        return rewardAmounts;
+        return distributionAmounts;
     }
 
     /// @notice Checks whether the `msg.sender`'s `signature` is compatible with the message
@@ -194,65 +194,65 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         _sign(signature);
     }
 
-    /// @notice Combines signing the message and depositing a reward
-    function signAndCreateDistribution(DistributionParameters memory reward, bytes calldata signature)
+    /// @notice Combines signing the message and creating a distribution
+    function signAndCreateDistribution(DistributionParameters memory distribution, bytes calldata signature)
         external
-        returns (uint256 rewardAmount)
+        returns (uint256 distributionAmount)
     {
         _sign(signature);
-        return _createDistribution(reward);
+        return _createDistribution(distribution);
     }
 
     /// @notice Internal version of `createDistribution`
-    function _createDistribution(DistributionParameters memory reward)
+    function _createDistribution(DistributionParameters memory distribution)
         internal
         nonReentrant
-        returns (uint256 rewardAmount)
+        returns (uint256 distributionAmount)
     {
-        uint32 epochStart = _getRoundedEpoch(reward.epochStart);
-        reward.epochStart = epochStart;
+        uint32 epochStart = _getRoundedEpoch(distribution.epochStart);
+        distribution.epochStart = epochStart;
         // Reward will not be accepted in the following conditions:
         if (
             // if epoch parameters would lead to a past distribution
             epochStart + EPOCH_DURATION < block.timestamp ||
             // if the amount of epochs for which this incentive should last is zero
-            reward.numEpoch == 0 ||
+            distribution.numEpoch == 0 ||
             // if the amount to use to incentivize is still 0
-            reward.amount == 0 ||
-            // if the reward parameters are not correctly specified
-            reward.propFees + reward.propToken0 + reward.propToken1 != 1e4 ||
+            distribution.amount == 0 ||
+            // if the distribution parameters are not correctly specified
+            distribution.propFees + distribution.propToken0 + distribution.propToken1 != 1e4 ||
             // if boosted addresses get less than non-boosted addresses in case of
-            (reward.boostingAddress != address(0) && reward.boostedReward < 1e4) ||
+            (distribution.boostingAddress != address(0) && distribution.boostedReward < 1e4) ||
             // if the type of the position wrappers is not well specified
-            reward.positionWrappers.length != reward.wrapperTypes.length
+            distribution.positionWrappers.length != distribution.wrapperTypes.length
         ) revert InvalidReward();
-        rewardAmount = reward.amount;
+        distributionAmount = distribution.amount;
         // Computing fees: these are waived for whitelisted addresses and if there is a whitelisted token in a pool
         uint256 userFeeRebate = feeRebate[msg.sender];
         if (
             userFeeRebate < BASE_9 &&
-            isWhitelistedToken[IUniswapV3Pool(reward.uniV3Pool).token0()] == 0 &&
-            isWhitelistedToken[IUniswapV3Pool(reward.uniV3Pool).token1()] == 0
+            isWhitelistedToken[IUniswapV3Pool(distribution.uniV3Pool).token0()] == 0 &&
+            isWhitelistedToken[IUniswapV3Pool(distribution.uniV3Pool).token1()] == 0
         ) {
             uint256 _fees = (fees * (BASE_9 - userFeeRebate)) / BASE_9;
-            uint256 rewardAmountMinusFees = (rewardAmount * (BASE_9 - _fees)) / BASE_9;
+            uint256 distributionAmountMinusFees = (distributionAmount * (BASE_9 - _fees)) / BASE_9;
             address _feeRecipient = feeRecipient;
             _feeRecipient = _feeRecipient == address(0) ? address(this) : _feeRecipient;
-            IERC20(reward.rewardToken).safeTransferFrom(
+            IERC20(distribution.rewardToken).safeTransferFrom(
                 msg.sender,
                 _feeRecipient,
-                rewardAmount - rewardAmountMinusFees
+                distributionAmount - distributionAmountMinusFees
             );
-            rewardAmount = rewardAmountMinusFees;
-            reward.amount = rewardAmount;
+            distributionAmount = distributionAmountMinusFees;
+            distribution.amount = distributionAmount;
         }
 
-        IERC20(reward.rewardToken).safeTransferFrom(msg.sender, merkleRootDistributor, rewardAmount);
+        IERC20(distribution.rewardToken).safeTransferFrom(msg.sender, merkleRootDistributor, distributionAmount);
         uint256 senderNonce = nonces[msg.sender];
         nonces[msg.sender] = senderNonce + 1;
-        reward.rewardId = bytes32(keccak256(abi.encodePacked(msg.sender, senderNonce)));
-        distributionList.push(reward);
-        emit NewReward(reward, msg.sender);
+        distribution.rewardId = bytes32(keccak256(abi.encodePacked(msg.sender, senderNonce)));
+        distributionList.push(distribution);
+        emit NewDistribution(distribution, msg.sender);
     }
 
     /// @notice Internal version of the `sign` function
@@ -266,25 +266,27 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     // ================================= UI HELPERS ================================
     // These functions are not to be queried on-chain and hence are not optimized for gas consumption
 
-    /// @notice Returns the list of all rewards ever distributed or to be distributed
+    /// @notice Returns the list of all distributions ever distributed or to be distributed
     function getAllDistributions() external view returns (DistributionParameters[] memory) {
         return distributionList;
     }
 
-    /// @notice Returns the list of all currently active rewards on UniswapV3 pool
+    /// @notice Returns the list of all currently active distributions on UniswapV3 pool
     function getActiveDistributions() external view returns (ExtensiveDistributionParameters[] memory) {
-        return _getPoolDistributionsForEpoch(address(0), _getRoundedEpoch(uint32(block.timestamp)));
+        uint32 roundedEpoch = _getRoundedEpoch(uint32(block.timestamp));
+        return _getPoolDistributionsBetweenEpochs(address(0), roundedEpoch, roundedEpoch + EPOCH_DURATION);
     }
 
-    /// @notice Returns the list of all the rewards that were or that are going to be live at
+    /// @notice Returns the list of all the distributions that were or that are going to be live at
     /// a specific epoch
     function getDistributionsForEpoch(uint32 epoch) external view returns (ExtensiveDistributionParameters[] memory) {
-        return _getPoolDistributionsForEpoch(address(0), _getRoundedEpoch(epoch));
+        uint32 roundedEpoch = _getRoundedEpoch(epoch);
+        return _getPoolDistributionsBetweenEpochs(address(0), roundedEpoch, roundedEpoch + EPOCH_DURATION);
     }
 
-    /// @notice Gets the rewards that were or will be live at some point between `epochStart` (included) and `epochEnd` (excluded)
-    /// @dev If a reward starts during `epochEnd`, it will not be returned by this function
-    /// @dev Conversely, if a reward starts after `epochStart` and ends before `epochEnd`, it will be returned by this function
+    /// @notice Gets the distributions that were or will be live at some point between `epochStart` (included) and `epochEnd` (excluded)
+    /// @dev If a distribution starts during `epochEnd`, it will not be returned by this function
+    /// @dev Conversely, if a distribution starts after `epochStart` and ends before `epochEnd`, it will be returned by this function
     function getDistributionsBetweenEpochs(uint32 epochStart, uint32 epochEnd)
         external
         view
@@ -293,7 +295,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         return _getPoolDistributionsBetweenEpochs(address(0), _getRoundedEpoch(epochStart), _getRoundedEpoch(epochEnd));
     }
 
-    /// @notice Returns the list of all rewards that were or will be live after `epochStart` (included)
+    /// @notice Returns the list of all distributions that were or will be live after `epochStart` (included)
     function getDistributionsAfterEpoch(uint32 epochStart)
         external
         view
@@ -302,26 +304,28 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         return _getPoolDistributionsBetweenEpochs(address(0), _getRoundedEpoch(epochStart), type(uint32).max);
     }
 
-    /// @notice Returns the list of all currently active rewards for a specific UniswapV3 pool
+    /// @notice Returns the list of all currently active distributions for a specific UniswapV3 pool
     function getActivePoolDistributions(address uniV3Pool)
         external
         view
         returns (ExtensiveDistributionParameters[] memory)
     {
-        return _getPoolDistributionsForEpoch(uniV3Pool, _getRoundedEpoch(uint32(block.timestamp)));
+        uint32 roundedEpoch = _getRoundedEpoch(uint32(block.timestamp));
+        return _getPoolDistributionsBetweenEpochs(uniV3Pool, roundedEpoch, roundedEpoch + EPOCH_DURATION);
     }
 
-    /// @notice Returns the list of all the rewards that were or that are going to be live at a
+    /// @notice Returns the list of all the distributions that were or that are going to be live at a
     /// specific epoch and for a specific pool
     function getPoolDistributionsForEpoch(address uniV3Pool, uint32 epoch)
         external
         view
         returns (ExtensiveDistributionParameters[] memory)
     {
-        return _getPoolDistributionsForEpoch(uniV3Pool, _getRoundedEpoch(epoch));
+        uint32 roundedEpoch = _getRoundedEpoch(epoch);
+        return _getPoolDistributionsBetweenEpochs(uniV3Pool, roundedEpoch, roundedEpoch + EPOCH_DURATION);
     }
 
-    /// @notice Returns the list of all rewards that were or will be live between `epochStart` (included) and `epochEnd` (excluded)
+    /// @notice Returns the list of all distributions that were or will be live between `epochStart` (included) and `epochEnd` (excluded)
     /// for a specific pool
     function getPoolDistributionsBetweenEpochs(
         address uniV3Pool,
@@ -331,7 +335,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         return _getPoolDistributionsBetweenEpochs(uniV3Pool, _getRoundedEpoch(epochStart), _getRoundedEpoch(epochEnd));
     }
 
-    /// @notice Returns the list of all rewards that were or will be live after `epochStart` (included)
+    /// @notice Returns the list of all distributions that were or will be live after `epochStart` (included)
     /// for a specific pool
     function getPoolDistributionsAfterEpoch(address uniV3Pool, uint32 epochStart)
         external
@@ -410,27 +414,18 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         return (epoch / EPOCH_DURATION) * EPOCH_DURATION;
     }
 
-    /// @notice Checks whether `reward` was live at `roundedEpoch`
-    function _isDistributionLiveForEpoch(DistributionParameters storage reward, uint32 roundedEpoch)
-        internal
-        view
-        returns (bool)
-    {
-        uint256 rewardEpochStart = reward.epochStart;
-        return rewardEpochStart <= roundedEpoch && rewardEpochStart + reward.numEpoch * EPOCH_DURATION > roundedEpoch;
-    }
-
-    /// @notice Checks whether `reward` was live between `roundedEpochStart` and `roundedEpochEnd`
+    /// @notice Checks whether `distribution` was live between `roundedEpochStart` and `roundedEpochEnd`
     function _isDistributionLiveBetweenEpochs(
-        DistributionParameters storage reward,
+        DistributionParameters storage distribution,
         uint32 roundedEpochStart,
         uint32 roundedEpochEnd
     ) internal view returns (bool) {
-        uint256 rewardEpochStart = reward.epochStart;
-        return (rewardEpochStart + reward.numEpoch * EPOCH_DURATION > roundedEpochStart &&
-            rewardEpochStart < roundedEpochEnd);
+        uint256 distributionEpochStart = distribution.epochStart;
+        return (distributionEpochStart + distribution.numEpoch * EPOCH_DURATION > roundedEpochStart &&
+            distributionEpochStart < roundedEpochEnd);
     }
 
+    /// @notice Fetches data for `token` on the Uniswap `pool`
     function _getUniswapTokenData(IERC20Metadata token, address pool)
         internal
         view
@@ -442,6 +437,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         data.poolBalance = token.balanceOf(pool);
     }
 
+    /// @notice Fetches extra data about the parameters in a distribution
     function _getExtensiveDistributionParameters(DistributionParameters memory distribution)
         internal
         view
@@ -449,7 +445,6 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     {
         extensiveParams.base = distribution;
         extensiveParams.poolFee = IUniswapV3Pool(distribution.uniV3Pool).fee();
-
         extensiveParams.token0 = _getUniswapTokenData(
             IERC20Metadata(IUniswapV3Pool(distribution.uniV3Pool).token0()),
             distribution.uniV3Pool
@@ -458,56 +453,21 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
             IERC20Metadata(IUniswapV3Pool(distribution.uniV3Pool).token1()),
             distribution.uniV3Pool
         );
-
         extensiveParams.rewardTokenSymbol = IERC20Metadata(distribution.rewardToken).symbol();
         extensiveParams.rewardTokenDecimals = IERC20Metadata(distribution.rewardToken).decimals();
     }
 
-    /// @notice Gets the list of all active rewards for `uniV3Pool` during the epoch which started at `epochStart`
-    /// @dev If the `uniV3Pool` parameter is equal to 0, then this function will return the rewards for all pools
-    function _getPoolDistributionsForEpoch(address uniV3Pool, uint32 epochStart)
-        internal
-        view
-        returns (ExtensiveDistributionParameters[] memory)
-    {
-        uint256 length;
-        uint256 rewardListLength = distributionList.length;
-        DistributionParameters[] memory longActiveRewards = new DistributionParameters[](rewardListLength);
-        for (uint32 i; i < rewardListLength; ) {
-            DistributionParameters storage distribution = distributionList[i];
-            if (
-                _isDistributionLiveForEpoch(distribution, epochStart) &&
-                (uniV3Pool == address(0) || distribution.uniV3Pool == uniV3Pool)
-            ) {
-                longActiveRewards[length] = distribution;
-                length += 1;
-            }
-            unchecked {
-                ++i;
-            }
-        }
-
-        ExtensiveDistributionParameters[] memory activeRewards = new ExtensiveDistributionParameters[](length);
-        for (uint32 i; i < length; ) {
-            activeRewards[i] = _getExtensiveDistributionParameters(longActiveRewards[i]);
-            unchecked {
-                ++i;
-            }
-        }
-        return activeRewards;
-    }
-
-    /// @notice Gets the list of all the rewards for `uniV3Pool` that have been active between `epochStart` and `epochEnd` (excluded)
-    /// @dev If the `uniV3Pool` parameter is equal to 0, then this function will return the rewards for all pools
+    /// @notice Gets the list of all the distributions for `uniV3Pool` that have been active between `epochStart` and `epochEnd` (excluded)
+    /// @dev If the `uniV3Pool` parameter is equal to 0, then this function will return the distributions for all pools
     function _getPoolDistributionsBetweenEpochs(
         address uniV3Pool,
         uint32 epochStart,
         uint32 epochEnd
     ) internal view returns (ExtensiveDistributionParameters[] memory) {
         uint256 length;
-        uint256 rewardListLength = distributionList.length;
-        DistributionParameters[] memory longActiveRewards = new DistributionParameters[](rewardListLength);
-        for (uint32 i; i < rewardListLength; ) {
+        uint256 distributionListLength = distributionList.length;
+        DistributionParameters[] memory longActiveRewards = new DistributionParameters[](distributionListLength);
+        for (uint32 i; i < distributionListLength; ) {
             DistributionParameters storage distribution = distributionList[i];
             if (
                 _isDistributionLiveBetweenEpochs(distribution, epochStart, epochEnd) &&
