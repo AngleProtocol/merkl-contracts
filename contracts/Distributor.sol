@@ -37,6 +37,7 @@ pragma solidity ^0.8.17;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin/contracts/utils/math/SafeCast.sol";
 
 import "./utils/UUPSHelper.sol";
 
@@ -48,6 +49,11 @@ struct MerkleTree {
     bytes32 merkleRoot;
     // Ipfs hash of the tree data
     bytes32 ipfsHash;
+}
+
+struct Claim {
+    uint208 amount;
+    uint48 timestamp;
 }
 
 /// @title Distributor
@@ -87,7 +93,7 @@ contract Distributor is UUPSHelper {
     uint256 public disputeAmount;
 
     /// @notice Mapping user -> token -> amount to track claimed amounts
-    mapping(address => mapping(address => uint256)) public claimed;
+    mapping(address => mapping(address => Claim)) public claimed;
 
     /// @notice Trusted EOAs to update the Merkle root
     mapping(address => uint256) public canUpdateMerkleRoot;
@@ -177,8 +183,8 @@ contract Distributor is UUPSHelper {
             if (!_verifyProof(leaf, proofs[i])) revert InvalidProof();
 
             // Closing reentrancy gate here
-            uint256 toSend = amount - claimed[user][token];
-            claimed[user][token] = amount;
+            uint256 toSend = amount - claimed[user][token].amount;
+            claimed[user][token] = Claim(SafeCast.toUint208(amount), uint48(block.timestamp));
 
             IERC20(token).safeTransfer(user, toSend);
             emit Claimed(user, token, toSend);
@@ -254,14 +260,16 @@ contract Distributor is UUPSHelper {
 
     /// @notice Toggles permissioned claiming for a given user
     function toggleOnlyOperatorCanClaim(address user) external onlyTrustedOrUser(user) {
-        onlyOperatorCanClaim[user] = 1 - onlyOperatorCanClaim[user];
-        emit OperatorClaimingToggled(user, onlyOperatorCanClaim[user] == 1);
+        uint256 oldValue = onlyOperatorCanClaim[user];
+        onlyOperatorCanClaim[user] = 1 - oldValue;
+        emit OperatorClaimingToggled(user, oldValue == 0);
     }
 
     /// @notice Toggles whitelisting for a given user and a given operator
     function toggleOperator(address user, address operator) external onlyTrustedOrUser(user) {
-        operators[user][operator] = 1 - operators[user][operator];
-        emit OperatorToggled(user, operator, operators[user][operator] == 1);
+        uint256 oldValue = operators[user][operator];
+        operators[user][operator] = 1 - oldValue;
+        emit OperatorToggled(user, operator, oldValue == 0);
     }
 
     /// @notice Recovers any ERC20 token
