@@ -186,7 +186,7 @@ contract Distributor is UUPSHelper {
 
             // Closing reentrancy gate here
             uint256 toSend = amount - claimed[user][token].amount;
-            claimed[user][token] = Claim(SafeCast.toUint232(amount), uint24(block.timestamp));
+            claimed[user][token] = Claim(SafeCast.toUint232(amount), uint24(block.timestamp / 3600));
 
             IERC20(token).safeTransfer(user, toSend);
             emit Claimed(user, token, toSend);
