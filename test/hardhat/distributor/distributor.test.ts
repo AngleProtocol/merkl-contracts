@@ -14,14 +14,7 @@ import {
   MockToken__factory,
 } from '../../../typechain';
 import { inReceipt } from '../utils/expectEvent';
-import {
-  deployUpgradeableUUPS,
-  increaseTime,
-  latestTime,
-  MAX_UINT256,
-  MerkleTreeType,
-  ZERO_ADDRESS,
-} from '../utils/helpers';
+import { deployUpgradeableUUPS, increaseTime, latestTime, MerkleTreeType, ZERO_ADDRESS } from '../utils/helpers';
 
 contract('Distributor', () => {
   let deployer: SignerWithAddress;
@@ -735,9 +728,9 @@ contract('Distributor', () => {
       });
       expect(await angle.balanceOf(distributor.address)).to.be.equal(parseEther('9'));
       expect(await angle.balanceOf('0x3931C80BF7a911fcda8b684b23A433D124b59F06')).to.be.equal(parseEther('1'));
-      expect(await distributor.claimed('0x3931C80BF7a911fcda8b684b23A433D124b59F06', angle.address)).to.be.equal(
-        parseEther('1'),
-      );
+      expect(
+        (await distributor.claimed('0x3931C80BF7a911fcda8b684b23A433D124b59F06', angle.address)).amount,
+      ).to.be.equal(parseEther('1'));
     });
     it('success - small proof on one token and token balance', async () => {
       const elements = [];
@@ -778,9 +771,9 @@ contract('Distributor', () => {
       });
       expect(await angle.balanceOf(distributor.address)).to.be.equal(parseEther('9'));
       expect(await angle.balanceOf('0x3931C80BF7a911fcda8b684b23A433D124b59F06')).to.be.equal(parseEther('1'));
-      expect(await distributor.claimed('0x3931C80BF7a911fcda8b684b23A433D124b59F06', angle.address)).to.be.equal(
-        parseEther('1'),
-      );
+      expect(
+        (await distributor.claimed('0x3931C80BF7a911fcda8b684b23A433D124b59F06', angle.address)).amount,
+      ).to.be.equal(parseEther('1'));
     });
     it('success - small proof on one token for different addresses', async () => {
       const elements = [];
@@ -827,13 +820,13 @@ contract('Distributor', () => {
       });
       expect(await angle.balanceOf(distributor.address)).to.be.equal(parseEther('8.5'));
       expect(await angle.balanceOf('0x3931C80BF7a911fcda8b684b23A433D124b59F06')).to.be.equal(parseEther('1'));
-      expect(await distributor.claimed('0x3931C80BF7a911fcda8b684b23A433D124b59F06', angle.address)).to.be.equal(
-        parseEther('1'),
-      );
+      expect(
+        (await distributor.claimed('0x3931C80BF7a911fcda8b684b23A433D124b59F06', angle.address)).amount,
+      ).to.be.equal(parseEther('1'));
       expect(await angle.balanceOf('0x8f02b4a44Eacd9b8eE7739aa0BA58833DD45d002')).to.be.equal(parseEther('0.5'));
-      expect(await distributor.claimed('0x8f02b4a44Eacd9b8eE7739aa0BA58833DD45d002', angle.address)).to.be.equal(
-        parseEther('0.5'),
-      );
+      expect(
+        (await distributor.claimed('0x8f02b4a44Eacd9b8eE7739aa0BA58833DD45d002', angle.address)).amount,
+      ).to.be.equal(parseEther('0.5'));
     });
 
     it('success - small proof on different tokens for the same address', async () => {
@@ -881,14 +874,14 @@ contract('Distributor', () => {
       });
       expect(await angle.balanceOf(distributor.address)).to.be.equal(parseEther('9'));
       expect(await angle.balanceOf('0x3931C80BF7a911fcda8b684b23A433D124b59F06')).to.be.equal(parseEther('1'));
-      expect(await distributor.claimed('0x3931C80BF7a911fcda8b684b23A433D124b59F06', angle.address)).to.be.equal(
-        parseEther('1'),
-      );
+      expect(
+        (await distributor.claimed('0x3931C80BF7a911fcda8b684b23A433D124b59F06', angle.address)).amount,
+      ).to.be.equal(parseEther('1'));
       expect(await agEUR.balanceOf(distributor.address)).to.be.equal(parseEther('0'));
       expect(await agEUR.balanceOf('0x3931C80BF7a911fcda8b684b23A433D124b59F06')).to.be.equal(parseEther('0.5'));
-      expect(await distributor.claimed('0x3931C80BF7a911fcda8b684b23A433D124b59F06', agEUR.address)).to.be.equal(
-        parseEther('0.5'),
-      );
+      expect(
+        (await distributor.claimed('0x3931C80BF7a911fcda8b684b23A433D124b59F06', agEUR.address)).amount,
+      ).to.be.equal(parseEther('0.5'));
     });
     it('success - two claims on the same token by the same address', async () => {
       let elements = [];
@@ -930,9 +923,9 @@ contract('Distributor', () => {
 
       expect(await angle.balanceOf(distributor.address)).to.be.equal(parseEther('9'));
       expect(await angle.balanceOf('0x3931C80BF7a911fcda8b684b23A433D124b59F06')).to.be.equal(parseEther('1'));
-      expect(await distributor.claimed('0x3931C80BF7a911fcda8b684b23A433D124b59F06', angle.address)).to.be.equal(
-        parseEther('1'),
-      );
+      expect(
+        (await distributor.claimed('0x3931C80BF7a911fcda8b684b23A433D124b59F06', angle.address)).amount,
+      ).to.be.equal(parseEther('1'));
       // Updating Merkle root after second claim
       elements = [];
       // Now the person can claim 2 additional tokens
@@ -967,9 +960,9 @@ contract('Distributor', () => {
 
       expect(await angle.balanceOf(distributor.address)).to.be.equal(parseEther('7'));
       expect(await angle.balanceOf('0x3931C80BF7a911fcda8b684b23A433D124b59F06')).to.be.equal(parseEther('3'));
-      expect(await distributor.claimed('0x3931C80BF7a911fcda8b684b23A433D124b59F06', angle.address)).to.be.equal(
-        parseEther('3'),
-      );
+      expect(
+        (await distributor.claimed('0x3931C80BF7a911fcda8b684b23A433D124b59F06', angle.address)).amount,
+      ).to.be.equal(parseEther('3'));
     });
     it('success - claims on an old Merkle root but not on the new one after an update', async () => {
       let elements = [];
@@ -1017,9 +1010,9 @@ contract('Distributor', () => {
 
       expect(await angle.balanceOf(distributor.address)).to.be.equal(parseEther('9'));
       expect(await angle.balanceOf('0x3931C80BF7a911fcda8b684b23A433D124b59F06')).to.be.equal(parseEther('1'));
-      expect(await distributor.claimed('0x3931C80BF7a911fcda8b684b23A433D124b59F06', angle.address)).to.be.equal(
-        parseEther('1'),
-      );
+      expect(
+        (await distributor.claimed('0x3931C80BF7a911fcda8b684b23A433D124b59F06', angle.address)).amount,
+      ).to.be.equal(parseEther('1'));
       // Updating Merkle root after second claim
       elements = [];
       // Now the person can claim 2 additional tokens

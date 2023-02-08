@@ -399,8 +399,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         emit MessageUpdated(_messageHash);
     }
 
-    /// @notice Toggles the whitelist status for `user` when it comes to signing messages before depositing
-    /// rewards
+    /// @notice Toggles the whitelist status for `user` when it comes to signing messages before depositing rewards.
     function toggleSigningWhitelist(address user) external onlyGovernorOrGuardian {
         uint256 whitelistStatus = 1 - userSignatureWhitelist[user];
         userSignatureWhitelist[user] = whitelistStatus;
