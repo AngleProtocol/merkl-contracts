@@ -1,7 +1,7 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
-import { BigNumber } from 'ethers';
-import { parseEther, parseUnits } from 'ethers/lib/utils';
+import { BigNumber, constants } from 'ethers';
+import { keccak256, parseEther, parseUnits } from 'ethers/lib/utils';
 import { contract, ethers, web3 } from 'hardhat';
 import { MerkleTree } from 'merkletreejs';
 
@@ -619,7 +619,14 @@ contract('Distributor', () => {
         distributor.claim([], [angle.address], [parseEther('1')], [[web3.utils.keccak256('test')]]),
       ).to.be.revertedWithCustomError(distributor, 'InvalidLengths');
     });
+    it('reverts - root is zero', async () => {
+      await distributor.connect(guardian).updateTree({ merkleRoot: constants.HashZero, ipfsHash: constants.HashZero });
+      await expect(
+        distributor.claim([alice.address], [angle.address], [parseEther('1')], [[web3.utils.keccak256('test')]]),
+      ).to.be.revertedWithCustomError(distributor, 'InvalidUninitializedRoot');
+    });
     it('reverts - invalid proof', async () => {
+      await distributor.connect(guardian).updateTree({ merkleRoot: keccak256('0x1F'), ipfsHash: constants.HashZero });
       await expect(
         distributor.claim([alice.address], [angle.address], [parseEther('1')], [[web3.utils.keccak256('test')]]),
       ).to.be.revertedWithCustomError(distributor, 'InvalidProof');
