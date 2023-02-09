@@ -330,6 +330,8 @@ contract Distributor is UUPSHelper {
                 ++i;
             }
         }
-        return currentHash == getMerkleRoot();
+        bytes32 root = getMerkleRoot();
+        if (root == bytes32(0)) revert InvalidUninitializedRoot();
+        return currentHash == root;
     }
 }

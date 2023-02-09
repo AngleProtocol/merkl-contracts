@@ -7,6 +7,7 @@ error InvalidLengths();
 error InvalidParam();
 error InvalidParams();
 error InvalidProof();
+error InvalidUninitializedRoot();
 error InvalidReward();
 error InvalidSignature();
 error NoDispute();
