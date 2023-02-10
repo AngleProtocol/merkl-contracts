@@ -71,6 +71,7 @@ contract('MerklGaugeMiddleman', () => {
     await angle.connect(alice).approve(middleman.address, MAX_UINT256);
     await manager.connect(guardian).toggleTokenWhitelist(agEUR);
     await manager.connect(guardian).toggleSigningWhitelist(middleman.address);
+    await manager.connect(guardian).setRewardTokenMinAmounts([angle.address], [1]);
     await middleman.setAddresses(alice.address, angle.address, manager.address);
     await middleman.setAngleAllowance();
   });
