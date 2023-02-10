@@ -121,6 +121,6 @@ contract MerklGaugeMiddleman {
         if (msg.sender != angleDistributor() || params.uniV3Pool == address(0)) revert InvalidParams();
         params.epochStart = uint32(block.timestamp);
         params.amount = amount;
-        merkleRewardManager().createDistribution(params);
+        if (amount > 0) merkleRewardManager().createDistribution(params);
     }
 }

@@ -71,6 +71,7 @@ contract('DistributionCreator', () => {
     await angle.connect(alice).approve(manager.address, MAX_UINT256);
     await manager.connect(guardian).toggleTokenWhitelist(agEUR.address);
     await manager.connect(guardian).toggleSigningWhitelist(alice.address);
+    await manager.connect(guardian).setRewardTokenMinAmounts([angle.address], [1]);
   });
 
   describe('upgrade', () => {
@@ -113,6 +114,8 @@ contract('DistributionCreator', () => {
       expect(await manager.coreBorrow()).to.be.equal(coreBorrow.address);
       expect(await manager.fees()).to.be.equal(parseAmount.gwei('0.1'));
       expect(await manager.isWhitelistedToken(agEUR.address)).to.be.equal(1);
+      expect(await manager.rewardTokens(0)).to.be.equal(angle.address);
+      expect(await manager.rewardTokenMinAmounts(angle.address)).to.be.equal(1);
     });
     it('reverts - already initialized', async () => {
       await expect(manager.initialize(coreBorrow.address, bob.address, parseAmount.gwei('0.1'))).to.be.revertedWith(
@@ -164,6 +167,10 @@ contract('DistributionCreator', () => {
         'NotGovernorOrGuardian',
       );
       await expect(manager.connect(alice).setFeeRecipient(deployer.address)).to.be.revertedWithCustomError(
+        manager,
+        'NotGovernorOrGuardian',
+      );
+      await expect(manager.connect(alice).setRewardTokenMinAmounts([angle.address], [1])).to.be.revertedWithCustomError(
         manager,
         'NotGovernorOrGuardian',
       );
@@ -270,6 +277,63 @@ contract('DistributionCreator', () => {
       inReceipt(receipt2, 'MessageUpdated', {
         _messageHash: msgHash2,
       });
+    });
+  });
+  describe('setRewardTokenMinAmounts', () => {
+    it('success - value updated for a set of tokens', async () => {
+      const receipt = await (
+        await manager
+          .connect(guardian)
+          .setRewardTokenMinAmounts([agEUR.address, angle.address], [parseEther('1'), parseEther('2')])
+      ).wait();
+      inReceipt(receipt, 'RewardTokenMinimumAmountUpdated', {
+        token: agEUR.address,
+        amount: parseEther('1'),
+      });
+      inReceipt(receipt, 'RewardTokenMinimumAmountUpdated', {
+        token: angle.address,
+        amount: parseEther('2'),
+      });
+      expect(await manager.rewardTokenMinAmounts(agEUR.address)).to.be.equal(parseEther('1'));
+      expect(await manager.rewardTokenMinAmounts(angle.address)).to.be.equal(parseEther('2'));
+      expect(await manager.rewardTokens(0)).to.be.equal(angle.address);
+      expect(await manager.rewardTokens(1)).to.be.equal(agEUR.address);
+
+      const rewardTokenList = await manager.getValidRewardTokens();
+      expect(rewardTokenList.length).to.be.equal(2);
+      expect(rewardTokenList[0].token).to.be.equal(angle.address);
+      expect(rewardTokenList[0].minimumAmountPerEpoch).to.be.equal(parseEther('2'));
+      expect(rewardTokenList[1].token).to.be.equal(agEUR.address);
+      expect(rewardTokenList[1].minimumAmountPerEpoch).to.be.equal(parseEther('1'));
+
+      await manager
+        .connect(guardian)
+        .setRewardTokenMinAmounts([agEUR.address, angle.address], [parseEther('4'), parseEther('0')]);
+      expect(await manager.rewardTokenMinAmounts(agEUR.address)).to.be.equal(parseEther('4'));
+      expect(await manager.rewardTokenMinAmounts(angle.address)).to.be.equal(parseEther('0'));
+      expect(await manager.rewardTokens(0)).to.be.equal(angle.address);
+      expect(await manager.rewardTokens(1)).to.be.equal(agEUR.address);
+
+      const rewardTokenList2 = await manager.getValidRewardTokens();
+      expect(rewardTokenList2.length).to.be.equal(1);
+      expect(rewardTokenList2[0].token).to.be.equal(agEUR.address);
+      expect(rewardTokenList2[0].minimumAmountPerEpoch).to.be.equal(parseEther('4'));
+
+      await manager
+        .connect(guardian)
+        .setRewardTokenMinAmounts([agEUR.address, angle.address], [parseEther('7'), parseEther('5')]);
+      expect(await manager.rewardTokens(0)).to.be.equal(angle.address);
+      expect(await manager.rewardTokens(1)).to.be.equal(agEUR.address);
+      expect(await manager.rewardTokens(2)).to.be.equal(angle.address);
+
+      const rewardTokenList3 = await manager.getValidRewardTokens();
+      expect(rewardTokenList3.length).to.be.equal(3);
+      expect(rewardTokenList3[0].token).to.be.equal(angle.address);
+      expect(rewardTokenList3[0].minimumAmountPerEpoch).to.be.equal(parseEther('5'));
+      expect(rewardTokenList3[1].token).to.be.equal(agEUR.address);
+      expect(rewardTokenList3[1].minimumAmountPerEpoch).to.be.equal(parseEther('7'));
+      expect(rewardTokenList3[2].token).to.be.equal(angle.address);
+      expect(rewardTokenList3[2].minimumAmountPerEpoch).to.be.equal(parseEther('5'));
     });
   });
 
@@ -471,6 +535,23 @@ contract('DistributionCreator', () => {
         rewardId: web3.utils.soliditySha3('TEST') as string,
         additionalData: web3.utils.soliditySha3('test2ng') as string,
       };
+      const params7 = {
+        uniV3Pool: pool.address,
+        rewardToken: agEUR.address,
+        positionWrappers: [alice.address, bob.address, deployer.address],
+        wrapperTypes: [0, 1, 2],
+        amount: parseEther('1'),
+        propToken0: 4000,
+        propToken1: 2000,
+        propFees: 4000,
+        isOutOfRangeIncentivized: 0,
+        epochStart: startTime,
+        numEpoch: 1,
+        boostedReward: 0,
+        boostingAddress: ZERO_ADDRESS,
+        rewardId: web3.utils.soliditySha3('TEST') as string,
+        additionalData: web3.utils.soliditySha3('test2ng') as string,
+      };
       await expect(manager.connect(alice).createDistribution(param0)).to.be.revertedWithCustomError(
         manager,
         'InvalidReward',
@@ -496,6 +577,16 @@ contract('DistributionCreator', () => {
         'InvalidReward',
       );
       await expect(manager.connect(alice).createDistribution(params6)).to.be.revertedWithCustomError(
+        manager,
+        'InvalidReward',
+      );
+      await expect(manager.connect(alice).createDistribution(params7)).to.be.revertedWithCustomError(
+        manager,
+        'InvalidReward',
+      );
+
+      await manager.connect(guardian).setRewardTokenMinAmounts([angle.address], [parseEther('100000')]);
+      await expect(manager.connect(alice).createDistribution(params)).to.be.revertedWithCustomError(
         manager,
         'InvalidReward',
       );

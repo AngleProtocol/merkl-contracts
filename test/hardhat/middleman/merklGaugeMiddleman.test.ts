@@ -245,6 +245,7 @@ contract('MerklGaugeMiddleman', () => {
       await middleman.connect(guardian).setGauge(alice.address, params);
       await middleman.connect(guardian).setGauge(bob.address, params0);
       await angle.connect(alice).transfer(middleman.address, parseEther('0.7'));
+      await middleman.connect(alice).notifyReward(alice.address, parseEther('0'));
       await middleman.connect(alice).notifyReward(alice.address, parseEther('0.7'));
       await angle.connect(alice).transfer(middleman.address, parseEther('0.8'));
       await middleman.connect(alice).notifyReward(bob.address, parseEther('0.8'));
