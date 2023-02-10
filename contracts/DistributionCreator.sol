@@ -104,15 +104,14 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @notice Maps a user to whether it is whitelisted for not signing
     mapping(address => uint256) public userSignatureWhitelist;
 
-    /// @notice Maps a token to the minimum amount that must be sent per epoch for a distribution to be
-    /// valid
+    /// @notice Maps a token to the minimum amount that must be sent per epoch for a distribution to be valid
     /// @dev If `rewardTokenMinAmounts[token] == 0`, then `token` cannot be used as a reward
     mapping(address => uint256) public rewardTokenMinAmounts;
 
     /// @notice List of all reward tokens that have at some point been accepted
     address[] public rewardTokens;
 
-    uint256[38] private __gap;
+    uint256[36] private __gap;
 
     // ============================== ERRORS / EVENTS ==============================
 
