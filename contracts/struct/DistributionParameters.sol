@@ -2,11 +2,6 @@
 
 pragma solidity ^0.8.17;
 
-/** 
-* TODO: 
-- Which helpers do we keep in the contract?
-- Do we improve gas wise the rewards that are sent
- */
 struct DistributionParameters {
     // ID of the reward (populated once created)
     bytes32 rewardId;
@@ -14,7 +9,8 @@ struct DistributionParameters {
     address uniV3Pool;
     // Address of the reward token for the incentives
     address rewardToken;
-    // Amount of `rewardToken` to distribute
+    // Amount of `rewardToken` to distribute across all the epochs
+    // Amount distributed per epoch is `amount/numEpoch`
     uint256 amount;
     // List of all UniV3 position wrappers to consider for this contract
     // (this can include addresses of Arrakis or Gamma smart contracts for instance)

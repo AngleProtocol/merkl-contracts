@@ -44,6 +44,7 @@ import "./interfaces/external/uniswap/IUniswapV3Pool.sol";
 import "./utils/UUPSHelper.sol";
 import "./struct/DistributionParameters.sol";
 import "./struct/ExtensiveDistributionParameters.sol";
+import "./struct/RewardTokenAmounts.sol";
 
 /// @title DistributionCreator
 /// @author Angle Labs, Inc.
@@ -103,16 +104,25 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @notice Maps a user to whether it is whitelisted for not signing
     mapping(address => uint256) public userSignatureWhitelist;
 
+    /// @notice Maps a token to the minimum amount that must be sent per epoch for a distribution to be
+    /// valid
+    /// @dev If `rewardTokenMinAmounts[token] == 0`, then `token` cannot be used as a reward
+    mapping(address => uint256) public rewardTokenMinAmounts;
+
+    /// @notice List of all reward tokens that have at some point been accepted
+    address[] public rewardTokens;
+
     uint256[38] private __gap;
 
     // ============================== ERRORS / EVENTS ==============================
 
-    event FeesSet(uint256 _fees);
-    event FeeRecipientUpdated(address indexed _feeRecipient);
     event DistributorUpdated(address indexed _distributor);
+    event FeeRebateUpdated(address indexed user, uint256 userFeeRebate);
+    event FeeRecipientUpdated(address indexed _feeRecipient);
+    event FeesSet(uint256 _fees);
     event MessageUpdated(bytes32 _messageHash);
     event NewDistribution(DistributionParameters distribution, address indexed sender);
-    event FeeRebateUpdated(address indexed user, uint256 userFeeRebate);
+    event RewardTokenMinimumAmountUpdated(address indexed token, uint256 amount);
     event TokenWhitelistToggled(address indexed token, uint256 toggleStatus);
     event UserSigned(bytes32 messageHash, address indexed user);
     event UserSigningWhitelistToggled(address indexed user, uint256 toggleStatus);
@@ -210,21 +220,24 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         returns (uint256 distributionAmount)
     {
         uint32 epochStart = _getRoundedEpoch(distribution.epochStart);
+        uint256 minDistributionAmount = rewardTokenMinAmounts[distribution.rewardToken];
         distribution.epochStart = epochStart;
         // Reward will not be accepted in the following conditions:
         if (
             // if epoch parameters would lead to a past distribution
             epochStart + EPOCH_DURATION < block.timestamp ||
-            // if the amount of epochs for which this incentive should last is zero
+            // if the amount of epochs for which this distribution should last is zero
             distribution.numEpoch == 0 ||
-            // if the amount to use to incentivize is still 0
-            distribution.amount == 0 ||
             // if the distribution parameters are not correctly specified
             distribution.propFees + distribution.propToken0 + distribution.propToken1 != 1e4 ||
             // if boosted addresses get less than non-boosted addresses in case of
             (distribution.boostingAddress != address(0) && distribution.boostedReward < 1e4) ||
             // if the type of the position wrappers is not well specified
-            distribution.positionWrappers.length != distribution.wrapperTypes.length
+            distribution.positionWrappers.length != distribution.wrapperTypes.length ||
+            // if the reward token is not whitelisted as an incentive token
+            minDistributionAmount == 0 ||
+            // if the amount distributed is too small with respect to what is allowed
+            distribution.amount / distribution.numEpoch < minDistributionAmount
         ) revert InvalidReward();
         distributionAmount = distribution.amount;
         // Computing fees: these are waived for whitelisted addresses and if there is a whitelisted token in a pool
@@ -275,6 +288,32 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     function getActiveDistributions() external view returns (ExtensiveDistributionParameters[] memory) {
         uint32 roundedEpoch = _getRoundedEpoch(uint32(block.timestamp));
         return _getPoolDistributionsBetweenEpochs(address(0), roundedEpoch, roundedEpoch + EPOCH_DURATION);
+    }
+
+    /// @notice Returns the list of all the reward tokens supported as well as their minimum amounts
+    function getValidRewardTokens() external view returns (RewardTokenAmounts[] memory) {
+        uint256 length;
+        uint256 rewardTokenListLength = rewardTokens.length;
+        RewardTokenAmounts[] memory validRewardTokens = new RewardTokenAmounts[](rewardTokenListLength);
+        for (uint32 i; i < rewardTokenListLength; ) {
+            address token = rewardTokens[i];
+            uint256 minAmount = rewardTokenMinAmounts[token];
+            if (minAmount > 0) {
+                validRewardTokens[length] = RewardTokenAmounts(token, minAmount);
+                length += 1;
+            }
+            unchecked {
+                ++i;
+            }
+        }
+        RewardTokenAmounts[] memory validRewardTokensShort = new RewardTokenAmounts[](length);
+        for (uint32 i; i < length; ) {
+            validRewardTokensShort[i] = validRewardTokens[i];
+            unchecked {
+                ++i;
+            }
+        }
+        return validRewardTokensShort;
     }
 
     /// @notice Returns the list of all the distributions that were or that are going to be live at
@@ -382,6 +421,22 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
             unchecked {
                 ++i;
             }
+        }
+    }
+
+    /// @notice Sets the minimum amounts per distribution epoch for different reward tokens
+    function setRewardTokenMinAmounts(address[] calldata tokens, uint256[] calldata amounts)
+        external
+        onlyGovernorOrGuardian
+    {
+        uint256 tokensLength = tokens.length;
+        for (uint256 i; i < tokensLength; ++i) {
+            uint256 amount = amounts[i];
+            // Basic logic check to make sure there are no duplicates in the `rewardTokens` table. If a token is
+            // removed then re-added, it will appear as a duplicate in the list
+            if (amount > 0 && rewardTokenMinAmounts[tokens[i]] == 0) rewardTokens.push(tokens[i]);
+            rewardTokenMinAmounts[tokens[i]] = amount;
+            emit RewardTokenMinimumAmountUpdated(tokens[i], amount);
         }
     }
 
