@@ -71,6 +71,7 @@ contract('MerklGaugeMiddleman', () => {
     await angle.connect(alice).approve(middleman.address, MAX_UINT256);
     await manager.connect(guardian).toggleTokenWhitelist(agEUR);
     await manager.connect(guardian).toggleSigningWhitelist(middleman.address);
+    await manager.connect(guardian).setRewardTokenMinAmounts([angle.address], [1]);
     await middleman.setAddresses(alice.address, angle.address, manager.address);
     await middleman.setAngleAllowance();
   });
@@ -245,6 +246,7 @@ contract('MerklGaugeMiddleman', () => {
       await middleman.connect(guardian).setGauge(alice.address, params);
       await middleman.connect(guardian).setGauge(bob.address, params0);
       await angle.connect(alice).transfer(middleman.address, parseEther('0.7'));
+      await middleman.connect(alice).notifyReward(alice.address, parseEther('0'));
       await middleman.connect(alice).notifyReward(alice.address, parseEther('0.7'));
       await angle.connect(alice).transfer(middleman.address, parseEther('0.8'));
       await middleman.connect(alice).notifyReward(bob.address, parseEther('0.8'));
