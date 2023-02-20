@@ -2,17 +2,19 @@
 # yarn lockfile v1
 
 
-"@angleprotocol/sdk@1.1.51":
-  version "1.1.51"
-  resolved "https://registry.yarnpkg.com/@angleprotocol/sdk/-/sdk-1.1.51.tgz#302b088b08616fb37259a965095396adfbacbe0a"
-  integrity sha512-4dLHbv2cREVGKLAiKtA1UIPBsylJPSrJ99XxAwbSiXq9hVYlY9pbJKhpLs3C2tn01zFEo0xbhOtxE2X47g1VGg==
+"@angleprotocol/sdk@3.0.1":
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/@angleprotocol/sdk/-/sdk-3.0.1.tgz#0efb35dd2eef51fa2702240a7600dc4849ffec5e"
+  integrity sha512-CKSxuy+1Zv4xsv3k4owLxQuDR/4j12NwJmh+pWdUtpyDsf199WThvSTiZGYbUKbmX1E8Zoold0ZFilpjB4YX9Q==
   dependencies:
     "@typechain/ethers-v5" "^10.0.0"
     "@types/lodash" "^4.14.180"
     ethers "^5.6.4"
     graphql "^15.7.1"
     graphql-request "^3.6.1"
+    keccak256 "^1.0.6"
     lodash "^4.17.21"
+    merkletreejs "^0.3.9"
     tiny-invariant "^1.1.0"
     typechain "^8.0.0"
 
@@ -6318,6 +6320,15 @@ jsprim@^1.2.2:
     json-schema "0.4.0"
     verror "1.10.0"
 
+keccak256@^1.0.6:
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/keccak256/-/keccak256-1.0.6.tgz#dd32fb771558fed51ce4e45a035ae7515573da58"
+  integrity sha512-8GLiM01PkdJVGUhR1e6M/AvWnSqYS0HaERI+K/QtStGDGlSTx2B1zTqZk4Zlqu5TxHJNTxWAdP9Y+WI50OApUw==
+  dependencies:
+    bn.js "^5.2.0"
+    buffer "^6.0.3"
+    keccak "^3.0.2"
+
 keccak@^3.0.0, keccak@^3.0.2:
   version "3.0.2"
   resolved "https://registry.npmjs.org/keccak/-/keccak-3.0.2.tgz"
@@ -6628,6 +6639,17 @@ merkletreejs@0.2.32:
   version "0.2.32"
   resolved "https://registry.yarnpkg.com/merkletreejs/-/merkletreejs-0.2.32.tgz#cf1c0760e2904e4a1cc269108d6009459fd06223"
   integrity sha512-TostQBiwYRIwSE5++jGmacu3ODcKAgqb0Y/pnIohXS7sWxh1gCkSptbmF1a43faehRDpcHf7J/kv0Ml2D/zblQ==
+  dependencies:
+    bignumber.js "^9.0.1"
+    buffer-reverse "^1.0.1"
+    crypto-js "^3.1.9-1"
+    treeify "^1.1.0"
+    web3-utils "^1.3.4"
+
+merkletreejs@^0.3.9:
+  version "0.3.9"
+  resolved "https://registry.yarnpkg.com/merkletreejs/-/merkletreejs-0.3.9.tgz#cdb364a3b974a44f4eff3446522d7066e0cf95de"
+  integrity sha512-NjlATjJr4NEn9s8v/VEHhgwRWaE1eA/Une07d9SEqKzULJi1Wsh0Y3svwJdP2bYLMmgSBHzOrNydMWM1NN9VeQ==
   dependencies:
     bignumber.js "^9.0.1"
     buffer-reverse "^1.0.1"

@@ -9,19 +9,14 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
   const { deploy } = deployments;
   const { deployer } = await ethers.getNamedSigners();
   let coreBorrow: string;
-  /**
-   * TODO: change this before real deployment
-   */
-  coreBorrow = (await deployments.get('MockCoreBorrow')).address;
-  /*
+
   if (!network.live) {
     // If we're in mainnet fork, we're using the `CoreBorrow` address from mainnet
-    coreBorrow = (await deployments.get('MockCoreBorrow')).address;
+    coreBorrow = registry(ChainId.MAINNET)?.Merkl?.CoreMerkl!;
   } else {
     // Otherwise, we're using the proxy admin address from the desired network
-    coreBorrow = registry(network.config.chainId as ChainId)?.CoreBorrow!;
+    coreBorrow = registry(network.config.chainId as ChainId)?.Merkl?.CoreMerkl!;
   }
-  */
 
   console.log('Let us get started with deployment');
 

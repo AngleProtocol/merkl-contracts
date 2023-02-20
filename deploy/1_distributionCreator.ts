@@ -11,19 +11,14 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
   const { deployer } = await ethers.getNamedSigners();
   let coreBorrow: string;
   const distributor = (await deployments.get('Distributor')).address;
-  /**
-   * TODO: change this before real deployment
-   */
-  coreBorrow = (await deployments.get('MockCoreBorrow')).address;
-  /*
+
   if (!network.live) {
     // If we're in mainnet fork, we're using the `CoreBorrow` address from mainnet
-    coreBorrow = (await deployments.get('MockCoreBorrow')).address;
+    coreBorrow = registry(ChainId.MAINNET)?.Merkl?.CoreMerkl!;
   } else {
     // Otherwise, we're using the proxy admin address from the desired network
-    coreBorrow = registry(network.config.chainId as ChainId)?.CoreBorrow!;
+    coreBorrow = registry(network.config.chainId as ChainId)?.Merkl?.CoreMerkl!;
   }
-  */
 
   console.log('Now deploying DistributionCreator');
   console.log('Starting with the implementation');
@@ -61,6 +56,21 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
   console.log('Contract successfully initialized');
   console.log('');
   console.log(await contract.coreBorrow());
+
+  /* Once good some functions need to be called to have everything setup.
+
+  In the DistributionCreator contract:
+  - `toggleTokenWhitelist` -> for agEUR
+  - `setRewardTokenMinAmounts` -> for OP (on Optimism), and ANGLE on all chains
+  - `setFeeRecipient`
+  - `setMessage`
+
+  In the Distributor contract:
+  - `toggleTrusted`
+  - `setDisputeToken` -> should we activate dispute periods
+  - `setDisputePeriods`
+
+  */
 };
 
 func.tags = ['distributionCreator'];

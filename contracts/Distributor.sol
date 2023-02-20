@@ -42,8 +42,8 @@ import "@openzeppelin/contracts/utils/math/SafeCast.sol";
 import "./utils/UUPSHelper.sol";
 
 struct MerkleTree {
-    // Root of a Merkle tree which leaves are (address user, address token, uint amount)
-    // representing an amount of tokens owed to user.
+    // Root of a Merkle tree which leaves are `(address user, address token, uint amount)`
+    // representing an amount of tokens accumulated by `user`.
     // The Merkle tree is assumed to have only increasing amounts: that is to say if a user can claim 1,
     // then after the amount associated in the Merkle tree for this token should be x > 1
     bytes32 merkleRoot;
@@ -57,11 +57,8 @@ struct Claim {
 }
 
 /// @title Distributor
-/// @notice Allows AMMs LPs to claim the rewards that were distributed to them
+/// @notice Allows LPs on AMMs with concentrated liquidity to claim the rewards that were distributed to them
 /// @author Angle Labs. Inc
-/// @dev This contract relies on whitelisted or Angle-governance controlled addresses to update the Merkle root
-/// for reward distribution. After each tree update, there is a dispute period, during which it is possible to
-/// fallback to the old version of the Merkle root
 contract Distributor is UUPSHelper {
     using SafeERC20 for IERC20;
 
@@ -155,7 +152,7 @@ contract Distributor is UUPSHelper {
     /// @param users Recipient of tokens
     /// @param tokens ERC20 claimed
     /// @param amounts Amount of tokens that will be sent to the corresponding users
-    /// @param proofs Array of hashes bridging from leaf (hash of user | token | amount) to Merkle root
+    /// @param proofs Array of hashes bridging from a leaf `(hash of user | token | amount)` to the Merkle root
     function claim(
         address[] calldata users,
         address[] calldata tokens,
