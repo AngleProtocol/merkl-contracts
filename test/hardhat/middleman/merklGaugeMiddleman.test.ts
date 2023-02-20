@@ -31,7 +31,7 @@ contract('MerklGaugeMiddleman', () => {
 
   let manager: DistributionCreator;
   let middleman: MockMerklGaugeMiddleman;
-  let coreBorrow: MockCoreBorrow;
+  let core: MockCoreBorrow;
   let startTime: number;
   // eslint-disable-next-line
   let params: any;
@@ -39,15 +39,13 @@ contract('MerklGaugeMiddleman', () => {
   beforeEach(async () => {
     [deployer, alice, bob, governor, guardian] = await ethers.getSigners();
     angle = (await new MockToken__factory(deployer).deploy('ANGLE', 'ANGLE', 18)) as MockToken;
-    coreBorrow = (await new MockCoreBorrow__factory(deployer).deploy()) as MockCoreBorrow;
+    core = (await new MockCoreBorrow__factory(deployer).deploy()) as MockCoreBorrow;
     pool = (await new MockUniswapV3Pool__factory(deployer).deploy()) as MockUniswapV3Pool;
-    middleman = (await new MockMerklGaugeMiddleman__factory(deployer).deploy(
-      coreBorrow.address,
-    )) as MockMerklGaugeMiddleman;
-    await coreBorrow.toggleGuardian(guardian.address);
-    await coreBorrow.toggleGovernor(governor.address);
+    middleman = (await new MockMerklGaugeMiddleman__factory(deployer).deploy(core.address)) as MockMerklGaugeMiddleman;
+    await core.toggleGuardian(guardian.address);
+    await core.toggleGovernor(governor.address);
     manager = (await deployUpgradeableUUPS(new DistributionCreator__factory(deployer))) as DistributionCreator;
-    await manager.initialize(coreBorrow.address, bob.address, parseAmount.gwei('0.1'));
+    await manager.initialize(core.address, bob.address, parseAmount.gwei('0.1'));
     startTime = await latestTime();
     params = {
       uniV3Pool: pool.address,
@@ -78,7 +76,7 @@ contract('MerklGaugeMiddleman', () => {
 
   describe('initializer', () => {
     it('success - values initialized', async () => {
-      expect(await middleman.coreBorrow()).to.be.equal(coreBorrow.address);
+      expect(await middleman.core()).to.be.equal(core.address);
       expect(await angle.allowance(middleman.address, manager.address)).to.be.equal(MAX_UINT256);
     });
     it('reverts - zero address', async () => {

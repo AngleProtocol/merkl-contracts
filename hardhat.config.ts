@@ -48,32 +48,46 @@ const config: HardhatUserConfig = {
         settings: {
           optimizer: {
             enabled: true,
-            runs: 1000,
+            runs: 100000,
           },
           viaIR: true,
         },
       },
     ],
+    overrides: {
+      'contracts/DistributionCreator.sol': {
+        version: '0.8.17',
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 1000,
+          },
+          viaIR: true,
+        },
+      },
+    },
   },
   defaultNetwork: 'hardhat',
   // For the lists of Chain ID: https://chainlist.org
   networks: {
     hardhat: {
-      accounts: accounts('mainnet'),
+      accounts: accounts('polygon'),
       live: false,
       blockGasLimit: 125e5,
       initialBaseFeePerGas: 0,
       hardfork: 'london',
       forking: {
         enabled: argv.fork || false,
+        /*
         // Mainnet
         url: nodeUrl('fork'),
-        blockNumber: 16519432,
-        // Polygon
-        /*
-        url: nodeUrl('forkpolygon'),
-        blockNumber: 31505333,
+        blockNumber: 16671190,
         */
+        // Polygon
+
+        url: nodeUrl('forkpolygon'),
+        blockNumber: 39517477,
+
         // Optimism
         /*
         url: nodeUrl('optimism'),

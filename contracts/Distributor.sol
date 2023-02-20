@@ -73,8 +73,8 @@ contract Distributor is UUPSHelper {
     /// @notice Token to deposit to freeze the roots update
     IERC20 public disputeToken;
 
-    /// @notice `CoreBorrow` contract handling access control
-    ICoreBorrow public coreBorrow;
+    /// @notice `Core` contract handling access control
+    ICore public core;
 
     /// @notice Address which created the dispute
     /// @dev Used to store if there is an ongoing dispute
@@ -121,13 +121,13 @@ contract Distributor is UUPSHelper {
 
     /// @notice Checks whether the `msg.sender` has the governor role or the guardian role
     modifier onlyGovernorOrGuardian() {
-        if (!coreBorrow.isGovernorOrGuardian(msg.sender)) revert NotGovernorOrGuardian();
+        if (!core.isGovernorOrGuardian(msg.sender)) revert NotGovernorOrGuardian();
         _;
     }
 
     /// @notice Checks whether the `msg.sender` is the `user` address or is a trusted address
     modifier onlyTrustedOrUser(address user) {
-        if (user != msg.sender && canUpdateMerkleRoot[msg.sender] != 1 && !coreBorrow.isGovernorOrGuardian(msg.sender))
+        if (user != msg.sender && canUpdateMerkleRoot[msg.sender] != 1 && !core.isGovernorOrGuardian(msg.sender))
             revert NotTrusted();
         _;
     }
@@ -136,13 +136,13 @@ contract Distributor is UUPSHelper {
 
     constructor() initializer {}
 
-    function initialize(ICoreBorrow _coreBorrow) external initializer {
-        if (address(_coreBorrow) == address(0)) revert ZeroAddress();
-        coreBorrow = _coreBorrow;
+    function initialize(ICore _core) external initializer {
+        if (address(_core) == address(0)) revert ZeroAddress();
+        core = _core;
     }
 
     /// @inheritdoc UUPSUpgradeable
-    function _authorizeUpgrade(address) internal view override onlyGuardianUpgrader(coreBorrow) {}
+    function _authorizeUpgrade(address) internal view override onlyGuardianUpgrader(core) {}
 
     // =============================== MAIN FUNCTION ===============================
 
@@ -213,7 +213,7 @@ contract Distributor is UUPSHelper {
             // A trusted address cannot update a tree right after a precedent tree update otherwise it can de facto
             // validate a tree which has not passed the dispute period
             ((canUpdateMerkleRoot[msg.sender] != 1 || block.timestamp - lastTreeUpdate < disputePeriod) &&
-                !coreBorrow.isGovernorOrGuardian(msg.sender))
+                !core.isGovernorOrGuardian(msg.sender))
         ) revert NotTrusted();
         MerkleTree memory _lastTree = tree;
         tree = _tree;

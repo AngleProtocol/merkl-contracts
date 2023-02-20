@@ -63,8 +63,8 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @notice Base for fee computation
     uint256 public constant BASE_9 = 1e9;
 
-    /// @notice `CoreBorrow` contract handling access control
-    ICoreBorrow public coreBorrow;
+    /// @notice `Core` contract handling access control
+    ICore public core;
 
     /// @notice User contract for distributing rewards
     address public distributor;
@@ -129,7 +129,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
 
     /// @notice Checks whether the `msg.sender` has the governor role or the guardian role
     modifier onlyGovernorOrGuardian() {
-        if (!coreBorrow.isGovernorOrGuardian(msg.sender)) revert NotGovernorOrGuardian();
+        if (!core.isGovernorOrGuardian(msg.sender)) revert NotGovernorOrGuardian();
         _;
     }
 
@@ -142,21 +142,21 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     // ================================ CONSTRUCTOR ================================
 
     function initialize(
-        ICoreBorrow _coreBorrow,
+        ICore _core,
         address _distributor,
         uint256 _fees
     ) external initializer {
-        if (address(_coreBorrow) == address(0) || _distributor == address(0)) revert ZeroAddress();
+        if (address(_core) == address(0) || _distributor == address(0)) revert ZeroAddress();
         if (_fees > BASE_9) revert InvalidParam();
         distributor = _distributor;
-        coreBorrow = _coreBorrow;
+        core = _core;
         fees = _fees;
     }
 
     constructor() initializer {}
 
     /// @inheritdoc UUPSUpgradeable
-    function _authorizeUpgrade(address) internal view override onlyGuardianUpgrader(coreBorrow) {}
+    function _authorizeUpgrade(address) internal view override onlyGuardianUpgrader(core) {}
 
     // ============================== DEPOSIT FUNCTION =============================
 

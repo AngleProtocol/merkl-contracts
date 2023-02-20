@@ -8,14 +8,14 @@ const argv = yargs.env('').boolean('ci').parseSync();
 const func: DeployFunction = async ({ deployments, ethers, network }) => {
   const { deploy } = deployments;
   const { deployer } = await ethers.getNamedSigners();
-  let coreBorrow: string;
+  let core: string;
 
   if (!network.live) {
     // If we're in mainnet fork, we're using the `CoreBorrow` address from mainnet
-    coreBorrow = registry(ChainId.MAINNET)?.Merkl?.CoreMerkl!;
+    core = registry(ChainId.MAINNET)?.Merkl?.CoreMerkl!;
   } else {
     // Otherwise, we're using the proxy admin address from the desired network
-    coreBorrow = registry(network.config.chainId as ChainId)?.Merkl?.CoreMerkl!;
+    core = registry(network.config.chainId as ChainId)?.Merkl?.CoreMerkl!;
   }
 
   console.log('Let us get started with deployment');
@@ -47,9 +47,9 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
   console.log(`Successfully deployed contract at the address ${distributor}`);
   console.log('Initializing the contract');
   const contract = new ethers.Contract(distributor, Distributor__factory.createInterface(), deployer) as Distributor;
-  await (await contract.connect(deployer).initialize(coreBorrow)).wait();
+  await (await contract.connect(deployer).initialize(core)).wait();
   console.log('Contract successfully initialized');
-  console.log(await contract.coreBorrow());
+  console.log(await contract.core());
 
   console.log('');
 };
