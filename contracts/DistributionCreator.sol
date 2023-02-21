@@ -223,7 +223,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         uint32 epochStart = _getRoundedEpoch(distribution.epochStart);
         uint256 minDistributionAmount = rewardTokenMinAmounts[distribution.rewardToken];
         distribution.epochStart = epochStart;
-        // Reward are not be accepted in the following conditions:
+        // Reward are not accepted in the following conditions:
         if (
             // if epoch parameters lead to a past distribution
             epochStart + EPOCH_DURATION < block.timestamp ||
