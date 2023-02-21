@@ -19,7 +19,7 @@
     "check-upgradeability": "hardhat run scripts/checkUpgradeability.ts",
     "license": "hardhat prepend-spdx-license",
     "node:fork": "FORK=true hardhat node --tags",
-    "size": "forge build --sizes",
+    "size": "yarn hardhat:compile && hardhat size-contracts",
     "lint": "yarn lint:sol && yarn lint:js:fix",
     "lint:js:fix": "eslint --ignore-path .gitignore --fix --max-warnings 30 'test/**/*.{js,ts}' '*.{js,ts}'",
     "lint:sol": "solhint --fix --max-warnings 20 \"contracts/**/*.sol\""
@@ -31,7 +31,7 @@
     "url": "https://github.com/AngleProtocol/boilerplate/issues"
   },
   "devDependencies": {
-    "@angleprotocol/sdk": "1.1.51",
+    "@angleprotocol/sdk": "3.0.1",
     "@ethersproject/abi": "^5.7.0",
     "@ethersproject/providers": "^5.7.1",
     "@nomicfoundation/hardhat-chai-matchers": "^1.0.3",

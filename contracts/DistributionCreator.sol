@@ -48,10 +48,9 @@ import "./struct/RewardTokenAmounts.sol";
 
 /// @title DistributionCreator
 /// @author Angle Labs, Inc.
-/// @notice Manages the distribution of rewards across different UniswapV3 pools
-/// @dev This contract is mostly a helper for APIs getting built on top and helping in Angle
-/// UniswapV3 incentivization scheme
-/// @dev People depositing rewards should have signed a `message` with the conditions for using the
+/// @notice Manages the distribution of rewards across different pools with concentrated liquidity (like on Uniswap V3)
+/// @dev This contract is mostly a helper for APIs built on top of Merkl
+/// @dev People depositing rewards must have signed a `message` with the conditions for using the
 /// product
 contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     using SafeERC20 for IERC20;
@@ -64,13 +63,13 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @notice Base for fee computation
     uint256 public constant BASE_9 = 1e9;
 
-    /// @notice `CoreBorrow` contract handling access control
-    ICoreBorrow public coreBorrow;
+    /// @notice `Core` contract handling access control
+    ICore public core;
 
     /// @notice User contract for distributing rewards
     address public distributor;
 
-    /// @notice Address to which fees will be forwarded
+    /// @notice Address to which fees are forwarded
     address public feeRecipient;
 
     /// @notice Value (in base 10**9) of the fees taken when creating a distribution for a pool which do not
@@ -113,7 +112,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
 
     uint256[36] private __gap;
 
-    // ============================== ERRORS / EVENTS ==============================
+    // =================================== EVENTS ==================================
 
     event DistributorUpdated(address indexed _distributor);
     event FeeRebateUpdated(address indexed user, uint256 userFeeRebate);
@@ -126,11 +125,11 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     event UserSigned(bytes32 messageHash, address indexed user);
     event UserSigningWhitelistToggled(address indexed user, uint256 toggleStatus);
 
-    // ================================== MODIFIER =================================
+    // ================================= MODIFIERS =================================
 
     /// @notice Checks whether the `msg.sender` has the governor role or the guardian role
     modifier onlyGovernorOrGuardian() {
-        if (!coreBorrow.isGovernorOrGuardian(msg.sender)) revert NotGovernorOrGuardian();
+        if (!core.isGovernorOrGuardian(msg.sender)) revert NotGovernorOrGuardian();
         _;
     }
 
@@ -143,31 +142,34 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     // ================================ CONSTRUCTOR ================================
 
     function initialize(
-        ICoreBorrow _coreBorrow,
+        ICore _core,
         address _distributor,
         uint256 _fees
     ) external initializer {
-        if (address(_coreBorrow) == address(0) || _distributor == address(0)) revert ZeroAddress();
+        if (address(_core) == address(0) || _distributor == address(0)) revert ZeroAddress();
         if (_fees > BASE_9) revert InvalidParam();
         distributor = _distributor;
-        coreBorrow = _coreBorrow;
+        core = _core;
         fees = _fees;
     }
 
     constructor() initializer {}
 
     /// @inheritdoc UUPSUpgradeable
-    function _authorizeUpgrade(address) internal view override onlyGuardianUpgrader(coreBorrow) {}
+    function _authorizeUpgrade(address) internal view override onlyGuardianUpgrader(core) {}
 
     // ============================== DEPOSIT FUNCTION =============================
 
-    /// @notice Creates a `distribution` to incentivize a given UniswapV3 pool for a specific period of time
+    /// @notice Creates a `distribution` to incentivize a given pool for a specific period of time
     /// @return distributionAmount How many reward tokens are actually taken into consideration in the contract
-    /// @dev It's important to make sure that the address specified as a UniV3 pool is effectively a pool
-    /// otherwise they will not be handled by the distribution script and rewards may be lost
+    /// @dev If the address specified as a UniV3 pool is not effectively a pool, it will not be handled by the
+    /// distribution script and rewards may be lost
+    /// @dev Reward tokens sent as part of distributions must have been whitelisted before and amounts
+    /// sent should be bigger than a minimum amount specific to each token
     /// @dev The `positionWrappers` specified in the `distribution` struct need to be supported by the script
-    /// @dev If the pool incentivized contains agEUR, then no fees are taken on the rewards
-    /// @dev This function will revert if the user has not signed the message `messageHash` once through one of
+    /// List of supported `positionWrappers` can be found in the docs.
+    /// @dev If the pool incentivized contains one whitelisted token, then no fees are taken on the rewards
+    /// @dev This function reverts if the sender has not signed the message `messageHash` once through one of
     /// the functions enabling to sign
     function createDistribution(DistributionParameters memory distribution)
         external
@@ -196,7 +198,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     }
 
     /// @notice Checks whether the `msg.sender`'s `signature` is compatible with the message
-    /// to sign and stores the fact that signing was done
+    /// to sign and stores the signature
     /// @dev If you signed the message once, and the message has not been modified, then you do not
     /// need to sign again
     function sign(bytes calldata signature) external {
@@ -221,9 +223,9 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         uint32 epochStart = _getRoundedEpoch(distribution.epochStart);
         uint256 minDistributionAmount = rewardTokenMinAmounts[distribution.rewardToken];
         distribution.epochStart = epochStart;
-        // Reward will not be accepted in the following conditions:
+        // Reward are not accepted in the following conditions:
         if (
-            // if epoch parameters would lead to a past distribution
+            // if epoch parameters lead to a past distribution
             epochStart + EPOCH_DURATION < block.timestamp ||
             // if the amount of epochs for which this distribution should last is zero
             distribution.numEpoch == 0 ||
@@ -278,12 +280,12 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     // ================================= UI HELPERS ================================
     // These functions are not to be queried on-chain and hence are not optimized for gas consumption
 
-    /// @notice Returns the list of all distributions ever distributed or to be distributed
+    /// @notice Returns the list of all distributions ever made or to be done in the future
     function getAllDistributions() external view returns (DistributionParameters[] memory) {
         return distributionList;
     }
 
-    /// @notice Returns the list of all currently active distributions on UniswapV3 pool
+    /// @notice Returns the list of all currently active distributions on pools of supported AMMs (like Uniswap V3)
     function getActiveDistributions() external view returns (ExtensiveDistributionParameters[] memory) {
         uint32 roundedEpoch = _getRoundedEpoch(uint32(block.timestamp));
         return _getPoolDistributionsBetweenEpochs(address(0), roundedEpoch, roundedEpoch + EPOCH_DURATION);
@@ -323,8 +325,8 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     }
 
     /// @notice Gets the distributions that were or will be live at some point between `epochStart` (included) and `epochEnd` (excluded)
-    /// @dev If a distribution starts during `epochEnd`, it will not be returned by this function
-    /// @dev Conversely, if a distribution starts after `epochStart` and ends before `epochEnd`, it will be returned by this function
+    /// @dev If a distribution starts during `epochEnd`, it is not be returned by this function
+    /// @dev Conversely, if a distribution starts after `epochStart` and ends before `epochEnd`, it is returned by this function
     function getDistributionsBetweenEpochs(uint32 epochStart, uint32 epochEnd)
         external
         view

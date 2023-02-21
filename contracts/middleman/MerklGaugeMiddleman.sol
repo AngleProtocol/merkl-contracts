@@ -51,8 +51,8 @@ contract MerklGaugeMiddleman {
 
     // ================================= PARAMETERS ================================
 
-    /// @notice `CoreBorrow` contract handling access control
-    ICoreBorrow public coreBorrow;
+    /// @notice `Core` contract handling access control
+    ICore public core;
 
     /// @notice Maps a gauge to its reward parameters
     mapping(address => DistributionParameters) public gaugeParams;
@@ -61,9 +61,9 @@ contract MerklGaugeMiddleman {
 
     event GaugeSet(address indexed gauge);
 
-    constructor(ICoreBorrow _coreBorrow) {
-        if (address(_coreBorrow) == address(0)) revert ZeroAddress();
-        coreBorrow = _coreBorrow;
+    constructor(ICore _core) {
+        if (address(_core) == address(0)) revert ZeroAddress();
+        core = _core;
         IERC20 _angle = angle();
         // Condition left here for testing purposes
         if (address(_angle) != address(0))
@@ -101,7 +101,7 @@ contract MerklGaugeMiddleman {
 
     /// @notice Specifies the reward distribution parameters for `gauge`
     function setGauge(address gauge, DistributionParameters memory params) external {
-        if (!coreBorrow.isGovernorOrGuardian(msg.sender)) revert NotGovernorOrGuardian();
+        if (!core.isGovernorOrGuardian(msg.sender)) revert NotGovernorOrGuardian();
         DistributionCreator manager = merkleRewardManager();
         if (
             gauge == address(0) ||

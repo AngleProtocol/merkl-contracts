@@ -30,7 +30,7 @@ contract('DistributionCreator', () => {
   let token1: MockToken;
 
   let manager: DistributionCreator;
-  let coreBorrow: MockCoreBorrow;
+  let core: MockCoreBorrow;
   let startTime: number;
   // eslint-disable-next-line
   let params: any;
@@ -41,14 +41,14 @@ contract('DistributionCreator', () => {
     token0 = (await new MockToken__factory(deployer).deploy('token0', 'token0', 18)) as MockToken;
     token1 = (await new MockToken__factory(deployer).deploy('token1', 'token1', 18)) as MockToken;
     agEUR = (await new MockToken__factory(deployer).deploy('agEUR', 'agEUR', 18)) as MockToken;
-    coreBorrow = (await new MockCoreBorrow__factory(deployer).deploy()) as MockCoreBorrow;
+    core = (await new MockCoreBorrow__factory(deployer).deploy()) as MockCoreBorrow;
     pool = (await new MockUniswapV3Pool__factory(deployer).deploy()) as MockUniswapV3Pool;
     await pool.setToken(token0.address, 0);
     await pool.setToken(token1.address, 1);
-    await coreBorrow.toggleGuardian(guardian.address);
-    await coreBorrow.toggleGovernor(governor.address);
+    await core.toggleGuardian(guardian.address);
+    await core.toggleGovernor(governor.address);
     manager = (await deployUpgradeableUUPS(new DistributionCreator__factory(deployer))) as DistributionCreator;
-    await manager.initialize(coreBorrow.address, bob.address, parseAmount.gwei('0.1'));
+    await manager.initialize(core.address, bob.address, parseAmount.gwei('0.1'));
     startTime = await latestTime();
     params = {
       uniV3Pool: pool.address,
@@ -111,14 +111,14 @@ contract('DistributionCreator', () => {
   describe('initializer', () => {
     it('success - treasury', async () => {
       expect(await manager.distributor()).to.be.equal(bob.address);
-      expect(await manager.coreBorrow()).to.be.equal(coreBorrow.address);
+      expect(await manager.core()).to.be.equal(core.address);
       expect(await manager.fees()).to.be.equal(parseAmount.gwei('0.1'));
       expect(await manager.isWhitelistedToken(agEUR.address)).to.be.equal(1);
       expect(await manager.rewardTokens(0)).to.be.equal(angle.address);
       expect(await manager.rewardTokenMinAmounts(angle.address)).to.be.equal(1);
     });
     it('reverts - already initialized', async () => {
-      await expect(manager.initialize(coreBorrow.address, bob.address, parseAmount.gwei('0.1'))).to.be.revertedWith(
+      await expect(manager.initialize(core.address, bob.address, parseAmount.gwei('0.1'))).to.be.revertedWith(
         'Initializable: contract is already initialized',
       );
     });
@@ -130,10 +130,10 @@ contract('DistributionCreator', () => {
         managerRevert.initialize(ZERO_ADDRESS, bob.address, parseAmount.gwei('0.1')),
       ).to.be.revertedWithCustomError(managerRevert, 'ZeroAddress');
       await expect(
-        managerRevert.initialize(coreBorrow.address, ZERO_ADDRESS, parseAmount.gwei('0.1')),
+        managerRevert.initialize(core.address, ZERO_ADDRESS, parseAmount.gwei('0.1')),
       ).to.be.revertedWithCustomError(managerRevert, 'ZeroAddress');
       await expect(
-        managerRevert.initialize(coreBorrow.address, bob.address, parseAmount.gwei('1.1')),
+        managerRevert.initialize(core.address, bob.address, parseAmount.gwei('1.1')),
       ).to.be.revertedWithCustomError(managerRevert, 'InvalidParam');
     });
   });

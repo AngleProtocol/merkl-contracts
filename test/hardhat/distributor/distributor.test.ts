@@ -25,18 +25,18 @@ contract('Distributor', () => {
   let angle: MockToken;
 
   let distributor: Distributor;
-  let coreBorrow: MockCoreBorrow;
+  let core: MockCoreBorrow;
   let merkleTree: MerkleTreeType;
   const emptyBytes = '0x0000000000000000000000000000000000000000000000000000000000000000';
 
   beforeEach(async () => {
     [deployer, alice, bob, governor, guardian] = await ethers.getSigners();
     angle = (await new MockToken__factory(deployer).deploy('ANGLE', 'ANGLE', 18)) as MockToken;
-    coreBorrow = (await new MockCoreBorrow__factory(deployer).deploy()) as MockCoreBorrow;
-    await coreBorrow.toggleGuardian(guardian.address);
-    await coreBorrow.toggleGovernor(governor.address);
+    core = (await new MockCoreBorrow__factory(deployer).deploy()) as MockCoreBorrow;
+    await core.toggleGuardian(guardian.address);
+    await core.toggleGovernor(governor.address);
     distributor = (await deployUpgradeableUUPS(new Distributor__factory(deployer))) as Distributor;
-    await distributor.initialize(coreBorrow.address);
+    await distributor.initialize(core.address);
     merkleTree = { merkleRoot: web3.utils.keccak256('MERKLE_ROOT'), ipfsHash: web3.utils.keccak256('IPFS_HASH') };
   });
   describe('upgrade', () => {
@@ -75,11 +75,11 @@ contract('Distributor', () => {
   });
 
   describe('initializer', () => {
-    it('success - coreBorrow', async () => {
-      expect(await distributor.coreBorrow()).to.be.equal(coreBorrow.address);
+    it('success - core', async () => {
+      expect(await distributor.core()).to.be.equal(core.address);
     });
     it('reverts - already initialized', async () => {
-      await expect(distributor.initialize(coreBorrow.address)).to.be.revertedWith(
+      await expect(distributor.initialize(core.address)).to.be.revertedWith(
         'Initializable: contract is already initialized',
       );
     });

@@ -3,7 +3,7 @@
 pragma solidity 0.8.17;
 
 import "./IAgToken.sol";
-import "./ICoreBorrow.sol";
+import "./ICore.sol";
 
 /// @title ITreasury
 /// @author Angle Core Team
