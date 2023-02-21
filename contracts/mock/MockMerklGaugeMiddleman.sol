@@ -19,7 +19,7 @@ contract MockMerklGaugeMiddleman is MerklGaugeMiddleman {
         return angleAddress;
     }
 
-    function merkleRewardManager() public view override returns (DistributionCreator) {
+    function merklDistributionCreator() public view override returns (DistributionCreator) {
         return manager;
     }
 
