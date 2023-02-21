@@ -67,7 +67,7 @@ contract MerklGaugeMiddleman {
         IERC20 _angle = angle();
         // Condition left here for testing purposes
         if (address(_angle) != address(0))
-            _angle.safeIncreaseAllowance(address(merkleRewardManager()), type(uint256).max);
+            _angle.safeIncreaseAllowance(address(merklDistributionCreator()), type(uint256).max);
     }
 
     // ================================= REFERENCES ================================
@@ -84,7 +84,7 @@ contract MerklGaugeMiddleman {
 
     /// @notice Address of the Merkl contract managing rewards to be distributed
     // TODO: to be replaced at deployment
-    function merkleRewardManager() public view virtual returns (DistributionCreator) {
+    function merklDistributionCreator() public view virtual returns (DistributionCreator) {
         return DistributionCreator(0x4f91F01cE8ec07c9B1f6a82c18811848254917Ab);
     }
 
@@ -93,7 +93,7 @@ contract MerklGaugeMiddleman {
     /// @notice Restores the allowance for the ANGLE token to the `DistributionCreator` contract
     function setAngleAllowance() external {
         IERC20 _angle = angle();
-        address manager = address(merkleRewardManager());
+        address manager = address(merklDistributionCreator());
         uint256 currentAllowance = _angle.allowance(address(this), manager);
         if (currentAllowance < type(uint256).max)
             _angle.safeIncreaseAllowance(manager, type(uint256).max - currentAllowance);
@@ -102,7 +102,7 @@ contract MerklGaugeMiddleman {
     /// @notice Specifies the reward distribution parameters for `gauge`
     function setGauge(address gauge, DistributionParameters memory params) external {
         if (!core.isGovernorOrGuardian(msg.sender)) revert NotGovernorOrGuardian();
-        DistributionCreator manager = merkleRewardManager();
+        DistributionCreator manager = merklDistributionCreator();
         if (
             gauge == address(0) ||
             params.rewardToken != address(angle()) ||
@@ -121,6 +121,6 @@ contract MerklGaugeMiddleman {
         if (msg.sender != angleDistributor() || params.uniV3Pool == address(0)) revert InvalidParams();
         params.epochStart = uint32(block.timestamp);
         params.amount = amount;
-        if (amount > 0) merkleRewardManager().createDistribution(params);
+        if (amount > 0) merklDistributionCreator().createDistribution(params);
     }
 }
