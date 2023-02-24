@@ -4,7 +4,7 @@
   "description": "",
   "scripts": {
     "deploy": "hardhat deploy --tags distributionCreator --network",
-    "etherscan": "hardhat etherscan-verify --network",
+    "etherscan": "hardhat etherscan-verify --solc-input --network",
     "foundry:compile": "forge build --optimize --optimizer-runs 1000",
     "foundry:coverage": "forge coverage --report lcov && forge coverage",
     "foundry:deploy": "forge script --broadcast --verify -vvvv",

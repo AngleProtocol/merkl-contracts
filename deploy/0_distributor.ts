@@ -8,6 +8,7 @@ const argv = yargs.env('').boolean('ci').parseSync();
 const func: DeployFunction = async ({ deployments, ethers, network }) => {
   const { deploy } = deployments;
   const { deployer } = await ethers.getNamedSigners();
+
   let core: string;
 
   if (!network.live) {
@@ -19,6 +20,7 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
   }
 
   console.log('Let us get started with deployment');
+  console.log(deployer.address);
 
   console.log('Now deploying Distributor');
   console.log('Starting with the implementation');
@@ -49,7 +51,6 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
   const contract = new ethers.Contract(distributor, Distributor__factory.createInterface(), deployer) as Distributor;
   await (await contract.connect(deployer).initialize(core)).wait();
   console.log('Contract successfully initialized');
-  console.log(await contract.core());
 
   console.log('');
 };
