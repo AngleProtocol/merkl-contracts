@@ -10,7 +10,6 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
   const { deploy } = deployments;
   const { deployer } = await ethers.getNamedSigners();
   let core: string;
-  const distributor = (await deployments.get('Distributor')).address;
 
   if (!network.live) {
     // If we're in mainnet fork, we're using the `CoreBorrow` address from mainnet
@@ -23,17 +22,18 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
   console.log('Now deploying DistributionCreator');
   console.log('Starting with the implementation');
 
-  await deploy('DistributionCreator_Implementation', {
+  await deploy('DistributionCreator_Implementation_2', {
     contract: 'DistributionCreator',
     from: deployer.address,
     log: !argv.ci,
   });
 
-  const implementationAddress = (await ethers.getContract('DistributionCreator_Implementation')).address;
+  const implementationAddress = (await ethers.getContract('DistributionCreator_Implementation_2')).address;
 
   console.log(`Successfully deployed the implementation for DistributionCreator at ${implementationAddress}`);
   console.log('');
-
+  /*
+  const distributor = (await deployments.get('Distributor')).address;
   console.log('Now deploying the Proxy');
 
   await deploy('DistributionCreator', {
@@ -56,6 +56,7 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
   console.log('Contract successfully initialized');
   console.log('');
   console.log(await contract.core());
+  */
 
   /* Once good some functions need to be called to have everything setup.
 
@@ -74,5 +75,5 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
 };
 
 func.tags = ['distributionCreator'];
-func.dependencies = ['distributor'];
+// func.dependencies = ['distributor'];
 export default func;

@@ -244,7 +244,7 @@ const config: HardhatUserConfig = {
     outputFile: argv.ci ? 'gas-report.txt' : undefined,
   },
   spdxLicenseIdentifier: {
-    overwrite: true,
+    overwrite: false,
     runOnCompile: true,
   },
   abiExporter: {
