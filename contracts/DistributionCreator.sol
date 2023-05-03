@@ -141,11 +141,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
 
     // ================================ CONSTRUCTOR ================================
 
-    function initialize(
-        ICore _core,
-        address _distributor,
-        uint256 _fees
-    ) external initializer {
+    function initialize(ICore _core, address _distributor, uint256 _fees) external initializer {
         if (address(_core) == address(0) || _distributor == address(0)) revert ZeroAddress();
         if (_fees > BASE_9) revert InvalidParam();
         distributor = _distributor;
@@ -171,21 +167,17 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @dev If the pool incentivized contains one whitelisted token, then no fees are taken on the rewards
     /// @dev This function reverts if the sender has not signed the message `messageHash` once through one of
     /// the functions enabling to sign
-    function createDistribution(DistributionParameters memory distribution)
-        external
-        hasSigned
-        returns (uint256 distributionAmount)
-    {
+    function createDistribution(
+        DistributionParameters memory distribution
+    ) external hasSigned returns (uint256 distributionAmount) {
         return _createDistribution(distribution);
     }
 
     /// @notice Same as the function above but for multiple distributions at once
     /// @return List of all the distribution amounts actually deposited for each `distribution` in the `distributions` list
-    function createDistributions(DistributionParameters[] memory distributions)
-        external
-        hasSigned
-        returns (uint256[] memory)
-    {
+    function createDistributions(
+        DistributionParameters[] memory distributions
+    ) external hasSigned returns (uint256[] memory) {
         uint256 distributionsLength = distributions.length;
         uint256[] memory distributionAmounts = new uint256[](distributionsLength);
         for (uint256 i; i < distributionsLength; ) {
@@ -206,20 +198,18 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     }
 
     /// @notice Combines signing the message and creating a distribution
-    function signAndCreateDistribution(DistributionParameters memory distribution, bytes calldata signature)
-        external
-        returns (uint256 distributionAmount)
-    {
+    function signAndCreateDistribution(
+        DistributionParameters memory distribution,
+        bytes calldata signature
+    ) external returns (uint256 distributionAmount) {
         _sign(signature);
         return _createDistribution(distribution);
     }
 
     /// @notice Internal version of `createDistribution`
-    function _createDistribution(DistributionParameters memory distribution)
-        internal
-        nonReentrant
-        returns (uint256 distributionAmount)
-    {
+    function _createDistribution(
+        DistributionParameters memory distribution
+    ) internal nonReentrant returns (uint256 distributionAmount) {
         uint32 epochStart = _getRoundedEpoch(distribution.epochStart);
         uint256 minDistributionAmount = rewardTokenMinAmounts[distribution.rewardToken];
         distribution.epochStart = epochStart;
@@ -327,40 +317,34 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @notice Gets the distributions that were or will be live at some point between `epochStart` (included) and `epochEnd` (excluded)
     /// @dev If a distribution starts during `epochEnd`, it is not be returned by this function
     /// @dev Conversely, if a distribution starts after `epochStart` and ends before `epochEnd`, it is returned by this function
-    function getDistributionsBetweenEpochs(uint32 epochStart, uint32 epochEnd)
-        external
-        view
-        returns (ExtensiveDistributionParameters[] memory)
-    {
+    function getDistributionsBetweenEpochs(
+        uint32 epochStart,
+        uint32 epochEnd
+    ) external view returns (ExtensiveDistributionParameters[] memory) {
         return _getPoolDistributionsBetweenEpochs(address(0), _getRoundedEpoch(epochStart), _getRoundedEpoch(epochEnd));
     }
 
     /// @notice Returns the list of all distributions that were or will be live after `epochStart` (included)
-    function getDistributionsAfterEpoch(uint32 epochStart)
-        external
-        view
-        returns (ExtensiveDistributionParameters[] memory)
-    {
+    function getDistributionsAfterEpoch(
+        uint32 epochStart
+    ) external view returns (ExtensiveDistributionParameters[] memory) {
         return _getPoolDistributionsBetweenEpochs(address(0), _getRoundedEpoch(epochStart), type(uint32).max);
     }
 
     /// @notice Returns the list of all currently active distributions for a specific UniswapV3 pool
-    function getActivePoolDistributions(address uniV3Pool)
-        external
-        view
-        returns (ExtensiveDistributionParameters[] memory)
-    {
+    function getActivePoolDistributions(
+        address uniV3Pool
+    ) external view returns (ExtensiveDistributionParameters[] memory) {
         uint32 roundedEpoch = _getRoundedEpoch(uint32(block.timestamp));
         return _getPoolDistributionsBetweenEpochs(uniV3Pool, roundedEpoch, roundedEpoch + EPOCH_DURATION);
     }
 
     /// @notice Returns the list of all the distributions that were or that are going to be live at a
     /// specific epoch and for a specific pool
-    function getPoolDistributionsForEpoch(address uniV3Pool, uint32 epoch)
-        external
-        view
-        returns (ExtensiveDistributionParameters[] memory)
-    {
+    function getPoolDistributionsForEpoch(
+        address uniV3Pool,
+        uint32 epoch
+    ) external view returns (ExtensiveDistributionParameters[] memory) {
         uint32 roundedEpoch = _getRoundedEpoch(epoch);
         return _getPoolDistributionsBetweenEpochs(uniV3Pool, roundedEpoch, roundedEpoch + EPOCH_DURATION);
     }
@@ -377,11 +361,10 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
 
     /// @notice Returns the list of all distributions that were or will be live after `epochStart` (included)
     /// for a specific pool
-    function getPoolDistributionsAfterEpoch(address uniV3Pool, uint32 epochStart)
-        external
-        view
-        returns (ExtensiveDistributionParameters[] memory)
-    {
+    function getPoolDistributionsAfterEpoch(
+        address uniV3Pool,
+        uint32 epochStart
+    ) external view returns (ExtensiveDistributionParameters[] memory) {
         return _getPoolDistributionsBetweenEpochs(uniV3Pool, _getRoundedEpoch(epochStart), type(uint32).max);
     }
 
@@ -426,10 +409,10 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     }
 
     /// @notice Sets the minimum amounts per distribution epoch for different reward tokens
-    function setRewardTokenMinAmounts(address[] calldata tokens, uint256[] calldata amounts)
-        external
-        onlyGovernorOrGuardian
-    {
+    function setRewardTokenMinAmounts(
+        address[] calldata tokens,
+        uint256[] calldata amounts
+    ) external onlyGovernorOrGuardian {
         uint256 tokensLength = tokens.length;
         for (uint256 i; i < tokensLength; ++i) {
             uint256 amount = amounts[i];
@@ -481,11 +464,10 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     }
 
     /// @notice Fetches data for `token` on the Uniswap `pool`
-    function _getUniswapTokenData(IERC20Metadata token, address pool)
-        internal
-        view
-        returns (UniswapTokenData memory data)
-    {
+    function _getUniswapTokenData(
+        IERC20Metadata token,
+        address pool
+    ) internal view returns (UniswapTokenData memory data) {
         data.add = address(token);
         data.decimals = token.decimals();
         data.symbol = token.symbol();
@@ -493,13 +475,15 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     }
 
     /// @notice Fetches extra data about the parameters in a distribution
-    function _getExtensiveDistributionParameters(DistributionParameters memory distribution)
-        internal
-        view
-        returns (ExtensiveDistributionParameters memory extensiveParams)
-    {
+    function _getExtensiveDistributionParameters(
+        DistributionParameters memory distribution
+    ) internal view returns (ExtensiveDistributionParameters memory extensiveParams) {
         extensiveParams.base = distribution;
-        extensiveParams.poolFee = IUniswapV3Pool(distribution.uniV3Pool).fee();
+        try IUniswapV3Pool(distribution.uniV3Pool).fee() returns (uint24 fee) {
+            extensiveParams.poolFee = fee;
+        } catch {
+            extensiveParams.poolFee = 0;
+        }
         extensiveParams.token0 = _getUniswapTokenData(
             IERC20Metadata(IUniswapV3Pool(distribution.uniV3Pool).token0()),
             distribution.uniV3Pool
