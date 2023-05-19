@@ -47,6 +47,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
  * grant and revoke this role. Extra precautions should be taken to secure
  * accounts that have been granted it.
  */
+//solhint-disable
 abstract contract AccessControlUpgradeable is Initializable {
     function __AccessControl_init() internal initializer {
         __AccessControl_init_unchained();

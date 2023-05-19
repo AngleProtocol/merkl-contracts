@@ -11,10 +11,6 @@ contract MockMerklGaugeMiddleman is MerklGaugeMiddleman {
 
     constructor(ICore _coreBorrow) MerklGaugeMiddleman(_coreBorrow) {}
 
-    function angleDistributor() public view override returns (address) {
-        return angleDistributorAddress;
-    }
-
     function angle() public view override returns (IERC20) {
         return angleAddress;
     }

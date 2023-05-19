@@ -71,22 +71,21 @@ const config: HardhatUserConfig = {
   // For the lists of Chain ID: https://chainlist.org
   networks: {
     hardhat: {
-      accounts: accounts('polygon'),
+      accounts: accounts('mainnet'),
       live: false,
       blockGasLimit: 125e5,
       initialBaseFeePerGas: 0,
       hardfork: 'london',
       forking: {
         enabled: argv.fork || false,
-        /*
         // Mainnet
         url: nodeUrl('fork'),
         blockNumber: 16671190,
-        */
         // Polygon
-
+        /*
         url: nodeUrl('forkpolygon'),
         blockNumber: 39517477,
+        */
 
         // Optimism
         /*
