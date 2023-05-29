@@ -111,7 +111,7 @@ contract MerklGaugeMiddleman {
     /// parameters
     /// @dev Callable by any contract
     /// @dev This method can be used to recover leftover ANGLE tokens in the contract
-    function notifyReward(address gauge, uint256 amount) external {
+    function notifyReward(address gauge, uint256 amount) public {
         DistributionParameters memory params = gaugeParams[gauge];
         if (params.uniV3Pool == address(0)) revert InvalidParams();
         if (amount == 0) amount = angle().balanceOf(address(this));
@@ -127,5 +127,11 @@ contract MerklGaugeMiddleman {
                 angle().safeTransfer(msg.sender, amount);
             }
         }
+    }
+
+    /// @notice Fetches tokens and transmits rewards in the same transaction
+    function notifyRewardWithTransfer(address gauge, uint256 amount) external {
+        angle().safeTransferFrom(msg.sender, address(this), amount);
+        notifyReward(gauge, amount);
     }
 }

@@ -325,4 +325,38 @@ contract('MerklGaugeMiddleman', () => {
       expect(reward2.rewardId).to.be.equal(rewardId2);
     });
   });
+  describe('notifyRewardWithAmount', () => {
+    it('success - rewards well sent', async () => {
+      await pool.setToken(agEUR, 1);
+      await middleman.connect(guardian).setGauge(alice.address, params);
+      await angle.connect(alice).approve(middleman.address, parseEther('0.7'));
+      expect(await angle.balanceOf(middleman.address)).to.be.equal(parseEther('0'));
+      await middleman.connect(alice).notifyRewardWithTransfer(alice.address, parseEther('0.7'));
+      expect(await manager.nonces(middleman.address)).to.be.equal(1);
+      expect(await angle.balanceOf(manager.address)).to.be.equal(parseEther('0'));
+      expect(await angle.balanceOf(bob.address)).to.be.equal(parseEther('0.7'));
+      expect(await angle.balanceOf(middleman.address)).to.be.equal(parseEther('0'));
+      expect(await angle.balanceOf(alice.address)).to.be.equal(parseEther('999.3'));
+      const reward = await manager.distributionList(0);
+      expect(reward.uniV3Pool).to.be.equal(pool.address);
+      expect(reward.rewardToken).to.be.equal(angle.address);
+      expect(reward.amount).to.be.equal(parseEther('0.7'));
+      expect(reward.propToken0).to.be.equal(4000);
+      expect(reward.propToken1).to.be.equal(2000);
+      expect(reward.propFees).to.be.equal(4000);
+      expect(reward.isOutOfRangeIncentivized).to.be.equal(0);
+      expect(reward.epochStart).to.be.equal(await pool.round(await latestTime()));
+      expect(reward.numEpoch).to.be.equal(1);
+      expect(reward.boostedReward).to.be.equal(0);
+      expect(reward.boostingAddress).to.be.equal(ZERO_ADDRESS);
+      const rewardId = solidityKeccak256(['address', 'uint256'], [middleman.address, 0]);
+      expect(reward.rewardId).to.be.equal(rewardId);
+    });
+    it('reverts - no approval', async () => {
+      await pool.setToken(agEUR, 1);
+      await middleman.connect(guardian).setGauge(alice.address, params);
+      await angle.connect(alice).approve(middleman.address, 0);
+      await expect(middleman.connect(alice).notifyRewardWithTransfer(alice.address, parseEther('0.7'))).to.be.reverted;
+    });
+  });
 });
