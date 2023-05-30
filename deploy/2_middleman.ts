@@ -14,7 +14,7 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
   /**
    * TODO: change for Polygon deployment to MerklGaugeMiddlemanPolygon
    */
-  const implementationName = 'MerklGaugeMiddleman';
+  const implementationName = 'MerklGaugeMiddlemanPolygon';
 
   if (!network.live) {
     // If we're in mainnet fork, we're using the `CoreBorrow` address from mainnet
