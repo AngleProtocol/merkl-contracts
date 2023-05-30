@@ -76,7 +76,7 @@ contract('MerklGaugeMiddleman', () => {
 
   describe('initializer', () => {
     it('success - values initialized', async () => {
-      expect(await middleman.core()).to.be.equal(core.address);
+      expect(await middleman.accessControlManager()).to.be.equal(core.address);
       expect(await angle.allowance(middleman.address, manager.address)).to.be.equal(MAX_UINT256);
     });
     it('reverts - zero address', async () => {
@@ -222,6 +222,46 @@ contract('MerklGaugeMiddleman', () => {
       const rewardId = solidityKeccak256(['address', 'uint256'], [middleman.address, 0]);
       expect(reward.rewardId).to.be.equal(rewardId);
     });
+    it('success - rewards well sent when zero amount', async () => {
+      await pool.setToken(agEUR, 1);
+      await middleman.connect(guardian).setGauge(alice.address, params);
+      await angle.connect(alice).transfer(middleman.address, parseEther('0.7'));
+      expect(await angle.balanceOf(middleman.address)).to.be.equal(parseEther('0.7'));
+      expect(await angle.balanceOf(alice.address)).to.be.equal(parseEther('999.3'));
+      await manager.connect(guardian).setRewardTokenMinAmounts([angle.address], [parseEther('10')]);
+      await middleman.connect(alice).notifyReward(alice.address, parseEther('0'));
+      expect(await angle.balanceOf(alice.address)).to.be.equal(parseEther('1000'));
+      expect(await angle.balanceOf(middleman.address)).to.be.equal(parseEther('0'));
+      expect(await manager.nonces(middleman.address)).to.be.equal(0);
+      expect(await angle.balanceOf(manager.address)).to.be.equal(parseEther('0'));
+      expect(await angle.balanceOf(bob.address)).to.be.equal(parseEther('0'));
+    });
+    it('success - rewards sent back when inferior to min distribution amount', async () => {
+      await pool.setToken(agEUR, 1);
+      await middleman.connect(guardian).setGauge(alice.address, params);
+      await angle.connect(alice).transfer(middleman.address, parseEther('0.7'));
+      expect(await angle.balanceOf(middleman.address)).to.be.equal(parseEther('0.7'));
+      await middleman.connect(alice).notifyReward(alice.address, parseEther('0'));
+      expect(await angle.balanceOf(manager.address)).to.be.equal(parseEther('0'));
+      expect(await angle.balanceOf(bob.address)).to.be.equal(parseEther('0.7'));
+      expect(await manager.nonces(middleman.address)).to.be.equal(1);
+      expect(await angle.balanceOf(middleman.address)).to.be.equal(parseEther('0'));
+      expect(await angle.balanceOf(alice.address)).to.be.equal(parseEther('999.3'));
+      const reward = await manager.distributionList(0);
+      expect(reward.uniV3Pool).to.be.equal(pool.address);
+      expect(reward.rewardToken).to.be.equal(angle.address);
+      expect(reward.amount).to.be.equal(parseEther('0.7'));
+      expect(reward.propToken0).to.be.equal(4000);
+      expect(reward.propToken1).to.be.equal(2000);
+      expect(reward.propFees).to.be.equal(4000);
+      expect(reward.isOutOfRangeIncentivized).to.be.equal(0);
+      expect(reward.epochStart).to.be.equal(await pool.round(await latestTime()));
+      expect(reward.numEpoch).to.be.equal(1);
+      expect(reward.boostedReward).to.be.equal(0);
+      expect(reward.boostingAddress).to.be.equal(ZERO_ADDRESS);
+      const rewardId = solidityKeccak256(['address', 'uint256'], [middleman.address, 0]);
+      expect(reward.rewardId).to.be.equal(rewardId);
+    });
     it('success - rewards sent for different gauges at once', async () => {
       const params0 = {
         uniV3Pool: pool.address,
@@ -243,8 +283,8 @@ contract('MerklGaugeMiddleman', () => {
       await pool.setToken(agEUR, 1);
       await middleman.connect(guardian).setGauge(alice.address, params);
       await middleman.connect(guardian).setGauge(bob.address, params0);
-      await angle.connect(alice).transfer(middleman.address, parseEther('0.7'));
       await middleman.connect(alice).notifyReward(alice.address, parseEther('0'));
+      await angle.connect(alice).transfer(middleman.address, parseEther('0.7'));
       await middleman.connect(alice).notifyReward(alice.address, parseEther('0.7'));
       await angle.connect(alice).transfer(middleman.address, parseEther('0.8'));
       await middleman.connect(alice).notifyReward(bob.address, parseEther('0.8'));
@@ -283,6 +323,40 @@ contract('MerklGaugeMiddleman', () => {
       expect(reward2.boostingAddress).to.be.equal(ZERO_ADDRESS);
       const rewardId2 = solidityKeccak256(['address', 'uint256'], [middleman.address, 1]);
       expect(reward2.rewardId).to.be.equal(rewardId2);
+    });
+  });
+  describe('notifyRewardWithAmount', () => {
+    it('success - rewards well sent', async () => {
+      await pool.setToken(agEUR, 1);
+      await middleman.connect(guardian).setGauge(alice.address, params);
+      await angle.connect(alice).approve(middleman.address, parseEther('0.7'));
+      expect(await angle.balanceOf(middleman.address)).to.be.equal(parseEther('0'));
+      await middleman.connect(alice).notifyRewardWithTransfer(alice.address, parseEther('0.7'));
+      expect(await manager.nonces(middleman.address)).to.be.equal(1);
+      expect(await angle.balanceOf(manager.address)).to.be.equal(parseEther('0'));
+      expect(await angle.balanceOf(bob.address)).to.be.equal(parseEther('0.7'));
+      expect(await angle.balanceOf(middleman.address)).to.be.equal(parseEther('0'));
+      expect(await angle.balanceOf(alice.address)).to.be.equal(parseEther('999.3'));
+      const reward = await manager.distributionList(0);
+      expect(reward.uniV3Pool).to.be.equal(pool.address);
+      expect(reward.rewardToken).to.be.equal(angle.address);
+      expect(reward.amount).to.be.equal(parseEther('0.7'));
+      expect(reward.propToken0).to.be.equal(4000);
+      expect(reward.propToken1).to.be.equal(2000);
+      expect(reward.propFees).to.be.equal(4000);
+      expect(reward.isOutOfRangeIncentivized).to.be.equal(0);
+      expect(reward.epochStart).to.be.equal(await pool.round(await latestTime()));
+      expect(reward.numEpoch).to.be.equal(1);
+      expect(reward.boostedReward).to.be.equal(0);
+      expect(reward.boostingAddress).to.be.equal(ZERO_ADDRESS);
+      const rewardId = solidityKeccak256(['address', 'uint256'], [middleman.address, 0]);
+      expect(reward.rewardId).to.be.equal(rewardId);
+    });
+    it('reverts - no approval', async () => {
+      await pool.setToken(agEUR, 1);
+      await middleman.connect(guardian).setGauge(alice.address, params);
+      await angle.connect(alice).approve(middleman.address, 0);
+      await expect(middleman.connect(alice).notifyRewardWithTransfer(alice.address, parseEther('0.7'))).to.be.reverted;
     });
   });
 });
