@@ -45,6 +45,7 @@ import "../DistributionCreator.sol";
 /// @notice Manages the transfer of ANGLE rewards to the `DistributionCreator` contract
 /// @dev This contract is built under the assumption that the `DistributionCreator` contract has already whitelisted
 /// this contract for it to distribute rewards without having to sign a message
+/// @dev Transient funds left in this contract after a call may be exploited
 contract MerklGaugeMiddleman {
     using SafeERC20 for IERC20;
 
