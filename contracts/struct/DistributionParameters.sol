@@ -12,11 +12,12 @@ struct DistributionParameters {
     // Amount of `rewardToken` to distribute across all the epochs
     // Amount distributed per epoch is `amount/numEpoch`
     uint256 amount;
-    // List of all UniV3 position wrappers to consider for this contract
-    // (this can include addresses of Arrakis or Gamma smart contracts for instance)
+    // List of all position wrappers to consider or not for this contract. Some wrappers like Gamma or Arrakis
+    // are automatically detected and so there is no need to specify them here. Check out the docs to find out
+    // which need to be specified and which are not automatically detected.
     address[] positionWrappers;
-    // Type (Arrakis, Gamma, ...) encoded as a `uint32` for each wrapper in the list above. Mapping between wrapper types and their
-    // corresponding `uint32` value can be found in Angle Docs
+    // Type (Arrakis, Gamma, Blacklist, ...) encoded as a `uint32` for each wrapper in the list above. Mapping between
+    // wrapper types and their corresponding `uint32` value can be found in Angle Docs
     uint32[] wrapperTypes;
     // In the incentivization formula, how much of the fees should go to holders of token0
     // in base 10**4

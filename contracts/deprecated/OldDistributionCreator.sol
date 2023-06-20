@@ -1,38 +1,5 @@
 // SPDX-License-Identifier: BUSL-1.1
 
-/*
-                  *                                                  █                              
-                *****                                               ▓▓▓                             
-                  *                                               ▓▓▓▓▓▓▓                         
-                                   *            ///.           ▓▓▓▓▓▓▓▓▓▓▓▓▓                       
-                                 *****        ////////            ▓▓▓▓▓▓▓                          
-                                   *       /////////////            ▓▓▓                             
-                     ▓▓                  //////////////////          █         ▓▓                   
-                   ▓▓  ▓▓             ///////////////////////                ▓▓   ▓▓                
-                ▓▓       ▓▓        ////////////////////////////           ▓▓        ▓▓              
-              ▓▓            ▓▓    /////////▓▓▓///////▓▓▓/////////       ▓▓             ▓▓            
-           ▓▓                 ,////////////////////////////////////// ▓▓                 ▓▓         
-        ▓▓                  //////////////////////////////////////////                     ▓▓      
-      ▓▓                  //////////////////////▓▓▓▓/////////////////////                          
-                       ,////////////////////////////////////////////////////                        
-                    .//////////////////////////////////////////////////////////                     
-                     .//////////////////////////██.,//////////////////////////█                     
-                       .//////////////////////████..,./////////////////////██                       
-                        ...////////////////███████.....,.////////////////███                        
-                          ,.,////////////████████ ........,///////////████                          
-                            .,.,//////█████████      ,.......///////████                            
-                               ,..//████████           ........./████                               
-                                 ..,██████                .....,███                                 
-                                    .██                     ,.,█                                    
-                                                                                                    
-                                                                                                    
-                                                                                                    
-               ▓▓            ▓▓▓▓▓▓▓▓▓▓       ▓▓▓▓▓▓▓▓▓▓        ▓▓               ▓▓▓▓▓▓▓▓▓▓          
-             ▓▓▓▓▓▓          ▓▓▓    ▓▓▓       ▓▓▓               ▓▓               ▓▓   ▓▓▓▓         
-           ▓▓▓    ▓▓▓        ▓▓▓    ▓▓▓       ▓▓▓    ▓▓▓        ▓▓               ▓▓▓▓▓             
-          ▓▓▓        ▓▓      ▓▓▓    ▓▓▓       ▓▓▓▓▓▓▓▓▓▓        ▓▓▓▓▓▓▓▓▓▓       ▓▓▓▓▓▓▓▓▓▓          
-*/
-
 pragma solidity ^0.8.17;
 
 import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
@@ -40,22 +7,19 @@ import "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
-import "./interfaces/external/uniswap/IUniswapV3Pool.sol";
-import "./interfaces/external/algebra/IAlgebraPool.sol";
+import "../interfaces/external/uniswap/IUniswapV3Pool.sol";
+import "../utils/UUPSHelper.sol";
+import "../struct/DistributionParameters.sol";
+import "../struct/ExtensiveDistributionParameters.sol";
+import "../struct/RewardTokenAmounts.sol";
 
-import "./utils/UUPSHelper.sol";
-import "./struct/DistributionParameters.sol";
-import "./struct/ExtensiveDistributionParameters.sol";
-import "./struct/RewardTokenAmounts.sol";
-
-/// @title DistributionCreator
+/// @title OldDistributionCreator
 /// @author Angle Labs, Inc.
 /// @notice Manages the distribution of rewards across different pools with concentrated liquidity (like on Uniswap V3)
 /// @dev This contract is mostly a helper for APIs built on top of Merkl
 /// @dev People depositing rewards must have signed a `message` with the conditions for using the
 /// product
-//solhint-disable
-contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
+contract OldDistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     using SafeERC20 for IERC20;
 
     // =========================== CONSTANTS / VARIABLES ===========================
@@ -238,7 +202,6 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         uint256 userFeeRebate = feeRebate[msg.sender];
         if (
             userFeeRebate < BASE_9 &&
-            // Algebra pools also have these `token0` and `token1` parameters
             isWhitelistedToken[IUniswapV3Pool(distribution.uniV3Pool).token0()] == 0 &&
             isWhitelistedToken[IUniswapV3Pool(distribution.uniV3Pool).token1()] == 0
         ) {
@@ -486,19 +449,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         try IUniswapV3Pool(distribution.uniV3Pool).fee() returns (uint24 fee) {
             extensiveParams.poolFee = fee;
         } catch {
-            try IAlgebraPool(distribution.uniV3Pool).globalState() returns (
-                uint160,
-                int24,
-                uint16 fee,
-                uint16,
-                uint8,
-                uint8,
-                bool
-            ) {
-                extensiveParams.poolFee = uint24(fee);
-            } catch {
-                extensiveParams.poolFee = 0;
-            }
+            extensiveParams.poolFee = 0;
         }
         extensiveParams.token0 = _getUniswapTokenData(
             IERC20Metadata(IUniswapV3Pool(distribution.uniV3Pool).token0()),
