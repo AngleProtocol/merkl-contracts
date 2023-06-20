@@ -63,7 +63,7 @@ contract Distributor is UUPSHelper {
     using SafeERC20 for IERC20;
 
     /// @notice Epoch duration
-    uint32 public constant EPOCH_DURATION = 3600;
+    uint32 internal _EPOCH_DURATION = 3600;
 
     // ================================= VARIABLES =================================
 
@@ -312,14 +312,14 @@ contract Distributor is UUPSHelper {
         emit TreeUpdated(
             _tree.merkleRoot,
             _tree.ipfsHash,
-            (uint48(block.timestamp) / EPOCH_DURATION) * (EPOCH_DURATION) // Last hour
+            (uint48(block.timestamp) / _EPOCH_DURATION) * (_EPOCH_DURATION) // Last hour
         );
     }
 
     /// @notice Returns the end of the dispute period
     /// @dev treeUpdate is rounded up to next hour and then `disputePeriod` hours are added
     function _endOfDisputePeriod(uint48 treeUpdate) internal view returns (uint48) {
-        return ((treeUpdate - 1) / EPOCH_DURATION + 1 + disputePeriod) * (EPOCH_DURATION);
+        return ((treeUpdate - 1) / _EPOCH_DURATION + 1 + disputePeriod) * (_EPOCH_DURATION);
     }
 
     /// @notice Checks the validity of a proof
