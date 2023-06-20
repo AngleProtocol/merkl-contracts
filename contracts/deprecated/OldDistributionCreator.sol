@@ -19,6 +19,7 @@ import "../struct/RewardTokenAmounts.sol";
 /// @dev This contract is mostly a helper for APIs built on top of Merkl
 /// @dev People depositing rewards must have signed a `message` with the conditions for using the
 /// product
+//solhint-disable
 contract OldDistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     using SafeERC20 for IERC20;
 
