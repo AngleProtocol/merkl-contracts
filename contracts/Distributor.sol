@@ -63,7 +63,7 @@ contract Distributor is UUPSHelper {
     using SafeERC20 for IERC20;
 
     /// @notice Epoch duration
-    uint32 internal _EPOCH_DURATION = 3600;
+    uint32 internal constant _EPOCH_DURATION = 3600;
 
     // ================================= VARIABLES =================================
 
