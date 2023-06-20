@@ -1,4 +1,4 @@
-name: CI
+name: Merkl Contracts CI
 
 on:
   push:
@@ -27,6 +27,7 @@ defaults:
 
 jobs:
   run-linters:
+    name: Run Linters
     if: github.ref == 'refs/heads/main' || github.event.review.state == 'approved' || github.event.action == 'ready_for_review' || github.event.action == 'review_requested'
     runs-on: ubuntu-latest
     steps:
@@ -49,6 +50,7 @@ jobs:
         run: yarn eslint --ignore-path .gitignore --fix --max-warnings 30 'test/**/*.{js,ts}' '*.{js,ts}'
 
   hardhat-tests:
+    name: Run Hardhat Tests
     if: github.ref == 'refs/heads/main' || github.event.inputs.workflow_to_run == 'all' || github.event.inputs.workflow_to_run == 'hardhat-tests' || github.event.review.state == 'approved' || github.event.action == 'ready_for_review' || github.event.action == 'review_requested'
     runs-on: ubuntu-latest
     steps:
@@ -66,7 +68,6 @@ jobs:
           npm config set //registry.npmjs.org/
           yarn install --frozen-lockfile
 
-      # This is required separately from yarn test because it generates the typechain definitions
       - name: Compile
         run: yarn hardhat:compile
       - name: Run unit tests
@@ -74,30 +75,4 @@ jobs:
         env:
           ENABLE_GAS_REPORT: true
           CI: true
-
-  foundry-tests:
-    if: github.ref == 'refs/heads/main' || github.event.inputs.workflow_to_run == 'all' || github.event.inputs.workflow_to_run == 'foundry-tests' || github.event.review.state == 'approved' || github.event.action == 'ready_for_review' || github.event.action == 'review_requested'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-
-      - uses: actions/setup-node@v2
-        with:
-          node-version: 14
-      - uses: actions/cache@v2
-        with:
-          path: node_modules
-          key: yarn-${{ hashFiles('yarn.lock') }}
-          restore-keys: yarn-
-      - run: yarn install --frozen-lockfile
-
-      - name: Install Foundry
-        uses: foundry-rs/foundry-toolchain@v1
-        with:
-          version: nightly
-      - name: Run Foundry tests
-        run: yarn foundry:test
-        env:
-          ETH_NODE_URI_MAINNET: ${{ secrets.ETH_NODE_URI_MAINNET }}
-          ETH_NODE_URI_POLYGON: ${{ secrets.ETH_NODE_URI_POLYGON }}
-          ETH_NODE_URI_GOERLI: ${{ secrets.ETH_NODE_URI_GOERLI }}
+          ETH_NODE_URI_ARBITRUM: ${{ secrets.ETH_NODE_URI_MAINNET }}
