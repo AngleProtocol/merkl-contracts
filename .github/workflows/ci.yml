@@ -75,4 +75,4 @@ jobs:
         env:
           ENABLE_GAS_REPORT: true
           CI: true
-          ETH_NODE_URI_ARBITRUM: ${{ secrets.ETH_NODE_URI_MAINNET }}
+          ETH_NODE_URI_ARBITRUM: ${{ secrets.ETH_NODE_URI_ARBITRUM }}
