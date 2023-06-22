@@ -74,8 +74,8 @@
     "hardhat-deploy": "^0.11.23",
     "hardhat-gas-reporter": "^1.0.9",
     "hardhat-spdx-license-identifier": "2.0.3",
-    "mocha": "^9.2.1",
     "merkletreejs": "0.2.32",
+    "mocha": "^9.2.1",
     "prettier": "2.7.1",
     "prettier-plugin-solidity": "1.0.0-beta.17",
     "solhint": "^3.3.7",
@@ -92,6 +92,7 @@
     "eth-sig-util": "^3.0.1",
     "ethereumjs-util": "^7.1.4",
     "fs-extra": "^10.0.0",
+    "moment": "^2.29.4",
     "solc": "0.8.12",
     "yargs": "^17.5.1"
   }
