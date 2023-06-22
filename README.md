@@ -9,6 +9,8 @@ It basically contains two contracts:
 - `DistributionCreator`: to which DAOs and individuals can deposit their rewards to incentivize a pool
 - `Distributor`: the contract where users can claim their rewards
 
+You can learn more about the Merkl system in the [documentation](https://docs.angle.money/side-products/merkl).
+
 ## Setup
 
 ### Install packages
@@ -37,16 +39,14 @@ Warning: always keep your confidential information safe.
 Contracts in this repo rely on Hardhat tests. You can run tests as follows:
 
 ```bash
+# Whole test suite
+yarn hardhat:test
+
+# Only one file
 yarn hardhat:test ./test/hardhat/distributor/distributor.test.ts
 ```
 
 You can also check the coverage of the tests with:
-
-```bash
-yarn hardhat:coverage
-```
-
-### Coverage
 
 ```bash
 yarn hardhat:coverage
