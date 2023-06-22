@@ -4,6 +4,7 @@ import { BigNumber, constants } from 'ethers';
 import { keccak256, parseEther, parseUnits } from 'ethers/lib/utils';
 import { contract, ethers, web3 } from 'hardhat';
 import { MerkleTree } from 'merkletreejs';
+import moment from 'moment';
 
 import {
   Distributor,
@@ -14,7 +15,7 @@ import {
   MockToken__factory,
 } from '../../../typechain';
 import { inReceipt } from '../utils/expectEvent';
-import { deployUpgradeableUUPS, increaseTime, latestTime, MerkleTreeType, ZERO_ADDRESS } from '../utils/helpers';
+import { deployUpgradeableUUPS, increaseTime, latestTime, MerkleTreeType, time, ZERO_ADDRESS } from '../utils/helpers';
 
 contract('Distributor', () => {
   let deployer: SignerWithAddress;
@@ -202,7 +203,7 @@ contract('Distributor', () => {
       );
     });
     it('reverts - when there is an ongoing dispute', async () => {
-      await distributor.connect(guardian).setDisputePeriod(86400);
+      await distributor.connect(guardian).setDisputePeriod(1);
       await distributor.connect(guardian).updateTree(merkleTree);
       await distributor.connect(guardian).setDisputeToken(angle.address);
       await distributor.connect(guardian).setDisputeAmount(parseEther('1'));
@@ -221,12 +222,20 @@ contract('Distributor', () => {
         merkleRoot: web3.utils.keccak256('MERKLE_ROOT'),
         ipfsHash: web3.utils.keccak256('IPFS_HASH'),
       });
+      expect(await distributor.disputeAmount()).to.be.equal(0);
       expect((await distributor.tree()).merkleRoot).to.be.equal(web3.utils.keccak256('MERKLE_ROOT'));
       expect((await distributor.tree()).ipfsHash).to.be.equal(web3.utils.keccak256('IPFS_HASH'));
       expect((await distributor.lastTree()).merkleRoot).to.be.equal(emptyBytes);
       expect((await distributor.lastTree()).ipfsHash).to.be.equal(emptyBytes);
+      expect(await distributor.getMerkleRoot()).to.be.equal(emptyBytes);
+      expect(await distributor.endOfDisputePeriod()).to.be.equal(
+        moment
+          .unix(await latestTime())
+          .startOf('hour')
+          .unix() + 3600,
+      );
+      await time.increaseTo(await distributor.endOfDisputePeriod());
       expect(await distributor.getMerkleRoot()).to.be.equal(web3.utils.keccak256('MERKLE_ROOT'));
-      expect(await distributor.lastTreeUpdate()).to.be.equal(await latestTime());
     });
     it('success - from a governance address and successive update', async () => {
       expect(await distributor.getMerkleRoot()).to.be.equal(emptyBytes);
@@ -244,8 +253,15 @@ contract('Distributor', () => {
       expect((await distributor.tree()).ipfsHash).to.be.equal(web3.utils.keccak256('IPFS_HASH_2'));
       expect((await distributor.lastTree()).merkleRoot).to.be.equal(web3.utils.keccak256('MERKLE_ROOT'));
       expect((await distributor.lastTree()).ipfsHash).to.be.equal(web3.utils.keccak256('IPFS_HASH'));
+      expect(await distributor.getMerkleRoot()).to.be.equal(web3.utils.keccak256('MERKLE_ROOT'));
+      expect(await distributor.endOfDisputePeriod()).to.be.equal(
+        moment
+          .unix(await latestTime())
+          .startOf('hour')
+          .unix() + 3600,
+      );
+      await time.increaseTo(await distributor.endOfDisputePeriod());
       expect(await distributor.getMerkleRoot()).to.be.equal(web3.utils.keccak256('MERKLE_ROOT_2'));
-      expect(await distributor.lastTreeUpdate()).to.be.equal(await latestTime());
     });
     it('success - from a trusted address', async () => {
       await distributor.connect(guardian).toggleTrusted(bob.address);
@@ -256,8 +272,15 @@ contract('Distributor', () => {
       });
       expect((await distributor.tree()).merkleRoot).to.be.equal(web3.utils.keccak256('MERKLE_ROOT'));
       expect((await distributor.tree()).ipfsHash).to.be.equal(web3.utils.keccak256('IPFS_HASH'));
+      expect(await distributor.getMerkleRoot()).to.be.equal(emptyBytes);
+      expect(await distributor.endOfDisputePeriod()).to.be.equal(
+        moment
+          .unix(await latestTime())
+          .startOf('hour')
+          .unix() + 3600,
+      );
+      await time.increaseTo(await distributor.endOfDisputePeriod());
       expect(await distributor.getMerkleRoot()).to.be.equal(web3.utils.keccak256('MERKLE_ROOT'));
-      expect(await distributor.lastTreeUpdate()).to.be.equal(await latestTime());
     });
     it('success - from a trusted address and successive update', async () => {
       await distributor.connect(guardian).toggleTrusted(bob.address);
@@ -266,6 +289,7 @@ contract('Distributor', () => {
         merkleRoot: web3.utils.keccak256('MERKLE_ROOT_2'),
         ipfsHash: web3.utils.keccak256('IPFS_HASH_2'),
       };
+      await time.increaseTo(await distributor.endOfDisputePeriod());
       const receipt = await (await distributor.connect(bob).updateTree(merkleTree2)).wait();
       inReceipt(receipt, 'TreeUpdated', {
         merkleRoot: web3.utils.keccak256('MERKLE_ROOT_2'),
@@ -275,27 +299,45 @@ contract('Distributor', () => {
       expect((await distributor.tree()).ipfsHash).to.be.equal(web3.utils.keccak256('IPFS_HASH_2'));
       expect((await distributor.lastTree()).merkleRoot).to.be.equal(web3.utils.keccak256('MERKLE_ROOT'));
       expect((await distributor.lastTree()).ipfsHash).to.be.equal(web3.utils.keccak256('IPFS_HASH'));
+      expect(await distributor.getMerkleRoot()).to.be.equal(web3.utils.keccak256('MERKLE_ROOT'));
+      expect(await distributor.endOfDisputePeriod()).to.be.equal(
+        moment
+          .unix(await latestTime())
+          .startOf('hour')
+          .unix() + 3600,
+      );
+      await time.increaseTo(await distributor.endOfDisputePeriod());
       expect(await distributor.getMerkleRoot()).to.be.equal(web3.utils.keccak256('MERKLE_ROOT_2'));
-      expect(await distributor.lastTreeUpdate()).to.be.equal(await latestTime());
     });
     it('success - when from a trusted address and with dispute periods', async () => {
       await distributor.connect(guardian).toggleTrusted(bob.address);
+      await distributor.connect(guardian).setDisputePeriod(1);
       await distributor.connect(bob).updateTree(merkleTree);
       const merkleTree2 = {
         merkleRoot: web3.utils.keccak256('MERKLE_ROOT_2'),
         ipfsHash: web3.utils.keccak256('IPFS_HASH_2'),
       };
-      expect(await distributor.getMerkleRoot()).to.be.equal(web3.utils.keccak256('MERKLE_ROOT'));
-      await distributor.connect(guardian).setDisputePeriod(86400);
-      await increaseTime(86400);
+      expect(await distributor.getMerkleRoot()).to.be.equal(emptyBytes);
+      expect(await distributor.endOfDisputePeriod()).to.be.equal(
+        moment
+          .unix(await latestTime())
+          .startOf('hour')
+          .unix() + 7200,
+      );
+      await time.increaseTo(await distributor.endOfDisputePeriod());
       await distributor.connect(bob).updateTree(merkleTree2);
       expect((await distributor.tree()).merkleRoot).to.be.equal(web3.utils.keccak256('MERKLE_ROOT_2'));
       expect((await distributor.tree()).ipfsHash).to.be.equal(web3.utils.keccak256('IPFS_HASH_2'));
       expect((await distributor.lastTree()).merkleRoot).to.be.equal(web3.utils.keccak256('MERKLE_ROOT'));
       expect((await distributor.lastTree()).ipfsHash).to.be.equal(web3.utils.keccak256('IPFS_HASH'));
       expect(await distributor.getMerkleRoot()).to.be.equal(web3.utils.keccak256('MERKLE_ROOT'));
-      expect(await distributor.lastTreeUpdate()).to.be.equal(await latestTime());
-      await increaseTime(86400);
+      expect(await distributor.endOfDisputePeriod()).to.be.equal(
+        moment
+          .unix(await latestTime())
+          .startOf('hour')
+          .unix() + 7200,
+      );
+      await time.increaseTo(await distributor.endOfDisputePeriod());
       expect(await distributor.getMerkleRoot()).to.be.equal(web3.utils.keccak256('MERKLE_ROOT_2'));
       const merkleTree3 = {
         merkleRoot: web3.utils.keccak256('MERKLE_ROOT_3'),
@@ -307,7 +349,13 @@ contract('Distributor', () => {
       expect((await distributor.lastTree()).merkleRoot).to.be.equal(web3.utils.keccak256('MERKLE_ROOT_2'));
       expect((await distributor.lastTree()).ipfsHash).to.be.equal(web3.utils.keccak256('IPFS_HASH_2'));
       expect(await distributor.getMerkleRoot()).to.be.equal(web3.utils.keccak256('MERKLE_ROOT_2'));
-      expect(await distributor.lastTreeUpdate()).to.be.equal(await latestTime());
+      expect(await distributor.endOfDisputePeriod()).to.be.equal(
+        moment
+          .unix(await latestTime())
+          .startOf('hour')
+          .unix() + 7200,
+      );
+
       // Updating the tree should work for the guardian but not for Bob
       const merkleTree4 = {
         merkleRoot: web3.utils.keccak256('MERKLE_ROOT_4'),
@@ -324,12 +372,17 @@ contract('Distributor', () => {
       expect((await distributor.lastTree()).merkleRoot).to.be.equal(web3.utils.keccak256('MERKLE_ROOT_3'));
       expect((await distributor.lastTree()).ipfsHash).to.be.equal(web3.utils.keccak256('IPFS_HASH_3'));
       expect(await distributor.getMerkleRoot()).to.be.equal(web3.utils.keccak256('MERKLE_ROOT_3'));
-      expect(await distributor.lastTreeUpdate()).to.be.equal(await latestTime());
+      expect(await distributor.endOfDisputePeriod()).to.be.equal(
+        moment
+          .unix(await latestTime())
+          .startOf('hour')
+          .unix() + 7200,
+      );
     });
   });
   describe('disputeTree', () => {
     it('reverts - non allowance', async () => {
-      await distributor.connect(guardian).setDisputePeriod(86400);
+      await distributor.connect(guardian).setDisputePeriod(1);
       await distributor.connect(guardian).updateTree(merkleTree);
       await distributor.connect(guardian).setDisputeToken(angle.address);
       await distributor.connect(guardian).setDisputeAmount(parseEther('1'));
@@ -349,7 +402,7 @@ contract('Distributor', () => {
       );
     });
     it('success - dispute created', async () => {
-      await distributor.connect(guardian).setDisputePeriod(86400);
+      await distributor.connect(guardian).setDisputePeriod(1);
       await distributor.connect(guardian).updateTree(merkleTree);
       await distributor.connect(guardian).setDisputeToken(angle.address);
       await distributor.connect(guardian).setDisputeAmount(parseEther('1'));
@@ -374,7 +427,7 @@ contract('Distributor', () => {
       );
     });
     it('success - invalid resolution', async () => {
-      await distributor.connect(guardian).setDisputePeriod(86400);
+      await distributor.connect(guardian).setDisputePeriod(1);
       await distributor.connect(guardian).updateTree(merkleTree);
       await distributor.connect(guardian).setDisputeToken(angle.address);
       await distributor.connect(guardian).setDisputeAmount(parseEther('1'));
@@ -387,7 +440,12 @@ contract('Distributor', () => {
         valid: false,
       });
       expect(await distributor.disputer()).to.be.equal(ZERO_ADDRESS);
-      expect(await distributor.lastTreeUpdate()).to.be.equal(await latestTime());
+      expect(await distributor.endOfDisputePeriod()).to.be.equal(
+        moment
+          .unix(await latestTime())
+          .startOf('hour')
+          .unix() + 7200,
+      );
       expect(await angle.balanceOf(guardian.address)).to.be.equal(parseEther('1'));
       expect(await angle.balanceOf(alice.address)).to.be.equal(parseEther('0.3'));
     });
@@ -395,7 +453,7 @@ contract('Distributor', () => {
       await distributor.connect(guardian).updateTree(merkleTree);
       await distributor.connect(guardian).setDisputeToken(angle.address);
       await distributor.connect(guardian).setDisputeAmount(parseEther('1'));
-      await distributor.connect(guardian).setDisputePeriod(86400);
+      await distributor.connect(guardian).setDisputePeriod(1);
       const merkleTree2 = {
         merkleRoot: web3.utils.keccak256('MERKLE_ROOT_2'),
         ipfsHash: web3.utils.keccak256('IPFS_HASH_2'),
@@ -420,7 +478,7 @@ contract('Distributor', () => {
       expect(await distributor.disputer()).to.be.equal(ZERO_ADDRESS);
       expect(await angle.balanceOf(guardian.address)).to.be.equal(parseEther('0'));
       expect(await angle.balanceOf(alice.address)).to.be.equal(parseEther('1.3'));
-      expect(await distributor.lastTreeUpdate()).to.be.equal(0);
+      expect(await distributor.endOfDisputePeriod()).to.be.equal(0);
       expect((await distributor.tree()).merkleRoot).to.be.equal(web3.utils.keccak256('MERKLE_ROOT'));
       expect((await distributor.tree()).ipfsHash).to.be.equal(web3.utils.keccak256('IPFS_HASH'));
       expect((await distributor.lastTree()).merkleRoot).to.be.equal(web3.utils.keccak256('MERKLE_ROOT'));
@@ -435,7 +493,7 @@ contract('Distributor', () => {
       );
     });
     it('reverts - when there is a live dispute', async () => {
-      await distributor.connect(guardian).setDisputePeriod(86400);
+      await distributor.connect(guardian).setDisputePeriod(1);
       await distributor.connect(guardian).updateTree(merkleTree);
       await distributor.connect(guardian).setDisputeToken(angle.address);
       await distributor.connect(guardian).setDisputeAmount(parseEther('1'));
@@ -450,13 +508,18 @@ contract('Distributor', () => {
     it('success - when there is a tree that is live', async () => {
       await distributor.connect(guardian).toggleTrusted(bob.address);
       await distributor.connect(bob).updateTree(merkleTree);
-      expect(await distributor.lastTreeUpdate()).to.be.equal(await latestTime());
+      expect(await distributor.endOfDisputePeriod()).to.be.equal(
+        moment
+          .unix(await latestTime())
+          .startOf('hour')
+          .unix() + 3600,
+      );
       const receipt = await (await distributor.connect(guardian).revokeTree()).wait();
       inReceipt(receipt, 'TreeUpdated', {
         merkleRoot: emptyBytes,
         ipfsHash: emptyBytes,
       });
-      expect(await distributor.lastTreeUpdate()).to.be.equal(0);
+      expect(await distributor.endOfDisputePeriod()).to.be.equal(0);
       expect((await distributor.tree()).merkleRoot).to.be.equal(emptyBytes);
       expect((await distributor.tree()).ipfsHash).to.be.equal(emptyBytes);
       expect((await distributor.lastTree()).merkleRoot).to.be.equal(emptyBytes);
@@ -470,9 +533,15 @@ contract('Distributor', () => {
         merkleRoot: web3.utils.keccak256('MERKLE_ROOT_2'),
         ipfsHash: web3.utils.keccak256('IPFS_HASH_2'),
       };
+      await increaseTime(7200);
       await distributor.connect(bob).updateTree(merkleTree2);
-      expect(await distributor.lastTreeUpdate()).to.be.equal(await latestTime());
-      await distributor.connect(guardian).setDisputePeriod(86400);
+      expect(await distributor.endOfDisputePeriod()).to.be.equal(
+        moment
+          .unix(await latestTime())
+          .startOf('hour')
+          .unix() + 3600,
+      );
+      await distributor.connect(guardian).setDisputePeriod(1);
       expect((await distributor.tree()).merkleRoot).to.be.equal(web3.utils.keccak256('MERKLE_ROOT_2'));
       expect((await distributor.tree()).ipfsHash).to.be.equal(web3.utils.keccak256('IPFS_HASH_2'));
       expect((await distributor.lastTree()).merkleRoot).to.be.equal(web3.utils.keccak256('MERKLE_ROOT'));
@@ -483,12 +552,13 @@ contract('Distributor', () => {
         merkleRoot: web3.utils.keccak256('MERKLE_ROOT'),
         ipfsHash: web3.utils.keccak256('IPFS_HASH'),
       });
-      expect(await distributor.lastTreeUpdate()).to.be.equal(0);
+      expect(await distributor.endOfDisputePeriod()).to.be.equal(0);
       expect((await distributor.tree()).merkleRoot).to.be.equal(web3.utils.keccak256('MERKLE_ROOT'));
       expect((await distributor.tree()).ipfsHash).to.be.equal(web3.utils.keccak256('IPFS_HASH'));
       expect((await distributor.lastTree()).merkleRoot).to.be.equal(web3.utils.keccak256('MERKLE_ROOT'));
       expect((await distributor.lastTree()).ipfsHash).to.be.equal(web3.utils.keccak256('IPFS_HASH'));
       expect(await distributor.getMerkleRoot()).to.be.equal(web3.utils.keccak256('MERKLE_ROOT'));
+      await increaseTime(7200);
       const merkleTree3 = {
         merkleRoot: web3.utils.keccak256('MERKLE_ROOT_3'),
         ipfsHash: web3.utils.keccak256('IPFS_HASH_3'),
@@ -499,7 +569,7 @@ contract('Distributor', () => {
       expect((await distributor.lastTree()).merkleRoot).to.be.equal(web3.utils.keccak256('MERKLE_ROOT'));
       expect((await distributor.lastTree()).ipfsHash).to.be.equal(web3.utils.keccak256('IPFS_HASH'));
       expect(await distributor.getMerkleRoot()).to.be.equal(web3.utils.keccak256('MERKLE_ROOT'));
-      await increaseTime(86400);
+      await increaseTime(7200);
       expect(await distributor.getMerkleRoot()).to.be.equal(web3.utils.keccak256('MERKLE_ROOT_3'));
     });
   });
@@ -510,17 +580,11 @@ contract('Distributor', () => {
         'NotGovernorOrGuardian',
       );
     });
-    it('reverts - invalid param', async () => {
-      await expect(distributor.connect(guardian).setDisputePeriod(parseUnits('1', 14))).to.be.revertedWithCustomError(
-        distributor,
-        'InvalidParam',
-      );
-    });
     it('success - dispute period updated', async () => {
-      const receipt = await (await distributor.connect(guardian).setDisputePeriod(86400)).wait();
+      const receipt = await (await distributor.connect(guardian).setDisputePeriod(1)).wait();
       expect(await distributor.disputePeriod()).to.be.equal(86400);
       inReceipt(receipt, 'DisputePeriodUpdated', {
-        _disputePeriod: 86400,
+        _disputePeriod: 1,
       });
     });
   });
@@ -539,7 +603,7 @@ contract('Distributor', () => {
       expect(await distributor.disputeToken()).to.be.equal(angle.address);
     });
     it('reverts - when ongoing dispute', async () => {
-      await distributor.connect(guardian).setDisputePeriod(86400);
+      await distributor.connect(guardian).setDisputePeriod(1);
       await distributor.connect(guardian).updateTree(merkleTree);
       await distributor.connect(guardian).setDisputeToken(angle.address);
       await distributor.connect(guardian).setDisputeAmount(parseEther('1'));
@@ -567,7 +631,7 @@ contract('Distributor', () => {
       expect(await distributor.disputeAmount()).to.be.equal(parseEther('0.33'));
     });
     it('success - dispute amount updated', async () => {
-      await distributor.connect(guardian).setDisputePeriod(86400);
+      await distributor.connect(guardian).setDisputePeriod(1);
       await distributor.connect(guardian).updateTree(merkleTree);
       await distributor.connect(guardian).setDisputeToken(angle.address);
       await distributor.connect(guardian).setDisputeAmount(parseEther('1'));
@@ -627,6 +691,7 @@ contract('Distributor', () => {
     });
     it('reverts - invalid proof', async () => {
       await distributor.connect(guardian).updateTree({ merkleRoot: keccak256('0x1F'), ipfsHash: constants.HashZero });
+      await time.increaseTo(await distributor.endOfDisputePeriod());
       await expect(
         distributor.claim([alice.address], [angle.address], [parseEther('1')], [[web3.utils.keccak256('test')]]),
       ).to.be.revertedWithCustomError(distributor, 'InvalidProof');
@@ -716,6 +781,7 @@ contract('Distributor', () => {
       await angle.mint(distributor.address, parseEther('10'));
       merkleTree.merkleRoot = root;
       await distributor.connect(guardian).updateTree(merkleTree);
+      await time.increaseTo(await distributor.endOfDisputePeriod());
 
       await (
         await distributor.connect(guardian).toggleOnlyOperatorCanClaim('0x3931C80BF7a911fcda8b684b23A433D124b59F06')
@@ -762,6 +828,7 @@ contract('Distributor', () => {
       await angle.mint(distributor.address, parseEther('10'));
       merkleTree.merkleRoot = root;
       await distributor.connect(guardian).updateTree(merkleTree);
+      await time.increaseTo(await distributor.endOfDisputePeriod());
 
       const receipt = await (
         await distributor.claim(
@@ -806,6 +873,7 @@ contract('Distributor', () => {
       await angle.mint(distributor.address, parseEther('10'));
       merkleTree.merkleRoot = root;
       await distributor.connect(guardian).updateTree(merkleTree);
+      await time.increaseTo(await distributor.endOfDisputePeriod());
 
       const receipt = await (
         await distributor.claim(
@@ -860,6 +928,7 @@ contract('Distributor', () => {
       await agEUR.mint(distributor.address, parseEther('0.5'));
       merkleTree.merkleRoot = root;
       await distributor.connect(guardian).updateTree(merkleTree);
+      await time.increaseTo(await distributor.endOfDisputePeriod());
 
       const receipt = await (
         await distributor.claim(
@@ -912,6 +981,7 @@ contract('Distributor', () => {
       await agEUR.mint(distributor.address, parseEther('0.5'));
       merkleTree.merkleRoot = root;
       await distributor.connect(guardian).updateTree(merkleTree);
+      await time.increaseTo(await distributor.endOfDisputePeriod());
 
       // Doing first claim
       const receipt = await (
@@ -951,6 +1021,7 @@ contract('Distributor', () => {
       const proof2 = merkleTreeLib2.getHexProof(elements[0]);
       merkleTree.merkleRoot = root2;
       await distributor.connect(guardian).updateTree(merkleTree);
+      await time.increaseTo(await distributor.endOfDisputePeriod());
       const receipt2 = await (
         await distributor.claim(
           ['0x3931C80BF7a911fcda8b684b23A433D124b59F06'],
@@ -993,7 +1064,8 @@ contract('Distributor', () => {
       await agEUR.mint(distributor.address, parseEther('0.5'));
       merkleTree.merkleRoot = root;
       await distributor.connect(guardian).updateTree(merkleTree);
-      await distributor.connect(guardian).setDisputePeriod(86400);
+      await time.increaseTo(await distributor.endOfDisputePeriod());
+
       const merkleTree2 = {
         merkleRoot: web3.utils.keccak256('MERKLE_ROOT_2'),
         ipfsHash: web3.utils.keccak256('IPFS_HASH_2'),

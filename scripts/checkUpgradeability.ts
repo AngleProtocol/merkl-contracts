@@ -42,13 +42,8 @@ async function main() {
   // Uncomment to check all valid build names
   // console.log((await artifacts.getAllFullyQualifiedNames()));
 
-  testUpgradeability('DistributionCreator', 'contracts/DistributionCreator.sol');
-  testStorage(
-    'OldDistributionCreator',
-    'contracts/deprecated/OldDistributionCreator.sol',
-    'DistributionCreator',
-    'contracts/DistributionCreator.sol',
-  );
+  testUpgradeability('Distributor', 'contracts/Distributor.sol');
+  testStorage('OldDistributor', 'contracts/deprecated/OldDistributor.sol', 'Distributor', 'contracts/Distributor.sol');
 }
 
 main().catch(error => {
