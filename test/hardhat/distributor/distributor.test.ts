@@ -582,7 +582,7 @@ contract('Distributor', () => {
     });
     it('success - dispute period updated', async () => {
       const receipt = await (await distributor.connect(guardian).setDisputePeriod(1)).wait();
-      expect(await distributor.disputePeriod()).to.be.equal(86400);
+      expect(await distributor.disputePeriod()).to.be.equal(1);
       inReceipt(receipt, 'DisputePeriodUpdated', {
         _disputePeriod: 1,
       });
