@@ -1,6 +1,6 @@
 # <img src="logo.svg" alt="Angle Borrowing Module" height="40px"> Merkl Contracts
 
-[![CI](https://github.com/AngleProtocol/merkl-contracts/workflows/CI/badge.svg)](https://github.com/AngleProtocol/merkl-contracts/actions?query=workflow%3ACI)
+[![CI](https://github.com/AngleProtocol/merkl-contracts/workflows/Merkl%20Contracts%20CI/badge.svg)](https://github.com/AngleProtocol/merkl-contracts/actions)
 
 This repository contains the smart contracts of the Merkl product developed by Angle.
 
