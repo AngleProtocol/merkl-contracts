@@ -1,6 +1,6 @@
 # <img src="logo.svg" alt="Angle Borrowing Module" height="40px"> Merkl Contracts
 
-[![CI](https://github.com/AngleProtocol/merkl-contracts/workflows/CI/badge.svg)](https://github.com/AngleProtocol/merkl-contracts/actions?query=workflow%3ACI)
+[![CI](https://github.com/AngleProtocol/merkl-contracts/workflows/Merkl%20Contracts%20CI/badge.svg)](https://github.com/AngleProtocol/merkl-contracts/actions)
 
 This repository contains the smart contracts of the Merkl product developed by Angle.
 
@@ -24,13 +24,13 @@ forge i
 
 ### Create `.env` file
 
-In order to interact with non local networks, you must create an `.env` that has:
+In order to interact with non local networks, you must create an `.env` that has, for all supported networks (Ethereum, Polygon and Arbitrum):
 
 - `MNEMONIC`
-- network key
+- `ETH_NODE_URI`
 - `ETHERSCAN_API_KEY`
 
-For additional keys, you can check the `.env.example` file.
+You can copy paste the `.env.example` file into `.env` and fill with your keys/RPCs.
 
 Warning: always keep your confidential information safe.
 
