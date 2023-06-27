@@ -24,13 +24,13 @@ forge i
 
 ### Create `.env` file
 
-In order to interact with non local networks, you must create an `.env` that has:
+In order to interact with non local networks, you must create an `.env` that has, for all supported networks (Ethereum, Polygon and Arbitrum):
 
 - `MNEMONIC`
-- network key
+- `ETH_NODE_URI`
 - `ETHERSCAN_API_KEY`
 
-For additional keys, you can check the `.env.example` file.
+You can copy paste the `.env.example` file into `.env` and fill with your keys/RPCs.
 
 Warning: always keep your confidential information safe.
 
