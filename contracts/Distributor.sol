@@ -52,8 +52,8 @@ struct MerkleTree {
 }
 
 struct Claim {
-    uint208 amount;
-    uint48 timestamp;
+    uint256 amount;
+    bytes32 merkleRoot;
 }
 
 /// @title Distributor
@@ -185,7 +185,7 @@ contract Distributor is UUPSHelper {
 
             // Closing reentrancy gate here
             uint256 toSend = amount - claimed[user][token].amount;
-            claimed[user][token] = Claim(SafeCast.toUint208(amount), uint48(block.timestamp));
+            claimed[user][token] = Claim(SafeCast.toUint208(amount), getMerkleRoot());
 
             IERC20(token).safeTransfer(user, toSend);
             emit Claimed(user, token, toSend);
@@ -197,7 +197,7 @@ contract Distributor is UUPSHelper {
 
     /// @notice Returns the MerkleRoot that is currently live for the contract
     function getMerkleRoot() public view returns (bytes32) {
-        if (block.timestamp >= endOfDisputePeriod) return tree.merkleRoot;
+        if (block.timestamp >= endOfDisputePeriod && disputer == address(0)) return tree.merkleRoot;
         else return lastTree.merkleRoot;
     }
 
@@ -232,6 +232,7 @@ contract Distributor is UUPSHelper {
     /// @dev Requires a deposit of `disputeToken` that'll be slashed if the dispute is not accepted
     /// @dev It is only possible to create a dispute within `disputePeriod` after each tree update
     function disputeTree(string memory reason) external {
+        if (disputer != address(0)) revert UnresolvedDispute();
         if (block.timestamp >= endOfDisputePeriod) revert InvalidDispute();
         IERC20(disputeToken).safeTransferFrom(msg.sender, address(this), disputeAmount);
         disputer = msg.sender;
