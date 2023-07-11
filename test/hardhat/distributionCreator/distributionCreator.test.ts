@@ -334,6 +334,10 @@ contract('DistributionCreator', () => {
       expect(rewardTokenList3[1].minimumAmountPerEpoch).to.be.equal(parseEther('7'));
       expect(rewardTokenList3[2].token).to.be.equal(angle.address);
       expect(rewardTokenList3[2].minimumAmountPerEpoch).to.be.equal(parseEther('5'));
+
+      await expect(
+        manager.connect(guardian).setRewardTokenMinAmounts([agEUR.address], [parseEther('7'), parseEther('5')]),
+      ).to.be.revertedWithCustomError(manager, 'InvalidLengths');
     });
   });
 
