@@ -301,14 +301,10 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
                 ++i;
             }
         }
-        RewardTokenAmounts[] memory validRewardTokensShort = new RewardTokenAmounts[](length);
-        for (uint32 i; i < length; ) {
-            validRewardTokensShort[i] = validRewardTokens[i];
-            unchecked {
-                ++i;
-            }
+        assembly {
+            mstore(validRewardTokens, length)
         }
-        return validRewardTokensShort;
+        return validRewardTokens;
     }
 
     /// @notice Returns the list of all the distributions that were or that are going to be live at
@@ -459,10 +455,10 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
 
     /// @notice Checks whether `distribution` was live between `roundedEpochStart` and `roundedEpochEnd`
     function _isDistributionLiveBetweenEpochs(
-        DistributionParameters storage distribution,
+        DistributionParameters memory distribution,
         uint32 roundedEpochStart,
         uint32 roundedEpochEnd
-    ) internal view returns (bool) {
+    ) internal pure returns (bool) {
         uint256 distributionEpochStart = distribution.epochStart;
         return (distributionEpochStart + distribution.numEpoch * EPOCH_DURATION > roundedEpochStart &&
             distributionEpochStart < roundedEpochEnd);
@@ -522,27 +518,24 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     ) internal view returns (ExtensiveDistributionParameters[] memory) {
         uint256 length;
         uint256 distributionListLength = distributionList.length;
-        DistributionParameters[] memory longActiveRewards = new DistributionParameters[](distributionListLength);
+        ExtensiveDistributionParameters[] memory activeRewards = new ExtensiveDistributionParameters[](
+            distributionListLength
+        );
         for (uint32 i; i < distributionListLength; ) {
-            DistributionParameters storage distribution = distributionList[i];
+            DistributionParameters memory distribution = distributionList[i];
             if (
                 _isDistributionLiveBetweenEpochs(distribution, epochStart, epochEnd) &&
                 (uniV3Pool == address(0) || distribution.uniV3Pool == uniV3Pool)
             ) {
-                longActiveRewards[length] = distribution;
+                activeRewards[length] = _getExtensiveDistributionParameters(distribution);
                 length += 1;
             }
             unchecked {
                 ++i;
             }
         }
-
-        ExtensiveDistributionParameters[] memory activeRewards = new ExtensiveDistributionParameters[](length);
-        for (uint32 i; i < length; ) {
-            activeRewards[i] = _getExtensiveDistributionParameters(longActiveRewards[i]);
-            unchecked {
-                ++i;
-            }
+        assembly {
+            mstore(activeRewards, length)
         }
         return activeRewards;
     }
