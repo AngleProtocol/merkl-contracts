@@ -52,7 +52,8 @@ struct MerkleTree {
 }
 
 struct Claim {
-    uint256 amount;
+    uint208 amount;
+    uint48 timestamp;
     bytes32 merkleRoot;
 }
 
@@ -185,7 +186,7 @@ contract Distributor is UUPSHelper {
 
             // Closing reentrancy gate here
             uint256 toSend = amount - claimed[user][token].amount;
-            claimed[user][token] = Claim(SafeCast.toUint208(amount), getMerkleRoot());
+            claimed[user][token] = Claim(SafeCast.toUint208(amount), uint48(block.timestamp), getMerkleRoot());
 
             IERC20(token).safeTransfer(user, toSend);
             emit Claimed(user, token, toSend);
