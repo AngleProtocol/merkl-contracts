@@ -35,9 +35,9 @@
 
 pragma solidity ^0.8.17;
 
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "@openzeppelin/contracts/utils/math/SafeCast.sol";
+import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import { SafeCast } from "@openzeppelin/contracts/utils/math/SafeCast.sol";
 
 import "./utils/UUPSHelper.sol";
 
@@ -86,7 +86,7 @@ contract Distributor is UUPSHelper {
     /// @notice When the current tree will become valid
     uint48 public endOfDisputePeriod;
 
-    /// @notice Time before which a change in a tree becomes effective, in EPOCH_DURATION
+    /// @notice Time after which a change in a tree becomes effective, in EPOCH_DURATION
     uint48 public disputePeriod;
 
     /// @notice Amount to deposit to freeze the roots update
@@ -108,14 +108,14 @@ contract Distributor is UUPSHelper {
 
     // =================================== EVENTS ==================================
 
-    event Claimed(address user, address token, uint256 amount);
+    event Claimed(address indexed user, address indexed token, uint256 amount);
     event DisputeAmountUpdated(uint256 _disputeAmount);
     event Disputed(string reason);
     event DisputePeriodUpdated(uint48 _disputePeriod);
     event DisputeResolved(bool valid);
     event DisputeTokenUpdated(address indexed _disputeToken);
-    event OperatorClaimingToggled(address user, bool isEnabled);
-    event OperatorToggled(address user, address operator, bool isWhitelisted);
+    event OperatorClaimingToggled(address indexed user, bool isEnabled);
+    event OperatorToggled(address indexed user, address indexed operator, bool isWhitelisted);
     event Recovered(address indexed token, address indexed to, uint256 amount);
     event Revoked(); // With this event an indexer could maintain a table (timestamp, merkleRootUpdate)
     event TreeUpdated(bytes32 merkleRoot, bytes32 ipfsHash, uint48 endOfDisputePeriod);
@@ -230,7 +230,7 @@ contract Distributor is UUPSHelper {
 
     /// @notice Freezes the Merkle tree update until the dispute is resolved
     /// @dev Requires a deposit of `disputeToken` that'll be slashed if the dispute is not accepted
-    /// @dev It is only possible to create a dispute for `disputePeriod` after each tree update
+    /// @dev It is only possible to create a dispute within `disputePeriod` after each tree update
     function disputeTree(string memory reason) external {
         if (block.timestamp >= endOfDisputePeriod) revert InvalidDispute();
         IERC20(disputeToken).safeTransferFrom(msg.sender, address(this), disputeAmount);
@@ -281,7 +281,7 @@ contract Distributor is UUPSHelper {
         emit Recovered(tokenAddress, to, amountToRecover);
     }
 
-    /// @notice Sets the dispute period before which a tree update becomes effective
+    /// @notice Sets the dispute period after which a tree update becomes effective
     function setDisputePeriod(uint48 _disputePeriod) external onlyGovernorOrGuardian {
         disputePeriod = uint48(_disputePeriod);
         emit DisputePeriodUpdated(_disputePeriod);
