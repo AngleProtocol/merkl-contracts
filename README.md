@@ -1,4 +1,4 @@
-# <img src="logo.svg" alt="Angle Borrowing Module" height="40px"> Merkl Contracts
+# <img src="logo.svg" alt="Merkl Contracts" height="40px"> Merkl Contracts
 
 [![CI](https://github.com/AngleProtocol/merkl-contracts/workflows/Merkl%20Contracts%20CI/badge.svg)](https://github.com/AngleProtocol/merkl-contracts/actions)
 
