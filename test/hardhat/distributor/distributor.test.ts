@@ -401,6 +401,23 @@ contract('Distributor', () => {
         'InvalidDispute',
       );
     });
+    it('reverts - dispute ongoing', async () => {
+      await distributor.connect(guardian).setDisputePeriod(1);
+      await distributor.connect(guardian).updateTree(merkleTree);
+      await distributor.connect(guardian).setDisputeToken(angle.address);
+      await distributor.connect(guardian).setDisputeAmount(parseEther('1'));
+      await angle.mint(alice.address, parseEther('1.3'));
+      await angle.connect(alice).approve(distributor.address, parseEther('1'));
+      const receipt = await (await distributor.connect(alice).disputeTree('I do not like it')).wait();
+      inReceipt(receipt, 'Disputed', {
+        reason: 'I do not like it',
+      });
+      expect(await distributor.disputer()).to.be.equal(alice.address);
+      await expect(distributor.connect(bob).disputeTree('I do not like it')).to.be.revertedWithCustomError(
+        distributor,
+        'UnresolvedDispute',
+      );
+    });
     it('success - dispute created', async () => {
       await distributor.connect(guardian).setDisputePeriod(1);
       await distributor.connect(guardian).updateTree(merkleTree);
@@ -413,6 +430,13 @@ contract('Distributor', () => {
         reason: 'I do not like it',
       });
       expect(await distributor.disputer()).to.be.equal(alice.address);
+
+      // Check that getMerklRoot returns the last tree
+      expect(await distributor.getMerkleRoot()).to.be.equal(emptyBytes);
+      await increaseTime(7200);
+      expect(await distributor.getMerkleRoot()).to.be.equal(emptyBytes);
+      await increaseTime(7200);
+      expect(await distributor.getMerkleRoot()).to.be.equal(emptyBytes);
     });
   });
   describe('resolveDispute', () => {
