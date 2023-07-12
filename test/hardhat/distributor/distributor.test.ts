@@ -828,6 +828,9 @@ contract('Distributor', () => {
       expect(
         (await distributor.claimed('0x3931C80BF7a911fcda8b684b23A433D124b59F06', angle.address)).amount,
       ).to.be.equal(parseEther('1'));
+      expect(
+        (await distributor.claimed('0x3931C80BF7a911fcda8b684b23A433D124b59F06', angle.address)).merkleRoot,
+      ).to.be.equal(root);
     });
     it('success - small proof on one token and token balance', async () => {
       const elements = [];
