@@ -25,17 +25,18 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
   console.log('Now deploying Distributor');
   console.log('Starting with the implementation');
 
-  await deploy('Distributor_Implementation', {
+  await deploy('Distributor_Implementation_2', {
     contract: 'Distributor',
     from: deployer.address,
     log: !argv.ci,
   });
 
-  const implementationAddress = (await ethers.getContract('Distributor_Implementation')).address;
+  const implementationAddress = (await ethers.getContract('Distributor_Implementation_2')).address;
 
   console.log(`Successfully deployed the implementation for Distributor at ${implementationAddress}`);
   console.log('');
 
+  /*
   console.log('Now deploying the Proxy');
 
   await deploy('Distributor', {
@@ -51,7 +52,7 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
   const contract = new ethers.Contract(distributor, Distributor__factory.createInterface(), deployer) as Distributor;
   await (await contract.connect(deployer).initialize(core)).wait();
   console.log('Contract successfully initialized');
-
+  */
   console.log('');
 };
 
