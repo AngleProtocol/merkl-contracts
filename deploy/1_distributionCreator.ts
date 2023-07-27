@@ -9,8 +9,10 @@ const argv = yargs.env('').boolean('ci').parseSync();
 const func: DeployFunction = async ({ deployments, ethers, network }) => {
   const { deploy } = deployments;
   const { deployer } = await ethers.getNamedSigners();
-  let core: string;
 
+  let core: string;
+  core = '0xC16B81Af351BA9e64C1a069E3Ab18c244A1E3049';
+  /*
   if (!network.live) {
     // If we're in mainnet fork, we're using the `CoreBorrow` address from mainnet
     core = registry(ChainId.MAINNET)?.Merkl?.CoreMerkl!;
@@ -18,6 +20,7 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
     // Otherwise, we're using the proxy admin address from the desired network
     core = registry(network.config.chainId as ChainId)?.Merkl?.CoreMerkl!;
   }
+  */
 
   console.log('Now deploying DistributionCreator');
   console.log('Starting with the implementation');
@@ -32,7 +35,7 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
 
   console.log(`Successfully deployed the implementation for DistributionCreator at ${implementationAddress}`);
   console.log('');
-  /*
+
   const distributor = (await deployments.get('Distributor')).address;
   console.log('Now deploying the Proxy');
 
@@ -56,7 +59,6 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
   console.log('Contract successfully initialized');
   console.log('');
   console.log(await contract.core());
-  */
 
   /* Once good some functions need to be called to have everything setup.
 

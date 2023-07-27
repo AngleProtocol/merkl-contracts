@@ -81,18 +81,19 @@ const config: HardhatUserConfig = {
   // For the lists of Chain ID: https://chainlist.org
   networks: {
     hardhat: {
-      accounts: accounts('mainnet'),
+      accounts: accounts('polygonzkevm'),
       live: false,
       blockGasLimit: 125e5,
       initialBaseFeePerGas: 0,
       hardfork: 'london',
       forking: {
         enabled: argv.fork || false,
+        /*
         // Mainnet
         url: nodeUrl('fork'),
         blockNumber: 16671190,
         // Polygon
-        /*
+
         url: nodeUrl('forkpolygon'),
         blockNumber: 39517477,
         */
@@ -107,6 +108,12 @@ const config: HardhatUserConfig = {
         url: nodeUrl('arbitrum'),
         blockNumber: 19356874,
         */
+        /*
+        url: nodeUrl('arbitrum'),
+        blockNumber: 19356874,
+        */
+        url: nodeUrl('polygonzkevm'),
+        blockNumber: 3214816,
       },
       mining: argv.disableAutoMining
         ? {
@@ -225,6 +232,32 @@ const config: HardhatUserConfig = {
       verify: {
         etherscan: {
           apiKey: etherscanKey('bsc'),
+        },
+      },
+    },
+    gnosis: {
+      live: true,
+      url: nodeUrl('gnosis'),
+      accounts: accounts('gnosis'),
+      gas: 'auto',
+      gasMultiplier: 1.3,
+      chainId: 100,
+      verify: {
+        etherscan: {
+          apiKey: etherscanKey('gnosis'),
+        },
+      },
+    },
+    polygonzkevm: {
+      live: true,
+      url: nodeUrl('polygonzkevm'),
+      accounts: accounts('polygonzkevm'),
+      gas: 'auto',
+      gasMultiplier: 1.3,
+      chainId: 1101,
+      verify: {
+        etherscan: {
+          apiKey: etherscanKey('polygonzkevm'),
         },
       },
     },
