@@ -71,7 +71,9 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
   In the Distributor contract:
   - `toggleTrusted` -> keeper bot updating
   - `setDisputeToken` -> should we activate dispute periods
-  - `setDisputePeriods`
+  - `setDisputePeriod`
+  - `setDisputeAmount`
+
   */
 };
 
