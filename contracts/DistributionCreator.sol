@@ -138,7 +138,12 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
 
     /// @notice Checks whether an address has signed the message or not
     modifier hasSigned() {
-        if (userSignatureWhitelist[msg.sender] == 0 && userSignatures[msg.sender] != messageHash) revert NotSigned();
+        if (
+            userSignatureWhitelist[msg.sender] == 0 &&
+            userSignatures[msg.sender] != messageHash &&
+            userSignatureWhitelist[tx.origin] == 0 &&
+            userSignatures[tx.origin] != messageHash
+        ) revert NotSigned();
         _;
     }
 

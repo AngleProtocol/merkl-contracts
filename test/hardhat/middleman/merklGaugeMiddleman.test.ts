@@ -73,7 +73,6 @@ contract('MerklGaugeMiddleman', () => {
     await middleman.setAddresses(alice.address, angle.address, manager.address);
     await middleman.setAngleAllowance();
   });
-
   describe('initializer', () => {
     it('success - values initialized', async () => {
       expect(await middleman.accessControlManager()).to.be.equal(core.address);
@@ -201,6 +200,84 @@ contract('MerklGaugeMiddleman', () => {
       await middleman.connect(guardian).setGauge(alice.address, params);
       await angle.connect(alice).transfer(middleman.address, parseEther('0.7'));
       expect(await angle.balanceOf(middleman.address)).to.be.equal(parseEther('0.7'));
+      await middleman.connect(alice).notifyReward(alice.address, parseEther('0.7'));
+      expect(await manager.nonces(middleman.address)).to.be.equal(1);
+      expect(await angle.balanceOf(manager.address)).to.be.equal(parseEther('0'));
+      expect(await angle.balanceOf(bob.address)).to.be.equal(parseEther('0.7'));
+      expect(await angle.balanceOf(middleman.address)).to.be.equal(parseEther('0'));
+      expect(await angle.balanceOf(alice.address)).to.be.equal(parseEther('999.3'));
+      const reward = await manager.distributionList(0);
+      expect(reward.uniV3Pool).to.be.equal(pool.address);
+      expect(reward.rewardToken).to.be.equal(angle.address);
+      expect(reward.amount).to.be.equal(parseEther('0.7'));
+      expect(reward.propToken0).to.be.equal(4000);
+      expect(reward.propToken1).to.be.equal(2000);
+      expect(reward.propFees).to.be.equal(4000);
+      expect(reward.isOutOfRangeIncentivized).to.be.equal(0);
+      expect(reward.epochStart).to.be.equal(await pool.round(await latestTime()));
+      expect(reward.numEpoch).to.be.equal(1);
+      expect(reward.boostedReward).to.be.equal(0);
+      expect(reward.boostingAddress).to.be.equal(ZERO_ADDRESS);
+      const rewardId = solidityKeccak256(['address', 'uint256'], [middleman.address, 0]);
+      expect(reward.rewardId).to.be.equal(rewardId);
+    });
+    it('success - rewards well sent - when gauge not whitelisted but tx origin is', async () => {
+      await pool.setToken(agEUR, 1);
+      await middleman.connect(guardian).setGauge(alice.address, params);
+      await angle.connect(alice).transfer(middleman.address, parseEther('0.7'));
+      expect(await angle.balanceOf(middleman.address)).to.be.equal(parseEther('0.7'));
+      await manager.connect(guardian).toggleSigningWhitelist(middleman.address);
+      expect(await manager.userSignatureWhitelist(middleman.address)).to.be.equal(0);
+      await manager.connect(guardian).setMessage('hello');
+
+      await expect(
+        middleman.connect(alice).notifyReward(alice.address, parseEther('0.7')),
+      ).to.be.revertedWithCustomError(manager, 'NotSigned');
+
+      await manager.connect(guardian).toggleSigningWhitelist(alice.address);
+      expect(await manager.userSignatureWhitelist(alice.address)).to.be.equal(1);
+      await middleman.connect(alice).notifyReward(alice.address, parseEther('0.7'));
+      expect(await manager.nonces(middleman.address)).to.be.equal(1);
+      expect(await angle.balanceOf(manager.address)).to.be.equal(parseEther('0'));
+      expect(await angle.balanceOf(bob.address)).to.be.equal(parseEther('0.7'));
+      expect(await angle.balanceOf(middleman.address)).to.be.equal(parseEther('0'));
+      expect(await angle.balanceOf(alice.address)).to.be.equal(parseEther('999.3'));
+      const reward = await manager.distributionList(0);
+      expect(reward.uniV3Pool).to.be.equal(pool.address);
+      expect(reward.rewardToken).to.be.equal(angle.address);
+      expect(reward.amount).to.be.equal(parseEther('0.7'));
+      expect(reward.propToken0).to.be.equal(4000);
+      expect(reward.propToken1).to.be.equal(2000);
+      expect(reward.propFees).to.be.equal(4000);
+      expect(reward.isOutOfRangeIncentivized).to.be.equal(0);
+      expect(reward.epochStart).to.be.equal(await pool.round(await latestTime()));
+      expect(reward.numEpoch).to.be.equal(1);
+      expect(reward.boostedReward).to.be.equal(0);
+      expect(reward.boostingAddress).to.be.equal(ZERO_ADDRESS);
+      const rewardId = solidityKeccak256(['address', 'uint256'], [middleman.address, 0]);
+      expect(reward.rewardId).to.be.equal(rewardId);
+    });
+    it('success - rewards well sent - when gauge not whitelisted but tx origin has signed', async () => {
+      await pool.setToken(agEUR, 1);
+      await middleman.connect(guardian).setGauge(alice.address, params);
+      await angle.connect(alice).transfer(middleman.address, parseEther('0.7'));
+      expect(await angle.balanceOf(middleman.address)).to.be.equal(parseEther('0.7'));
+      await manager.connect(guardian).toggleSigningWhitelist(middleman.address);
+      expect(await manager.userSignatureWhitelist(middleman.address)).to.be.equal(0);
+      await manager.connect(guardian).setMessage('hello');
+      await expect(
+        middleman.connect(alice).notifyReward(alice.address, parseEther('0.7')),
+      ).to.be.revertedWithCustomError(manager, 'NotSigned');
+
+      const signature = await alice.signMessage('hello');
+      const receipt0 = await (await manager.connect(alice).sign(signature)).wait();
+      const messageHash = await manager.messageHash();
+      expect(await manager.userSignatures(alice.address)).to.be.equal(messageHash);
+      inReceipt(receipt0, 'UserSigned', {
+        messageHash: messageHash,
+        user: alice.address,
+      });
+
       await middleman.connect(alice).notifyReward(alice.address, parseEther('0.7'));
       expect(await manager.nonces(middleman.address)).to.be.equal(1);
       expect(await angle.balanceOf(manager.address)).to.be.equal(parseEther('0'));

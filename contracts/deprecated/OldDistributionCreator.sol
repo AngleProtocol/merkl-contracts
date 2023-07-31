@@ -1,5 +1,38 @@
 // SPDX-License-Identifier: BUSL-1.1
 
+/*
+                  *                                                  █                              
+                *****                                               ▓▓▓                             
+                  *                                               ▓▓▓▓▓▓▓                         
+                                   *            ///.           ▓▓▓▓▓▓▓▓▓▓▓▓▓                       
+                                 *****        ////////            ▓▓▓▓▓▓▓                          
+                                   *       /////////////            ▓▓▓                             
+                     ▓▓                  //////////////////          █         ▓▓                   
+                   ▓▓  ▓▓             ///////////////////////                ▓▓   ▓▓                
+                ▓▓       ▓▓        ////////////////////////////           ▓▓        ▓▓              
+              ▓▓            ▓▓    /////////▓▓▓///////▓▓▓/////////       ▓▓             ▓▓            
+           ▓▓                 ,////////////////////////////////////// ▓▓                 ▓▓         
+        ▓▓                  //////////////////////////////////////////                     ▓▓      
+      ▓▓                  //////////////////////▓▓▓▓/////////////////////                          
+                       ,////////////////////////////////////////////////////                        
+                    .//////////////////////////////////////////////////////////                     
+                     .//////////////////////////██.,//////////////////////////█                     
+                       .//////////////////////████..,./////////////////////██                       
+                        ...////////////////███████.....,.////////////////███                        
+                          ,.,////////////████████ ........,///////////████                          
+                            .,.,//////█████████      ,.......///////████                            
+                               ,..//████████           ........./████                               
+                                 ..,██████                .....,███                                 
+                                    .██                     ,.,█                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+               ▓▓            ▓▓▓▓▓▓▓▓▓▓       ▓▓▓▓▓▓▓▓▓▓        ▓▓               ▓▓▓▓▓▓▓▓▓▓          
+             ▓▓▓▓▓▓          ▓▓▓    ▓▓▓       ▓▓▓               ▓▓               ▓▓   ▓▓▓▓         
+           ▓▓▓    ▓▓▓        ▓▓▓    ▓▓▓       ▓▓▓    ▓▓▓        ▓▓               ▓▓▓▓▓             
+          ▓▓▓        ▓▓      ▓▓▓    ▓▓▓       ▓▓▓▓▓▓▓▓▓▓        ▓▓▓▓▓▓▓▓▓▓       ▓▓▓▓▓▓▓▓▓▓          
+*/
+
 pragma solidity ^0.8.17;
 
 import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
@@ -8,6 +41,7 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
 import "../interfaces/external/uniswap/IUniswapV3Pool.sol";
+import "../interfaces/external/algebra/IAlgebraPool.sol";
 import "../utils/UUPSHelper.sol";
 import "../struct/DistributionParameters.sol";
 import "../struct/ExtensiveDistributionParameters.sol";
@@ -111,7 +145,7 @@ contract OldDistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
 
     function initialize(ICore _core, address _distributor, uint256 _fees) external initializer {
         if (address(_core) == address(0) || _distributor == address(0)) revert ZeroAddress();
-        if (_fees > BASE_9) revert InvalidParam();
+        if (_fees >= BASE_9) revert InvalidParam();
         distributor = _distributor;
         core = _core;
         fees = _fees;
@@ -203,6 +237,7 @@ contract OldDistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         uint256 userFeeRebate = feeRebate[msg.sender];
         if (
             userFeeRebate < BASE_9 &&
+            // Algebra pools also have these `token0` and `token1` parameters
             isWhitelistedToken[IUniswapV3Pool(distribution.uniV3Pool).token0()] == 0 &&
             isWhitelistedToken[IUniswapV3Pool(distribution.uniV3Pool).token1()] == 0
         ) {
@@ -265,14 +300,10 @@ contract OldDistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
                 ++i;
             }
         }
-        RewardTokenAmounts[] memory validRewardTokensShort = new RewardTokenAmounts[](length);
-        for (uint32 i; i < length; ) {
-            validRewardTokensShort[i] = validRewardTokens[i];
-            unchecked {
-                ++i;
-            }
+        assembly {
+            mstore(validRewardTokens, length)
         }
-        return validRewardTokensShort;
+        return validRewardTokens;
     }
 
     /// @notice Returns the list of all the distributions that were or that are going to be live at
@@ -317,8 +348,8 @@ contract OldDistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         return _getPoolDistributionsBetweenEpochs(uniV3Pool, roundedEpoch, roundedEpoch + EPOCH_DURATION);
     }
 
-    /// @notice Returns the list of all distributions that were or will be live between `epochStart` (included) and `epochEnd` (excluded)
-    /// for a specific pool
+    /// @notice Returns the list of all distributions that were or will be live at some point between
+    /// `epochStart` (included) and `epochEnd` (excluded) for a specific pool
     function getPoolDistributionsBetweenEpochs(
         address uniV3Pool,
         uint32 epochStart,
@@ -382,6 +413,7 @@ contract OldDistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         uint256[] calldata amounts
     ) external onlyGovernorOrGuardian {
         uint256 tokensLength = tokens.length;
+        if (tokensLength != amounts.length) revert InvalidLengths();
         for (uint256 i; i < tokensLength; ++i) {
             uint256 amount = amounts[i];
             // Basic logic check to make sure there are no duplicates in the `rewardTokens` table. If a token is
@@ -422,10 +454,10 @@ contract OldDistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
 
     /// @notice Checks whether `distribution` was live between `roundedEpochStart` and `roundedEpochEnd`
     function _isDistributionLiveBetweenEpochs(
-        DistributionParameters storage distribution,
+        DistributionParameters memory distribution,
         uint32 roundedEpochStart,
         uint32 roundedEpochEnd
-    ) internal view returns (bool) {
+    ) internal pure returns (bool) {
         uint256 distributionEpochStart = distribution.epochStart;
         return (distributionEpochStart + distribution.numEpoch * EPOCH_DURATION > roundedEpochStart &&
             distributionEpochStart < roundedEpochEnd);
@@ -450,7 +482,19 @@ contract OldDistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         try IUniswapV3Pool(distribution.uniV3Pool).fee() returns (uint24 fee) {
             extensiveParams.poolFee = fee;
         } catch {
-            extensiveParams.poolFee = 0;
+            try IAlgebraPool(distribution.uniV3Pool).globalState() returns (
+                uint160,
+                int24,
+                uint16 fee,
+                uint16,
+                uint8,
+                uint8,
+                bool
+            ) {
+                extensiveParams.poolFee = uint24(fee);
+            } catch {
+                extensiveParams.poolFee = 0;
+            }
         }
         extensiveParams.token0 = _getUniswapTokenData(
             IERC20Metadata(IUniswapV3Pool(distribution.uniV3Pool).token0()),
@@ -473,27 +517,24 @@ contract OldDistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     ) internal view returns (ExtensiveDistributionParameters[] memory) {
         uint256 length;
         uint256 distributionListLength = distributionList.length;
-        DistributionParameters[] memory longActiveRewards = new DistributionParameters[](distributionListLength);
+        ExtensiveDistributionParameters[] memory activeRewards = new ExtensiveDistributionParameters[](
+            distributionListLength
+        );
         for (uint32 i; i < distributionListLength; ) {
-            DistributionParameters storage distribution = distributionList[i];
+            DistributionParameters memory distribution = distributionList[i];
             if (
                 _isDistributionLiveBetweenEpochs(distribution, epochStart, epochEnd) &&
                 (uniV3Pool == address(0) || distribution.uniV3Pool == uniV3Pool)
             ) {
-                longActiveRewards[length] = distribution;
+                activeRewards[length] = _getExtensiveDistributionParameters(distribution);
                 length += 1;
             }
             unchecked {
                 ++i;
             }
         }
-
-        ExtensiveDistributionParameters[] memory activeRewards = new ExtensiveDistributionParameters[](length);
-        for (uint32 i; i < length; ) {
-            activeRewards[i] = _getExtensiveDistributionParameters(longActiveRewards[i]);
-            unchecked {
-                ++i;
-            }
+        assembly {
+            mstore(activeRewards, length)
         }
         return activeRewards;
     }

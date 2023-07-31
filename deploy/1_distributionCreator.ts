@@ -9,8 +9,8 @@ const argv = yargs.env('').boolean('ci').parseSync();
 const func: DeployFunction = async ({ deployments, ethers, network }) => {
   const { deploy } = deployments;
   const { deployer } = await ethers.getNamedSigners();
-  let core: string;
 
+  let core: string;
   if (!network.live) {
     // If we're in mainnet fork, we're using the `CoreBorrow` address from mainnet
     core = registry(ChainId.MAINNET)?.Merkl?.CoreMerkl!;
@@ -22,17 +22,18 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
   console.log('Now deploying DistributionCreator');
   console.log('Starting with the implementation');
 
-  await deploy('DistributionCreator_Implementation_3', {
+  await deploy('DistributionCreator_Implementation_4', {
     contract: 'DistributionCreator',
     from: deployer.address,
     log: !argv.ci,
   });
 
-  const implementationAddress = (await ethers.getContract('DistributionCreator_Implementation_3')).address;
+  const implementationAddress = (await ethers.getContract('DistributionCreator_Implementation_4')).address;
 
   console.log(`Successfully deployed the implementation for DistributionCreator at ${implementationAddress}`);
   console.log('');
   /*
+
   const distributor = (await deployments.get('Distributor')).address;
   console.log('Now deploying the Proxy');
 
@@ -69,10 +70,12 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
   In the Distributor contract:
   - `toggleTrusted` -> keeper bot updating
   - `setDisputeToken` -> should we activate dispute periods
-  - `setDisputePeriods`
+  - `setDisputePeriod`
+  - `setDisputeAmount`
+
   */
 };
 
 func.tags = ['distributionCreator'];
-func.dependencies = ['distributor'];
+// func.dependencies = ['distributor'];
 export default func;
