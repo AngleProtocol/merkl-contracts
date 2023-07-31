@@ -22,13 +22,13 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
   console.log('Now deploying DistributionCreator');
   console.log('Starting with the implementation');
 
-  await deploy('DistributionCreator_Implementation_2', {
+  await deploy('DistributionCreator_Implementation_3', {
     contract: 'DistributionCreator',
     from: deployer.address,
     log: !argv.ci,
   });
 
-  const implementationAddress = (await ethers.getContract('DistributionCreator_Implementation_2')).address;
+  const implementationAddress = (await ethers.getContract('DistributionCreator_Implementation_3')).address;
 
   console.log(`Successfully deployed the implementation for DistributionCreator at ${implementationAddress}`);
   console.log('');
@@ -60,20 +60,19 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
 
   /* Once good some functions need to be called to have everything setup.
 
-  In the DistributionCreator contract:
+  In the `DistributionCreator` contract:
   - `toggleTokenWhitelist` -> for agEUR
   - `setRewardTokenMinAmounts` -> for OP (on Optimism), and ANGLE on all chains
-  - `setFeeRecipient`
-  - `setMessage`
+  - `setFeeRecipient -> angleLabs
+  - `setMessage` ->
 
   In the Distributor contract:
-  - `toggleTrusted`
+  - `toggleTrusted` -> keeper bot updating
   - `setDisputeToken` -> should we activate dispute periods
   - `setDisputePeriods`
-
   */
 };
 
 func.tags = ['distributionCreator'];
-// func.dependencies = ['distributor'];
+func.dependencies = ['distributor'];
 export default func;
