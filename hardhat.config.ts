@@ -92,12 +92,10 @@ const config: HardhatUserConfig = {
         // Mainnet
         url: nodeUrl('fork'),
         blockNumber: 16671190,
+        */
         // Polygon
-
         url: nodeUrl('forkpolygon'),
         blockNumber: 39517477,
-        */
-
         // Optimism
         /*
         url: nodeUrl('optimism'),
@@ -112,8 +110,10 @@ const config: HardhatUserConfig = {
         url: nodeUrl('arbitrum'),
         blockNumber: 19356874,
         */
+        /*
         url: nodeUrl('polygonzkevm'),
         blockNumber: 3214816,
+        */
       },
       mining: argv.disableAutoMining
         ? {
