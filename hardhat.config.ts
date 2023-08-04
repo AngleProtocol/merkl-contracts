@@ -261,6 +261,19 @@ const config: HardhatUserConfig = {
         },
       },
     },
+    base: {
+      live: true,
+      url: nodeUrl('base'),
+      accounts: accounts('base'),
+      gas: 'auto',
+      gasMultiplier: 1.3,
+      chainId: 8453,
+      verify: {
+        etherscan: {
+          apiKey: etherscanKey('base'),
+        },
+      },
+    },
   },
   paths: {
     sources: './contracts',
