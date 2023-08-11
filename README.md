@@ -81,6 +81,10 @@ To update libraries:
 forge update
 ```
 
+## Audits
+
+The Merkl smart contracts have been audited by Code4rena, find the audit report [here](https://code4rena.com/reports/2023-06-angle).
+
 ## Media
 
 Don't hesitate to reach out on [Twitter](https://twitter.com/AngleProtocol) 🐦
