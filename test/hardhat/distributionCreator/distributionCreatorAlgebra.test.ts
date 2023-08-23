@@ -110,7 +110,7 @@ contract('DistributionCreator - Algebra', () => {
       const activeDistributions = await manager.getActiveDistributions();
       expect(activeDistributions.length).to.be.equal(0);
       const distributions = await manager.getDistributionsAfterEpoch(reward.epochStart - 1);
-      expect(distributions[0].poolFee).to.be.equal(400);
+      expect(distributions[0].poolFee).to.be.equal(0);
     });
     it('success - on a pool that does not have a fee in it', async () => {
       const params2 = {

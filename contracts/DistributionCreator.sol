@@ -494,19 +494,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         try IUniswapV3Pool(distribution.uniV3Pool).fee() returns (uint24 fee) {
             extensiveParams.poolFee = fee;
         } catch {
-            try IAlgebraPool(distribution.uniV3Pool).globalState() returns (
-                uint160,
-                int24,
-                uint16 fee,
-                uint16,
-                uint8,
-                uint8,
-                bool
-            ) {
-                extensiveParams.poolFee = uint24(fee);
-            } catch {
-                extensiveParams.poolFee = 0;
-            }
+            extensiveParams.poolFee = 0;
         }
         extensiveParams.token0 = _getUniswapTokenData(
             IERC20Metadata(IUniswapV3Pool(distribution.uniV3Pool).token0()),
