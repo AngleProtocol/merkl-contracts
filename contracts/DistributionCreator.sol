@@ -48,6 +48,12 @@ import { DistributionParameters } from "./struct/DistributionParameters.sol";
 import { UniswapTokenData, ExtensiveDistributionParameters } from "./struct/ExtensiveDistributionParameters.sol";
 import { RewardTokenAmounts } from "./struct/RewardTokenAmounts.sol";
 
+interface IDistributionCreator {
+    function tryGetExtensiveDistributionParameters(
+        DistributionParameters memory distribution
+    ) external view returns (bool success, ExtensiveDistributionParameters memory extensiveParams);
+}
+
 /// @title DistributionCreator
 /// @author Angle Labs, Inc.
 /// @notice Manages the distribution of rewards across different pools with concentrated liquidity (like on Uniswap V3)
@@ -481,14 +487,26 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     }
 
     /// @notice Fetches extra data about the parameters in a distribution
-    function _getExtensiveDistributionParameters(
+    function getExtensiveDistributionParameters(
         DistributionParameters memory distribution
-    ) internal view returns (ExtensiveDistributionParameters memory extensiveParams) {
+    ) external view returns (ExtensiveDistributionParameters memory extensiveParams) {
         extensiveParams.base = distribution;
         try IUniswapV3Pool(distribution.uniV3Pool).fee() returns (uint24 fee) {
             extensiveParams.poolFee = fee;
         } catch {
-            extensiveParams.poolFee = 0;
+            try IAlgebraPool(distribution.uniV3Pool).globalState() returns (
+                uint160,
+                int24,
+                uint16 fee,
+                uint16,
+                uint8,
+                uint8,
+                bool
+            ) {
+                extensiveParams.poolFee = uint24(fee);
+            } catch {
+                extensiveParams.poolFee = 0;
+            }
         }
         extensiveParams.token0 = _getUniswapTokenData(
             IERC20Metadata(IUniswapV3Pool(distribution.uniV3Pool).token0()),
@@ -500,6 +518,20 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         );
         extensiveParams.rewardTokenSymbol = IERC20Metadata(distribution.rewardToken).symbol();
         extensiveParams.rewardTokenDecimals = IERC20Metadata(distribution.rewardToken).decimals();
+    }
+
+    /// @notice Tries to fetch extra data about the parameters in a distribution
+    function tryGetExtensiveDistributionParameters(
+        DistributionParameters memory distribution
+    ) external returns (bool success, ExtensiveDistributionParameters memory extensiveParams) {
+        (bool callSuccess, bytes memory returndata) = address(this).delegatecall(
+            abi.encodeWithSelector(DistributionCreator.getExtensiveDistributionParameters.selector, distribution)
+        );
+        success = callSuccess;
+        if (success) {
+            extensiveParams = abi.decode(returndata, (ExtensiveDistributionParameters));
+        }
+        return (success, extensiveParams);
     }
 
     /// @notice Gets the list of all the distributions for `uniV3Pool` that have been active between `epochStart` and `epochEnd` (excluded)
@@ -520,8 +552,13 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
                 _isDistributionLiveBetweenEpochs(distribution, epochStart, epochEnd) &&
                 (uniV3Pool == address(0) || distribution.uniV3Pool == uniV3Pool)
             ) {
-                activeRewards[length] = _getExtensiveDistributionParameters(distribution);
-                length += 1;
+                (bool success, ExtensiveDistributionParameters memory extensiveParams) = IDistributionCreator(
+                    address(this)
+                ).tryGetExtensiveDistributionParameters(distribution);
+                if (success) {
+                    activeRewards[length] = extensiveParams;
+                    length += 1;
+                }
             }
             unchecked {
                 ++i;
