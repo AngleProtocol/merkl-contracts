@@ -17,6 +17,7 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
   } else {
     // Otherwise, we're using the proxy admin address from the desired network
     core = registry(network.config.chainId as ChainId)?.Merkl?.CoreMerkl!;
+    core = '0xC16B81Af351BA9e64C1a069E3Ab18c244A1E3049';
   }
 
   console.log('Now deploying DistributionCreator');
@@ -32,7 +33,6 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
 
   console.log(`Successfully deployed the implementation for DistributionCreator at ${implementationAddress}`);
   console.log('');
-  /*
 
   const distributor = (await deployments.get('Distributor')).address;
   console.log('Now deploying the Proxy');
@@ -57,7 +57,6 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
   console.log('Contract successfully initialized');
   console.log('');
   console.log(await contract.core());
-  */
 
   /* Once good some functions need to be called to have everything setup.
 
@@ -77,5 +76,5 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
 };
 
 func.tags = ['distributionCreator'];
-// func.dependencies = ['distributor'];
+func.dependencies = ['distributor'];
 export default func;
