@@ -31,7 +31,7 @@
     "url": "https://github.com/AngleProtocol/boilerplate/issues"
   },
   "devDependencies": {
-    "@angleprotocol/sdk": "3.0.77",
+    "@angleprotocol/sdk": "3.0.87",
     "@ethersproject/abi": "^5.7.0",
     "@ethersproject/providers": "^5.7.1",
     "@nomicfoundation/hardhat-chai-matchers": "^1.0.3",
