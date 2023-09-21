@@ -445,7 +445,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @notice Sets the message that needs to be signed by users before posting rewards
     function setMessage(string memory _message) external onlyGovernorOrGuardian {
         message = _message;
-        bytes32 _messageHash = ECDSA.toEthSignedMessageHash(bytes(_message));
+        bytes32 _messageHash = ECDSA.toEthSignedMessageHash(bytes32(bytes(_message)));
         messageHash = _messageHash;
         emit MessageUpdated(_messageHash);
     }
