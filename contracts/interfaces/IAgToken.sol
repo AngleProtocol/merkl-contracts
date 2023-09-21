@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0
 
-pragma solidity 0.8.17;
+pragma solidity ^0.8.17;
 
 import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
 
@@ -27,11 +27,7 @@ interface IAgToken is IERC20Upgradeable {
     /// @dev This method is to be called by a contract with the minter right after being requested
     /// to do so by a `sender` address willing to burn tokens from another `burner` address
     /// @dev The method checks the allowance between the `sender` and the `burner`
-    function burnFrom(
-        uint256 amount,
-        address burner,
-        address sender
-    ) external;
+    function burnFrom(uint256 amount, address burner, address sender) external;
 
     /// @notice Burns `amount` tokens from a `burner` address
     /// @param amount Amount of tokens to burn
