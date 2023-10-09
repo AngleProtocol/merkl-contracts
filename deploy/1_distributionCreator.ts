@@ -17,7 +17,7 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
   } else {
     // Otherwise, we're using the proxy admin address from the desired network
     core = registry(network.config.chainId as ChainId)?.Merkl?.CoreMerkl!;
-    core = '0xC16B81Af351BA9e64C1a069E3Ab18c244A1E3049';
+    core = '0x5adDc89785D75C86aB939E9e15bfBBb7Fc086A87';
   }
 
   console.log('Now deploying DistributionCreator');
@@ -62,7 +62,7 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
 
   In the `DistributionCreator` contract:
   - `toggleTokenWhitelist` -> for agEUR
-  - `setRewardTokenMinAmounts` -> for OP (on Optimism), and ANGLE on all chains
+  - `setRewardTokenMinAmounts`
   - `setFeeRecipient -> angleLabs
   - `setMessage` ->
 
