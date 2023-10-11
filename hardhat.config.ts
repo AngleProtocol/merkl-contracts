@@ -116,8 +116,8 @@ const config: HardhatUserConfig = {
         url: nodeUrl('polygonzkevm'),
         blockNumber: 3214816,
         */
-        url: nodeUrl('linea'),
-        blockNumber: 597462,
+        url: nodeUrl('mantle'),
+        blockNumber: 14188687,
       },
       mining: argv.disableAutoMining
         ? {
@@ -301,6 +301,19 @@ const config: HardhatUserConfig = {
       verify: {
         etherscan: {
           apiKey: etherscanKey('zksync'),
+        },
+      },
+    },
+    mantle: {
+      live: true,
+      url: nodeUrl('mantle'),
+      accounts: accounts('mantle'),
+      gas: 'auto',
+      gasMultiplier: 1.3,
+      chainId: 5000,
+      verify: {
+        etherscan: {
+          apiKey: etherscanKey('mantle'),
         },
       },
     },
