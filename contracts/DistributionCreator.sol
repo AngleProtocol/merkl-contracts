@@ -713,7 +713,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         uint32 epochEnd,
         uint32 skip,
         uint32 first
-    ) internal view returns (ExtensiveDistributionParameters[] memory, uint256 lastIndexDistribution) {
+    ) internal view returns (ExtensiveDistributionParameters[] memory, uint256) {
         uint256 length;
         uint256 distributionListLength = distributionList.length;
         uint256 returnSize = first > distributionListLength ? distributionListLength : first;
