@@ -313,7 +313,11 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     function getActiveDistributions(
         uint32 skip,
         uint32 first
-    ) external view returns (ExtensiveDistributionParameters[] memory, uint256 lastIndexDistribution) {
+    )
+        external
+        view
+        returns (ExtensiveDistributionParameters[] memory searchDistributions, uint256 lastIndexDistribution)
+    {
         uint32 roundedEpoch = _getRoundedEpoch(uint32(block.timestamp));
         return _getPoolDistributionsBetweenEpochs(address(0), roundedEpoch, roundedEpoch + EPOCH_DURATION, skip, first);
     }
