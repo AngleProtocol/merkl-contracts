@@ -291,9 +291,12 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     }
 
     /// @notice Returns the list of all currently active distributions on pools of supported AMMs (like Uniswap V3)
-    function getActiveDistributions() external view returns (ExtensiveDistributionParameters[] memory) {
+    function getActiveDistributions(
+        uint32 skip,
+        uint32 first
+    ) external view returns (ExtensiveDistributionParameters[] memory) {
         uint32 roundedEpoch = _getRoundedEpoch(uint32(block.timestamp));
-        return _getPoolDistributionsBetweenEpochs(address(0), roundedEpoch, roundedEpoch + EPOCH_DURATION);
+        return _getPoolDistributionsBetweenEpochs(address(0), roundedEpoch, roundedEpoch + EPOCH_DURATION, skip, first);
     }
 
     /// @notice Returns the list of all the reward tokens supported as well as their minimum amounts
@@ -320,9 +323,13 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
 
     /// @notice Returns the list of all the distributions that were or that are going to be live at
     /// a specific epoch
-    function getDistributionsForEpoch(uint32 epoch) external view returns (ExtensiveDistributionParameters[] memory) {
+    function getDistributionsForEpoch(
+        uint32 epoch,
+        uint32 skip,
+        uint32 first
+    ) external view returns (ExtensiveDistributionParameters[] memory) {
         uint32 roundedEpoch = _getRoundedEpoch(epoch);
-        return _getPoolDistributionsBetweenEpochs(address(0), roundedEpoch, roundedEpoch + EPOCH_DURATION);
+        return _getPoolDistributionsBetweenEpochs(address(0), roundedEpoch, roundedEpoch + EPOCH_DURATION, skip, first);
     }
 
     /// @notice Gets the distributions that were or will be live at some point between `epochStart` (included) and `epochEnd` (excluded)
@@ -330,34 +337,50 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @dev Conversely, if a distribution starts after `epochStart` and ends before `epochEnd`, it is returned by this function
     function getDistributionsBetweenEpochs(
         uint32 epochStart,
-        uint32 epochEnd
+        uint32 epochEnd,
+        uint32 skip,
+        uint32 first
     ) external view returns (ExtensiveDistributionParameters[] memory) {
-        return _getPoolDistributionsBetweenEpochs(address(0), _getRoundedEpoch(epochStart), _getRoundedEpoch(epochEnd));
+        return
+            _getPoolDistributionsBetweenEpochs(
+                address(0),
+                _getRoundedEpoch(epochStart),
+                _getRoundedEpoch(epochEnd),
+                skip,
+                first
+            );
     }
 
     /// @notice Returns the list of all distributions that were or will be live after `epochStart` (included)
     function getDistributionsAfterEpoch(
-        uint32 epochStart
+        uint32 epochStart,
+        uint32 skip,
+        uint32 first
     ) external view returns (ExtensiveDistributionParameters[] memory) {
-        return _getPoolDistributionsBetweenEpochs(address(0), _getRoundedEpoch(epochStart), type(uint32).max);
+        return
+            _getPoolDistributionsBetweenEpochs(address(0), _getRoundedEpoch(epochStart), type(uint32).max, skip, first);
     }
 
     /// @notice Returns the list of all currently active distributions for a specific UniswapV3 pool
     function getActivePoolDistributions(
-        address uniV3Pool
+        address uniV3Pool,
+        uint32 skip,
+        uint32 first
     ) external view returns (ExtensiveDistributionParameters[] memory) {
         uint32 roundedEpoch = _getRoundedEpoch(uint32(block.timestamp));
-        return _getPoolDistributionsBetweenEpochs(uniV3Pool, roundedEpoch, roundedEpoch + EPOCH_DURATION);
+        return _getPoolDistributionsBetweenEpochs(uniV3Pool, roundedEpoch, roundedEpoch + EPOCH_DURATION, skip, first);
     }
 
     /// @notice Returns the list of all the distributions that were or that are going to be live at a
     /// specific epoch and for a specific pool
     function getPoolDistributionsForEpoch(
         address uniV3Pool,
-        uint32 epoch
+        uint32 epoch,
+        uint32 skip,
+        uint32 first
     ) external view returns (ExtensiveDistributionParameters[] memory) {
         uint32 roundedEpoch = _getRoundedEpoch(epoch);
-        return _getPoolDistributionsBetweenEpochs(uniV3Pool, roundedEpoch, roundedEpoch + EPOCH_DURATION);
+        return _getPoolDistributionsBetweenEpochs(uniV3Pool, roundedEpoch, roundedEpoch + EPOCH_DURATION, skip, first);
     }
 
     /// @notice Returns the list of all distributions that were or will be live at some point between
@@ -365,18 +388,30 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     function getPoolDistributionsBetweenEpochs(
         address uniV3Pool,
         uint32 epochStart,
-        uint32 epochEnd
+        uint32 epochEnd,
+        uint32 skip,
+        uint32 first
     ) external view returns (ExtensiveDistributionParameters[] memory) {
-        return _getPoolDistributionsBetweenEpochs(uniV3Pool, _getRoundedEpoch(epochStart), _getRoundedEpoch(epochEnd));
+        return
+            _getPoolDistributionsBetweenEpochs(
+                uniV3Pool,
+                _getRoundedEpoch(epochStart),
+                _getRoundedEpoch(epochEnd),
+                skip,
+                first
+            );
     }
 
     /// @notice Returns the list of all distributions that were or will be live after `epochStart` (included)
     /// for a specific pool
     function getPoolDistributionsAfterEpoch(
         address uniV3Pool,
-        uint32 epochStart
+        uint32 epochStart,
+        uint32 skip,
+        uint32 first
     ) external view returns (ExtensiveDistributionParameters[] memory) {
-        return _getPoolDistributionsBetweenEpochs(uniV3Pool, _getRoundedEpoch(epochStart), type(uint32).max);
+        return
+            _getPoolDistributionsBetweenEpochs(uniV3Pool, _getRoundedEpoch(epochStart), type(uint32).max, skip, first);
     }
 
     // ============================ GOVERNANCE FUNCTIONS ===========================
@@ -527,30 +562,36 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     function _getPoolDistributionsBetweenEpochs(
         address uniV3Pool,
         uint32 epochStart,
-        uint32 epochEnd
+        uint32 epochEnd,
+        uint32 skip,
+        uint32 first
     ) internal view returns (ExtensiveDistributionParameters[] memory) {
         uint256 length;
         uint256 distributionListLength = distributionList.length;
-        ExtensiveDistributionParameters[] memory activeRewards = new ExtensiveDistributionParameters[](
-            distributionListLength
-        );
-        for (uint32 i; i < distributionListLength; ) {
+        uint256 returnSize = first > distributionListLength ? distributionListLength : first;
+        ExtensiveDistributionParameters[] memory activeRewards = new ExtensiveDistributionParameters[](returnSize);
+        uint256 i = 0;
+        while (true) {
             DistributionParameters memory distribution = distributionList[i];
             if (
                 _isDistributionLiveBetweenEpochs(distribution, epochStart, epochEnd) &&
                 (uniV3Pool == address(0) || distribution.uniV3Pool == uniV3Pool)
             ) {
-                (bool success, ExtensiveDistributionParameters memory extensiveParams) = IDistributionCreator(
-                    address(this)
-                ).tryGetExtensiveDistributionParameters(distribution);
-                if (success) {
-                    activeRewards[length] = extensiveParams;
-                    length += 1;
+                if (skip > 0) skip -= 1;
+                else {
+                    (bool success, ExtensiveDistributionParameters memory extensiveParams) = IDistributionCreator(
+                        address(this)
+                    ).tryGetExtensiveDistributionParameters(distribution);
+                    if (success) {
+                        activeRewards[length] = extensiveParams;
+                        length += 1;
+                    }
                 }
             }
             unchecked {
                 ++i;
             }
+            if (length == returnSize) break;
         }
         assembly {
             mstore(activeRewards, length)
