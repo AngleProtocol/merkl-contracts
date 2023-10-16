@@ -291,10 +291,29 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     }
 
     /// @notice Returns the list of all currently active distributions on pools of supported AMMs (like Uniswap V3)
+    function getActiveDistributions()
+        external
+        view
+        returns (ExtensiveDistributionParameters[] memory searchDistributions)
+    {
+        uint32 roundedEpoch = _getRoundedEpoch(uint32(block.timestamp));
+        (searchDistributions, ) = _getPoolDistributionsBetweenEpochs(
+            address(0),
+            roundedEpoch,
+            roundedEpoch + EPOCH_DURATION,
+            0,
+            type(uint32).max
+        );
+    }
+
+    /// @notice Returns the list of all currently active distributions on pools of supported AMMs (like Uniswap V3)
+    /// @param skip Disregard distibutions with a global index lower than `skip`
+    /// @param first Limit the lenght of the returned array to `first`
+    /// @dev Similar to `getActiveDistributions()` with additional parameters to prevent out of gas error
     function getActiveDistributions(
         uint32 skip,
         uint32 first
-    ) external view returns (ExtensiveDistributionParameters[] memory) {
+    ) external view returns (ExtensiveDistributionParameters[] memory, uint256 lastIndexDistribution) {
         uint32 roundedEpoch = _getRoundedEpoch(uint32(block.timestamp));
         return _getPoolDistributionsBetweenEpochs(address(0), roundedEpoch, roundedEpoch + EPOCH_DURATION, skip, first);
     }
@@ -324,10 +343,28 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @notice Returns the list of all the distributions that were or that are going to be live at
     /// a specific epoch
     function getDistributionsForEpoch(
+        uint32 epoch
+    ) external view returns (ExtensiveDistributionParameters[] memory searchDistributions) {
+        uint32 roundedEpoch = _getRoundedEpoch(epoch);
+        (searchDistributions, ) = _getPoolDistributionsBetweenEpochs(
+            address(0),
+            roundedEpoch,
+            roundedEpoch + EPOCH_DURATION,
+            0,
+            type(uint32).max
+        );
+    }
+
+    /// @notice Returns the list of all the distributions that were or that are going to be live at
+    /// a specific epoch
+    /// @param skip Disregard distibutions with a global index lower than `skip`
+    /// @param first Limit the lenght of the returned array to `first`
+    /// @dev Similar to `getDistributionsForEpoch(uint256 epoch)` with additional parameters to prevent out of gas error
+    function getDistributionsForEpoch(
         uint32 epoch,
         uint32 skip,
         uint32 first
-    ) external view returns (ExtensiveDistributionParameters[] memory) {
+    ) external view returns (ExtensiveDistributionParameters[] memory, uint256 lastIndexDistribution) {
         uint32 roundedEpoch = _getRoundedEpoch(epoch);
         return _getPoolDistributionsBetweenEpochs(address(0), roundedEpoch, roundedEpoch + EPOCH_DURATION, skip, first);
     }
@@ -337,10 +374,27 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @dev Conversely, if a distribution starts after `epochStart` and ends before `epochEnd`, it is returned by this function
     function getDistributionsBetweenEpochs(
         uint32 epochStart,
+        uint32 epochEnd
+    ) external view returns (ExtensiveDistributionParameters[] memory searchDistributions) {
+        (searchDistributions, ) = _getPoolDistributionsBetweenEpochs(
+            address(0),
+            _getRoundedEpoch(epochStart),
+            _getRoundedEpoch(epochEnd),
+            0,
+            type(uint32).max
+        );
+    }
+
+    /// @notice Gets the distributions that were or will be live at some point between `epochStart` (included) and `epochEnd` (excluded)
+    /// @param skip Disregard distibutions with a global index lower than `skip`
+    /// @param first Limit the lenght of the returned array to `first`
+    /// @dev Similar to `getDistributionsBetweenEpochs(uint256 epochStart, uint256 epochEnd)` with additional parameters to prevent out of gas error
+    function getDistributionsBetweenEpochs(
+        uint32 epochStart,
         uint32 epochEnd,
         uint32 skip,
         uint32 first
-    ) external view returns (ExtensiveDistributionParameters[] memory) {
+    ) external view returns (ExtensiveDistributionParameters[] memory, uint256 lastIndexDistribution) {
         return
             _getPoolDistributionsBetweenEpochs(
                 address(0),
@@ -353,20 +407,53 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
 
     /// @notice Returns the list of all distributions that were or will be live after `epochStart` (included)
     function getDistributionsAfterEpoch(
+        uint32 epochStart
+    ) external view returns (ExtensiveDistributionParameters[] memory searchDistributions) {
+        (searchDistributions, ) = _getPoolDistributionsBetweenEpochs(
+            address(0),
+            _getRoundedEpoch(epochStart),
+            type(uint32).max,
+            0,
+            type(uint32).max
+        );
+    }
+
+    /// @notice Returns the list of all distributions that were or will be live after `epochStart` (included)
+    /// @param skip Disregard distibutions with a global index lower than `skip`
+    /// @param first Limit the lenght of the returned array to `first`
+    /// @dev Similar to `getDistributionsAfterEpoch(uint256 epochStart)` with additional parameters to prevent out of gas error
+    function getDistributionsAfterEpoch(
         uint32 epochStart,
         uint32 skip,
         uint32 first
-    ) external view returns (ExtensiveDistributionParameters[] memory) {
+    ) external view returns (ExtensiveDistributionParameters[] memory, uint256 lastIndexDistribution) {
         return
             _getPoolDistributionsBetweenEpochs(address(0), _getRoundedEpoch(epochStart), type(uint32).max, skip, first);
     }
 
     /// @notice Returns the list of all currently active distributions for a specific UniswapV3 pool
     function getActivePoolDistributions(
+        address uniV3Pool
+    ) external view returns (ExtensiveDistributionParameters[] memory searchDistributions) {
+        uint32 roundedEpoch = _getRoundedEpoch(uint32(block.timestamp));
+        (searchDistributions, ) = _getPoolDistributionsBetweenEpochs(
+            uniV3Pool,
+            roundedEpoch,
+            roundedEpoch + EPOCH_DURATION,
+            0,
+            type(uint32).max
+        );
+    }
+
+    /// @notice Returns the list of all currently active distributions for a specific UniswapV3 pool
+    /// @param skip Disregard distibutions with a global index lower than `skip`
+    /// @param first Limit the lenght of the returned array to `first`
+    /// @dev Similar to `getActivePoolDistributions(address uniV3Pool)` with additional parameters to prevent out of gas error
+    function getActivePoolDistributions(
         address uniV3Pool,
         uint32 skip,
         uint32 first
-    ) external view returns (ExtensiveDistributionParameters[] memory) {
+    ) external view returns (ExtensiveDistributionParameters[] memory, uint256 lastIndexDistribution) {
         uint32 roundedEpoch = _getRoundedEpoch(uint32(block.timestamp));
         return _getPoolDistributionsBetweenEpochs(uniV3Pool, roundedEpoch, roundedEpoch + EPOCH_DURATION, skip, first);
     }
@@ -375,10 +462,29 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// specific epoch and for a specific pool
     function getPoolDistributionsForEpoch(
         address uniV3Pool,
+        uint32 epoch
+    ) external view returns (ExtensiveDistributionParameters[] memory searchDistributions) {
+        uint32 roundedEpoch = _getRoundedEpoch(epoch);
+        (searchDistributions, ) = _getPoolDistributionsBetweenEpochs(
+            uniV3Pool,
+            roundedEpoch,
+            roundedEpoch + EPOCH_DURATION,
+            0,
+            type(uint32).max
+        );
+    }
+
+    /// @notice Returns the list of all the distributions that were or that are going to be live at a
+    /// specific epoch and for a specific pool
+    /// @param skip Disregard distibutions with a global index lower than `skip`
+    /// @param first Limit the lenght of the returned array to `first`
+    /// @dev Similar to `getPoolDistributionsForEpoch(address uniV3Pool,uint32 epoch)` with additional parameters to prevent out of gas error
+    function getPoolDistributionsForEpoch(
+        address uniV3Pool,
         uint32 epoch,
         uint32 skip,
         uint32 first
-    ) external view returns (ExtensiveDistributionParameters[] memory) {
+    ) external view returns (ExtensiveDistributionParameters[] memory, uint256 lastIndexDistribution) {
         uint32 roundedEpoch = _getRoundedEpoch(epoch);
         return _getPoolDistributionsBetweenEpochs(uniV3Pool, roundedEpoch, roundedEpoch + EPOCH_DURATION, skip, first);
     }
@@ -388,10 +494,30 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     function getPoolDistributionsBetweenEpochs(
         address uniV3Pool,
         uint32 epochStart,
+        uint32 epochEnd
+    ) external view returns (ExtensiveDistributionParameters[] memory searchDistributions) {
+        (searchDistributions, ) = _getPoolDistributionsBetweenEpochs(
+            uniV3Pool,
+            _getRoundedEpoch(epochStart),
+            _getRoundedEpoch(epochEnd),
+            0,
+            type(uint32).max
+        );
+    }
+
+    /// @notice Returns the list of all distributions that were or will be live at some point between
+    /// `epochStart` (included) and `epochEnd` (excluded) for a specific pool
+    /// specific epoch and for a specific pool
+    /// @param skip Disregard distibutions with a global index lower than `skip`
+    /// @param first Limit the lenght of the returned array to `first`
+    /// @dev Similar to `getPoolDistributionsBetweenEpochs(address uniV3Pool,uint32 epochStart, uint32 epochEnd)` with additional parameters to prevent out of gas error
+    function getPoolDistributionsBetweenEpochs(
+        address uniV3Pool,
+        uint32 epochStart,
         uint32 epochEnd,
         uint32 skip,
         uint32 first
-    ) external view returns (ExtensiveDistributionParameters[] memory) {
+    ) external view returns (ExtensiveDistributionParameters[] memory, uint256 lastIndexDistribution) {
         return
             _getPoolDistributionsBetweenEpochs(
                 uniV3Pool,
@@ -406,10 +532,28 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// for a specific pool
     function getPoolDistributionsAfterEpoch(
         address uniV3Pool,
+        uint32 epochStart
+    ) external view returns (ExtensiveDistributionParameters[] memory searchDistributions) {
+        (searchDistributions, ) = _getPoolDistributionsBetweenEpochs(
+            uniV3Pool,
+            _getRoundedEpoch(epochStart),
+            type(uint32).max,
+            0,
+            type(uint32).max
+        );
+    }
+
+    /// @notice Returns the list of all distributions that were or will be live after `epochStart` (included)
+    /// for a specific pool
+    /// @param skip Disregard distibutions with a global index lower than `skip`
+    /// @param first Limit the lenght of the returned array to `first`
+    /// @dev Similar to `getPoolDistributionsAfterEpoch(address uniV3Pool,uint32 epochStart)` with additional parameters to prevent out of gas error
+    function getPoolDistributionsAfterEpoch(
+        address uniV3Pool,
         uint32 epochStart,
         uint32 skip,
         uint32 first
-    ) external view returns (ExtensiveDistributionParameters[] memory) {
+    ) external view returns (ExtensiveDistributionParameters[] memory, uint256 lastIndexDistribution) {
         return
             _getPoolDistributionsBetweenEpochs(uniV3Pool, _getRoundedEpoch(epochStart), type(uint32).max, skip, first);
     }
@@ -565,27 +709,24 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         uint32 epochEnd,
         uint32 skip,
         uint32 first
-    ) internal view returns (ExtensiveDistributionParameters[] memory) {
+    ) internal view returns (ExtensiveDistributionParameters[] memory, uint256 lastIndexDistribution) {
         uint256 length;
         uint256 distributionListLength = distributionList.length;
         uint256 returnSize = first > distributionListLength ? distributionListLength : first;
         ExtensiveDistributionParameters[] memory activeRewards = new ExtensiveDistributionParameters[](returnSize);
-        uint256 i = 0;
-        while (true) {
+        uint32 i = skip;
+        while (i < distributionListLength) {
             DistributionParameters memory distribution = distributionList[i];
             if (
                 _isDistributionLiveBetweenEpochs(distribution, epochStart, epochEnd) &&
                 (uniV3Pool == address(0) || distribution.uniV3Pool == uniV3Pool)
             ) {
-                if (skip > 0) skip -= 1;
-                else {
-                    (bool success, ExtensiveDistributionParameters memory extensiveParams) = IDistributionCreator(
-                        address(this)
-                    ).tryGetExtensiveDistributionParameters(distribution);
-                    if (success) {
-                        activeRewards[length] = extensiveParams;
-                        length += 1;
-                    }
+                (bool success, ExtensiveDistributionParameters memory extensiveParams) = IDistributionCreator(
+                    address(this)
+                ).tryGetExtensiveDistributionParameters(distribution);
+                if (success) {
+                    activeRewards[length] = extensiveParams;
+                    length += 1;
                 }
             }
             unchecked {
@@ -596,6 +737,6 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         assembly {
             mstore(activeRewards, length)
         }
-        return activeRewards;
+        return (activeRewards, i);
     }
 }

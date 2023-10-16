@@ -107,9 +107,9 @@ contract('DistributionCreator - Algebra', () => {
       expect(reward.additionalData).to.be.equal(web3.utils.soliditySha3('test2ng'));
       const rewardId = solidityKeccak256(['address', 'uint256'], [alice.address, 0]);
       expect(reward.rewardId).to.be.equal(rewardId);
-      const activeDistributions = await manager.getActiveDistributions();
+      const activeDistributions = await manager['getActiveDistributions()'];
       expect(activeDistributions.length).to.be.equal(0);
-      const distributions = await manager.getDistributionsAfterEpoch(reward.epochStart - 1);
+      const distributions = await manager['getDistributionsAfterEpoch(uint32)'](reward.epochStart - 1);
       expect(distributions[0].poolFee).to.be.equal(0);
     });
     it('success - on a pool that does not have a fee in it', async () => {
@@ -148,9 +148,9 @@ contract('DistributionCreator - Algebra', () => {
       expect(reward.additionalData).to.be.equal(web3.utils.soliditySha3('test2ng'));
       const rewardId = solidityKeccak256(['address', 'uint256'], [alice.address, 0]);
       expect(reward.rewardId).to.be.equal(rewardId);
-      const activeDistributions = await manager.getActiveDistributions();
+      const activeDistributions = await manager['getActiveDistributions()'];
       expect(activeDistributions.length).to.be.equal(0);
-      const distributions = await manager.getDistributionsAfterEpoch(reward.epochStart - 1);
+      const distributions = await manager['getDistributionsAfterEpoch(uint32)'](reward.epochStart - 1);
       expect(distributions[0].poolFee).to.be.equal(0);
     });
   });

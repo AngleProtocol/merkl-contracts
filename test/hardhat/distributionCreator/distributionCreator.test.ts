@@ -803,7 +803,7 @@ contract('DistributionCreator', () => {
       expect(allRewards[0].wrapperTypes[1]).to.be.equal(1);
       expect(allRewards[0].wrapperTypes[2]).to.be.equal(2);
 
-      const activeRewards = await manager.getActiveDistributions();
+      const activeRewards = await manager['getActiveDistributions()']();
       expect(activeRewards.length).to.be.equal(1);
       expect(activeRewards[0].base.positionWrappers[0]).to.be.equal(alice.address);
       expect(activeRewards[0].base.positionWrappers[1]).to.be.equal(bob.address);
@@ -813,7 +813,7 @@ contract('DistributionCreator', () => {
       expect(activeRewards[0].base.wrapperTypes[1]).to.be.equal(1);
       expect(activeRewards[0].base.wrapperTypes[2]).to.be.equal(2);
 
-      const rewardsForEpoch = await manager.getDistributionsForEpoch(startTime);
+      const rewardsForEpoch = await manager['getDistributionsForEpoch(uint32)'](startTime);
       expect(rewardsForEpoch.length).to.be.equal(1);
       expect(rewardsForEpoch[0].base.positionWrappers[0]).to.be.equal(alice.address);
       expect(rewardsForEpoch[0].base.positionWrappers[1]).to.be.equal(bob.address);
@@ -821,9 +821,9 @@ contract('DistributionCreator', () => {
       expect(rewardsForEpoch[0].base.wrapperTypes[0]).to.be.equal(0);
       expect(rewardsForEpoch[0].base.wrapperTypes[1]).to.be.equal(1);
       expect(rewardsForEpoch[0].base.wrapperTypes[2]).to.be.equal(2);
-      expect((await manager.getDistributionsForEpoch(startTime + 3600)).length).to.be.equal(0);
+      expect((await manager['getDistributionsForEpoch(uint32)'](startTime + 3600)).length).to.be.equal(0);
 
-      const poolRewards = await manager.getActivePoolDistributions(pool.address);
+      const poolRewards = await manager['getActivePoolDistributions(address)'](pool.address);
       expect(poolRewards.length).to.be.equal(1);
       expect(poolRewards[0].base.positionWrappers[0]).to.be.equal(alice.address);
       expect(poolRewards[0].base.positionWrappers[1]).to.be.equal(bob.address);
@@ -831,9 +831,12 @@ contract('DistributionCreator', () => {
       expect(poolRewards[0].base.wrapperTypes[0]).to.be.equal(0);
       expect(poolRewards[0].base.wrapperTypes[1]).to.be.equal(1);
       expect(poolRewards[0].base.wrapperTypes[2]).to.be.equal(2);
-      expect((await manager.getActivePoolDistributions(bob.address)).length).to.be.equal(0);
+      expect((await manager['getActivePoolDistributions(address)'](bob.address)).length).to.be.equal(0);
 
-      const poolRewardsForEpoch = await manager.getPoolDistributionsForEpoch(pool.address, startTime);
+      const poolRewardsForEpoch = await manager['getPoolDistributionsForEpoch(address,uint32)'](
+        pool.address,
+        startTime,
+      );
       expect(poolRewardsForEpoch.length).to.be.equal(1);
       expect(poolRewardsForEpoch[0].base.positionWrappers[0]).to.be.equal(alice.address);
       expect(poolRewardsForEpoch[0].base.positionWrappers[1]).to.be.equal(bob.address);
@@ -841,7 +844,9 @@ contract('DistributionCreator', () => {
       expect(poolRewardsForEpoch[0].base.wrapperTypes[0]).to.be.equal(0);
       expect(poolRewardsForEpoch[0].base.wrapperTypes[1]).to.be.equal(1);
       expect(poolRewardsForEpoch[0].base.wrapperTypes[2]).to.be.equal(2);
-      expect((await manager.getPoolDistributionsForEpoch(pool.address, startTime + 3600)).length).to.be.equal(0);
+      expect(
+        (await manager['getPoolDistributionsForEpoch(address,uint32)'](pool.address, startTime + 3600)).length,
+      ).to.be.equal(0);
     });
     it('success - when spans over several epochs', async () => {
       await pool.setToken(agEUR.address, 0);
@@ -863,69 +868,137 @@ contract('DistributionCreator', () => {
         additionalData: web3.utils.soliditySha3('toong') as string,
       };
       await manager.connect(alice).createDistribution(params2);
-      const poolRewardsForEpoch = await manager.getPoolDistributionsForEpoch(pool.address, startTime);
+      const poolRewardsForEpoch = await manager['getPoolDistributionsForEpoch(address,uint32)'](
+        pool.address,
+        startTime,
+      );
       expect(poolRewardsForEpoch.length).to.be.equal(1);
       expect(poolRewardsForEpoch[0].base.positionWrappers[0]).to.be.equal(alice.address);
       expect(poolRewardsForEpoch[0].base.positionWrappers[1]).to.be.equal(bob.address);
       expect(poolRewardsForEpoch[0].base.positionWrappers[2]).to.be.equal(deployer.address);
-      expect((await manager.getPoolDistributionsForEpoch(pool.address, startTime + 3600)).length).to.be.equal(1);
-      expect((await manager.getPoolDistributionsForEpoch(pool.address, startTime + 3600 * 9)).length).to.be.equal(1);
-      expect((await manager.getPoolDistributionsForEpoch(pool.address, startTime + 3600 * 10)).length).to.be.equal(0);
-      const rewardsForEpoch = await manager.getDistributionsForEpoch(startTime);
+      expect(
+        (await manager['getPoolDistributionsForEpoch(address,uint32)'](pool.address, startTime + 3600)).length,
+      ).to.be.equal(1);
+      expect(
+        (await manager['getPoolDistributionsForEpoch(address,uint32)'](pool.address, startTime + 3600 * 9)).length,
+      ).to.be.equal(1);
+      expect(
+        (await manager['getPoolDistributionsForEpoch(address,uint32)'](pool.address, startTime + 3600 * 10)).length,
+      ).to.be.equal(0);
+      const rewardsForEpoch = await manager['getDistributionsForEpoch(uint32)'](startTime);
       expect(rewardsForEpoch.length).to.be.equal(1);
       expect(rewardsForEpoch[0].base.positionWrappers[0]).to.be.equal(alice.address);
       expect(rewardsForEpoch[0].base.positionWrappers[1]).to.be.equal(bob.address);
       expect(rewardsForEpoch[0].base.positionWrappers[2]).to.be.equal(deployer.address);
-      expect((await manager.getDistributionsForEpoch(startTime + 3600)).length).to.be.equal(1);
-      expect((await manager.getDistributionsForEpoch(startTime + 3600 * 9)).length).to.be.equal(1);
-      expect((await manager.getDistributionsForEpoch(startTime + 3600 * 10)).length).to.be.equal(0);
+      expect((await manager['getDistributionsForEpoch(uint32)'](startTime + 3600)).length).to.be.equal(1);
+      expect((await manager['getDistributionsForEpoch(uint32)'](startTime + 3600 * 9)).length).to.be.equal(1);
+      expect((await manager['getDistributionsForEpoch(uint32)'](startTime + 3600 * 10)).length).to.be.equal(0);
 
       expect(
-        (await manager.getDistributionsBetweenEpochs(startTime + 3600 * 9, startTime + 3600 * 10)).length,
-      ).to.be.equal(1);
-      expect(
-        (await manager.getDistributionsBetweenEpochs(startTime + 3600 * 10, startTime + 3600 * 13)).length,
-      ).to.be.equal(0);
-      expect((await manager.getDistributionsBetweenEpochs(startTime - 1, startTime)).length).to.be.equal(0);
-      expect((await manager.getDistributionsBetweenEpochs(startTime - 1, startTime + 3600)).length).to.be.equal(1);
-      expect((await manager.getDistributionsBetweenEpochs(startTime - 1, startTime + 3600 * 11)).length).to.be.equal(1);
-      expect(
-        (await manager.getDistributionsBetweenEpochs(startTime + 3600 * 4, startTime + 3600 * 9)).length,
-      ).to.be.equal(1);
-      expect(
-        (await manager.getPoolDistributionsBetweenEpochs(pool.address, startTime - 1, startTime)).length,
-      ).to.be.equal(0);
-      expect(
-        (await manager.getPoolDistributionsBetweenEpochs(pool.address, startTime - 1, startTime + 3600)).length,
-      ).to.be.equal(1);
-      expect(
-        (await manager.getPoolDistributionsBetweenEpochs(pool.address, startTime - 1, startTime + 3600 * 11)).length,
-      ).to.be.equal(1);
-      expect(
-        (await manager.getPoolDistributionsBetweenEpochs(pool.address, startTime + 3600 * 4, startTime + 3600 * 9))
+        (await manager['getDistributionsBetweenEpochs(uint32,uint32)'](startTime + 3600 * 9, startTime + 3600 * 10))
           .length,
       ).to.be.equal(1);
       expect(
-        (await manager.getPoolDistributionsBetweenEpochs(alice.address, startTime - 1, startTime + 3600)).length,
-      ).to.be.equal(0);
-      expect(
-        (await manager.getPoolDistributionsBetweenEpochs(alice.address, startTime - 1, startTime + 3600 * 11)).length,
-      ).to.be.equal(0);
-      expect(
-        (await manager.getPoolDistributionsBetweenEpochs(alice.address, startTime + 3600 * 4, startTime + 3600 * 9))
+        (await manager['getDistributionsBetweenEpochs(uint32,uint32)'](startTime + 3600 * 10, startTime + 3600 * 13))
           .length,
       ).to.be.equal(0);
-      expect((await manager.getDistributionsAfterEpoch(startTime)).length).to.be.equal(1);
-      expect((await manager.getDistributionsAfterEpoch(0)).length).to.be.equal(1);
-      expect((await manager.getDistributionsAfterEpoch(startTime + 3600 * 9)).length).to.be.equal(1);
-      expect((await manager.getDistributionsAfterEpoch(startTime + 3600 * 10)).length).to.be.equal(0);
-      expect((await manager.getPoolDistributionsAfterEpoch(pool.address, startTime)).length).to.be.equal(1);
-      expect((await manager.getPoolDistributionsAfterEpoch(pool.address, 0)).length).to.be.equal(1);
-      expect((await manager.getPoolDistributionsAfterEpoch(pool.address, startTime + 3600 * 9)).length).to.be.equal(1);
-      expect((await manager.getPoolDistributionsAfterEpoch(pool.address, startTime + 3600 * 10)).length).to.be.equal(0);
-      expect((await manager.getPoolDistributionsAfterEpoch(alice.address, startTime)).length).to.be.equal(0);
-      expect((await manager.getPoolDistributionsAfterEpoch(alice.address, 0)).length).to.be.equal(0);
-      expect((await manager.getPoolDistributionsAfterEpoch(alice.address, startTime + 3600 * 9)).length).to.be.equal(0);
+      expect(
+        (await manager['getDistributionsBetweenEpochs(uint32,uint32)'](startTime - 1, startTime)).length,
+      ).to.be.equal(0);
+      expect(
+        (await manager['getDistributionsBetweenEpochs(uint32,uint32)'](startTime - 1, startTime + 3600)).length,
+      ).to.be.equal(1);
+      expect(
+        (await manager['getDistributionsBetweenEpochs(uint32,uint32)'](startTime - 1, startTime + 3600 * 11)).length,
+      ).to.be.equal(1);
+      expect(
+        (await manager['getDistributionsBetweenEpochs(uint32,uint32)'](startTime + 3600 * 4, startTime + 3600 * 9))
+          .length,
+      ).to.be.equal(1);
+      expect(
+        (
+          await manager['getPoolDistributionsBetweenEpochs(address,uint32,uint32)'](
+            pool.address,
+            startTime - 1,
+            startTime,
+          )
+        ).length,
+      ).to.be.equal(0);
+      expect(
+        (
+          await manager['getPoolDistributionsBetweenEpochs(address,uint32,uint32)'](
+            pool.address,
+            startTime - 1,
+            startTime + 3600,
+          )
+        ).length,
+      ).to.be.equal(1);
+      expect(
+        (
+          await manager['getPoolDistributionsBetweenEpochs(address,uint32,uint32)'](
+            pool.address,
+            startTime - 1,
+            startTime + 3600 * 11,
+          )
+        ).length,
+      ).to.be.equal(1);
+      expect(
+        (
+          await manager['getPoolDistributionsBetweenEpochs(address,uint32,uint32)'](
+            pool.address,
+            startTime + 3600 * 4,
+            startTime + 3600 * 9,
+          )
+        ).length,
+      ).to.be.equal(1);
+      expect(
+        (
+          await manager['getPoolDistributionsBetweenEpochs(address,uint32,uint32)'](
+            alice.address,
+            startTime - 1,
+            startTime + 3600,
+          )
+        ).length,
+      ).to.be.equal(0);
+      expect(
+        (
+          await manager['getPoolDistributionsBetweenEpochs(address,uint32,uint32)'](
+            alice.address,
+            startTime - 1,
+            startTime + 3600 * 11,
+          )
+        ).length,
+      ).to.be.equal(0);
+      expect(
+        (
+          await manager['getPoolDistributionsBetweenEpochs(address,uint32,uint32)'](
+            alice.address,
+            startTime + 3600 * 4,
+            startTime + 3600 * 9,
+          )
+        ).length,
+      ).to.be.equal(0);
+      expect((await manager['getDistributionsAfterEpoch(uint32)'](startTime)).length).to.be.equal(1);
+      expect((await manager['getDistributionsAfterEpoch(uint32)'](0)).length).to.be.equal(1);
+      expect((await manager['getDistributionsAfterEpoch(uint32)'](startTime + 3600 * 9)).length).to.be.equal(1);
+      expect((await manager['getDistributionsAfterEpoch(uint32)'](startTime + 3600 * 10)).length).to.be.equal(0);
+      expect(
+        (await manager['getPoolDistributionsAfterEpoch(address,uint32)'](pool.address, startTime)).length,
+      ).to.be.equal(1);
+      expect((await manager['getPoolDistributionsAfterEpoch(address,uint32)'](pool.address, 0)).length).to.be.equal(1);
+      expect(
+        (await manager['getPoolDistributionsAfterEpoch(address,uint32)'](pool.address, startTime + 3600 * 9)).length,
+      ).to.be.equal(1);
+      expect(
+        (await manager['getPoolDistributionsAfterEpoch(address,uint32)'](pool.address, startTime + 3600 * 10)).length,
+      ).to.be.equal(0);
+      expect(
+        (await manager['getPoolDistributionsAfterEpoch(address,uint32)'](alice.address, startTime)).length,
+      ).to.be.equal(0);
+      expect((await manager['getPoolDistributionsAfterEpoch(address,uint32)'](alice.address, 0)).length).to.be.equal(0);
+      expect(
+        (await manager['getPoolDistributionsAfterEpoch(address,uint32)'](alice.address, startTime + 3600 * 9)).length,
+      ).to.be.equal(0);
     });
   });
   describe('createDistributions', () => {
@@ -1030,126 +1103,204 @@ contract('DistributionCreator', () => {
 
       expect((await manager.getAllDistributions()).length).to.be.equal(4);
 
-      const activeRewards = await manager.getActiveDistributions();
+      const activeRewards = await manager['getActiveDistributions()']();
       expect(activeRewards.length).to.be.equal(1);
       expect(activeRewards[0].base.amount).to.be.equal(parseEther('0.9'));
 
-      const activePoolRewards = await manager.getActivePoolDistributions(pool.address);
+      const activePoolRewards = await manager['getActivePoolDistributions(address)'](pool.address);
       expect(activePoolRewards.length).to.be.equal(1);
       expect(activePoolRewards[0].base.amount).to.be.equal(parseEther('0.9'));
-      expect(await manager.getActivePoolDistributions(mockPool.address));
+      expect(await manager['getActivePoolDistributions(address)'](mockPool.address));
 
-      const epochRewards0 = await manager.getDistributionsForEpoch(startTime + 3600);
+      const epochRewards0 = await manager['getDistributionsForEpoch(uint32)'](startTime + 3600);
       expect(epochRewards0.length).to.be.equal(2);
       expect(epochRewards0[0].base.amount).to.be.equal(parseEther('0.9'));
       expect(epochRewards0[1].base.amount).to.be.equal(parseEther('1.8'));
 
-      const epochRewards1 = await manager.getDistributionsForEpoch(startTime + 3600 * 2);
+      const epochRewards1 = await manager['getDistributionsForEpoch(uint32)'](startTime + 3600 * 2);
       expect(epochRewards1.length).to.be.equal(2);
       expect(epochRewards1[0].base.amount).to.be.equal(parseEther('0.9'));
       expect(epochRewards1[1].base.amount).to.be.equal(parseEther('2.7'));
 
-      const epochRewards2 = await manager.getDistributionsForEpoch(startTime + 3600 * 3);
+      const epochRewards2 = await manager['getDistributionsForEpoch(uint32)'](startTime + 3600 * 3);
       expect(epochRewards2.length).to.be.equal(1);
       expect(epochRewards2[0].base.amount).to.be.equal(parseEther('2.7'));
 
-      const epochRewards3 = await manager.getDistributionsForEpoch(startTime + 3600 * 10);
+      const epochRewards3 = await manager['getDistributionsForEpoch(uint32)'](startTime + 3600 * 10);
       expect(epochRewards3.length).to.be.equal(1);
       expect(epochRewards3[0].base.amount).to.be.equal(parseEther('3.6'));
 
-      const poolRewards0 = await manager.getPoolDistributionsForEpoch(pool.address, startTime + 3600);
+      const poolRewards0 = await manager['getPoolDistributionsForEpoch(address,uint32)'](
+        pool.address,
+        startTime + 3600,
+      );
       expect(poolRewards0.length).to.be.equal(1);
       expect(poolRewards0[0].base.amount).to.be.equal(parseEther('0.9'));
 
-      const poolRewards1 = await manager.getPoolDistributionsForEpoch(pool.address, startTime + 3600 * 2);
+      const poolRewards1 = await manager['getPoolDistributionsForEpoch(address,uint32)'](
+        pool.address,
+        startTime + 3600 * 2,
+      );
       expect(poolRewards1.length).to.be.equal(2);
       expect(poolRewards1[0].base.amount).to.be.equal(parseEther('0.9'));
       expect(poolRewards1[1].base.amount).to.be.equal(parseEther('2.7'));
 
-      const poolRewards2 = await manager.getPoolDistributionsForEpoch(pool.address, startTime + 3600 * 3);
+      const poolRewards2 = await manager['getPoolDistributionsForEpoch(address,uint32)'](
+        pool.address,
+        startTime + 3600 * 3,
+      );
       expect(poolRewards2.length).to.be.equal(1);
       expect(poolRewards2[0].base.amount).to.be.equal(parseEther('2.7'));
 
-      const poolRewards3 = await manager.getPoolDistributionsForEpoch(pool.address, startTime + 3600 * 10);
+      const poolRewards3 = await manager['getPoolDistributionsForEpoch(address,uint32)'](
+        pool.address,
+        startTime + 3600 * 10,
+      );
       expect(poolRewards3.length).to.be.equal(0);
 
-      const poolRewards01 = await manager.getPoolDistributionsForEpoch(mockPool.address, startTime + 3600);
+      const poolRewards01 = await manager['getPoolDistributionsForEpoch(address,uint32)'](
+        mockPool.address,
+        startTime + 3600,
+      );
       expect(poolRewards01.length).to.be.equal(1);
       expect(poolRewards01[0].base.amount).to.be.equal(parseEther('1.8'));
 
-      const poolRewards11 = await manager.getPoolDistributionsForEpoch(mockPool.address, startTime + 3600 * 2);
+      const poolRewards11 = await manager['getPoolDistributionsForEpoch(address,uint32)'](
+        mockPool.address,
+        startTime + 3600 * 2,
+      );
       expect(poolRewards11.length).to.be.equal(0);
 
-      const poolRewards21 = await manager.getPoolDistributionsForEpoch(mockPool.address, startTime + 3600 * 3);
+      const poolRewards21 = await manager['getPoolDistributionsForEpoch(address,uint32)'](
+        mockPool.address,
+        startTime + 3600 * 3,
+      );
       expect(poolRewards21.length).to.be.equal(0);
 
-      const poolRewards31 = await manager.getPoolDistributionsForEpoch(mockPool.address, startTime + 3600 * 10);
+      const poolRewards31 = await manager['getPoolDistributionsForEpoch(address,uint32)'](
+        mockPool.address,
+        startTime + 3600 * 10,
+      );
       expect(poolRewards31.length).to.be.equal(1);
       expect(poolRewards31[0].base.amount).to.be.equal(parseEther('3.6'));
 
       expect(
-        (await manager.getDistributionsBetweenEpochs(startTime + 3600 * 9, startTime + 3600 * 10)).length,
-      ).to.be.equal(0);
-      expect((await manager.getDistributionsBetweenEpochs(startTime, startTime + 3600 * 2)).length).to.be.equal(2);
-      expect((await manager.getDistributionsBetweenEpochs(startTime, startTime + 3600 * 3)).length).to.be.equal(3);
-      expect(
-        (await manager.getDistributionsBetweenEpochs(startTime + 3600 * 2, startTime + 3600 * 3)).length,
-      ).to.be.equal(2);
-      expect(
-        (await manager.getDistributionsBetweenEpochs(startTime + 3600 * 4, startTime + 3600 * 11)).length,
-      ).to.be.equal(2);
-      expect(
-        (await manager.getDistributionsBetweenEpochs(startTime + 3600 * 4, startTime + 3600 * 10)).length,
-      ).to.be.equal(1);
-      expect(
-        (await manager.getDistributionsBetweenEpochs(startTime + 3600 * 10, startTime + 3600 * 12)).length,
-      ).to.be.equal(1);
-      expect((await manager.getDistributionsAfterEpoch(startTime)).length).to.be.equal(4);
-      expect((await manager.getDistributionsAfterEpoch(startTime + 3600 * 2)).length).to.be.equal(3);
-      expect((await manager.getDistributionsAfterEpoch(startTime + 3600 * 3)).length).to.be.equal(2);
-      expect((await manager.getDistributionsAfterEpoch(startTime + 3600 * 5)).length).to.be.equal(1);
-      expect((await manager.getDistributionsAfterEpoch(startTime + 3600 * 13)).length).to.be.equal(0);
-      expect(
-        (await manager.getPoolDistributionsBetweenEpochs(pool.address, startTime, startTime + 3600)).length,
-      ).to.be.equal(1);
-      expect(
-        (await manager.getPoolDistributionsBetweenEpochs(pool.address, startTime, startTime + 2 * 3600)).length,
-      ).to.be.equal(1);
-      expect(
-        (await manager.getPoolDistributionsBetweenEpochs(mockPool.address, startTime, startTime + 2 * 3600)).length,
-      ).to.be.equal(1);
-      expect(
-        (await manager.getPoolDistributionsBetweenEpochs(mockPool.address, startTime + 3 * 3600, startTime + 10 * 3600))
+        (await manager['getDistributionsBetweenEpochs(uint32,uint32)'](startTime + 3600 * 9, startTime + 3600 * 10))
           .length,
       ).to.be.equal(0);
       expect(
-        (await manager.getPoolDistributionsBetweenEpochs(pool.address, startTime, startTime + 3 * 3600)).length,
+        (await manager['getDistributionsBetweenEpochs(uint32,uint32)'](startTime, startTime + 3600 * 2)).length,
       ).to.be.equal(2);
       expect(
-        (await manager.getPoolDistributionsBetweenEpochs(pool.address, startTime + 3 * 3600, startTime + 100 * 3600))
+        (await manager['getDistributionsBetweenEpochs(uint32,uint32)'](startTime, startTime + 3600 * 3)).length,
+      ).to.be.equal(3);
+      expect(
+        (await manager['getDistributionsBetweenEpochs(uint32,uint32)'](startTime + 3600 * 2, startTime + 3600 * 3))
           .length,
+      ).to.be.equal(2);
+      expect(
+        (await manager['getDistributionsBetweenEpochs(uint32,uint32)'](startTime + 3600 * 4, startTime + 3600 * 11))
+          .length,
+      ).to.be.equal(2);
+      expect(
+        (await manager['getDistributionsBetweenEpochs(uint32,uint32)'](startTime + 3600 * 4, startTime + 3600 * 10))
+          .length,
+      ).to.be.equal(1);
+      expect(
+        (await manager['getDistributionsBetweenEpochs(uint32,uint32)'](startTime + 3600 * 10, startTime + 3600 * 12))
+          .length,
+      ).to.be.equal(1);
+      expect((await manager['getDistributionsAfterEpoch(uint32)'](startTime)).length).to.be.equal(4);
+      expect((await manager['getDistributionsAfterEpoch(uint32)'](startTime + 3600 * 2)).length).to.be.equal(3);
+      expect((await manager['getDistributionsAfterEpoch(uint32)'](startTime + 3600 * 3)).length).to.be.equal(2);
+      expect((await manager['getDistributionsAfterEpoch(uint32)'](startTime + 3600 * 5)).length).to.be.equal(1);
+      expect((await manager['getDistributionsAfterEpoch(uint32)'](startTime + 3600 * 13)).length).to.be.equal(0);
+      expect(
+        (
+          await manager['getPoolDistributionsBetweenEpochs(address,uint32,uint32)'](
+            pool.address,
+            startTime,
+            startTime + 3600,
+          )
+        ).length,
       ).to.be.equal(1);
       expect(
         (
-          await manager.getPoolDistributionsBetweenEpochs(
+          await manager['getPoolDistributionsBetweenEpochs(address,uint32,uint32)'](
+            pool.address,
+            startTime,
+            startTime + 2 * 3600,
+          )
+        ).length,
+      ).to.be.equal(1);
+      expect(
+        (
+          await manager['getPoolDistributionsBetweenEpochs(address,uint32,uint32)'](
+            mockPool.address,
+            startTime,
+            startTime + 2 * 3600,
+          )
+        ).length,
+      ).to.be.equal(1);
+      expect(
+        (
+          await manager['getPoolDistributionsBetweenEpochs(address,uint32,uint32)'](
+            mockPool.address,
+            startTime + 3 * 3600,
+            startTime + 10 * 3600,
+          )
+        ).length,
+      ).to.be.equal(0);
+      expect(
+        (
+          await manager['getPoolDistributionsBetweenEpochs(address,uint32,uint32)'](
+            pool.address,
+            startTime,
+            startTime + 3 * 3600,
+          )
+        ).length,
+      ).to.be.equal(2);
+      expect(
+        (
+          await manager['getPoolDistributionsBetweenEpochs(address,uint32,uint32)'](
+            pool.address,
+            startTime + 3 * 3600,
+            startTime + 100 * 3600,
+          )
+        ).length,
+      ).to.be.equal(1);
+      expect(
+        (
+          await manager['getPoolDistributionsBetweenEpochs(address,uint32,uint32)'](
             mockPool.address,
             startTime + 3 * 3600,
             startTime + 100 * 3600,
           )
         ).length,
       ).to.be.equal(1);
-      expect((await manager.getPoolDistributionsAfterEpoch(pool.address, startTime)).length).to.be.equal(2);
-      expect((await manager.getPoolDistributionsAfterEpoch(pool.address, startTime + 3600 * 2)).length).to.be.equal(2);
-      expect((await manager.getPoolDistributionsAfterEpoch(pool.address, startTime + 3600 * 3)).length).to.be.equal(1);
-      expect((await manager.getPoolDistributionsAfterEpoch(pool.address, startTime + 3600 * 5)).length).to.be.equal(0);
-      expect((await manager.getPoolDistributionsAfterEpoch(mockPool.address, startTime + 3600 * 1)).length).to.be.equal(
-        2,
-      );
-      expect((await manager.getPoolDistributionsAfterEpoch(mockPool.address, startTime + 3600 * 2)).length).to.be.equal(
-        1,
-      );
       expect(
-        (await manager.getPoolDistributionsAfterEpoch(mockPool.address, startTime + 3600 * 13)).length,
+        (await manager['getPoolDistributionsAfterEpoch(address,uint32)'](pool.address, startTime)).length,
+      ).to.be.equal(2);
+      expect(
+        (await manager['getPoolDistributionsAfterEpoch(address,uint32)'](pool.address, startTime + 3600 * 2)).length,
+      ).to.be.equal(2);
+      expect(
+        (await manager['getPoolDistributionsAfterEpoch(address,uint32)'](pool.address, startTime + 3600 * 3)).length,
+      ).to.be.equal(1);
+      expect(
+        (await manager['getPoolDistributionsAfterEpoch(address,uint32)'](pool.address, startTime + 3600 * 5)).length,
+      ).to.be.equal(0);
+      expect(
+        (await manager['getPoolDistributionsAfterEpoch(address,uint32)'](mockPool.address, startTime + 3600 * 1))
+          .length,
+      ).to.be.equal(2);
+      expect(
+        (await manager['getPoolDistributionsAfterEpoch(address,uint32)'](mockPool.address, startTime + 3600 * 2))
+          .length,
+      ).to.be.equal(1);
+      expect(
+        (await manager['getPoolDistributionsAfterEpoch(address,uint32)'](mockPool.address, startTime + 3600 * 13))
+          .length,
       ).to.be.equal(0);
     });
   });
