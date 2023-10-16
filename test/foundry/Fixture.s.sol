@@ -4,14 +4,18 @@ pragma solidity ^0.8.17;
 
 import { Test, stdError } from "forge-std/Test.sol";
 import { IERC20, IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
+import "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import { DistributionCreator } from "../../contracts/DistributionCreator.sol";
 import { MockTokenPermit } from "../../contracts/mock/MockTokenPermit.sol";
 import { MockUniswapV3Pool } from "../../contracts/mock/MockUniswapV3Pool.sol";
 import { MockCoreBorrow } from "../../contracts/mock/MockCoreBorrow.sol";
 import { ICore } from "../../contracts/interfaces/ICore.sol";
+import "../../contracts/utils/UUPSHelper.sol";
 import { console } from "forge-std/console.sol";
 
 contract Fixture is Test {
+    uint32 public constant EPOCH_DURATION = 3600;
+
     MockTokenPermit public angle;
     MockTokenPermit public agEUR;
     MockTokenPermit public token0;
@@ -19,6 +23,7 @@ contract Fixture is Test {
 
     MockCoreBorrow public coreBorrow;
     MockUniswapV3Pool public pool;
+    DistributionCreator public creatorImpl;
     DistributionCreator public creator;
 
     address public alice;
@@ -58,7 +63,8 @@ contract Fixture is Test {
         pool = new MockUniswapV3Pool();
 
         // DistributionCreator
-        creator = new DistributionCreator();
+        creatorImpl = new DistributionCreator();
+        creator = DistributionCreator(deployUUPS(address(creatorImpl), hex""));
 
         // Set
         pool.setToken(address(token0), 0);
@@ -66,5 +72,13 @@ contract Fixture is Test {
         coreBorrow.toggleGuardian(address(guardian));
         coreBorrow.toggleGovernor(address(governor));
         creator.initialize(ICore(address(coreBorrow)), address(bob), 1e8);
+    }
+
+    /*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                                                         UTILS                                                      
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+
+    function deployUUPS(address implementation, bytes memory data) public returns (address) {
+        return address(new ERC1967Proxy(implementation, data));
     }
 }
