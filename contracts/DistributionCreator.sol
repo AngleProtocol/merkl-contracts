@@ -306,10 +306,12 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         );
     }
 
-    /// @notice Returns the list of all currently active distributions on pools of supported AMMs (like Uniswap V3)
     /// @param skip Disregard distibutions with a global index lower than `skip`
-    /// @param first Limit the lenght of the returned array to `first`
-    /// @dev Similar to `getActiveDistributions()` with additional parameters to prevent out of gas error
+    /// @param first Limit the length of the returned array to `first`
+    /// @return searchDistributions Eligible distributions
+    /// @return lastIndexDistribution Index of the last distribution assessed in the list of all distributions
+    /// For pagniation purpose, in case of out of gas, you can call back the same function but with `skip` set to `lastIndexDistribution`
+    /// @notice Similar to `getActiveDistributions()` with additional parameters to prevent out of gas error
     function getActiveDistributions(
         uint32 skip,
         uint32 first
@@ -359,11 +361,12 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         );
     }
 
-    /// @notice Returns the list of all the distributions that were or that are going to be live at
-    /// a specific epoch
+    /// @notice Similar to `getDistributionsForEpoch(uint256 epoch)` with additional parameters to prevent out of gas error
     /// @param skip Disregard distibutions with a global index lower than `skip`
-    /// @param first Limit the lenght of the returned array to `first`
-    /// @dev Similar to `getDistributionsForEpoch(uint256 epoch)` with additional parameters to prevent out of gas error
+    /// @param first Limit the length of the returned array to `first`
+    /// @return searchDistributions Eligible distributions
+    /// @return lastIndexDistribution Index of the last distribution assessed in the list of all distributions
+    /// For pagniation purpose, in case of out of gas, you can call back the same function but with `skip` set to `lastIndexDistribution`
     function getDistributionsForEpoch(
         uint32 epoch,
         uint32 skip,
@@ -389,10 +392,12 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         );
     }
 
-    /// @notice Gets the distributions that were or will be live at some point between `epochStart` (included) and `epochEnd` (excluded)
+    /// @notice Similar to `getDistributionsBetweenEpochs(uint256 epochStart, uint256 epochEnd)` with additional parameters to prevent out of gas error
     /// @param skip Disregard distibutions with a global index lower than `skip`
-    /// @param first Limit the lenght of the returned array to `first`
-    /// @dev Similar to `getDistributionsBetweenEpochs(uint256 epochStart, uint256 epochEnd)` with additional parameters to prevent out of gas error
+    /// @param first Limit the length of the returned array to `first`
+    /// @return searchDistributions Eligible distributions
+    /// @return lastIndexDistribution Index of the last distribution assessed in the list of all distributions
+    /// For pagniation purpose, in case of out of gas, you can call back the same function but with `skip` set to `lastIndexDistribution`
     function getDistributionsBetweenEpochs(
         uint32 epochStart,
         uint32 epochEnd,
@@ -422,10 +427,12 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         );
     }
 
-    /// @notice Returns the list of all distributions that were or will be live after `epochStart` (included)
+    /// @notice Similar to `getDistributionsAfterEpoch(uint256 epochStart)` with additional parameters to prevent out of gas error
     /// @param skip Disregard distibutions with a global index lower than `skip`
-    /// @param first Limit the lenght of the returned array to `first`
-    /// @dev Similar to `getDistributionsAfterEpoch(uint256 epochStart)` with additional parameters to prevent out of gas error
+    /// @param first Limit the length of the returned array to `first`
+    /// @return searchDistributions Eligible distributions
+    /// @return lastIndexDistribution Index of the last distribution assessed in the list of all distributions
+    /// For pagniation purpose, in case of out of gas, you can call back the same function but with `skip` set to `lastIndexDistribution`
     function getDistributionsAfterEpoch(
         uint32 epochStart,
         uint32 skip,
@@ -449,10 +456,12 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         );
     }
 
-    /// @notice Returns the list of all currently active distributions for a specific UniswapV3 pool
+    /// @notice Similar to `getActivePoolDistributions(address uniV3Pool)` with additional parameters to prevent out of gas error
     /// @param skip Disregard distibutions with a global index lower than `skip`
-    /// @param first Limit the lenght of the returned array to `first`
-    /// @dev Similar to `getActivePoolDistributions(address uniV3Pool)` with additional parameters to prevent out of gas error
+    /// @param first Limit the length of the returned array to `first`
+    /// @return searchDistributions Eligible distributions
+    /// @return lastIndexDistribution Index of the last distribution assessed in the list of all distributions
+    /// For pagniation purpose, in case of out of gas, you can call back the same function but with `skip` set to `lastIndexDistribution`
     function getActivePoolDistributions(
         address uniV3Pool,
         uint32 skip,
@@ -478,11 +487,12 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         );
     }
 
-    /// @notice Returns the list of all the distributions that were or that are going to be live at a
-    /// specific epoch and for a specific pool
+    /// @notice Similar to `getPoolDistributionsForEpoch(address uniV3Pool,uint32 epoch)` with additional parameters to prevent out of gas error
     /// @param skip Disregard distibutions with a global index lower than `skip`
-    /// @param first Limit the lenght of the returned array to `first`
-    /// @dev Similar to `getPoolDistributionsForEpoch(address uniV3Pool,uint32 epoch)` with additional parameters to prevent out of gas error
+    /// @param first Limit the length of the returned array to `first`
+    /// @return searchDistributions Eligible distributions
+    /// @return lastIndexDistribution Index of the last distribution assessed in the list of all distributions
+    /// For pagniation purpose, in case of out of gas, you can call back the same function but with `skip` set to `lastIndexDistribution`
     function getPoolDistributionsForEpoch(
         address uniV3Pool,
         uint32 epoch,
@@ -509,12 +519,12 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         );
     }
 
-    /// @notice Returns the list of all distributions that were or will be live at some point between
-    /// `epochStart` (included) and `epochEnd` (excluded) for a specific pool
-    /// specific epoch and for a specific pool
+    /// @notice Similar to `getPoolDistributionsBetweenEpochs(address uniV3Pool,uint32 epochStart, uint32 epochEnd)` with additional parameters to prevent out of gas error
     /// @param skip Disregard distibutions with a global index lower than `skip`
-    /// @param first Limit the lenght of the returned array to `first`
-    /// @dev Similar to `getPoolDistributionsBetweenEpochs(address uniV3Pool,uint32 epochStart, uint32 epochEnd)` with additional parameters to prevent out of gas error
+    /// @param first Limit the length of the returned array to `first`
+    /// @return searchDistributions Eligible distributions
+    /// @return lastIndexDistribution Index of the last distribution assessed in the list of all distributions
+    /// For pagniation purpose, in case of out of gas, you can call back the same function but with `skip` set to `lastIndexDistribution`
     function getPoolDistributionsBetweenEpochs(
         address uniV3Pool,
         uint32 epochStart,
@@ -547,11 +557,12 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         );
     }
 
-    /// @notice Returns the list of all distributions that were or will be live after `epochStart` (included)
-    /// for a specific pool
+    /// @notice Similar to `getPoolDistributionsAfterEpoch(address uniV3Pool,uint32 epochStart)` with additional parameters to prevent out of gas error
     /// @param skip Disregard distibutions with a global index lower than `skip`
-    /// @param first Limit the lenght of the returned array to `first`
-    /// @dev Similar to `getPoolDistributionsAfterEpoch(address uniV3Pool,uint32 epochStart)` with additional parameters to prevent out of gas error
+    /// @param first Limit the length of the returned array to `first`
+    /// @return searchDistributions Eligible distributions
+    /// @return lastIndexDistribution Index of the last distribution assessed in the list of all distributions
+    /// For pagniation purpose, in case of out of gas, you can call back the same function but with `skip` set to `lastIndexDistribution`
     function getPoolDistributionsAfterEpoch(
         address uniV3Pool,
         uint32 epochStart,
