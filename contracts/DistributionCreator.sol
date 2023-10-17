@@ -306,12 +306,12 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         );
     }
 
+    /// @notice Similar to `getActiveDistributions()` with additional parameters to prevent out of gas error
     /// @param skip Disregard distibutions with a global index lower than `skip`
     /// @param first Limit the length of the returned array to `first`
     /// @return searchDistributions Eligible distributions
     /// @return lastIndexDistribution Index of the last distribution assessed in the list of all distributions
     /// For pagniation purpose, in case of out of gas, you can call back the same function but with `skip` set to `lastIndexDistribution`
-    /// @notice Similar to `getActiveDistributions()` with additional parameters to prevent out of gas error
     function getActiveDistributions(
         uint32 skip,
         uint32 first
