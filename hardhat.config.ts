@@ -116,8 +116,8 @@ const config: HardhatUserConfig = {
         url: nodeUrl('polygonzkevm'),
         blockNumber: 3214816,
         */
-        url: nodeUrl('base'),
-        blockNumber: 2191026,
+        url: nodeUrl('mantle'),
+        blockNumber: 14188687,
       },
       mining: argv.disableAutoMining
         ? {
@@ -275,6 +275,45 @@ const config: HardhatUserConfig = {
       verify: {
         etherscan: {
           apiKey: etherscanKey('base'),
+        },
+      },
+    },
+    linea: {
+      live: true,
+      url: nodeUrl('linea'),
+      accounts: accounts('linea'),
+      gas: 'auto',
+      gasMultiplier: 1.3,
+      chainId: 59144,
+      verify: {
+        etherscan: {
+          apiKey: etherscanKey('linea'),
+        },
+      },
+    },
+    zksync: {
+      live: true,
+      url: nodeUrl('zksync'),
+      accounts: accounts('zksync'),
+      gas: 'auto',
+      gasMultiplier: 1.3,
+      chainId: 324,
+      verify: {
+        etherscan: {
+          apiKey: etherscanKey('zksync'),
+        },
+      },
+    },
+    mantle: {
+      live: true,
+      url: nodeUrl('mantle'),
+      accounts: accounts('mantle'),
+      gas: 'auto',
+      gasMultiplier: 1.3,
+      chainId: 5000,
+      verify: {
+        etherscan: {
+          apiKey: etherscanKey('mantle'),
         },
       },
     },

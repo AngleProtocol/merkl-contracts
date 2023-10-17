@@ -62,7 +62,7 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
 
   In the `DistributionCreator` contract:
   - `toggleTokenWhitelist` -> for agEUR
-  - `setRewardTokenMinAmounts` -> for OP (on Optimism), and ANGLE on all chains
+  - `setRewardTokenMinAmounts`
   - `setFeeRecipient -> angleLabs
   - `setMessage` ->
 
@@ -71,7 +71,6 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
   - `setDisputeToken` -> should we activate dispute periods
   - `setDisputePeriod`
   - `setDisputeAmount`
-
   */
 };
 
