@@ -19,6 +19,8 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
     core = registry(network.config.chainId as ChainId)?.Merkl?.CoreMerkl!;
   }
 
+  console.log(deployer.address);
+
   console.log('Now deploying DistributionCreator');
   console.log('Starting with the implementation');
   console.log('deployer ', await deployer.getBalance());
