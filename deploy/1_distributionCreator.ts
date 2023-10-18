@@ -21,7 +21,7 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
 
   console.log('Now deploying DistributionCreator');
   console.log('Starting with the implementation');
-
+  console.log('deployer ', await deployer.getBalance());
   await deploy('DistributionCreator_Implementation_7', {
     contract: 'DistributionCreator',
     from: deployer.address,

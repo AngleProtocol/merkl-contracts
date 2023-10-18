@@ -116,8 +116,8 @@ const config: HardhatUserConfig = {
         url: nodeUrl('polygonzkevm'),
         blockNumber: 3214816,
         */
-        url: nodeUrl('mantle'),
-        blockNumber: 14188687,
+        url: nodeUrl('linea'),
+        // blockNumber: 14188687,
       },
       mining: argv.disableAutoMining
         ? {
