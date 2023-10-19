@@ -15,7 +15,7 @@
     "foundry:test": "forge test -vvv",
     "hardhat:compile": "hardhat compile",
     "hardhat:coverage": "hardhat coverage",
-    "hardhat:deploy": "hardhat deploy --network polygon --tags",
+    "hardhat:deploy": "hardhat deploy --network linea --tags",
     "hardhat:test": "hardhat test",
     "check-upgradeability": "hardhat run scripts/checkUpgradeability.ts",
     "license": "hardhat prepend-spdx-license",

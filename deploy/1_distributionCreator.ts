@@ -17,46 +17,47 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
   } else {
     // Otherwise, we're using the proxy admin address from the desired network
     core = registry(network.config.chainId as ChainId)?.Merkl?.CoreMerkl!;
-    core = '0xC16B81Af351BA9e64C1a069E3Ab18c244A1E3049';
   }
+
+  console.log(deployer.address);
 
   console.log('Now deploying DistributionCreator');
   console.log('Starting with the implementation');
-
-  await deploy('DistributionCreator_Implementation_4', {
+  console.log('deployer ', await deployer.getBalance());
+  await deploy('DistributionCreator_Implementation_7', {
     contract: 'DistributionCreator',
     from: deployer.address,
     log: !argv.ci,
   });
 
-  const implementationAddress = (await ethers.getContract('DistributionCreator_Implementation_4')).address;
+  const implementationAddress = (await ethers.getContract('DistributionCreator_Implementation_7')).address;
 
   console.log(`Successfully deployed the implementation for DistributionCreator at ${implementationAddress}`);
   console.log('');
 
-  const distributor = (await deployments.get('Distributor')).address;
-  console.log('Now deploying the Proxy');
+  // const distributor = (await deployments.get('Distributor')).address;
+  // console.log('Now deploying the Proxy');
 
-  await deploy('DistributionCreator', {
-    contract: 'ERC1967Proxy',
-    from: deployer.address,
-    args: [implementationAddress, '0x'],
-    log: !argv.ci,
-  });
+  // await deploy('DistributionCreator', {
+  //   contract: 'ERC1967Proxy',
+  //   from: deployer.address,
+  //   args: [implementationAddress, '0x'],
+  //   log: !argv.ci,
+  // });
 
-  const manager = (await deployments.get('DistributionCreator')).address;
-  console.log(`Successfully deployed contract at the address ${manager}`);
-  console.log('Initializing the contract');
-  const contract = new ethers.Contract(
-    manager,
-    DistributionCreator__factory.createInterface(),
-    deployer,
-  ) as DistributionCreator;
+  // const manager = (await deployments.get('DistributionCreator')).address;
+  // console.log(`Successfully deployed contract at the address ${manager}`);
+  // console.log('Initializing the contract');
+  // const contract = new ethers.Contract(
+  //   manager,
+  //   DistributionCreator__factory.createInterface(),
+  //   deployer,
+  // ) as DistributionCreator;
 
-  await (await contract.connect(deployer).initialize(core, distributor, parseAmount.gwei('0.03'))).wait();
-  console.log('Contract successfully initialized');
-  console.log('');
-  console.log(await contract.core());
+  // await (await contract.connect(deployer).initialize(core, distributor, parseAmount.gwei('0.03'))).wait();
+  // console.log('Contract successfully initialized');
+  // console.log('');
+  // console.log(await contract.core());
 
   /* Once good some functions need to be called to have everything setup.
 
@@ -75,5 +76,5 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
 };
 
 func.tags = ['distributionCreator'];
-func.dependencies = ['distributor'];
+func.dependencies = [];
 export default func;
