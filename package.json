@@ -1,5 +1,5 @@
 {
-  "name": "angle-boilerplate",
+  "name": "merkl-contracts",
   "version": "1.0.0",
   "description": "",
   "scripts": {
@@ -31,9 +31,9 @@
   },
   "keywords": [],
   "author": "Angle Core Team",
-  "license": "GPL-3.0",
+  "license": "BUSL-1.1",
   "bugs": {
-    "url": "https://github.com/AngleProtocol/boilerplate/issues"
+    "url": "https://github.com/AngleProtocol/merkl-contracts/issues"
   },
   "devDependencies": {
     "@angleprotocol/sdk": "3.0.87",
