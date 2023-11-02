@@ -1,78 +1,177 @@
-name: Merkl Contracts CI
+name: CI
 
 on:
+  workflow_dispatch:
+  pull_request:
   push:
     branches:
-      - main
-  workflow_dispatch:
-    inputs:
-      workflow_to_run:
-        type: choice
-        description: Which workflow to run?
-        required: true
-        options:
-          - all
-          - hardhat-tests
-          - foundry-tests
-  pull_request:
-    types:
-      - ready_for_review
-      - review_requested
-  pull_request_review:
-    types: [submitted]
-
-defaults:
-  run:
-    shell: bash
+      - "main"
 
 jobs:
-  run-linters:
-    name: Run Linters
-    if: github.ref == 'refs/heads/main' || github.event.review.state == 'approved' || github.event.action == 'ready_for_review' || github.event.action == 'review_requested'
+  lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
         with:
-          node-version: 14
-      - uses: actions/cache@v2
-        with:
-          path: node_modules
-          key: yarn-${{ hashFiles('yarn.lock') }}
-          restore-keys: yarn-
+          node-version: 18
+          cache: "yarn"
+
       - name: Install dependencies
-        run: |
-          npm config set //registry.npmjs.org/
-          yarn install --frozen-lockfile
+        run: yarn install
+
       - name: Run solhint
-        run: yarn solhint --fix --max-warnings 20 'contracts/**/*.sol'
-      - name: Run eslint
-        run: yarn eslint --ignore-path .gitignore --fix --max-warnings 30 'test/**/*.{js,ts}' '*.{js,ts}'
+        run: yarn lint:check
+
+      - name: "Add lint summary"
+        run: |
+          echo "## Lint result" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Passed" >> $GITHUB_STEP_SUMMARY
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: "recursive"
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: "yarn"
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Compile hardhat
+        run: yarn hardhat:compile
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: nightly
+
+      - name: Compile foundry
+        run: yarn foundry:compile --sizes
+
+      - name: "Cache the build so that it can be re-used by the other jobs"
+        uses: "actions/cache/save@v3"
+        with:
+          key: "build-${{ github.sha }}"
+          path: |
+            cache-forge
+            out
+            cache-hh
+            artifacts
+            typechain
+            node_modules
+
+      - name: "Add build summary"
+        run: |
+          echo "## Build result" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Passed" >> $GITHUB_STEP_SUMMARY
 
   hardhat-tests:
-    name: Run Hardhat Tests
-    if: github.ref == 'refs/heads/main' || github.event.inputs.workflow_to_run == 'all' || github.event.inputs.workflow_to_run == 'hardhat-tests' || github.event.review.state == 'approved' || github.event.action == 'ready_for_review' || github.event.action == 'review_requested'
+    needs: ["build", "lint"]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: 14
-      - uses: actions/cache@v2
-        with:
-          path: node_modules
-          key: yarn-${{ hashFiles('yarn.lock') }}
-          restore-keys: yarn-
-      - name: Install dependencies
-        run: |
-          npm config set //registry.npmjs.org/
-          yarn install --frozen-lockfile
+      - uses: actions/checkout@v3
 
-      - name: Compile
-        run: yarn hardhat:compile
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: "yarn"
+
+      - name: "Restore the cached build"
+        uses: "actions/cache/restore@v3"
+        with:
+          fail-on-cache-miss: true
+          key: "build-${{ github.sha }}"
+          path: |
+            cache-forge
+            out
+            cache-hh
+            artifacts
+            typechain
+            node_modules
+      - run: export NODE_OPTIONS=--max_old_space_size=11264
+
       - name: Run unit tests
         run: yarn hardhat:test
         env:
           ENABLE_GAS_REPORT: true
           CI: true
           ETH_NODE_URI_ARBITRUM: ${{ secrets.ETH_NODE_URI_ARBITRUM }}
+
+      - name: "Add test summary"
+        run: |
+          echo "## Hardhat Unit tests result" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Passed" >> $GITHUB_STEP_SUMMARY
+
+  foundry-tests:
+    needs: ["build", "lint"]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: "recursive"
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: nightly
+
+      - name: "Restore the cached build"
+        uses: "actions/cache/restore@v3"
+        with:
+          fail-on-cache-miss: true
+          key: "build-${{ github.sha }}"
+          path: |
+            cache-forge
+            out
+            cache-hh
+            artifacts
+            typechain
+            node_modules
+
+      - name: Run Foundry tests
+        run: yarn foundry:test
+        env:
+          FOUNDRY_FUZZ_RUNS: "5000"
+          ENABLE_GAS_REPORT: true
+          CI: true
+          ETH_NODE_URI_OPTIMISM: ${{ secrets.ETH_NODE_URI_OPTIMISM }}
+
+      - name: "Add test summary"
+        run: |
+          echo "## Foundry Unit tests result" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Passed" >> $GITHUB_STEP_SUMMARY
+
+  slither-analyze:
+    needs: ["build", "lint"]
+    permissions:
+      actions: "read"
+      contents: "read"
+      security-events: "write"
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: "Check out the repo"
+        uses: "actions/checkout@v3"
+
+      - name: "Run Slither analysis"
+        uses: "crytic/slither-action@v0.3.0"
+        id: "slither"
+        with:
+          fail-on: "none"
+          sarif: "results.sarif"
+          node-version: 18
+
+      - name: "Upload SARIF file to GitHub code scanning"
+        uses: "github/codeql-action/upload-sarif@v2"
+        with:
+          sarif_file: ${{ steps.slither.outputs.sarif }}
+
+      - name: "Add Slither summary"
+        run: |
+          echo "## Slither result" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Uploaded to GitHub code scanning" >> $GITHUB_STEP_SUMMARY
