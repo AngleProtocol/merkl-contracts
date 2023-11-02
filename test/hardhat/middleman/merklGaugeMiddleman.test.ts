@@ -274,7 +274,7 @@ contract('MerklGaugeMiddleman', () => {
       const messageHash = await manager.messageHash();
       expect(await manager.userSignatures(alice.address)).to.be.equal(messageHash);
       inReceipt(receipt0, 'UserSigned', {
-        messageHash: messageHash,
+        messageHash,
         user: alice.address,
       });
 

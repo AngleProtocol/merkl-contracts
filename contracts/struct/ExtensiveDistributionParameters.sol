@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.17;
 
-import "./DistributionParameters.sol";
+import { DistributionParameters } from "./DistributionParameters.sol";
 
 struct UniswapTokenData {
     address add;

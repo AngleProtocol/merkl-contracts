@@ -1,7 +1,7 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
 import { BigNumber, constants } from 'ethers';
-import { keccak256, parseEther, parseUnits } from 'ethers/lib/utils';
+import { keccak256, parseEther } from 'ethers/lib/utils';
 import { contract, ethers, web3 } from 'hardhat';
 import { MerkleTree } from 'merkletreejs';
 import moment from 'moment';

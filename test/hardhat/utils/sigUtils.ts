@@ -77,10 +77,10 @@ export async function signPermit(
   return {
     token: verifyingContract,
     owner: owner.address,
-    value: value,
-    deadline: deadline,
-    v: v,
-    r: r,
-    s: s,
+    value,
+    deadline,
+    v,
+    r,
+    s,
   };
 }

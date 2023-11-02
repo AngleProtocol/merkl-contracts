@@ -8,7 +8,7 @@
     "const-name-snakecase": "warn",
     "contract-name-camelcase": "warn",
     "imports-on-top": "warn",
-    "prettier/prettier": "warn",
+    "prettier/prettier": "error",
     "ordering": "off",
     "mark-callable-contracts": "off",
     "no-empty-blocks": "off",
@@ -17,6 +17,7 @@
     "private-vars-leading-underscore": "warn",
     "reentrancy": "warn",
     "reason-string": "off",
-    "func-visibility": ["warn", { "ignoreConstructors": true }]
+    "func-visibility": ["warn", { "ignoreConstructors": true }],
+    "explicit-types": ["error","explicit"]
   }
 }

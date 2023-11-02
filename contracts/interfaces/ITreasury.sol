@@ -2,8 +2,8 @@
 
 pragma solidity ^0.8.17;
 
-import "./IAgToken.sol";
-import "./ICore.sol";
+import { IAgToken } from "./IAgToken.sol";
+import { ICore } from "./ICore.sol";
 
 /// @title ITreasury
 /// @author Angle Core Team
