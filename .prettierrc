@@ -12,8 +12,7 @@
       "options": {
         "printWidth": 120,
         "singleQuote": false,
-        "bracketSpacing": true,
-        "explicitTypes": "always"
+        "bracketSpacing": true
       }
     }
   ]

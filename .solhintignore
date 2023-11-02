@@ -1,0 +1,17 @@
+# Doesn't need to lint dev files
+lib
+scripts
+test
+mock
+deprecated
+
+# Doesn't need to lint build files
+node_modules
+cache-forge
+cache-hh
+typechain
+export
+out
+
+# Doesn't need to lint utils files
+external

@@ -41,7 +41,6 @@ import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.s
 import { ECDSA } from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
 import { IUniswapV3Pool } from "./interfaces/external/uniswap/IUniswapV3Pool.sol";
-import { IAlgebraPool } from "./interfaces/external/algebra/IAlgebraPool.sol";
 
 import "./utils/UUPSHelper.sol";
 import { DistributionParameters } from "./struct/DistributionParameters.sol";

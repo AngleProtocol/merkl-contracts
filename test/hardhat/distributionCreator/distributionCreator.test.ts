@@ -368,7 +368,7 @@ contract('DistributionCreator', () => {
       const messageHash = await manager.messageHash();
       expect(await manager.userSignatures(alice.address)).to.be.equal(messageHash);
       inReceipt(receipt, 'UserSigned', {
-        messageHash: messageHash,
+        messageHash,
         user: alice.address,
       });
     });
@@ -387,7 +387,7 @@ contract('DistributionCreator', () => {
       const messageHash = await manager.messageHash();
       expect(await manager.userSignatures(alice.address)).to.be.equal(messageHash);
       inReceipt(receipt, 'UserSigned', {
-        messageHash: messageHash,
+        messageHash,
         user: alice.address,
       });
       expect(await manager.nonces(alice.address)).to.be.equal(1);
@@ -613,7 +613,7 @@ contract('DistributionCreator', () => {
       const messageHash = await manager.messageHash();
       expect(await manager.userSignatures(deployer.address)).to.be.equal(messageHash);
       inReceipt(receipt, 'UserSigned', {
-        messageHash: messageHash,
+        messageHash,
         user: deployer.address,
       });
       await manager.connect(guardian).setMessage('hello2');
