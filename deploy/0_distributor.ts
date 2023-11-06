@@ -10,7 +10,7 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
   const { deployer } = await ethers.getNamedSigners();
 
   let core: string;
-  core = '0xC16B81Af351BA9e64C1a069E3Ab18c244A1E3049';
+  core = '0x3E399AE5B4D8bc0021e53b51c8BCdD66DD62c03b';
   /*
   if (!network.live) {
     // If we're in mainnet fork, we're using the `CoreBorrow` address from mainnet
@@ -23,7 +23,7 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
 
   console.log('Let us get started with deployment');
   console.log(deployer.address);
-
+  /*
   console.log('Now deploying Distributor');
   console.log('Starting with the implementation');
 
@@ -32,6 +32,7 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
     from: deployer.address,
     log: !argv.ci,
   });
+  */
 
   const implementationAddress = (await ethers.getContract('Distributor_Implementation_2')).address;
 
