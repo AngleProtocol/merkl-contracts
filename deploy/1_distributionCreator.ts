@@ -11,6 +11,7 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
   const { deployer } = await ethers.getNamedSigners();
 
   let core: string;
+  // TODO: change the coreMerkl address to that of the desired chain
   core = '0x3E399AE5B4D8bc0021e53b51c8BCdD66DD62c03b';
   /*
   if (!network.live) {
@@ -78,5 +79,5 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
 };
 
 func.tags = ['distributionCreator'];
-func.dependencies = [];
+func.dependencies = ['distributor'];
 export default func;
