@@ -100,9 +100,9 @@ contract MerklFraxIncentivizationHandler is Ownable {
         params.amount = amount;
         if (amount > 0) {
             if (amount > minAmount) {
+                if (leftover > 0) leftovers[incentiveTokenAddress][poolAddress] = 0;
                 _handleIncentiveTokenAllowance(IERC20(incentiveTokenAddress), address(creator), amount);
                 merklDistributionCreator().createDistribution(params);
-                if (leftover > 0) leftovers[incentiveTokenAddress][poolAddress] = 0;
             } else {
                 leftovers[incentiveTokenAddress][poolAddress] = amount;
             }
