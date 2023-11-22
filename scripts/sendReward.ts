@@ -2,42 +2,51 @@ import { parseEther } from 'ethers/lib/utils';
 import { ethers, web3 } from 'hardhat';
 
 import { ZERO_ADDRESS } from '../test/hardhat/utils/helpers';
-import { DistributionCreator__factory, MockCoreBorrow__factory } from '../typechain';
+import { DistributionCreator__factory } from '../typechain';
 
 async function main() {
   const { deployer } = await ethers.getNamedSigners();
 
-  const distributorCreator = `0xA9c076992F3917b47E2C619c46ff0b652d76e6B4`;
-  const mockTokenAddress = '0x84FB94595f9Aef81147cD4070a1564128A84bb7c';
-  const pool = '0x3fa147d6309abeb5c1316f7d8a7d8bd023e0cd80';
+  const distributionCreator = `0x8BB4C975Ff3c250e0ceEA271728547f3802B36Fd`;
+  const rewardTokenAddress = '0xC16B81Af351BA9e64C1a069E3Ab18c244A1E3049';
+  const pool = '0x599a68d45e6eed05aa8c5c0c85e7efeb5086d8e1';
 
-  const manager = DistributionCreator__factory.connect(distributorCreator, deployer);
-  const mockToken = MockCoreBorrow__factory.connect(mockTokenAddress, deployer);
+  const manager = DistributionCreator__factory.connect(distributionCreator, deployer);
 
   const params = {
     uniV3Pool: pool,
-    rewardToken: mockToken.address,
-    positionWrappers: ['0x1644de0A8E54626b54AC77463900FcFFD8B94542', '0xa29193Af0816D43cF44A3745755BF5f5e2f4F170'],
-    wrapperTypes: [0, 2],
-    amount: parseEther('350'),
-    propToken0: 4000,
-    propToken1: 2000,
-    propFees: 4000,
+    rewardToken: rewardTokenAddress,
+    positionWrappers: [],
+    wrapperTypes: [0],
+    amount: parseEther('1000'),
+    propToken0: 1000,
+    propToken1: 8000,
+    propFees: 1000,
     isOutOfRangeIncentivized: 0,
-    epochStart: 1676649600,
-    numEpoch: 500,
+    epochStart: 1700667000,
+    numEpoch: 24 * 2,
     boostedReward: 0,
     boostingAddress: ZERO_ADDRESS,
-    rewardId: web3.utils.soliditySha3('europtimism') as string,
-    additionalData: web3.utils.soliditySha3('europtimism') as string,
+    rewardId: web3.utils.soliditySha3('') as string,
+    additionalData: ethers.utils.defaultAbiCoder.encode(['uint256'], ['0x12']) as string,
   };
 
-  // console.log('Approving');
-  // await (await mockToken.connect(deployer).approve(manager.address, MAX_UINT256)).wait();
-
-  console.log('Depositing reward...');
-  await (await manager.connect(deployer).createDistribution(params, { gasLimit: 1e6 })).wait();
+  /**
+   * Create distribution
+   */
+  const tx = await manager.connect(deployer).createDistribution(params, { gasLimit: 2_000_000 });
+  await tx.wait();
   console.log('...Deposited reward ✅');
+
+  /**
+   * Resolve dispute
+   */
+  // const tx = await distributor.connect(deployer).resolveDispute(true);
+  // await tx.wait();
+
+  // const tx = await distributor.connect(deployer).toggleTrusted('0x435046800Fb9149eE65159721A92cB7d50a7534b');
+  // await tx.wait();
+  // console.log('...Toggled trusted ✅');
 }
 
 main().catch(error => {
