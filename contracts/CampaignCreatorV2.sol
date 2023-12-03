@@ -65,9 +65,6 @@ struct CampaignParameters {
 /// @dev People depositing rewards must have signed a `message` with the conditions for using the
 /// product
 //solhint-disable
-/*
-TODO: get campaigns by sender so we're able to track who created what, and for a campaignId find the lookup table in the campaignList
-*/
 contract CampaignCreatorV2 is UUPSHelper, ReentrancyGuardUpgradeable {
     using SafeERC20 for IERC20;
 
@@ -118,6 +115,9 @@ contract CampaignCreatorV2 is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @notice Maps a token to the minimum amount that must be sent per epoch for a campaign to be valid
     /// @dev If `rewardTokenMinAmounts[token] == 0`, then `token` cannot be used as a reward
     mapping(address => uint256) public rewardTokenMinAmounts;
+
+    /// @notice Maps a campaignId to the ID of the campaign in the campaign list
+    mapping(bytes32 => uint256) public campaignLookup;
 
     /// @notice List of all reward tokens that have at some point been accepted
     address[] public rewardTokens;
@@ -175,13 +175,9 @@ contract CampaignCreatorV2 is UUPSHelper, ReentrancyGuardUpgradeable {
 
     /// @notice Creates a `campaign` to incentivize a given pool for a specific period of time
     /// @return campaignAmount How many reward tokens are actually taken into consideration in the contract
-    /// @dev If the address specified as a UniV3 pool is not effectively a pool, it will not be handled by the
-    /// campaign script and rewards may be lost
+    /// @dev If the campaign is badly specified, it will not be handled by the campaign script and rewards may be lost
     /// @dev Reward tokens sent as part of campaigns must have been whitelisted before and amounts
     /// sent should be bigger than a minimum amount specific to each token
-    /// @dev The `positionWrappers` specified in the `campaign` struct need to be supported by the script
-    /// List of supported `positionWrappers` can be found in the docs.
-    /// @dev If the pool incentivized contains one whitelisted token, then no fees are taken on the rewards
     /// @dev This function reverts if the sender has not signed the message `messageHash` once through one of
     /// the functions enabling to sign
     function createCampaign(CampaignParameters memory campaign) external hasSigned returns (uint256 campaignAmount) {
@@ -257,8 +253,11 @@ contract CampaignCreatorV2 is UUPSHelper, ReentrancyGuardUpgradeable {
         IERC20(campaign.rewardToken).safeTransferFrom(msg.sender, distributor, campaignAmount);
         uint256 senderNonce = nonces[msg.sender];
         nonces[msg.sender] = senderNonce + 1;
-        campaign.rewardId = bytes32(keccak256(abi.encodePacked(msg.sender, senderNonce)));
+        bytes32 campaignId = bytes32(keccak256(abi.encodePacked(msg.sender, senderNonce)));
+        campaign.rewardId = campaignId;
         campaign.creator = msg.sender;
+        uint256 lookupIndex = campaignList.length;
+        campaignLookup[campaignId] = lookupIndex;
         campaignList.push(campaign);
         emit NewCampaign(campaign);
     }
@@ -279,29 +278,19 @@ contract CampaignCreatorV2 is UUPSHelper, ReentrancyGuardUpgradeable {
         return campaignList;
     }
 
-    /// @notice Returns the list of all currently active campaigns on pools of supported AMMs (like Uniswap V3)
-    function getActiveCampaigns() external view returns (CampaignParameters[] memory searchCampaigns) {
-        uint32 roundedEpoch = _getRoundedEpoch(uint32(block.timestamp));
-        (searchCampaigns, ) = _getCampaignsBetweenEpochs(
-            roundedEpoch,
-            roundedEpoch + EPOCH_DURATION,
-            0,
-            type(uint32).max
-        );
-    }
-
-    /// @notice Similar to `getActiveCampaigns()` with additional parameters to prevent out of gas error
+    /// @notice Similar to `getCampaignsBetweenEpochs(uint256 epochStart, uint256 epochEnd)` with additional parameters to prevent out of gas error
     /// @param skip Disregard distibutions with a global index lower than `skip`
     /// @param first Limit the length of the returned array to `first`
     /// @return searchCampaigns Eligible campaigns
     /// @return lastIndexCampaign Index of the last campaign assessed in the list of all campaigns
     /// For pagniation purpose, in case of out of gas, you can call back the same function but with `skip` set to `lastIndexCampaign`
-    function getActiveCampaigns(
+    function getCampaignsBetweenEpochs(
+        uint32 epochStart,
+        uint32 epochEnd,
         uint32 skip,
         uint32 first
-    ) external view returns (CampaignParameters[] memory searchCampaigns, uint256 lastIndexCampaign) {
-        uint32 roundedEpoch = _getRoundedEpoch(uint32(block.timestamp));
-        return _getCampaignsBetweenEpochs(roundedEpoch, roundedEpoch + EPOCH_DURATION, skip, first);
+    ) external view returns (CampaignParameters[] memory, uint256 lastIndexCampaign) {
+        return _getCampaignsBetweenEpochs(_getRoundedEpoch(epochStart), _getRoundedEpoch(epochEnd), skip, first);
     }
 
     /// @notice Returns the list of all the reward tokens supported as well as their minimum amounts
@@ -324,89 +313,6 @@ contract CampaignCreatorV2 is UUPSHelper, ReentrancyGuardUpgradeable {
             mstore(validRewardTokens, length)
         }
         return validRewardTokens;
-    }
-
-    /// @notice Returns the list of all the campaigns that were or that are going to be live at
-    /// a specific epoch
-    function getCampaignsForEpoch(uint32 epoch) external view returns (CampaignParameters[] memory searchCampaigns) {
-        uint32 roundedEpoch = _getRoundedEpoch(epoch);
-        (searchCampaigns, ) = _getCampaignsBetweenEpochs(
-            roundedEpoch,
-            roundedEpoch + EPOCH_DURATION,
-            0,
-            type(uint32).max
-        );
-    }
-
-    /// @notice Similar to `getCampaignsForEpoch(uint256 epoch)` with additional parameters to prevent out of gas error
-    /// @param skip Disregard distibutions with a global index lower than `skip`
-    /// @param first Limit the length of the returned array to `first`
-    /// @return searchCampaigns Eligible campaigns
-    /// @return lastIndexCampaign Index of the last campaign assessed in the list of all campaigns
-    /// For pagniation purpose, in case of out of gas, you can call back the same function but with `skip` set to `lastIndexCampaign`
-    function getCampaignsForEpoch(
-        uint32 epoch,
-        uint32 skip,
-        uint32 first
-    ) external view returns (CampaignParameters[] memory, uint256 lastIndexCampaign) {
-        uint32 roundedEpoch = _getRoundedEpoch(epoch);
-        return _getCampaignsBetweenEpochs(roundedEpoch, roundedEpoch + EPOCH_DURATION, skip, first);
-    }
-
-    /// @notice Gets the campaigns that were or will be live at some point between `epochStart` (included) and `epochEnd` (excluded)
-    /// @dev If a campaign starts during `epochEnd`, it is not be returned by this function
-    /// @dev Conversely, if a campaign starts after `epochStart` and ends before `epochEnd`, it is returned by this function
-    function getCampaignsBetweenEpochs(
-        uint32 epochStart,
-        uint32 epochEnd
-    ) external view returns (CampaignParameters[] memory searchCampaigns) {
-        (searchCampaigns, ) = _getCampaignsBetweenEpochs(
-            _getRoundedEpoch(epochStart),
-            _getRoundedEpoch(epochEnd),
-            0,
-            type(uint32).max
-        );
-    }
-
-    /// @notice Similar to `getCampaignsBetweenEpochs(uint256 epochStart, uint256 epochEnd)` with additional parameters to prevent out of gas error
-    /// @param skip Disregard distibutions with a global index lower than `skip`
-    /// @param first Limit the length of the returned array to `first`
-    /// @return searchCampaigns Eligible campaigns
-    /// @return lastIndexCampaign Index of the last campaign assessed in the list of all campaigns
-    /// For pagniation purpose, in case of out of gas, you can call back the same function but with `skip` set to `lastIndexCampaign`
-    function getCampaignsBetweenEpochs(
-        uint32 epochStart,
-        uint32 epochEnd,
-        uint32 skip,
-        uint32 first
-    ) external view returns (CampaignParameters[] memory, uint256 lastIndexCampaign) {
-        return _getCampaignsBetweenEpochs(_getRoundedEpoch(epochStart), _getRoundedEpoch(epochEnd), skip, first);
-    }
-
-    /// @notice Returns the list of all campaigns that were or will be live after `epochStart` (included)
-    function getCampaignsAfterEpoch(
-        uint32 epochStart
-    ) external view returns (CampaignParameters[] memory searchCampaigns) {
-        (searchCampaigns, ) = _getCampaignsBetweenEpochs(
-            _getRoundedEpoch(epochStart),
-            type(uint32).max,
-            0,
-            type(uint32).max
-        );
-    }
-
-    /// @notice Similar to `getCampaignsAfterEpoch(uint256 epochStart)` with additional parameters to prevent out of gas error
-    /// @param skip Disregard distibutions with a global index lower than `skip`
-    /// @param first Limit the length of the returned array to `first`
-    /// @return searchCampaigns Eligible campaigns
-    /// @return lastIndexCampaign Index of the last campaign assessed in the list of all campaigns
-    /// For pagniation purpose, in case of out of gas, you can call back the same function but with `skip` set to `lastIndexCampaign`
-    function getCampaignsAfterEpoch(
-        uint32 epochStart,
-        uint32 skip,
-        uint32 first
-    ) external view returns (CampaignParameters[] memory, uint256 lastIndexCampaign) {
-        return _getCampaignsBetweenEpochs(_getRoundedEpoch(epochStart), type(uint32).max, skip, first);
     }
 
     // ============================ GOVERNANCE FUNCTIONS ===========================
