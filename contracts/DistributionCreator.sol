@@ -48,11 +48,11 @@ import { RewardTokenAmounts } from "./struct/RewardTokenAmounts.sol";
 
 struct CampaignParameters {
     // Populated once created
-    bytes32 rewardId;
+    bytes32 campaignId;
     address creator;
-    //
-    uint256 amount;
+    // Chosen by campaign creator
     address rewardToken;
+    uint256 amount;
     uint32 campaignType;
     uint32 epochStart;
     uint32 numEpoch;
@@ -160,6 +160,12 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         _;
     }
 
+    /// @notice Checks whether the `msg.sender` has the governor role or the guardian role
+    modifier onlyGovernor() {
+        if (!core.isGovernor(msg.sender)) revert NotGovernor();
+        _;
+    }
+
     /// @notice Checks whether an address has signed the message or not
     modifier hasSigned() {
         if (
@@ -184,7 +190,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     constructor() initializer {}
 
     /// @inheritdoc UUPSUpgradeable
-    function _authorizeUpgrade(address) internal view override onlyGuardianUpgrader(core) {}
+    function _authorizeUpgrade(address) internal view override onlyGovernorUpgrader(core) {}
 
     // ============================== DEPOSIT FUNCTION =============================
 
@@ -294,7 +300,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         bytes32 campaignId;
         (campaignAmountMinusFees, campaignId) = _computeFees(_fees, campaign.amount, campaign.rewardToken);
         campaign.amount = campaignAmountMinusFees;
-        campaign.rewardId = campaignId;
+        campaign.campaignId = campaignId;
         campaign.creator = msg.sender;
         uint256 lookupIndex = campaignList.length;
         campaignLookup[campaignId] = lookupIndex;
@@ -453,38 +459,32 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     // ============================ GOVERNANCE FUNCTIONS ===========================
 
     /// @notice Sets a new `distributor` to which rewards should be distributed
-    function setNewDistributor(address _distributor) external onlyGovernorOrGuardian {
+    function setNewDistributor(address _distributor) external onlyGovernor {
         if (_distributor == address(0)) revert InvalidParam();
         distributor = _distributor;
         emit DistributorUpdated(_distributor);
     }
 
     /// @notice Sets the fees on deposit
-    function setFees(uint256 _fees) external onlyGovernorOrGuardian {
+    function setFees(uint256 _fees) external onlyGovernor {
         if (_fees >= BASE_9) revert InvalidParam();
         fees = _fees;
         emit FeesSet(_fees);
     }
 
-    function setCampaignFees(uint32 campaignType, uint256 _fees) external onlyGovernorOrGuardian {
+    function setCampaignFees(uint32 campaignType, uint256 _fees) external onlyGovernor {
         campaignSpecificFees[campaignType] = _fees;
     }
 
-    /// @notice Sets fee rebates for a given user
-    function setUserFeeRebate(address user, uint256 userFeeRebate) external onlyGovernorOrGuardian {
-        feeRebate[user] = userFeeRebate;
-        emit FeeRebateUpdated(user, userFeeRebate);
-    }
-
     /// @notice Toggles the fee whitelist for `token`
-    function toggleTokenWhitelist(address token) external onlyGovernorOrGuardian {
+    function toggleTokenWhitelist(address token) external onlyGovernor {
         uint256 toggleStatus = 1 - isWhitelistedToken[token];
         isWhitelistedToken[token] = toggleStatus;
         emit TokenWhitelistToggled(token, toggleStatus);
     }
 
     /// @notice Recovers fees accrued on the contract for a list of `tokens`
-    function recoverFees(IERC20[] calldata tokens, address to) external onlyGovernorOrGuardian {
+    function recoverFees(IERC20[] calldata tokens, address to) external onlyGovernor {
         uint256 tokensLength = tokens.length;
         for (uint256 i; i < tokensLength; ) {
             tokens[i].safeTransfer(to, tokens[i].balanceOf(address(this)));
@@ -492,6 +492,12 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
                 ++i;
             }
         }
+    }
+
+    /// @notice Sets fee rebates for a given user
+    function setUserFeeRebate(address user, uint256 userFeeRebate) external onlyGovernorOrGuardian {
+        feeRebate[user] = userFeeRebate;
+        emit FeeRebateUpdated(user, userFeeRebate);
     }
 
     /// @notice Sets the minimum amounts per distribution epoch for different reward tokens
@@ -512,13 +518,13 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     }
 
     /// @notice Sets a new address to receive fees
-    function setFeeRecipient(address _feeRecipient) external onlyGovernorOrGuardian {
+    function setFeeRecipient(address _feeRecipient) external onlyGovernor {
         feeRecipient = _feeRecipient;
         emit FeeRecipientUpdated(_feeRecipient);
     }
 
     /// @notice Sets the message that needs to be signed by users before posting rewards
-    function setMessage(string memory _message) external onlyGovernorOrGuardian {
+    function setMessage(string memory _message) external onlyGovernor {
         message = _message;
         bytes32 _messageHash = ECDSA.toEthSignedMessageHash(bytes(_message));
         messageHash = _messageHash;
