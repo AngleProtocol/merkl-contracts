@@ -130,6 +130,12 @@ contract Distributor is UUPSHelper {
         _;
     }
 
+    /// @notice Checks whether the `msg.sender` has the governor role or the guardian role
+    modifier onlyGovernor() {
+        if (!core.isGovernor(msg.sender)) revert NotGovernor();
+        _;
+    }
+
     /// @notice Checks whether the `msg.sender` is the `user` address or is a trusted address
     modifier onlyTrustedOrUser(address user) {
         if (user != msg.sender && canUpdateMerkleRoot[msg.sender] != 1 && !core.isGovernorOrGuardian(msg.sender))
@@ -147,7 +153,7 @@ contract Distributor is UUPSHelper {
     }
 
     /// @inheritdoc UUPSUpgradeable
-    function _authorizeUpgrade(address) internal view override onlyGuardianUpgrader(core) {}
+    function _authorizeUpgrade(address) internal view override onlyGovernorUpgrader(core) {}
 
     // =============================== MAIN FUNCTION ===============================
 
@@ -205,7 +211,7 @@ contract Distributor is UUPSHelper {
     // ============================ GOVERNANCE FUNCTIONS ===========================
 
     /// @notice Adds or removes EOAs which are trusted to update the Merkle root
-    function toggleTrusted(address eoa) external onlyGovernorOrGuardian {
+    function toggleTrusted(address eoa) external onlyGovernor {
         uint256 trustedStatus = 1 - canUpdateMerkleRoot[eoa];
         canUpdateMerkleRoot[eoa] = trustedStatus;
         emit TrustedToggled(eoa, trustedStatus == 1);
@@ -218,7 +224,7 @@ contract Distributor is UUPSHelper {
             // A trusted address cannot update a tree right after a precedent tree update otherwise it can de facto
             // validate a tree which has not passed the dispute period
             ((canUpdateMerkleRoot[msg.sender] != 1 || block.timestamp < endOfDisputePeriod) &&
-                !core.isGovernorOrGuardian(msg.sender))
+                !core.isGovernor(msg.sender))
         ) revert NotTrusted();
         MerkleTree memory _lastTree = tree;
         tree = _tree;
@@ -278,7 +284,7 @@ contract Distributor is UUPSHelper {
     }
 
     /// @notice Recovers any ERC20 token
-    function recoverERC20(address tokenAddress, address to, uint256 amountToRecover) external onlyGovernorOrGuardian {
+    function recoverERC20(address tokenAddress, address to, uint256 amountToRecover) external onlyGovernor {
         IERC20(tokenAddress).safeTransfer(to, amountToRecover);
         emit Recovered(tokenAddress, to, amountToRecover);
     }
