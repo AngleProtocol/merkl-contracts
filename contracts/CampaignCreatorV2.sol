@@ -53,9 +53,9 @@ struct CampaignParameters {
     uint256 amount;
     address rewardToken;
     uint32 campaignType;
-    bytes campaignData;
     uint32 epochStart;
     uint32 numEpoch;
+    bytes campaignData;
 }
 
 /// @title CampaignCreator
@@ -64,6 +64,14 @@ struct CampaignParameters {
 /// @dev This contract is mostly a helper for APIs built on top of Merkl
 /// @dev People depositing rewards must have signed a `message` with the conditions for using the
 /// product
+/**
+ * TODO signature multisig
+ * per campaign fee type
+ * agreeWithT&Cs -> populate the stuff
+ * epoch -> from hour to timestamp
+ * batch constructor calls -> for deployment
+ * combine contracts -> stay in actual system: backward compatible
+ */
 //solhint-disable
 contract CampaignCreatorV2 is UUPSHelper, ReentrancyGuardUpgradeable {
     using SafeERC20 for IERC20;
