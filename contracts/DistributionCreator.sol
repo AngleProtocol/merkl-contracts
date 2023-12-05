@@ -66,6 +66,9 @@ struct CampaignParameters {
 /// @dev People depositing rewards must have signed a `message` with the conditions for using the
 /// product
 //solhint-disable
+/**
+TODO: differentiate guardian and governor roles
+* */
 contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     using SafeERC20 for IERC20;
 
@@ -276,44 +279,21 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @notice Internal version of `createCampaign`
     function _createCampaign(
         CampaignParameters memory campaign
-    ) internal nonReentrant returns (uint256 campaignAmount) {
+    ) internal nonReentrant returns (uint256 campaignAmountMinusFees) {
         uint32 epochStart = _getRoundedEpoch(campaign.epochStart);
-        uint256 minCampaignAmount = rewardTokenMinAmounts[campaign.rewardToken];
         campaign.epochStart = epochStart;
-        // Reward are not accepted in the following conditions:
-        if (
-            // if epoch parameters lead to a past campaign
-            epochStart + EPOCH_DURATION < block.timestamp ||
-            // if the amount of epochs for which this campaign should last is zero
-            campaign.numEpoch == 0 ||
-            // if the reward token is not whitelisted as an incentive token
-            minCampaignAmount == 0 ||
-            // if the amount distributed is too small with respect to what is allowed
-            campaign.amount / campaign.numEpoch < minCampaignAmount
-        ) revert InvalidReward();
-        campaignAmount = campaign.amount;
+        _invalidateCampaign(
+            epochStart,
+            campaign.amount,
+            campaign.numEpoch,
+            rewardTokenMinAmounts[campaign.rewardToken]
+        );
         // Computing fees: these are waived for whitelisted addresses and if there is a whitelisted token in a pool
-        uint256 userFeeRebate = feeRebate[msg.sender];
         uint256 _fees = campaignSpecificFees[campaign.campaignType];
         if (_fees == 0) _fees = fees;
-        if (userFeeRebate < BASE_9) {
-            _fees = (_fees * (BASE_9 - userFeeRebate)) / BASE_9;
-            uint256 campaignAmountMinusFees = (campaignAmount * (BASE_9 - _fees)) / BASE_9;
-            address _feeRecipient = feeRecipient;
-            _feeRecipient = _feeRecipient == address(0) ? address(this) : _feeRecipient;
-            IERC20(campaign.rewardToken).safeTransferFrom(
-                msg.sender,
-                _feeRecipient,
-                campaignAmount - campaignAmountMinusFees
-            );
-            campaignAmount = campaignAmountMinusFees;
-            campaign.amount = campaignAmount;
-        }
-
-        IERC20(campaign.rewardToken).safeTransferFrom(msg.sender, distributor, campaignAmount);
-        uint256 senderNonce = nonces[msg.sender];
-        nonces[msg.sender] = senderNonce + 1;
-        bytes32 campaignId = bytes32(keccak256(abi.encodePacked(msg.sender, senderNonce)));
+        bytes32 campaignId;
+        (campaignAmountMinusFees, campaignId) = _computeFees(_fees, campaign.amount, campaign.rewardToken);
+        campaign.amount = campaignAmountMinusFees;
         campaign.rewardId = campaignId;
         campaign.creator = msg.sender;
         uint256 lookupIndex = campaignList.length;
@@ -322,58 +302,79 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         emit NewCampaign(campaign);
     }
 
+    function _invalidateCampaign(
+        uint256 epochStart,
+        uint256 amount,
+        uint256 numEpoch,
+        uint256 minCampaignAmount
+    ) internal view {
+        if (
+            // if epoch parameters lead to a past campaign
+            epochStart + EPOCH_DURATION < block.timestamp ||
+            // if the amount of epochs for which this campaign should last is zero
+            numEpoch == 0 ||
+            // if the reward token is not whitelisted as an incentive token
+            minCampaignAmount == 0 ||
+            // if the amount distributed is too small with respect to what is allowed
+            amount / numEpoch < minCampaignAmount
+        ) revert InvalidReward();
+    }
+
     /// @notice Internal version of `createDistribution`
     function _createDistribution(
         DistributionParameters memory distribution
-    ) internal nonReentrant returns (uint256 distributionAmount) {
+    ) internal nonReentrant returns (uint256 distributionAmountMinusFees) {
         uint32 epochStart = _getRoundedEpoch(distribution.epochStart);
-        uint256 minDistributionAmount = rewardTokenMinAmounts[distribution.rewardToken];
         distribution.epochStart = epochStart;
-        // Reward are not accepted in the following conditions:
+        _invalidateCampaign(
+            epochStart,
+            distribution.amount,
+            distribution.numEpoch,
+            rewardTokenMinAmounts[distribution.rewardToken]
+        );
         if (
-            // if epoch parameters lead to a past distribution
-            epochStart + EPOCH_DURATION < block.timestamp ||
-            // if the amount of epochs for which this distribution should last is zero
-            distribution.numEpoch == 0 ||
             // if the distribution parameters are not correctly specified
             distribution.propFees + distribution.propToken0 + distribution.propToken1 != 1e4 ||
             // if boosted addresses get less than non-boosted addresses in case of
             (distribution.boostingAddress != address(0) && distribution.boostedReward < 1e4) ||
             // if the type of the position wrappers is not well specified
-            distribution.positionWrappers.length != distribution.wrapperTypes.length ||
-            // if the reward token is not whitelisted as an incentive token
-            minDistributionAmount == 0 ||
-            // if the amount distributed is too small with respect to what is allowed
-            distribution.amount / distribution.numEpoch < minDistributionAmount
+            distribution.positionWrappers.length != distribution.wrapperTypes.length
         ) revert InvalidReward();
-        distributionAmount = distribution.amount;
         // Computing fees: these are waived for whitelisted addresses and if there is a whitelisted token in a pool
-        uint256 userFeeRebate = feeRebate[msg.sender];
+        uint256 _fees;
         if (
-            userFeeRebate < BASE_9 &&
-            // Algebra pools also have these `token0` and `token1` parameters
             isWhitelistedToken[IUniswapV3Pool(distribution.uniV3Pool).token0()] == 0 &&
             isWhitelistedToken[IUniswapV3Pool(distribution.uniV3Pool).token1()] == 0
-        ) {
-            uint256 _fees = (fees * (BASE_9 - userFeeRebate)) / BASE_9;
-            uint256 distributionAmountMinusFees = (distributionAmount * (BASE_9 - _fees)) / BASE_9;
+        ) _fees = fees;
+        bytes32 campaignId;
+        (distributionAmountMinusFees, campaignId) = _computeFees(_fees, distribution.amount, distribution.rewardToken);
+        distribution.amount = distributionAmountMinusFees;
+        distribution.rewardId = campaignId;
+        distributionList.push(distribution);
+        emit NewDistribution(distribution, msg.sender);
+    }
+
+    function _computeFees(
+        uint256 baseFeesValue,
+        uint256 distributionAmount,
+        address rewardToken
+    ) internal returns (uint256 distributionAmountMinusFees, bytes32 campaignId) {
+        uint256 _fees = (baseFeesValue * (BASE_9 - feeRebate[msg.sender])) / BASE_9;
+        distributionAmountMinusFees = distributionAmount;
+        if (_fees != 0) {
+            distributionAmountMinusFees = (distributionAmount * (BASE_9 - _fees)) / BASE_9;
             address _feeRecipient = feeRecipient;
             _feeRecipient = _feeRecipient == address(0) ? address(this) : _feeRecipient;
-            IERC20(distribution.rewardToken).safeTransferFrom(
+            IERC20(rewardToken).safeTransferFrom(
                 msg.sender,
                 _feeRecipient,
                 distributionAmount - distributionAmountMinusFees
             );
-            distributionAmount = distributionAmountMinusFees;
-            distribution.amount = distributionAmount;
         }
-
-        IERC20(distribution.rewardToken).safeTransferFrom(msg.sender, distributor, distributionAmount);
+        IERC20(rewardToken).safeTransferFrom(msg.sender, distributor, distributionAmountMinusFees);
         uint256 senderNonce = nonces[msg.sender];
         nonces[msg.sender] = senderNonce + 1;
-        distribution.rewardId = bytes32(keccak256(abi.encodePacked(msg.sender, senderNonce)));
-        distributionList.push(distribution);
-        emit NewDistribution(distribution, msg.sender);
+        campaignId = bytes32(keccak256(abi.encodePacked(msg.sender, senderNonce)));
     }
 
     /// @notice Internal version of the `sign` function
