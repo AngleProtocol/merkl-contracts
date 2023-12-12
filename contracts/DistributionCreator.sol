@@ -54,8 +54,8 @@ struct CampaignParameters {
     address rewardToken;
     uint256 amount;
     uint32 campaignType;
-    uint32 epochStart;
-    uint32 numEpoch;
+    uint32 startTimestamp;
+    uint32 duration; // in seconds, has to be a multiple of EPOCH
     bytes campaignData;
 }
 
@@ -286,14 +286,12 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     function _createCampaign(
         CampaignParameters memory campaign
     ) internal nonReentrant returns (uint256 campaignAmountMinusFees) {
-        uint32 epochStart = _getRoundedEpoch(campaign.epochStart);
-        campaign.epochStart = epochStart;
-        _invalidateCampaign(
-            epochStart,
-            campaign.amount,
-            campaign.numEpoch,
-            rewardTokenMinAmounts[campaign.rewardToken]
-        );
+        uint32 epochStart = _getRoundedEpoch(campaign.startTimestamp);
+        uint32 duration = _getRoundedEpoch(campaign.duration);
+        uint32 durationInHours = duration / EPOCH_DURATION;
+        campaign.startTimestamp = epochStart;
+        campaign.duration = duration;
+        _invalidateCampaign(epochStart, campaign.amount, durationInHours, rewardTokenMinAmounts[campaign.rewardToken]);
         // Computing fees: these are waived for whitelisted addresses and if there is a whitelisted token in a pool
         uint256 _fees = campaignSpecificFees[campaign.campaignType];
         if (_fees == 0) _fees = fees;
@@ -311,18 +309,18 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     function _invalidateCampaign(
         uint256 epochStart,
         uint256 amount,
-        uint256 numEpoch,
+        uint256 durationInHours,
         uint256 minCampaignAmount
     ) internal view {
         if (
             // if epoch parameters lead to a past campaign
             epochStart + EPOCH_DURATION < block.timestamp ||
             // if the amount of epochs for which this campaign should last is zero
-            numEpoch == 0 ||
+            durationInHours == 0 ||
             // if the reward token is not whitelisted as an incentive token
             minCampaignAmount == 0 ||
             // if the amount distributed is too small with respect to what is allowed
-            amount / numEpoch < minCampaignAmount
+            amount / durationInHours < minCampaignAmount
         ) revert InvalidReward();
     }
 
@@ -545,17 +543,6 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         return (epoch / EPOCH_DURATION) * EPOCH_DURATION;
     }
 
-    /// @notice Checks whether `campaign` was live between `roundedEpochStart` and `roundedEpochEnd`
-    function _isCampaignLiveBetweenEpochs(
-        CampaignParameters memory campaign,
-        uint32 roundedEpochStart,
-        uint32 roundedEpochEnd
-    ) internal pure returns (bool) {
-        uint256 campaignEpochStart = campaign.epochStart;
-        return (campaignEpochStart + campaign.numEpoch * EPOCH_DURATION > roundedEpochStart &&
-            campaignEpochStart < roundedEpochEnd);
-    }
-
     /// @notice Gets the list of all the campaigns for `uniV3Pool` that have been active between `epochStart` and `epochEnd` (excluded)
     /// @dev If the `uniV3Pool` parameter is equal to 0, then this function will return the campaigns for all pools
     function _getCampaignsBetweenEpochs(
@@ -571,7 +558,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         uint32 i = skip;
         while (i < campaignListLength) {
             CampaignParameters memory campaign = campaignList[i];
-            if (_isCampaignLiveBetweenEpochs(campaign, epochStart, epochEnd)) {
+            if (campaign.startTimestamp + campaign.duration > epochStart && campaign.startTimestamp < epochEnd) {
                 activeRewards[length] = campaign;
                 length += 1;
             }
@@ -584,17 +571,6 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
             mstore(activeRewards, length)
         }
         return (activeRewards, i);
-    }
-
-    /// @notice Checks whether `distribution` was live between `roundedEpochStart` and `roundedEpochEnd`
-    function _isDistributionLiveBetweenEpochs(
-        DistributionParameters memory distribution,
-        uint32 roundedEpochStart,
-        uint32 roundedEpochEnd
-    ) internal pure returns (bool) {
-        uint256 distributionEpochStart = distribution.epochStart;
-        return (distributionEpochStart + distribution.numEpoch * EPOCH_DURATION > roundedEpochStart &&
-            distributionEpochStart < roundedEpochEnd);
     }
 
     /// @notice Gets the list of all the distributions for `uniV3Pool` that have been active between `epochStart` and `epochEnd` (excluded)
@@ -612,7 +588,10 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         uint32 i = skip;
         while (i < distributionListLength) {
             DistributionParameters memory distribution = distributionList[i];
-            if (_isDistributionLiveBetweenEpochs(distribution, epochStart, epochEnd)) {
+            if (
+                distribution.epochStart + distribution.numEpoch * EPOCH_DURATION > epochStart &&
+                distribution.epochStart < epochEnd
+            ) {
                 activeRewards[length] = distribution;
                 length += 1;
             }
