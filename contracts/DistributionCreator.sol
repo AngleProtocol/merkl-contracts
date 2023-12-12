@@ -394,10 +394,27 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
 
     /// @notice Returns the list of all the reward tokens supported as well as their minimum amounts
     function getValidRewardTokens() external view returns (RewardTokenAmounts[] memory) {
+        (RewardTokenAmounts[] memory validRewardTokens, ) = _getValidRewardTokens(0, type(uint32).max);
+        return validRewardTokens;
+    }
+
+    function getValidRewardTokens(
+        uint32 skip,
+        uint32 first
+    ) external view returns (RewardTokenAmounts[] memory, uint256) {
+        return _getValidRewardTokens(skip, first);
+    }
+
+    function _getValidRewardTokens(
+        uint32 skip,
+        uint32 first
+    ) internal view returns (RewardTokenAmounts[] memory, uint256) {
         uint256 length;
         uint256 rewardTokenListLength = rewardTokens.length;
-        RewardTokenAmounts[] memory validRewardTokens = new RewardTokenAmounts[](rewardTokenListLength);
-        for (uint32 i; i < rewardTokenListLength; ) {
+        uint256 returnSize = first > rewardTokenListLength ? rewardTokenListLength : first;
+        RewardTokenAmounts[] memory validRewardTokens = new RewardTokenAmounts[](returnSize);
+        uint32 i = skip;
+        while (i < rewardTokenListLength) {
             address token = rewardTokens[i];
             uint256 minAmount = rewardTokenMinAmounts[token];
             if (minAmount > 0) {
@@ -407,16 +424,12 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
             unchecked {
                 ++i;
             }
+            if (length == returnSize) break;
         }
         assembly {
             mstore(validRewardTokens, length)
         }
-        return validRewardTokens;
-    }
-
-    /// @notice Returns the list of all campaigns ever made or to be done in the future
-    function getAllCampaigns() external view returns (CampaignParameters[] memory) {
-        return campaignList;
+        return (validRewardTokens, i);
     }
 
     /// @notice Similar to `getCampaignsBetweenEpochs(uint256 epochStart, uint256 epochEnd)` with additional parameters to prevent out of gas error
@@ -432,11 +445,6 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         uint32 first
     ) external view returns (CampaignParameters[] memory, uint256 lastIndexCampaign) {
         return _getCampaignsBetweenEpochs(_getRoundedEpoch(epochStart), _getRoundedEpoch(epochEnd), skip, first);
-    }
-
-    /// @notice Returns the list of all distributions ever made or to be done in the future
-    function getAllDistributions() external view returns (DistributionParameters[] memory) {
-        return distributionList;
     }
 
     /// @notice Similar to `getDistributionsBetweenEpochs(uint256 epochStart, uint256 epochEnd)` with additional parameters to prevent out of gas error
