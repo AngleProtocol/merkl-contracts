@@ -378,7 +378,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         IERC20(rewardToken).safeTransferFrom(msg.sender, distributor, distributionAmountMinusFees);
         uint256 senderNonce = nonces[msg.sender];
         nonces[msg.sender] = senderNonce + 1;
-        campaignId = bytes32(keccak256(abi.encodePacked(msg.sender, senderNonce)));
+        campaignId = bytes32(keccak256(abi.encodePacked(msg.sender, senderNonce, block.chainid)));
     }
 
     /// @notice Internal version of the `sign` function

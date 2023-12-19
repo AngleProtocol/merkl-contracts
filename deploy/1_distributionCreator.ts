@@ -26,13 +26,13 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
   console.log('Now deploying DistributionCreator');
   console.log('Starting with the implementation');
   console.log('deployer ', await deployer.getBalance());
-  await deploy('DistributionCreator_Implementation_7', {
+  await deploy('TestDistributionCreator_Implementation', {
     contract: 'DistributionCreator',
     from: deployer.address,
     log: !argv.ci,
   });
 
-  const implementationAddress = (await ethers.getContract('DistributionCreator_Implementation_7')).address;
+  const implementationAddress = (await ethers.getContract('TestDistributionCreator_Implementation')).address;
 
   console.log(`Successfully deployed the implementation for DistributionCreator at ${implementationAddress}`);
   console.log('');
@@ -40,14 +40,22 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
   const distributor = (await deployments.get('Distributor')).address;
   console.log('Now deploying the Proxy');
 
+<<<<<<< HEAD
   await deploy('DistributionCreator', {
+=======
+  await deploy('TestDistributionCreator', {
+>>>>>>> 40a69dd (mock deployment merkl)
     contract: 'ERC1967Proxy',
     from: deployer.address,
     args: [implementationAddress, '0x'],
     log: !argv.ci,
   });
 
+<<<<<<< HEAD
   const manager = (await deployments.get('DistributionCreator')).address;
+=======
+  const manager = (await deployments.get('TestDistributionCreator')).address;
+>>>>>>> 40a69dd (mock deployment merkl)
   console.log(`Successfully deployed contract at the address ${manager}`);
   console.log('Initializing the contract');
   const contract = new ethers.Contract(
@@ -78,5 +86,9 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
 };
 
 func.tags = ['distributionCreator'];
+<<<<<<< HEAD
 func.dependencies = [''];
+=======
+func.dependencies = ['distributor'];
+>>>>>>> 40a69dd (mock deployment merkl)
 export default func;

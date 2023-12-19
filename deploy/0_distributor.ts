@@ -42,14 +42,14 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
 
   console.log('Now deploying the Proxy');
 
-  await deploy('Distributor', {
+  await deploy('TestDistributor', {
     contract: 'ERC1967Proxy',
     from: deployer.address,
     args: [implementationAddress, '0x'],
     log: !argv.ci,
   });
 
-  const distributor = (await deployments.get('Distributor')).address;
+  const distributor = (await deployments.get('TestDistributor')).address;
   console.log(`Successfully deployed contract at the address ${distributor}`);
   console.log('Initializing the contract');
   const contract = new ethers.Contract(distributor, Distributor__factory.createInterface(), deployer) as Distributor;
