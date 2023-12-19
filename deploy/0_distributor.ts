@@ -10,7 +10,7 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
   const { deployer } = await ethers.getNamedSigners();
 
   let core: string;
-  core = '0xC16B81Af351BA9e64C1a069E3Ab18c244A1E3049';
+  core = '0xE0c4Db05a515f2EcE758ab02e6cE4d1C30245752';
   /*
   if (!network.live) {
     // If we're in mainnet fork, we're using the `CoreBorrow` address from mainnet
@@ -40,14 +40,14 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
 
   console.log('Now deploying the Proxy');
 
-  await deploy('Distributor', {
+  await deploy('TestDistributor', {
     contract: 'ERC1967Proxy',
     from: deployer.address,
     args: [implementationAddress, '0x'],
     log: !argv.ci,
   });
 
-  const distributor = (await deployments.get('Distributor')).address;
+  const distributor = (await deployments.get('TestDistributor')).address;
   console.log(`Successfully deployed contract at the address ${distributor}`);
   console.log('Initializing the contract');
   const contract = new ethers.Contract(distributor, Distributor__factory.createInterface(), deployer) as Distributor;
