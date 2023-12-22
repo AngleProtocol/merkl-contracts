@@ -299,7 +299,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         (campaignAmountMinusFees, campaignId) = _computeFees(_fees, campaign.amount, campaign.rewardToken);
         campaign.amount = campaignAmountMinusFees;
         campaign.campaignId = campaignId;
-        campaign.creator = msg.sender;
+        if (campaign.creator == address(0)) campaign.creator = msg.sender;
         uint256 lookupIndex = campaignList.length;
         campaignLookup[campaignId] = lookupIndex;
         campaignList.push(campaign);
