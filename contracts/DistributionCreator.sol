@@ -49,8 +49,8 @@ import { RewardTokenAmounts } from "./struct/RewardTokenAmounts.sol";
 struct CampaignParameters {
     // Populated once created
     bytes32 campaignId;
-    address creator;
     // Chosen by campaign creator
+    address creator;
     address rewardToken;
     uint256 amount;
     uint32 campaignType;
