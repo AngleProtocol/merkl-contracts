@@ -328,14 +328,6 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     function _createDistribution(
         DistributionParameters memory distribution
     ) internal nonReentrant returns (uint256 distributionAmountMinusFees) {
-        uint32 epochStart = _getRoundedEpoch(distribution.epochStart);
-        distribution.epochStart = epochStart;
-        _invalidateCampaign(
-            epochStart,
-            distribution.amount,
-            distribution.numEpoch,
-            rewardTokenMinAmounts[distribution.rewardToken]
-        );
         if (
             // if the distribution parameters are not correctly specified
             distribution.propFees + distribution.propToken0 + distribution.propToken1 != 1e4 ||
@@ -344,18 +336,51 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
             // if the type of the position wrappers is not well specified
             distribution.positionWrappers.length != distribution.wrapperTypes.length
         ) revert InvalidReward();
-        // Computing fees: these are waived for whitelisted addresses and if there is a whitelisted token in a pool
-        uint256 _fees;
-        if (
-            isWhitelistedToken[IUniswapV3Pool(distribution.uniV3Pool).token0()] == 0 &&
-            isWhitelistedToken[IUniswapV3Pool(distribution.uniV3Pool).token1()] == 0
-        ) _fees = fees;
-        bytes32 campaignId;
-        (distributionAmountMinusFees, campaignId) = _computeFees(_fees, distribution.amount, distribution.rewardToken);
-        distribution.amount = distributionAmountMinusFees;
-        distribution.rewardId = campaignId;
-        distributionList.push(distribution);
-        emit NewDistribution(distribution, msg.sender);
+
+        address[] memory whitelist = new address[](distribution.wrapperTypes.length);
+        address[] memory blacklist = new address[](distribution.wrapperTypes.length);
+        uint256 whitelistLength;
+        uint256 blacklistLength;
+
+        for (uint256 k = 0; k < distribution.wrapperTypes.length; k++) {
+            if (distribution.wrapperTypes[k] == 0) {
+                whitelist[whitelistLength] = (distribution.positionWrappers[k]);
+                whitelistLength += 1;
+            }
+            if (distribution.wrapperTypes[k] == 3) {
+                blacklist[blacklistLength] = (distribution.positionWrappers[k]);
+                blacklistLength += 1;
+            }
+        }
+
+        assembly {
+            mstore(whitelist, whitelistLength)
+            mstore(blacklist, blacklistLength)
+        }
+
+        _createCampaign(
+            CampaignParameters({
+                campaignId: distribution.rewardId,
+                creator: msg.sender,
+                rewardToken: distribution.rewardToken,
+                amount: distributionAmountMinusFees,
+                campaignType: 2,
+                startTimestamp: distribution.epochStart * 3600,
+                duration: distribution.numEpoch * EPOCH_DURATION,
+                campaignData: abi.encode(
+                    distribution.uniV3Pool,
+                    distribution.propFees, // eg. 6000
+                    distribution.propToken0, // eg. 3000
+                    distribution.propToken1, // eg. 1000
+                    distribution.isOutOfRangeIncentivized, // eg. false
+                    distribution.boostingAddress, // eg. NULL_ADDRESS
+                    distribution.boostedReward, // eg. 0
+                    whitelist, // eg. []
+                    blacklist, // blacklist
+                    "0x"
+                )
+            })
+        );
     }
 
     function _computeFees(
@@ -432,19 +457,19 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         return (validRewardTokens, i);
     }
 
-    /// @notice Similar to `getCampaignsBetweenEpochs(uint256 epochStart, uint256 epochEnd)` with additional parameters to prevent out of gas error
+    /// @notice Similar to `getCampaignsBetween(uint256 epochStart, uint256 epochEnd)` with additional parameters to prevent out of gas error
     /// @param skip Disregard distibutions with a global index lower than `skip`
     /// @param first Limit the length of the returned array to `first`
     /// @return searchCampaigns Eligible campaigns
     /// @return lastIndexCampaign Index of the last campaign assessed in the list of all campaigns
     /// For pagniation purpose, in case of out of gas, you can call back the same function but with `skip` set to `lastIndexCampaign`
-    function getCampaignsBetweenEpochs(
-        uint32 epochStart,
-        uint32 epochEnd,
+    function getCampaignsBetween(
+        uint32 start,
+        uint32 end,
         uint32 skip,
         uint32 first
     ) external view returns (CampaignParameters[] memory, uint256 lastIndexCampaign) {
-        return _getCampaignsBetweenEpochs(_getRoundedEpoch(epochStart), _getRoundedEpoch(epochEnd), skip, first);
+        return _getCampaignsBetween(start, end, skip, first);
     }
 
     /// @notice Similar to `getDistributionsBetweenEpochs(uint256 epochStart, uint256 epochEnd)` with additional parameters to prevent out of gas error
@@ -553,9 +578,9 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
 
     /// @notice Gets the list of all the campaigns for `uniV3Pool` that have been active between `epochStart` and `epochEnd` (excluded)
     /// @dev If the `uniV3Pool` parameter is equal to 0, then this function will return the campaigns for all pools
-    function _getCampaignsBetweenEpochs(
-        uint32 epochStart,
-        uint32 epochEnd,
+    function _getCampaignsBetween(
+        uint32 start,
+        uint32 end,
         uint32 skip,
         uint32 first
     ) internal view returns (CampaignParameters[] memory, uint256) {
@@ -566,7 +591,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         uint32 i = skip;
         while (i < campaignListLength) {
             CampaignParameters memory campaign = campaignList[i];
-            if (campaign.startTimestamp + campaign.duration > epochStart && campaign.startTimestamp < epochEnd) {
+            if (campaign.startTimestamp + campaign.duration > start && campaign.startTimestamp < end) {
                 activeRewards[length] = campaign;
                 length += 1;
             }
