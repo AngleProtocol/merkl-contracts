@@ -10,7 +10,8 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
   const { deployer } = await ethers.getNamedSigners();
 
   let core: string;
-  core = '0xFD0DFC837Fe7ED19B23df589b6F6Da5a775F99E0';
+  // TODO: change the coreMerkl address to that of the desired chain
+  core = '0x3E399AE5B4D8bc0021e53b51c8BCdD66DD62c03b';
   /*
   if (!network.live) {
     // If we're in mainnet fork, we're using the `CoreBorrow` address from mainnet

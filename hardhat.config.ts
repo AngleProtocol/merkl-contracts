@@ -81,7 +81,7 @@ const config: HardhatUserConfig = {
   // For the lists of Chain ID: https://chainlist.org
   networks: {
     hardhat: {
-      accounts: accounts('base'),
+      accounts: accounts('coredao'),
       live: false,
       blockGasLimit: 125e5,
       initialBaseFeePerGas: 0,
@@ -115,6 +115,9 @@ const config: HardhatUserConfig = {
         /*
         url: nodeUrl('polygonzkevm'),
         blockNumber: 3214816,
+        */
+        /*
+        url: nodeUrl('coredao'),
         */
         url: nodeUrl('gnosis'),
         // blockNumber: 14188687,
@@ -315,6 +318,45 @@ const config: HardhatUserConfig = {
       verify: {
         etherscan: {
           apiKey: etherscanKey('mantle'),
+        },
+      },
+    },
+    filecoin: {
+      live: true,
+      url: nodeUrl('filecoin'),
+      accounts: accounts('filecoin'),
+      gas: 'auto',
+      gasMultiplier: 1.3,
+      chainId: 314,
+      verify: {
+        etherscan: {
+          apiKey: etherscanKey('filecoin'),
+        },
+      },
+    },
+    thundercore: {
+      live: true,
+      url: nodeUrl('thundercore'),
+      accounts: accounts('thundercore'),
+      gas: 'auto',
+      gasMultiplier: 1.3,
+      chainId: 108,
+      verify: {
+        etherscan: {
+          apiKey: etherscanKey('thundercore'),
+        },
+      },
+    },
+    coredao: {
+      live: true,
+      url: nodeUrl('coredao'),
+      accounts: accounts('coredao'),
+      gas: 'auto',
+      gasMultiplier: 1.3,
+      chainId: 1116,
+      verify: {
+        etherscan: {
+          apiKey: etherscanKey('coredao'),
         },
       },
     },
