@@ -1,4 +1,5 @@
 {
+  "detectors_to_exclude": "naming-convention,solc-version,timestamp",
   "filter_paths": "lib",
   "solc_remaps": ["ds-test/=lib/ds-test/src/", "forge-std/=lib/forge-std/src/"]
 }

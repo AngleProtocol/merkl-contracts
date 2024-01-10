@@ -22,7 +22,7 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
     core = registry(network.config.chainId as ChainId)?.Merkl?.CoreMerkl!;
   }
   */
-
+  
   console.log(deployer.address);
   console.log('Now deploying DistributionCreator');
   console.log('Starting with the implementation');
@@ -65,7 +65,7 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
   /* Once good some functions need to be called to have everything setup.
 
   In the `DistributionCreator` contract:
-  - `toggleTokenWhitelist` -> for agEUR
+  - `toggleTokenWhitelist` -> for agEUR and stEUR
   - `setRewardTokenMinAmounts`
   - `setFeeRecipient -> angleLabs
   - `setMessage` ->
@@ -79,5 +79,5 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
 };
 
 func.tags = ['distributionCreator'];
-func.dependencies = ['distributor'];
+func.dependencies = [''];
 export default func;

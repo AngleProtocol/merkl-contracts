@@ -78,6 +78,8 @@ contract DistributionCreatorOOGTest is Fixture {
         vm.stopPrank();
     }
 
+    /*
+    // Commented because of an update in Foundry which does not handle well out of gas issues
     function testFuzz_GetDistributionsOutOfGas() public {
         address[] memory positionWrappers = new address[](3);
         uint32[] memory wrapperTypes = new uint32[](3);
@@ -141,6 +143,7 @@ contract DistributionCreatorOOGTest is Fixture {
         vm.expectRevert();
         creator.getPoolDistributionsAfterEpoch(address(pool), startTime);
     }
+    */
 
     function testFuzz_getActiveDistributions() public {
         uint256 lastIndexDistribution;
