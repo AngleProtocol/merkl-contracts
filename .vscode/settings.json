@@ -7,7 +7,7 @@
     "editor.defaultFormatter": "JuanBlanco.solidity"
   },
   "editor.codeActionsOnSave": {
-    "source.fixAll": true
+    "source.fixAll": "explicit"
   },
   "solidity.compileUsingRemoteVersion": "v0.8.17+commit.8df45f5f"
 }
