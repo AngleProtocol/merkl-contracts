@@ -10,7 +10,8 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
   const { deployer } = await ethers.getNamedSigners();
 
   let core: string;
-  core = '0xE0c4Db05a515f2EcE758ab02e6cE4d1C30245752';
+  // Base - CoreBorrowTest
+  core = '0xA6a505Eeb4e1e93052c48126f2d42ef6694A651D';
   /*
   if (!network.live) {
     // If we're in mainnet fork, we're using the `CoreBorrow` address from mainnet
