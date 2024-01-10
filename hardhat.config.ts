@@ -116,7 +116,7 @@ const config: HardhatUserConfig = {
         url: nodeUrl('polygonzkevm'),
         blockNumber: 3214816,
         */
-        url: nodeUrl('linea'),
+        url: nodeUrl('gnosis'),
         // blockNumber: 14188687,
       },
       mining: argv.disableAutoMining
@@ -244,8 +244,9 @@ const config: HardhatUserConfig = {
       url: nodeUrl('gnosis'),
       accounts: accounts('gnosis'),
       gas: 'auto',
-      gasMultiplier: 1.3,
+      gasMultiplier: 2,
       chainId: 100,
+      initialBaseFeePerGas: 2000000000,
       verify: {
         etherscan: {
           apiKey: etherscanKey('gnosis'),
