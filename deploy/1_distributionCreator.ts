@@ -63,7 +63,7 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
   /* Once good some functions need to be called to have everything setup.
 
   In the `DistributionCreator` contract:
-  - `toggleTokenWhitelist` -> for agEUR
+  - `toggleTokenWhitelist` -> for agEUR and stEUR
   - `setRewardTokenMinAmounts`
   - `setFeeRecipient -> angleLabs
   - `setMessage` ->
