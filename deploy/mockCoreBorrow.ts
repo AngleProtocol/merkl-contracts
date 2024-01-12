@@ -1,4 +1,3 @@
-import { ChainId, CONTRACTS_ADDRESSES, registry } from '@angleprotocol/sdk';
 import { DeployFunction } from 'hardhat-deploy/types';
 import yargs from 'yargs';
 

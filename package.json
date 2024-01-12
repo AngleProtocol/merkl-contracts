@@ -36,7 +36,7 @@
     "url": "https://github.com/AngleProtocol/merkl-contracts/issues"
   },
   "devDependencies": {
-    "@angleprotocol/sdk": "3.0.87",
+    "@angleprotocol/sdk": "0.21.1",
     "@ethersproject/abi": "^5.7.0",
     "@ethersproject/providers": "^5.7.1",
     "@nomicfoundation/hardhat-chai-matchers": "^1.0.3",

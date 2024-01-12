@@ -1,13 +1,13 @@
-name: "CI Deep"
+name: 'CI Deep'
 
 on:
   schedule:
-    - cron: "0 3 * * 0" # at 3:00am UTC every Sunday
+    - cron: '0 3 * * 0' # at 3:00am UTC every Sunday
   workflow_dispatch:
     inputs:
       fuzzRuns:
-        default: "10000"
-        description: "Unit: number of fuzz runs."
+        default: '10000'
+        description: 'Unit: number of fuzz runs.'
         required: false
 
 jobs:
@@ -19,7 +19,12 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
-          cache: "yarn"
+          cache: 'yarn'
+
+      - name: Setup repo
+        uses: ./.github/actions/setup-repo
+        with:
+          registry-token: ${{ secrets.GH_REGISTRY_ACCESS_TOKEN }}
 
       - name: Install dependencies
         run: yarn install
@@ -27,7 +32,7 @@ jobs:
       - name: Run solhint
         run: yarn lint:check
 
-      - name: "Add lint summary"
+      - name: 'Add lint summary'
         run: |
           echo "## Lint result" >> $GITHUB_STEP_SUMMARY
           echo "✅ Passed" >> $GITHUB_STEP_SUMMARY
@@ -37,12 +42,12 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          submodules: "recursive"
+          submodules: 'recursive'
 
       - uses: actions/setup-node@v3
         with:
           node-version: 18
-          cache: "yarn"
+          cache: 'yarn'
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile
@@ -58,10 +63,10 @@ jobs:
       - name: Compile foundry
         run: yarn foundry:compile --sizes
 
-      - name: "Cache the build so that it can be re-used by the other jobs"
-        uses: "actions/cache/save@v3"
+      - name: 'Cache the build so that it can be re-used by the other jobs'
+        uses: 'actions/cache/save@v3'
         with:
-          key: "build-${{ github.sha }}"
+          key: 'build-${{ github.sha }}'
           path: |
             cache-forge
             out
@@ -70,13 +75,13 @@ jobs:
             typechain
             node_modules
 
-      - name: "Add build summary"
+      - name: 'Add build summary'
         run: |
           echo "## Build result" >> $GITHUB_STEP_SUMMARY
           echo "✅ Passed" >> $GITHUB_STEP_SUMMARY
 
   hardhat-tests:
-    needs: ["build", "lint"]
+    needs: ['build', 'lint']
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -84,13 +89,13 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
-          cache: "yarn"
+          cache: 'yarn'
 
-      - name: "Restore the cached build"
-        uses: "actions/cache/restore@v3"
+      - name: 'Restore the cached build'
+        uses: 'actions/cache/restore@v3'
         with:
           fail-on-cache-miss: true
-          key: "build-${{ github.sha }}"
+          key: 'build-${{ github.sha }}'
           path: |
             cache-forge
             out
@@ -108,29 +113,29 @@ jobs:
           CI: true
           ETH_NODE_URI_ARBITRUM: ${{ secrets.ETH_NODE_URI_ARBITRUM }}
 
-      - name: "Add test summary"
+      - name: 'Add test summary'
         run: |
           echo "## Hardhat Unit tests result" >> $GITHUB_STEP_SUMMARY
           echo "✅ Passed" >> $GITHUB_STEP_SUMMARY
 
   foundry-tests:
-    needs: ["build", "lint"]
+    needs: ['build', 'lint']
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
         with:
-          submodules: "recursive"
+          submodules: 'recursive'
 
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
         with:
           version: nightly
 
-      - name: "Restore the cached build"
-        uses: "actions/cache/restore@v3"
+      - name: 'Restore the cached build'
+        uses: 'actions/cache/restore@v3'
         with:
           fail-on-cache-miss: true
-          key: "build-${{ github.sha }}"
+          key: 'build-${{ github.sha }}'
           path: |
             cache-forge
             out
@@ -145,7 +150,7 @@ jobs:
           ETH_NODE_URI_OPTIMISM: ${{ secrets.ETH_NODE_URI_OPTIMISM }}
           FOUNDRY_FUZZ_RUNS: ${{ github.event.inputs.fuzzRuns || '10000' }}
 
-      - name: "Add test summary"
+      - name: 'Add test summary'
         run: |
           echo "## Foundry Unit tests result" >> $GITHUB_STEP_SUMMARY
           echo "✅ Passed" >> $GITHUB_STEP_SUMMARY
