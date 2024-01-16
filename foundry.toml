@@ -19,6 +19,9 @@ runs = 500
 [invariant]
 runs = 500
 
+[profile.dev]
+via_ir = false
+
 [rpc_endpoints]
 mainnet = "${ETH_NODE_URI_MAINNET}"
 polygon = "${ETH_NODE_URI_POLYGON}"
