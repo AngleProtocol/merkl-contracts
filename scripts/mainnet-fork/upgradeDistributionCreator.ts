@@ -6,12 +6,9 @@ import { deployUpgradeableUUPS, increaseTime, ZERO_ADDRESS } from '../../test/ha
 import {
   DistributionCreator,
   DistributionCreator__factory,
+  Distributor,
+  Distributor__factory,
   ERC20,
-  ERC20__factory,
-  MockMerklGaugeMiddleman,
-  MockMerklGaugeMiddleman__factory,
-  ProxyAdmin,
-  ProxyAdmin__factory,
 } from '../../typechain';
 import { formatAmount, parseAmount } from '../../utils/bignumber';
 
@@ -19,8 +16,7 @@ const argv = yargs.env('').boolean('ci').parseSync();
 
 async function main() {
   let manager: DistributionCreator;
-  let middleman: MockMerklGaugeMiddleman;
-  let angle: ERC20;
+  let distributor: Distributor;
   let params: any;
 
   const { deploy } = deployments;
@@ -35,13 +31,20 @@ async function main() {
   await network.provider.send('hardhat_setBalance', [governor, '0x10000000000000000000000000000']);
   const governorSigner = await ethers.provider.getSigner(governor);
 
-  const distributorAddress = registry(ChainId.MAINNET)?.Merkl?.DistributionCreator!;
+  const distributionAddress = registry(ChainId.MAINNET)?.Merkl?.DistributionCreator!;
+  const distributorAddress = registry(ChainId.MAINNET)?.Merkl?.Distributor!;
 
   manager = new ethers.Contract(
-    distributorAddress,
+    distributionAddress,
     DistributionCreator__factory.createInterface(),
     governorSigner,
   ) as DistributionCreator;
+
+  distributor = new ethers.Contract(
+    distributorAddress,
+    Distributor__factory.createInterface(),
+    governorSigner,
+  ) as Distributor;
 
   const newImplementation = await new DistributionCreator__factory(deployer).deploy();
   await manager.connect(governorSigner).upgradeTo(newImplementation.address);
@@ -49,16 +52,16 @@ async function main() {
   console.log(await manager.core());
   console.log(await manager.distributor());
   console.log(await manager.feeRecipient());
-  console.log(await manager.defaultFees());
+  console.log((await manager.defaultFees()).toString());
   console.log(await manager.message());
   console.log(await manager.distributionList(10));
-  console.log(await manager.feeRebate(governor));
-  console.log(await manager.isWhitelistedToken(registry(ChainId.MAINNET)?.agEUR?.AgToken!));
-  console.log(await manager._nonces('0xfda462548ce04282f4b6d6619823a7c64fdc0185'));
-  console.log(await manager.userSignatureWhitelist('0xfda462548ce04282f4b6d6619823a7c64fdc0185'));
+  console.log((await manager.feeRebate(governor)).toString());
+  console.log((await manager.isWhitelistedToken(registry(ChainId.MAINNET)?.agEUR?.AgToken!)).toString());
+  console.log((await manager._nonces('0xfda462548ce04282f4b6d6619823a7c64fdc0185')).toString());
+  console.log((await manager.userSignatureWhitelist('0xfda462548ce04282f4b6d6619823a7c64fdc0185')).toString());
   console.log(await manager.rewardTokens(0));
-  console.log(await manager.campaignList(0));
-  console.log(await manager.campaignSpecificFees(0));
+  // console.log(await manager.campaignList(0));
+  console.log((await manager.campaignSpecificFees(0)).toString());
 }
 
 main().catch(error => {
