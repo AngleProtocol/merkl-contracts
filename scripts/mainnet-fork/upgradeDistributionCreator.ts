@@ -4,12 +4,10 @@ import yargs from 'yargs';
 
 import { deployUpgradeableUUPS, increaseTime, ZERO_ADDRESS } from '../../test/hardhat/utils/helpers';
 import {
-  AngleDistributor,
-  AngleDistributor__factory,
   DistributionCreator,
+  DistributionCreator__factory,
   ERC20,
   ERC20__factory,
-  MerkleRewardManager__factory,
   MockMerklGaugeMiddleman,
   MockMerklGaugeMiddleman__factory,
   ProxyAdmin,
@@ -21,13 +19,22 @@ const argv = yargs.env('').boolean('ci').parseSync();
 
 async function main() {
   let manager: DistributionCreator;
-  let angleDistributor: AngleDistributor;
   let middleman: MockMerklGaugeMiddleman;
   let angle: ERC20;
   let params: any;
 
   const { deploy } = deployments;
   const [deployer] = await ethers.getSigners();
+
+  const manager = new ethers.Contract(
+    proxyAdminAddress,
+    ProxyAdmin__factory.createInterface(),
+    governorSigner,
+  ) as ProxyAdmin;
+
+  const newImplementation = await new DistributionCreator__factory(deployer).deploy();
+  await manager.connect(governor).upgradeTo(newImplementation.address);
+
   const proxyAdminAddress = CONTRACTS_ADDRESSES[ChainId.MAINNET].ProxyAdmin!;
   const governor = CONTRACTS_ADDRESSES[ChainId.MAINNET].Governor! as string;
   const coreBorrow = CONTRACTS_ADDRESSES[ChainId.MAINNET].CoreBorrow! as string;

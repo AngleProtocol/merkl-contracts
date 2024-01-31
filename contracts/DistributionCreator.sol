@@ -47,23 +47,14 @@ import { CampaignParameters } from "./struct/CampaignParameters.sol";
 import { DistributionParameters } from "./struct/DistributionParameters.sol";
 import { RewardTokenAmounts } from "./struct/RewardTokenAmounts.sol";
 
-struct CampaignParameters {
-    // Populated once created
-    bytes32 campaignId;
-    // Chosen by campaign creator
-    address creator;
-    address rewardToken;
-    uint256 amount;
-    uint32 campaignType;
-    uint32 startTimestamp;
-    uint32 duration;
-    bytes campaignData;
-}
-
 /// @title DistributionCreator
 /// @author Angle Labs, Inc.
 /// @notice Manages the distribution of rewards through the Merkl system
 /// @dev This contract is mostly a helper for APIs built on top of Merkl
+/// @dev This contract is an upgraded version and distinguishes two types of different rewards:
+/// - distributions: type of campaign for concentrated liquidity pools created before Feb 15 2024,
+/// now deprecated
+/// - campaigns: the new more global name to describe any reward program on top of Merkl
 //solhint-disable
 contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     using SafeERC20 for IERC20;
@@ -86,10 +77,10 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @notice Address to which fees are forwarded
     address public feeRecipient;
 
-    /// @notice Value (in base 10**9) of the fees taken when creating a distribution for a pool
+    /// @notice Value (in base 10**9) of the fees taken when creating a campaign
     uint256 public defaultFees;
 
-    /// @notice Message that needs to be acknowledged by users creating a distribution
+    /// @notice Message that needs to be acknowledged by users creating a campaign
     string public message;
 
     /// @notice Hash of the message that needs to be signed
@@ -97,8 +88,6 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
 
     /// @notice List of all rewards distributed in the contract on campaigns created before mid Feb 2024
     /// for concentrated liquidity pools
-    /// @dev An attacker could try to populate this list. It shouldn't be an issue as only view functions
-    /// iterate on it
     DistributionParameters[] public distributionList;
 
     /// @notice Maps an address to its fee rebate
@@ -108,7 +97,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// on pools with whitelisted tokens
     mapping(address => uint256) public isWhitelistedToken;
 
-    /// @deprecated, kept for storage compatibility
+    /// @notice Deprecated, kept for storage compatibility
     mapping(address => uint256) public _nonces;
 
     /// @notice Maps an address to the last valid hash signed
@@ -200,46 +189,12 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
                                                  USER FACING FUNCTIONS                                              
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
-    /// @notice Creates a `distribution` to incentivize a given pool for a specific period of time
-    /// @return distributionAmount How many reward tokens are actually taken into consideration in the contract
-    /// @dev If the address specified as a UniV3 pool is not effectively a pool, it will not be handled by the
-    /// distribution script and rewards may be lost
-    /// @dev Reward tokens sent as part of distributions must have been whitelisted before and amounts
-    /// sent should be bigger than a minimum amount specific to each token
-    /// @dev The `positionWrappers` specified in the `distribution` struct need to be supported by the script
-    /// List of supported `positionWrappers` can be found in the docs.
-    /// @dev If the pool incentivized contains one whitelisted token, then no fees are taken on the rewards
-    /// @dev This function reverts if the sender has not signed the message `messageHash` once through one of
-    /// the functions enabling to sign
-    function createDistribution(
-        DistributionParameters memory distribution
-    ) external nonReentrant hasSigned returns (uint256 distributionAmount) {
-        return _createDistribution(distribution);
-    }
-
-    /// @notice Same as the function above but for multiple distributions at once
-    /// @return List of all the distribution amounts actually deposited for each `distribution` in the `distributions` list
-    function createDistributions(
-        DistributionParameters[] memory distributions
-    ) external nonReentrant hasSigned returns (uint256[] memory) {
-        uint256 distributionsLength = distributions.length;
-        uint256[] memory distributionAmounts = new uint256[](distributionsLength);
-        for (uint256 i; i < distributionsLength; ) {
-            distributionAmounts[i] = _createDistribution(distributions[i]);
-            unchecked {
-                ++i;
-            }
-        }
-        return distributionAmounts;
-    }
-
     /// @notice Creates a `campaign` to incentivize a given pool for a specific period of time
     /// @return campaignAmount How many reward tokens are actually taken into consideration in the contract
     /// @dev If the campaign is badly specified, it will not be handled by the campaign script and rewards may be lost
     /// @dev Reward tokens sent as part of campaigns must have been whitelisted before and amounts
     /// sent should be bigger than a minimum amount specific to each token
-    /// @dev This function reverts if the sender has not signed the message `messageHash` once through one of
-    /// the functions enabling to sign
+    /// @dev This function reverts if the sender has not accepted the terms and conditions
     function createCampaign(CampaignParameters memory campaign) external nonReentrant hasSigned returns (bytes32) {
         return _createCampaign(campaign);
     }
@@ -261,6 +216,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     }
 
     /// @notice Allows a user to accept the conditions without signing the message
+    /// @dev Users may either call `acceptConditions` here or `sign` the message
     function acceptConditions() external {
         userSignatureWhitelist[msg.sender] = 1;
     }
@@ -273,15 +229,6 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         _sign(signature);
     }
 
-    /// @notice Combines signing the message and creating a distribution
-    function signAndCreateDistribution(
-        DistributionParameters memory distribution,
-        bytes calldata signature
-    ) external returns (uint256 distributionAmount) {
-        _sign(signature);
-        return _createDistribution(distribution);
-    }
-
     /// @notice Combines signing the message and creating a campaign
     function signAndCreateCampaign(
         CampaignParameters memory campaign,
@@ -289,6 +236,28 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     ) external returns (bytes32) {
         _sign(signature);
         return _createCampaign(campaign);
+    }
+
+    /// @notice Creates a `distribution` to incentivize a given pool for a specific period of time
+    function createDistribution(
+        DistributionParameters memory distribution
+    ) external nonReentrant hasSigned returns (uint256 distributionAmount) {
+        return _createDistribution(distribution);
+    }
+
+    /// @notice Same as the function above but for multiple distributions at once
+    function createDistributions(
+        DistributionParameters[] memory distributions
+    ) external nonReentrant hasSigned returns (uint256[] memory) {
+        uint256 distributionsLength = distributions.length;
+        uint256[] memory distributionAmounts = new uint256[](distributionsLength);
+        for (uint256 i; i < distributionsLength; ) {
+            distributionAmounts[i] = _createDistribution(distributions[i]);
+            unchecked {
+                ++i;
+            }
+        }
+        return distributionAmounts;
     }
 
     /*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -348,7 +317,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         return _getValidRewardTokens(skip, first);
     }
 
-    /// @notice Similar to `getCampaignsBetween(uint256 epochStart, uint256 epochEnd)` with additional parameters to prevent out of gas error
+    /// @notice Gets all the campaigns which were live at some point between `start` and `end` timestamp
     /// @param skip Disregard distibutions with a global index lower than `skip`
     /// @param first Limit the length of the returned array to `first`
     /// @return searchCampaigns Eligible campaigns
@@ -364,7 +333,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         return _getCampaignsBetween(start, end, skip, first);
     }
 
-    /// @notice Similar to `getDistributionsBetweenEpochs(uint256 epochStart, uint256 epochEnd)` with additional parameters to prevent out of gas error
+    /// @notice Gets all the distributions which were live at some point between `start` and `end` timestamp
     /// @param skip Disregard distibutions with a global index lower than `skip`
     /// @param first Limit the length of the returned array to `first`
     /// @return searchDistributions Eligible distributions
@@ -475,7 +444,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         uint256 rewardTokenMinAmount = rewardTokenMinAmounts[campaign.rewardToken];
         // if epoch parameters lead to a past campaign
         if (campaign.startTimestamp < block.timestamp) revert CampaignSouldStartInFuture();
-        // if the distribution doesn't last at least one second
+        // if the campaign doesn't last at least one second
         if (campaign.duration == 0) revert CampaignDurationIsZero();
         // if the reward token is not whitelisted as an incentive token
         if (rewardTokenMinAmount == 0) revert CampaignRewardTokenNotWhitelisted();
@@ -502,12 +471,12 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
 
     /// @notice Converts the deprecated distribution type into a campaign
     function _createDistribution(DistributionParameters memory distribution) internal returns (uint256) {
-        address[] memory whitelist = new address[](distribution.wrapperTypes.length);
-        address[] memory blacklist = new address[](distribution.wrapperTypes.length);
+        uint256 wrapperLength = distribution.wrapperTypes.length;
+        address[] memory whitelist = new address[](wrapperLength);
+        address[] memory blacklist = new address[](wrapperLength);
         uint256 whitelistLength;
         uint256 blacklistLength;
-
-        for (uint256 k = 0; k < distribution.wrapperTypes.length; k++) {
+        for (uint256 k = 0; k < wrapperLength; k++) {
             if (distribution.wrapperTypes[k] == 0) {
                 whitelist[whitelistLength] = (distribution.positionWrappers[k]);
                 whitelistLength += 1;
@@ -537,11 +506,11 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
                     distribution.propFees, // eg. 6000
                     distribution.propToken0, // eg. 3000
                     distribution.propToken1, // eg. 1000
-                    distribution.isOutOfRangeIncentivized, // eg. false
+                    distribution.isOutOfRangeIncentivized, // eg. 0
                     distribution.boostingAddress, // eg. NULL_ADDRESS
                     distribution.boostedReward, // eg. 0
                     whitelist, // eg. []
-                    blacklist, // blacklist
+                    blacklist, // eg. []
                     "0x"
                 )
             })
@@ -585,8 +554,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         return (epoch / HOUR) * HOUR;
     }
 
-    /// @notice Gets the list of all the campaigns for `uniV3Pool` that have been active between `epochStart` and `epochEnd` (excluded)
-    /// @dev If the `uniV3Pool` parameter is equal to 0, then this function will return the campaigns for all pools
+    /// @notice Internal version of `getCampaignsBetween`
     function _getCampaignsBetween(
         uint32 start,
         uint32 end,
@@ -615,8 +583,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         return (activeRewards, i);
     }
 
-    /// @notice Gets the list of all the distributions for `uniV3Pool` that have been active between `epochStart` and `epochEnd` (excluded)
-    /// @dev If the `uniV3Pool` parameter is equal to 0, then this function will return the distributions for all pools
+    /// @notice Internal version of `getDistributionsBetweenEpochs`
     function _getDistributionsBetweenEpochs(
         uint32 epochStart,
         uint32 epochEnd,
