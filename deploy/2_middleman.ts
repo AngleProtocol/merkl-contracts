@@ -2,8 +2,6 @@ import { ChainId, registry } from '@angleprotocol/sdk';
 import { DeployFunction } from 'hardhat-deploy/types';
 import yargs from 'yargs';
 
-import { DistributionCreator, DistributionCreator__factory } from '../typechain';
-import { parseAmount } from '../utils/bignumber';
 const argv = yargs.env('').boolean('ci').parseSync();
 
 const func: DeployFunction = async ({ deployments, ethers, network }) => {
