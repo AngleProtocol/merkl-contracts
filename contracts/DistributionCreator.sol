@@ -43,6 +43,7 @@ import { ECDSA } from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import { IUniswapV3Pool } from "./interfaces/external/uniswap/IUniswapV3Pool.sol";
 
 import "./utils/UUPSHelper.sol";
+import { CampaignParameters } from "./struct/CampaignParameters.sol";
 import { DistributionParameters } from "./struct/DistributionParameters.sol";
 import { RewardTokenAmounts } from "./struct/RewardTokenAmounts.sol";
 
@@ -61,10 +62,8 @@ struct CampaignParameters {
 
 /// @title DistributionCreator
 /// @author Angle Labs, Inc.
-/// @notice Manages the distribution of rewards across different pools with concentrated liquidity (like on Uniswap V3)
+/// @notice Manages the distribution of rewards through the Merkl system
 /// @dev This contract is mostly a helper for APIs built on top of Merkl
-/// @dev People depositing rewards must have signed a `message` with the conditions for using the
-/// product
 //solhint-disable
 contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     using SafeERC20 for IERC20;
@@ -81,7 +80,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @notice `Core` contract handling access control
     ICore public core;
 
-    /// @notice User contract for distributing rewards
+    /// @notice Contract distributing rewards to users
     address public distributor;
 
     /// @notice Address to which fees are forwarded
@@ -96,7 +95,8 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @notice Hash of the message that needs to be signed
     bytes32 public messageHash;
 
-    /// @notice List of all rewards ever distributed or to be distributed in the contract
+    /// @notice List of all rewards distributed in the contract on campaigns created before mid Feb 2024
+    /// for concentrated liquidity pools
     /// @dev An attacker could try to populate this list. It shouldn't be an issue as only view functions
     /// iterate on it
     DistributionParameters[] public distributionList;
@@ -132,6 +132,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @notice Maps a campaignId to the ID of the campaign in the campaign list + 1
     mapping(bytes32 => uint256) internal _campaignLookup;
 
+    /// @notice Maps a campaign type to the fees for this specific campaign
     mapping(uint32 => uint256) public campaignSpecificFees;
 
     /*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
