@@ -88,11 +88,9 @@ const config: HardhatUserConfig = {
       hardfork: 'london',
       forking: {
         enabled: argv.fork || false,
-        /*
         // Mainnet
         url: nodeUrl('fork'),
-        blockNumber: 16671190,
-        */
+        blockNumber: 19127150,
         // Polygon
         /*
         url: nodeUrl('forkpolygon'),
@@ -116,8 +114,10 @@ const config: HardhatUserConfig = {
         url: nodeUrl('polygonzkevm'),
         blockNumber: 3214816,
         */
+        /*
         url: nodeUrl('linea'),
-        // blockNumber: 14188687,
+        blockNumber: 14188687,
+        */
       },
       mining: argv.disableAutoMining
         ? {
