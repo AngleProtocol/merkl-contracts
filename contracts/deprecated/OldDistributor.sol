@@ -60,7 +60,7 @@ struct Claim {
 /// @title Distributor
 /// @notice Allows LPs on AMMs with concentrated liquidity to claim the rewards that were distributed to them
 /// @author Angle Labs. Inc
-contract OldDistributor is UUPSHelper {
+contract Distributor is UUPSHelper {
     using SafeERC20 for IERC20;
 
     /// @notice Epoch duration
