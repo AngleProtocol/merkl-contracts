@@ -48,6 +48,8 @@ async function main() {
 
   const newImplementation = await new DistributionCreator__factory(deployer).deploy();
   await manager.connect(governorSigner).upgradeTo(newImplementation.address);
+  const newDistribImplementation = await new Distributor__factory(deployer).deploy();
+  await distributor.connect(governorSigner).upgradeTo(newDistribImplementation.address);
 
   console.log(await manager.core());
   console.log(await manager.distributor());
@@ -62,6 +64,15 @@ async function main() {
   console.log(await manager.rewardTokens(0));
   // console.log(await manager.campaignList(0));
   console.log((await manager.campaignSpecificFees(0)).toString());
+
+  console.log(await distributor.tree());
+  console.log(await distributor.lastTree());
+  console.log(await distributor.disputeToken());
+  console.log(await distributor.core());
+  console.log(await distributor.disputer());
+  console.log((await distributor.endOfDisputePeriod()).toString());
+  console.log((await distributor.disputePeriod()).toString());
+  console.log((await distributor.disputeAmount()).toString());
 }
 
 main().catch(error => {
