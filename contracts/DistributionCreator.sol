@@ -190,13 +190,13 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
     /// @notice Creates a `campaign` to incentivize a given pool for a specific period of time
-    /// @return campaignAmount How many reward tokens are actually taken into consideration in the contract
+    /// @return The campaignId of the new campaign
     /// @dev If the campaign is badly specified, it will not be handled by the campaign script and rewards may be lost
     /// @dev Reward tokens sent as part of campaigns must have been whitelisted before and amounts
     /// sent should be bigger than a minimum amount specific to each token
     /// @dev This function reverts if the sender has not accepted the terms and conditions
-    function createCampaign(CampaignParameters memory campaign) external nonReentrant hasSigned returns (bytes32) {
-        return _createCampaign(campaign);
+    function createCampaign(CampaignParameters memory newCampaign) external nonReentrant hasSigned returns (bytes32) {
+        return _createCampaign(newCampaign);
     }
 
     /// @notice Same as the function above but for multiple campaigns at once
@@ -231,11 +231,11 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
 
     /// @notice Combines signing the message and creating a campaign
     function signAndCreateCampaign(
-        CampaignParameters memory campaign,
+        CampaignParameters memory newCampaign,
         bytes calldata signature
     ) external returns (bytes32) {
         _sign(signature);
-        return _createCampaign(campaign);
+        return _createCampaign(newCampaign);
     }
 
     /// @notice Creates a `distribution` to incentivize a given pool for a specific period of time
@@ -286,17 +286,17 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     ///  - `campaign.campaignData`
     /// This prevents the creation by the same account of two campaigns with the same parameters
     /// which is not a huge issue
-    function campaignId(CampaignParameters memory campaign) public pure returns (bytes32) {
+    function campaignId(CampaignParameters memory campaignData) public pure returns (bytes32) {
         return
             bytes32(
                 keccak256(
                     abi.encodePacked(
-                        campaign.creator,
-                        campaign.rewardToken,
-                        campaign.campaignType,
-                        campaign.startTimestamp,
-                        campaign.duration,
-                        campaign.campaignData
+                        campaignData.creator,
+                        campaignData.rewardToken,
+                        campaignData.campaignType,
+                        campaignData.startTimestamp,
+                        campaignData.duration,
+                        campaignData.campaignData
                     )
                 )
             );
@@ -440,33 +440,33 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
     /// @notice Internal version of `createCampaign`
-    function _createCampaign(CampaignParameters memory campaign) internal returns (bytes32) {
-        uint256 rewardTokenMinAmount = rewardTokenMinAmounts[campaign.rewardToken];
+    function _createCampaign(CampaignParameters memory newCampaign) internal returns (bytes32) {
+        uint256 rewardTokenMinAmount = rewardTokenMinAmounts[newCampaign.rewardToken];
         // if epoch parameters lead to a past campaign
-        if (campaign.startTimestamp < block.timestamp) revert CampaignSouldStartInFuture();
+        if (newCampaign.startTimestamp < block.timestamp) revert CampaignSouldStartInFuture();
         // if the campaign doesn't last at least one second
-        if (campaign.duration == 0) revert CampaignDurationIsZero();
+        if (newCampaign.duration == 0) revert CampaignDurationIsZero();
         // if the reward token is not whitelisted as an incentive token
         if (rewardTokenMinAmount == 0) revert CampaignRewardTokenNotWhitelisted();
         // if the amount distributed is too small with respect to what is allowed
-        if ((campaign.amount * HOUR) / campaign.duration < rewardTokenMinAmount) revert CampaignRewardTooLow();
+        if ((newCampaign.amount * HOUR) / newCampaign.duration < rewardTokenMinAmount) revert CampaignRewardTooLow();
 
-        if (campaign.creator == address(0)) campaign.creator = msg.sender;
+        if (newCampaign.creator == address(0)) newCampaign.creator = msg.sender;
 
         // Computing fees: these are waived for whitelisted addresses and if there is a whitelisted token in a pool
-        uint256 _fees = campaignSpecificFees[campaign.campaignType];
+        uint256 _fees = campaignSpecificFees[newCampaign.campaignType];
         if (_fees == 0) _fees = defaultFees;
-        uint256 campaignAmountMinusFees = _computeFees(_fees, campaign.amount, campaign.rewardToken);
-        campaign.amount = campaignAmountMinusFees;
+        uint256 campaignAmountMinusFees = _computeFees(_fees, newCampaign.amount, newCampaign.rewardToken);
+        newCampaign.amount = campaignAmountMinusFees;
 
-        campaign.campaignId = campaignId(campaign);
+        newCampaign.campaignId = campaignId(newCampaign);
 
-        if (_campaignLookup[campaign.campaignId] != 0) revert CampaignAlreadyExists();
-        _campaignLookup[campaign.campaignId] = campaignList.length + 1;
-        campaignList.push(campaign);
-        emit NewCampaign(campaign);
+        if (_campaignLookup[newCampaign.campaignId] != 0) revert CampaignAlreadyExists();
+        _campaignLookup[newCampaign.campaignId] = campaignList.length + 1;
+        campaignList.push(newCampaign);
+        emit NewCampaign(newCampaign);
 
-        return campaign.campaignId;
+        return newCampaign.campaignId;
     }
 
     /// @notice Converts the deprecated distribution type into a campaign
@@ -567,9 +567,12 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         CampaignParameters[] memory activeRewards = new CampaignParameters[](returnSize);
         uint32 i = skip;
         while (i < campaignListLength) {
-            CampaignParameters memory campaign = campaignList[i];
-            if (campaign.startTimestamp + campaign.duration > start && campaign.startTimestamp < end) {
-                activeRewards[length] = campaign;
+            CampaignParameters memory campaignToProcess = campaignList[i];
+            if (
+                campaignToProcess.startTimestamp + campaignToProcess.duration > start &&
+                campaignToProcess.startTimestamp < end
+            ) {
+                activeRewards[length] = campaignToProcess;
                 length += 1;
             }
             unchecked {
