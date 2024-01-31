@@ -44,6 +44,14 @@ async function main() {
 
   testUpgradeability('Distributor', 'contracts/Distributor.sol');
   testStorage('OldDistributor', 'contracts/deprecated/OldDistributor.sol', 'Distributor', 'contracts/Distributor.sol');
+
+  testUpgradeability('DistributionCreator', 'contracts/DistributionCreator.sol');
+  testStorage(
+    'OldDistributionCreator',
+    'contracts/deprecated/OldDistributionCreator.sol',
+    'DistributionCreator',
+    'contracts/DistributionCreator.sol',
+  );
 }
 
 main().catch(error => {

@@ -58,7 +58,7 @@ struct Claim {
 }
 
 /// @title Distributor
-/// @notice Allows LPs on AMMs with concentrated liquidity to claim the rewards that were distributed to them
+/// @notice Allows to claim rewards distributed to them through Merkl
 /// @author Angle Labs. Inc
 contract Distributor is UUPSHelper {
     using SafeERC20 for IERC20;
@@ -290,20 +290,20 @@ contract Distributor is UUPSHelper {
     }
 
     /// @notice Sets the dispute period after which a tree update becomes effective
-    function setDisputePeriod(uint48 _disputePeriod) external onlyGovernorOrGuardian {
+    function setDisputePeriod(uint48 _disputePeriod) external onlyGovernor {
         disputePeriod = uint48(_disputePeriod);
         emit DisputePeriodUpdated(_disputePeriod);
     }
 
     /// @notice Sets the token used as a caution during disputes
-    function setDisputeToken(IERC20 _disputeToken) external onlyGovernorOrGuardian {
+    function setDisputeToken(IERC20 _disputeToken) external onlyGovernor {
         if (disputer != address(0)) revert UnresolvedDispute();
         disputeToken = _disputeToken;
         emit DisputeTokenUpdated(address(_disputeToken));
     }
 
     /// @notice Sets the amount of `disputeToken` used as a caution during disputes
-    function setDisputeAmount(uint256 _disputeAmount) external onlyGovernorOrGuardian {
+    function setDisputeAmount(uint256 _disputeAmount) external onlyGovernor {
         if (disputer != address(0)) revert UnresolvedDispute();
         disputeAmount = _disputeAmount;
         emit DisputeAmountUpdated(_disputeAmount);
