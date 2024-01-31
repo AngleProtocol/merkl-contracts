@@ -165,6 +165,27 @@ jobs:
       - name: 'Check out the repo'
         uses: 'actions/checkout@v3'
 
+      - name: 'Restore the cached build'
+        uses: 'actions/cache/restore@v3'
+        with:
+          fail-on-cache-miss: true
+          key: 'build-${{ github.sha }}'
+          path: |
+            cache-forge
+            out
+            cache-hh
+            artifacts
+            typechain
+            node_modules
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: nightly
+
+      - name: Compile foundry
+        run: forge clean && forge build --build-info --force
+
       - name: 'Run Slither analysis'
         uses: 'crytic/slither-action@v0.3.0'
         id: 'slither'
