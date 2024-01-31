@@ -240,9 +240,9 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
 
     /// @notice Creates a `distribution` to incentivize a given pool for a specific period of time
     function createDistribution(
-        DistributionParameters memory distribution
+        DistributionParameters memory newDistribution
     ) external nonReentrant hasSigned returns (uint256 distributionAmount) {
-        return _createDistribution(distribution);
+        return _createDistribution(newDistribution);
     }
 
     /// @notice Same as the function above but for multiple distributions at once
@@ -263,6 +263,11 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                                                         GETTERS                                                     
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+
+    /// @notice Returns the distribution at a given index converted into a campaign
+    function distribution(uint256 index) external view returns (CampaignParameters memory) {
+        return _convertDistribution(distributionList[index]);
+    }
 
     /// @notice Returns the index of a campaign in the campaign list
     function campaignLookup(bytes32 _campaignId) public view returns (uint256) {
@@ -469,20 +474,29 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         return newCampaign.campaignId;
     }
 
+    /// @notice Creates a distribution from a deprecated distribution type
+    function _createDistribution(DistributionParameters memory newDistribution) internal returns (uint256) {
+        _createCampaign(_convertDistribution(newDistribution));
+        // Not gas efficient but deprecated
+        return campaignList[campaignList.length - 1].amount;
+    }
+
     /// @notice Converts the deprecated distribution type into a campaign
-    function _createDistribution(DistributionParameters memory distribution) internal returns (uint256) {
-        uint256 wrapperLength = distribution.wrapperTypes.length;
+    function _convertDistribution(
+        DistributionParameters memory distributionToConvert
+    ) internal view returns (CampaignParameters memory) {
+        uint256 wrapperLength = distributionToConvert.wrapperTypes.length;
         address[] memory whitelist = new address[](wrapperLength);
         address[] memory blacklist = new address[](wrapperLength);
         uint256 whitelistLength;
         uint256 blacklistLength;
         for (uint256 k = 0; k < wrapperLength; k++) {
-            if (distribution.wrapperTypes[k] == 0) {
-                whitelist[whitelistLength] = (distribution.positionWrappers[k]);
+            if (distributionToConvert.wrapperTypes[k] == 0) {
+                whitelist[whitelistLength] = (distributionToConvert.positionWrappers[k]);
                 whitelistLength += 1;
             }
-            if (distribution.wrapperTypes[k] == 3) {
-                blacklist[blacklistLength] = (distribution.positionWrappers[k]);
+            if (distributionToConvert.wrapperTypes[k] == 3) {
+                blacklist[blacklistLength] = (distributionToConvert.positionWrappers[k]);
                 blacklistLength += 1;
             }
         }
@@ -492,32 +506,28 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
             mstore(blacklist, blacklistLength)
         }
 
-        _createCampaign(
+        return
             CampaignParameters({
-                campaignId: distribution.rewardId,
+                campaignId: distributionToConvert.rewardId,
                 creator: msg.sender,
-                rewardToken: distribution.rewardToken,
-                amount: distribution.amount,
+                rewardToken: distributionToConvert.rewardToken,
+                amount: distributionToConvert.amount,
                 campaignType: 2,
-                startTimestamp: distribution.epochStart,
-                duration: distribution.numEpoch * HOUR,
+                startTimestamp: distributionToConvert.epochStart,
+                duration: distributionToConvert.numEpoch * HOUR,
                 campaignData: abi.encode(
-                    distribution.uniV3Pool,
-                    distribution.propFees, // eg. 6000
-                    distribution.propToken0, // eg. 3000
-                    distribution.propToken1, // eg. 1000
-                    distribution.isOutOfRangeIncentivized, // eg. 0
-                    distribution.boostingAddress, // eg. NULL_ADDRESS
-                    distribution.boostedReward, // eg. 0
+                    distributionToConvert.uniV3Pool,
+                    distributionToConvert.propFees, // eg. 6000
+                    distributionToConvert.propToken0, // eg. 3000
+                    distributionToConvert.propToken1, // eg. 1000
+                    distributionToConvert.isOutOfRangeIncentivized, // eg. 0
+                    distributionToConvert.boostingAddress, // eg. NULL_ADDRESS
+                    distributionToConvert.boostedReward, // eg. 0
                     whitelist, // eg. []
                     blacklist, // eg. []
                     "0x"
                 )
-            })
-        );
-
-        // Not gas efficient but deprecated
-        return campaignList[campaignList.length - 1].amount;
+            });
     }
 
     /// @notice Computes the fees to be taken on a campaign and transfers them to the fee recipient
@@ -599,12 +609,9 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         DistributionParameters[] memory activeRewards = new DistributionParameters[](returnSize);
         uint32 i = skip;
         while (i < distributionListLength) {
-            DistributionParameters memory distribution = distributionList[i];
-            if (
-                distribution.epochStart + distribution.numEpoch * HOUR > epochStart &&
-                distribution.epochStart < epochEnd
-            ) {
-                activeRewards[length] = distribution;
+            DistributionParameters memory d = distributionList[i];
+            if (d.epochStart + d.numEpoch * HOUR > epochStart && d.epochStart < epochEnd) {
+                activeRewards[length] = d;
                 length += 1;
             }
             unchecked {
