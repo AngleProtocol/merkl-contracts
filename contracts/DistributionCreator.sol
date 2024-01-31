@@ -262,6 +262,28 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         return distributionAmounts;
     }
 
+    /// @notice Creates a `distribution` to incentivize a given pool for a specific period of time
+    function createDistribution(
+        DistributionParameters memory distribution
+    ) external nonReentrant hasSigned returns (uint256 distributionAmount) {
+        return _createDistribution(distribution);
+    }
+
+    /// @notice Same as the function above but for multiple distributions at once
+    function createDistributions(
+        DistributionParameters[] memory distributions
+    ) external nonReentrant hasSigned returns (uint256[] memory) {
+        uint256 distributionsLength = distributions.length;
+        uint256[] memory distributionAmounts = new uint256[](distributionsLength);
+        for (uint256 i; i < distributionsLength; ) {
+            distributionAmounts[i] = _createDistribution(distributions[i]);
+            unchecked {
+                ++i;
+            }
+        }
+        return distributionAmounts;
+    }
+
     /*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                                                         GETTERS                                                     
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
