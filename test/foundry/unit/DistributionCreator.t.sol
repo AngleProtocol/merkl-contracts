@@ -260,6 +260,7 @@ contract Test_DistributionCreator_CreateDistribution is DistributionCreatorTest 
         bytes32 campaignId = bytes32(
             keccak256(
                 abi.encodePacked(
+                    block.chainid,
                     alice,
                     address(angle),
                     uint32(2),
@@ -443,6 +444,7 @@ contract Test_DistributionCreator_CreateCampaign is DistributionCreatorTest {
         bytes32 campaignId = bytes32(
             keccak256(
                 abi.encodePacked(
+                    block.chainid,
                     alice,
                     address(campaign.rewardToken),
                     uint32(campaign.campaignType),
@@ -523,6 +525,7 @@ contract Test_DistributionCreator_CreateCampaigns is DistributionCreatorTest {
         bytes32 campaignId = bytes32(
             keccak256(
                 abi.encodePacked(
+                    block.chainid,
                     alice,
                     address(campaigns[0].rewardToken),
                     uint32(campaigns[0].campaignType),
@@ -554,6 +557,7 @@ contract Test_DistributionCreator_CreateCampaigns is DistributionCreatorTest {
         campaignId = bytes32(
             keccak256(
                 abi.encodePacked(
+                    block.chainid,
                     alice,
                     address(campaigns[1].rewardToken),
                     uint32(campaigns[1].campaignType),
