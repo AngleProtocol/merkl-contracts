@@ -68,6 +68,8 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @notice Base for fee computation
     uint256 public constant BASE_9 = 1e9;
 
+    uint256 public immutable CHAIN_ID = block.chainid;
+
     /// @notice `Core` contract handling access control
     ICore public core;
 
@@ -291,11 +293,12 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     ///  - `campaign.campaignData`
     /// This prevents the creation by the same account of two campaigns with the same parameters
     /// which is not a huge issue
-    function campaignId(CampaignParameters memory campaignData) public pure returns (bytes32) {
+    function campaignId(CampaignParameters memory campaignData) public view returns (bytes32) {
         return
             bytes32(
                 keccak256(
                     abi.encodePacked(
+                        CHAIN_ID,
                         campaignData.creator,
                         campaignData.rewardToken,
                         campaignData.campaignType,
