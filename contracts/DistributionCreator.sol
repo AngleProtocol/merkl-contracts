@@ -375,14 +375,16 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         emit FeesSet(_defaultFees);
     }
 
-    function setCampaignFees(uint32 campaignType, uint256 _fees) external onlyGovernor {
+    /// @notice Sets the fees specific for a campaign
+    /// @dev To waive the fees for a campaign, set its fees to 1
+    function setCampaignFees(uint32 campaignType, uint256 _fees) external onlyGovernorOrGuardian {
         if (_fees >= BASE_9) revert InvalidParam();
         campaignSpecificFees[campaignType] = _fees;
         emit CampaignSpecificFeesSet(campaignType, _fees);
     }
 
     /// @notice Toggles the fee whitelist for `token`
-    function toggleTokenWhitelist(address token) external onlyGovernor {
+    function toggleTokenWhitelist(address token) external onlyGovernorOrGuardian {
         uint256 toggleStatus = 1 - isWhitelistedToken[token];
         isWhitelistedToken[token] = toggleStatus;
         emit TokenWhitelistToggled(token, toggleStatus);
@@ -463,7 +465,8 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
 
         // Computing fees: these are waived for whitelisted addresses and if there is a whitelisted token in a pool
         uint256 _fees = campaignSpecificFees[newCampaign.campaignType];
-        if (_fees == 0) _fees = defaultFees;
+        if (_fees == 1) _fees = 0;
+        else if (_fees == 0) _fees = defaultFees;
         uint256 campaignAmountMinusFees = _computeFees(_fees, newCampaign.amount, newCampaign.rewardToken);
         newCampaign.amount = campaignAmountMinusFees;
 
