@@ -27,19 +27,18 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
 
   console.log('Now deploying Distributor');
   console.log('Starting with the implementation');
-  /*
-  await deploy('Distributor_Implementation_2', {
+
+  await deploy('Distributor_Implementation_V2_0', {
     contract: 'Distributor',
     from: deployer.address,
     log: !argv.ci,
   });
-  */
 
-  const implementationAddress = (await ethers.getContract('Distributor_Implementation_2')).address;
+  const implementationAddress = (await ethers.getContract('Distributor_Implementation_V2_0')).address;
 
   console.log(`Successfully deployed the implementation for Distributor at ${implementationAddress}`);
   console.log('');
-
+  /*
   console.log('Now deploying the Proxy');
 
   await deploy('TestDistributor', {
@@ -56,6 +55,7 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
   await (await contract.connect(deployer).initialize(core)).wait();
   console.log('Contract successfully initialized');
   console.log('');
+  */
 };
 
 func.tags = ['distributor'];
