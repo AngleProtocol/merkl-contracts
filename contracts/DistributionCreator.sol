@@ -39,6 +39,7 @@ import { ReentrancyGuardUpgradeable } from "@openzeppelin/contracts-upgradeable/
 import { IERC20, IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import { ECDSA } from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import { SignatureChecker } from "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
 
 import { IUniswapV3Pool } from "./interfaces/external/uniswap/IUniswapV3Pool.sol";
 
@@ -560,7 +561,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @notice Internal version of the `sign` function
     function _sign(bytes calldata signature) internal {
         bytes32 _messageHash = messageHash;
-        if (ECDSA.recover(_messageHash, signature) != msg.sender) revert InvalidSignature();
+        if (!SignatureChecker.isValidSignatureNow(msg.sender, _messageHash, signature)) revert InvalidSignature();
         userSignatures[msg.sender] = _messageHash;
         emit UserSigned(_messageHash, msg.sender);
     }

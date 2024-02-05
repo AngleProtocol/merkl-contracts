@@ -590,19 +590,15 @@ contract Test_DistributionCreator_CreateCampaigns is DistributionCreatorTest {
 contract Test_DistributionCreator_setCampaignFees is DistributionCreatorTest {
     event CampaignSpecificFeesSet(uint32 campaignType, uint256 _fees);
 
-    function test_RevertWhen_NotGovernor() public {
-        vm.expectRevert(NotGovernor.selector);
+    function test_RevertWhen_NotGovernorOrGuardian() public {
+        vm.expectRevert(NotGovernorOrGuardian.selector);
         vm.prank(alice);
-        creator.setCampaignFees(0, 1e8);
-
-        vm.expectRevert(NotGovernor.selector);
-        vm.prank(guardian);
         creator.setCampaignFees(0, 1e8);
     }
 
     function test_RevertWhen_InvalidParam() public {
         vm.expectRevert(InvalidParam.selector);
-        vm.prank(governor);
+        vm.prank(guardian);
         creator.setCampaignFees(0, 1e10);
     }
 
@@ -610,7 +606,7 @@ contract Test_DistributionCreator_setCampaignFees is DistributionCreatorTest {
         vm.expectEmit(false, false, false, false, address(creator));
         emit CampaignSpecificFeesSet(0, 5e8);
 
-        vm.prank(governor);
+        vm.prank(guardian);
         creator.setCampaignFees(0, 5e8);
 
         assertEq(5e8, creator.campaignSpecificFees(0));
@@ -675,5 +671,34 @@ contract Test_DistributionCreator_setCampaignFees is DistributionCreatorTest {
         ) = creator.campaignList(creator.campaignLookup(campaignId));
 
         assertEq(8e7, fetchedAmount);
+    }
+}
+
+contract Test_DistributionCreator_sign is DistributionCreatorTest {
+    function test_Success() public {
+        vm.prank(governor);
+        creator.setMessage("test");
+
+        assertEq("test", creator.message());
+        assertEq(creator.userSignatures(alice), bytes32(0));
+
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(1, creator.messageHash());
+        vm.prank(alice);
+        creator.sign(abi.encodePacked(r, s, v));
+
+        assertEq(creator.userSignatures(alice), creator.messageHash());
+    }
+
+    function test_RevertWith_InvalidSignature() public {
+        vm.prank(governor);
+        creator.setMessage("test");
+
+        assertEq("test", creator.message());
+        assertEq(creator.userSignatures(alice), bytes32(0));
+
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(2, creator.messageHash());
+        vm.prank(alice);
+        vm.expectRevert(InvalidSignature.selector);
+        creator.sign(abi.encodePacked(r, s, v));
     }
 }
