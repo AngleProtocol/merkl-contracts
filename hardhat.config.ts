@@ -15,10 +15,8 @@ import '@nomiclabs/hardhat-solhint';
 import '@tenderly/hardhat-tenderly';
 import '@typechain/hardhat';
 
-import { parseEther } from 'ethers/lib/utils';
 import { TASK_COMPILE_SOLIDITY_GET_SOURCE_PATHS } from 'hardhat/builtin-tasks/task-names';
 import { HardhatUserConfig, subtask } from 'hardhat/config';
-import { HardhatNetworkAccountsUserConfig, HardhatNetworkAccountUserConfig } from 'hardhat/types';
 import yargs from 'yargs';
 
 import { accounts, etherscanKey, nodeUrl } from './utils/network';
@@ -28,13 +26,6 @@ subtask(TASK_COMPILE_SOLIDITY_GET_SOURCE_PATHS).setAction(async (_, __, runSuper
   const paths = await runSuper();
   return paths.filter((p: string) => !p.includes('/test/foundry/'));
 });
-
-const accountsPkey: HardhatNetworkAccountsUserConfig = [
-  { privateKey: process.env.DEPLOYER_PRIVATE_KEY!, balance: parseEther('1000').toString() },
-];
-
-const accountsOldDeployer: HardhatNetworkAccountsUserConfig = accounts('old_deployer');
-const accountsMerklDeployer: HardhatNetworkAccountsUserConfig = accounts('merkl_deployer');
 
 const argv = yargs
   .env('')
@@ -69,7 +60,7 @@ const config: HardhatUserConfig = {
         settings: {
           optimizer: {
             enabled: true,
-            runs: 1,
+            runs: 100,
           },
           viaIR: false,
         },
@@ -79,7 +70,7 @@ const config: HardhatUserConfig = {
         settings: {
           optimizer: {
             enabled: true,
-            runs: 1,
+            runs: 100,
           },
           viaIR: false,
         },
@@ -90,17 +81,17 @@ const config: HardhatUserConfig = {
   // For the lists of Chain ID: https://chainlist.org
   networks: {
     hardhat: {
-      accounts: accounts('hardhat'),
+      accounts: accounts('coredao'),
       live: false,
       blockGasLimit: 125e5,
       initialBaseFeePerGas: 0,
       hardfork: 'london',
       forking: {
         enabled: argv.fork || false,
-        // Mainnet
         /*
+        // Mainnet
         url: nodeUrl('fork'),
-        blockNumber: 19127150,
+        blockNumber: 16671190,
         */
         // Polygon
         /*
@@ -113,8 +104,10 @@ const config: HardhatUserConfig = {
         blockNumber: 17614765,
         */
         // Arbitrum
+        /*
         url: nodeUrl('arbitrum'),
         blockNumber: 19356874,
+        */
         /*
         url: nodeUrl('arbitrum'),
         blockNumber: 19356874,
@@ -126,10 +119,8 @@ const config: HardhatUserConfig = {
         /*
         url: nodeUrl('coredao'),
         */
-        /*
         url: nodeUrl('gnosis'),
-        blockNumber: 14188687,
-        */
+        // blockNumber: 14188687,
       },
       mining: argv.disableAutoMining
         ? {
@@ -142,10 +133,10 @@ const config: HardhatUserConfig = {
     polygon: {
       live: true,
       url: nodeUrl('polygon'),
-      accounts: accountsOldDeployer,
+      accounts: accounts('polygon'),
       gas: 'auto',
-      gasMultiplier: 3,
       chainId: 137,
+      // gasPrice: 400e9,
       gasPrice: 'auto',
       verify: {
         etherscan: {
@@ -153,10 +144,22 @@ const config: HardhatUserConfig = {
         },
       },
     },
+    fantom: {
+      live: true,
+      url: nodeUrl('fantom'),
+      accounts: accounts('fantom'),
+      gas: 'auto',
+      chainId: 250,
+      verify: {
+        etherscan: {
+          apiKey: etherscanKey('fantom'),
+        },
+      },
+    },
     mainnet: {
       live: true,
       url: nodeUrl('mainnet'),
-      accounts: [process.env.DEPLOYER_PRIVATE_KEY!],
+      accounts: accounts('mainnet'),
       gas: 'auto',
       gasMultiplier: 1.3,
       chainId: 1,
@@ -166,10 +169,23 @@ const config: HardhatUserConfig = {
         },
       },
     },
+    goerli: {
+      live: true,
+      url: nodeUrl('goerli'),
+      accounts: accounts('goerli'),
+      gas: 'auto',
+      gasMultiplier: 1.3,
+      chainId: 1,
+      verify: {
+        etherscan: {
+          apiKey: etherscanKey('goerli'),
+        },
+      },
+    },
     optimism: {
       live: true,
       url: nodeUrl('optimism'),
-      accounts: accountsOldDeployer,
+      accounts: accounts('optimism'),
       gas: 'auto',
       chainId: 10,
       verify: {
@@ -181,7 +197,7 @@ const config: HardhatUserConfig = {
     arbitrum: {
       live: true,
       url: nodeUrl('arbitrum'),
-      accounts: accountsOldDeployer,
+      accounts: accounts('arbitrum'),
       gas: 'auto',
       chainId: 42161,
       verify: {
@@ -193,7 +209,7 @@ const config: HardhatUserConfig = {
     avalanche: {
       live: true,
       url: nodeUrl('avalanche'),
-      accounts: [process.env.DEPLOYER_PRIVATE_KEY!],
+      accounts: accounts('avalanche'),
       gas: 'auto',
       chainId: 43114,
       verify: {
@@ -202,10 +218,22 @@ const config: HardhatUserConfig = {
         },
       },
     },
+    aurora: {
+      live: true,
+      url: nodeUrl('aurora'),
+      accounts: accounts('aurora'),
+      gas: 'auto',
+      chainId: 1313161554,
+      verify: {
+        etherscan: {
+          apiKey: etherscanKey('aurora'),
+        },
+      },
+    },
     bsc: {
       live: true,
       url: nodeUrl('bsc'),
-      accounts: [process.env.DEPLOYER_PRIVATE_KEY!],
+      accounts: accounts('bsc'),
       gas: 'auto',
       chainId: 56,
       verify: {
@@ -217,9 +245,9 @@ const config: HardhatUserConfig = {
     gnosis: {
       live: true,
       url: nodeUrl('gnosis'),
-      accounts: accountsOldDeployer,
+      accounts: accounts('gnosis'),
       gas: 'auto',
-      gasMultiplier: 3,
+      gasMultiplier: 2,
       chainId: 100,
       initialBaseFeePerGas: 2000000000,
       verify: {
@@ -231,7 +259,7 @@ const config: HardhatUserConfig = {
     polygonzkevm: {
       live: true,
       url: nodeUrl('polygonzkevm'),
-      accounts: [process.env.DEPLOYER_PRIVATE_KEY!],
+      accounts: accounts('polygonzkevm'),
       gas: 'auto',
       gasMultiplier: 1.3,
       chainId: 1101,
@@ -244,7 +272,7 @@ const config: HardhatUserConfig = {
     base: {
       live: true,
       url: nodeUrl('base'),
-      accounts: [process.env.DEPLOYER_PRIVATE_KEY!],
+      accounts: accounts('base'),
       gas: 'auto',
       gasMultiplier: 1.3,
       chainId: 8453,
@@ -257,7 +285,7 @@ const config: HardhatUserConfig = {
     linea: {
       live: true,
       url: nodeUrl('linea'),
-      accounts: [process.env.DEPLOYER_PRIVATE_KEY!],
+      accounts: accounts('linea'),
       gas: 'auto',
       gasMultiplier: 1.3,
       chainId: 59144,
@@ -267,10 +295,23 @@ const config: HardhatUserConfig = {
         },
       },
     },
+    zksync: {
+      live: true,
+      url: nodeUrl('zksync'),
+      accounts: accounts('zksync'),
+      gas: 'auto',
+      gasMultiplier: 1.3,
+      chainId: 324,
+      verify: {
+        etherscan: {
+          apiKey: etherscanKey('zksync'),
+        },
+      },
+    },
     mantle: {
       live: true,
       url: nodeUrl('mantle'),
-      accounts: [process.env.DEPLOYER_PRIVATE_KEY!],
+      accounts: accounts('mantle'),
       gas: 'auto',
       gasMultiplier: 1.3,
       chainId: 5000,
@@ -283,7 +324,7 @@ const config: HardhatUserConfig = {
     filecoin: {
       live: true,
       url: nodeUrl('filecoin'),
-      accounts: accountsOldDeployer,
+      accounts: accounts('filecoin'),
       gas: 'auto',
       gasMultiplier: 1.3,
       chainId: 314,
@@ -296,7 +337,7 @@ const config: HardhatUserConfig = {
     thundercore: {
       live: true,
       url: nodeUrl('thundercore'),
-      accounts: accountsOldDeployer,
+      accounts: accounts('thundercore'),
       gas: 'auto',
       gasMultiplier: 1.3,
       chainId: 108,
@@ -309,7 +350,7 @@ const config: HardhatUserConfig = {
     coredao: {
       live: true,
       url: nodeUrl('coredao'),
-      accounts: accountsOldDeployer,
+      accounts: accounts('coredao'),
       gas: 'auto',
       gasMultiplier: 1.3,
       chainId: 1116,
