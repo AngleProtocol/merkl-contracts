@@ -34,6 +34,7 @@ contract('DistributionCreator', () => {
   let startTime: number;
   // eslint-disable-next-line
   let params: any;
+  let campaignsParams: any;
 
   beforeEach(async () => {
     [deployer, alice, bob, governor, guardian] = await ethers.getSigners();
@@ -66,6 +67,19 @@ contract('DistributionCreator', () => {
       boostingAddress: ZERO_ADDRESS,
       rewardId: web3.utils.soliditySha3('TEST') as string,
       additionalData: web3.utils.soliditySha3('test2ng') as string,
+    };
+    campaignsParams = {
+      campaignId: web3.utils.soliditySha3('TEST') as string,
+      creator: alice.address,
+      rewardToken: angle.address,
+      startTimestamp: startTime + 1000,
+      campaignType: 2,
+      duration: 1 * 60 * 60,
+      amount: parseEther('0.9'),
+      campaignData: ethers.utils.defaultAbiCoder.encode(
+        ['address', 'uint', 'uint', 'uint', 'uint', 'address', 'uint', 'address[]', 'address[]', 'string'],
+        [pool.address, 4000, 4000, 2000, 0, ZERO_ADDRESS, 0, [alice.address], [], '0x'],
+      ),
     };
     await angle.mint(alice.address, parseEther('1000'));
     await angle.connect(alice).approve(manager.address, MAX_UINT256);
@@ -382,6 +396,48 @@ contract('DistributionCreator', () => {
       await manager.connect(governor).setMessage('hello');
       const signature = await alice.signMessage('hello2');
       await expect(manager.connect(alice).sign(signature)).to.be.revertedWithCustomError(manager, 'InvalidSignature');
+    });
+  });
+  describe('signAndCreateCampaign', () => {
+    it('success - correct signature', async () => {
+      await manager.connect(governor).toggleSigningWhitelist(alice.address);
+      await manager.connect(governor).setMessage('hello');
+      const signature = await alice.signMessage('hello');
+      const receipt = await (await manager.connect(alice).signAndCreateCampaign(campaignsParams, signature)).wait();
+      const messageHash = await manager.messageHash();
+
+      expect(await manager.userSignatures(alice.address)).to.be.equal(messageHash);
+      inReceipt(receipt, 'UserSigned', {
+        messageHash,
+        user: alice.address,
+      });
+      expect(await angle.balanceOf(manager.address)).to.be.equal(parseEther('0.09'));
+      expect(await angle.balanceOf(bob.address)).to.be.equal(parseEther('0.81'));
+      const reward = await manager.campaignList(0);
+      expect(reward.campaignType).to.be.equal(2);
+      expect(reward.creator).to.be.equal(alice.address);
+      expect(reward.amount).to.be.equal(parseEther('0.81'));
+      expect(reward.rewardToken).to.be.equal(angle.address);
+      expect(reward.startTimestamp).to.be.equal(startTime + 1000);
+      expect(reward.duration).to.be.equal(1 * 60 * 60);
+      const campaignData = ethers.utils.defaultAbiCoder.encode(
+        ['address', 'uint', 'uint', 'uint', 'uint', 'address', 'uint', 'address[]', 'address[]', 'string'],
+        [pool.address, 4000, 4000, 2000, 0, ZERO_ADDRESS, 0, [alice.address], [], '0x'],
+      );
+      expect(reward.campaignData).to.be.equal(campaignData);
+      const campaignId = solidityKeccak256(
+        ['uint256', 'address', 'address', 'uint32', 'uint32', 'uint32', 'bytes'],
+        [await deployer.getChainId(), alice.address, angle.address, 2, startTime + 1000, 1 * 60 * 60, campaignData],
+      );
+      expect(reward.campaignId).to.be.equal(campaignId);
+    });
+    it('reverts - invalid signature', async () => {
+      await manager.connect(governor).toggleSigningWhitelist(alice.address);
+      await manager.connect(governor).setMessage('hello');
+      const signature = await alice.signMessage('hello2');
+      await expect(
+        manager.connect(alice).signAndCreateCampaign(campaignsParams, signature),
+      ).to.be.revertedWithCustomError(manager, 'InvalidSignature');
     });
   });
   describe('createDistribution', () => {
