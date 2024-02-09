@@ -90,7 +90,7 @@ const config: HardhatUserConfig = {
   // For the lists of Chain ID: https://chainlist.org
   networks: {
     hardhat: {
-      accounts: accountsPkey,
+      accounts: accounts('hardhat'),
       live: false,
       blockGasLimit: 125e5,
       initialBaseFeePerGas: 0,

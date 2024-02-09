@@ -21,8 +21,8 @@ contract('Distributor', () => {
   let deployer: SignerWithAddress;
   let alice: SignerWithAddress;
   let bob: SignerWithAddress;
-  let governor: SignerWithAddress;
   let guardian: SignerWithAddress;
+  let governor: SignerWithAddress;
   let angle: MockToken;
 
   let distributor: Distributor;
@@ -53,24 +53,12 @@ contract('Distributor', () => {
         newImplementation.address,
       );
       */
-
-      const newImplementation2 = await new Distributor__factory(deployer).deploy();
-      await distributor.connect(guardian).upgradeTo(newImplementation2.address);
-      /*
-      console.log(
-        await ethers.provider.getStorageAt(
-          distributor.address,
-          '0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc',
-        ),
-        newImplementation2.address,
-      );
-      */
     });
     it('reverts - when called by unallowed address', async () => {
       const newImplementation = await new Distributor__factory(deployer).deploy();
       await expect(distributor.connect(alice).upgradeTo(newImplementation.address)).to.be.revertedWithCustomError(
         distributor,
-        'NotGovernorOrGuardian',
+        'NotGovernor',
       );
     });
   });
@@ -90,15 +78,15 @@ contract('Distributor', () => {
     });
   });
   describe('toggleTrusted', () => {
-    it('reverts - not guardian', async () => {
+    it('reverts - not governor', async () => {
       await expect(distributor.connect(alice).toggleTrusted(bob.address)).to.be.revertedWithCustomError(
         distributor,
-        'NotGovernorOrGuardian',
+        'NotGovernor',
       );
     });
     it('success - trusted updated', async () => {
       expect(await distributor.canUpdateMerkleRoot(bob.address)).to.be.equal(0);
-      const receipt = await (await distributor.connect(guardian).toggleTrusted(bob.address)).wait();
+      const receipt = await (await distributor.connect(governor).toggleTrusted(bob.address)).wait();
       expect(await distributor.canUpdateMerkleRoot(bob.address)).to.be.equal(1);
       inReceipt(receipt, 'TrustedToggled', {
         eoa: bob.address,
@@ -106,8 +94,8 @@ contract('Distributor', () => {
       });
     });
     it('success - trusted updated and then removed', async () => {
-      await (await distributor.connect(guardian).toggleTrusted(bob.address)).wait();
-      const receipt = await (await distributor.connect(guardian).toggleTrusted(bob.address)).wait();
+      await (await distributor.connect(governor).toggleTrusted(bob.address)).wait();
+      const receipt = await (await distributor.connect(governor).toggleTrusted(bob.address)).wait();
       inReceipt(receipt, 'TrustedToggled', {
         eoa: bob.address,
         trust: false,
@@ -122,9 +110,9 @@ contract('Distributor', () => {
         'NotTrusted',
       );
     });
-    it('success - whitelist updated - call by guardian', async () => {
+    it('success - whitelist updated - call by governor', async () => {
       expect(await distributor.onlyOperatorCanClaim(bob.address)).to.be.equal(0);
-      const receipt = await (await distributor.connect(guardian).toggleOnlyOperatorCanClaim(bob.address)).wait();
+      const receipt = await (await distributor.connect(governor).toggleOnlyOperatorCanClaim(bob.address)).wait();
       expect(await distributor.onlyOperatorCanClaim(bob.address)).to.be.equal(1);
       inReceipt(receipt, 'OperatorClaimingToggled', {
         user: bob.address,
@@ -149,9 +137,9 @@ contract('Distributor', () => {
         'NotTrusted',
       );
     });
-    it('success - whitelist updated - call by guardian', async () => {
+    it('success - whitelist updated - call by governor', async () => {
       expect(await distributor.operators(bob.address, alice.address)).to.be.equal(0);
-      const receipt = await (await distributor.connect(guardian).toggleOperator(bob.address, alice.address)).wait();
+      const receipt = await (await distributor.connect(governor).toggleOperator(bob.address, alice.address)).wait();
       expect(await distributor.operators(bob.address, alice.address)).to.be.equal(1);
       inReceipt(receipt, 'OperatorToggled', {
         user: bob.address,
@@ -160,7 +148,7 @@ contract('Distributor', () => {
       });
     });
     it('success - whitelist updated - call by user', async () => {
-      await (await distributor.connect(guardian).toggleOperator(bob.address, alice.address)).wait();
+      await (await distributor.connect(governor).toggleOperator(bob.address, alice.address)).wait();
       expect(await distributor.operators(bob.address, alice.address)).to.be.equal(1);
       const receipt = await (await distributor.connect(bob).toggleOperator(bob.address, alice.address)).wait();
       expect(await distributor.operators(bob.address, alice.address)).to.be.equal(0);
@@ -172,19 +160,19 @@ contract('Distributor', () => {
     });
   });
   describe('recoverERC20', () => {
-    it('reverts - not guardian', async () => {
+    it('reverts - not governor', async () => {
       await expect(
         distributor.connect(alice).recoverERC20(angle.address, bob.address, parseEther('1')),
-      ).to.be.revertedWithCustomError(distributor, 'NotGovernorOrGuardian');
+      ).to.be.revertedWithCustomError(distributor, 'NotGovernor');
     });
     it('reverts - insufficient amount in contract', async () => {
-      await expect(distributor.connect(guardian).recoverERC20(angle.address, bob.address, parseEther('1'))).to.be
+      await expect(distributor.connect(governor).recoverERC20(angle.address, bob.address, parseEther('1'))).to.be
         .reverted;
     });
     it('success - amount received', async () => {
       await angle.mint(distributor.address, parseEther('2'));
       const receipt = await (
-        await distributor.connect(guardian).recoverERC20(angle.address, bob.address, parseEther('0.5'))
+        await distributor.connect(governor).recoverERC20(angle.address, bob.address, parseEther('0.5'))
       ).wait();
       inReceipt(receipt, 'Recovered', {
         token: angle.address,
@@ -203,10 +191,10 @@ contract('Distributor', () => {
       );
     });
     it('reverts - when there is an ongoing dispute', async () => {
-      await distributor.connect(guardian).setDisputePeriod(1);
-      await distributor.connect(guardian).updateTree(merkleTree);
-      await distributor.connect(guardian).setDisputeToken(angle.address);
-      await distributor.connect(guardian).setDisputeAmount(parseEther('1'));
+      await distributor.connect(governor).setDisputePeriod(1);
+      await distributor.connect(governor).updateTree(merkleTree);
+      await distributor.connect(governor).setDisputeToken(angle.address);
+      await distributor.connect(governor).setDisputeAmount(parseEther('1'));
       await angle.mint(alice.address, parseEther('1.3'));
       await angle.connect(alice).approve(distributor.address, parseEther('1'));
       await distributor.connect(alice).disputeTree('I do not like it');
@@ -217,7 +205,7 @@ contract('Distributor', () => {
     });
     it('success - from a governance address', async () => {
       expect(await distributor.getMerkleRoot()).to.be.equal(emptyBytes);
-      const receipt = await (await distributor.connect(guardian).updateTree(merkleTree)).wait();
+      const receipt = await (await distributor.connect(governor).updateTree(merkleTree)).wait();
       inReceipt(receipt, 'TreeUpdated', {
         merkleRoot: web3.utils.keccak256('MERKLE_ROOT'),
         ipfsHash: web3.utils.keccak256('IPFS_HASH'),
@@ -239,12 +227,12 @@ contract('Distributor', () => {
     });
     it('success - from a governance address and successive update', async () => {
       expect(await distributor.getMerkleRoot()).to.be.equal(emptyBytes);
-      await distributor.connect(guardian).updateTree(merkleTree);
+      await distributor.connect(governor).updateTree(merkleTree);
       const merkleTree2 = {
         merkleRoot: web3.utils.keccak256('MERKLE_ROOT_2'),
         ipfsHash: web3.utils.keccak256('IPFS_HASH_2'),
       };
-      const receipt = await (await distributor.connect(guardian).updateTree(merkleTree2)).wait();
+      const receipt = await (await distributor.connect(governor).updateTree(merkleTree2)).wait();
       inReceipt(receipt, 'TreeUpdated', {
         merkleRoot: web3.utils.keccak256('MERKLE_ROOT_2'),
         ipfsHash: web3.utils.keccak256('IPFS_HASH_2'),
@@ -264,7 +252,7 @@ contract('Distributor', () => {
       expect(await distributor.getMerkleRoot()).to.be.equal(web3.utils.keccak256('MERKLE_ROOT_2'));
     });
     it('success - from a trusted address', async () => {
-      await distributor.connect(guardian).toggleTrusted(bob.address);
+      await distributor.connect(governor).toggleTrusted(bob.address);
       const receipt = await (await distributor.connect(bob).updateTree(merkleTree)).wait();
       inReceipt(receipt, 'TreeUpdated', {
         merkleRoot: web3.utils.keccak256('MERKLE_ROOT'),
@@ -283,7 +271,7 @@ contract('Distributor', () => {
       expect(await distributor.getMerkleRoot()).to.be.equal(web3.utils.keccak256('MERKLE_ROOT'));
     });
     it('success - from a trusted address and successive update', async () => {
-      await distributor.connect(guardian).toggleTrusted(bob.address);
+      await distributor.connect(governor).toggleTrusted(bob.address);
       await distributor.connect(bob).updateTree(merkleTree);
       const merkleTree2 = {
         merkleRoot: web3.utils.keccak256('MERKLE_ROOT_2'),
@@ -310,8 +298,8 @@ contract('Distributor', () => {
       expect(await distributor.getMerkleRoot()).to.be.equal(web3.utils.keccak256('MERKLE_ROOT_2'));
     });
     it('success - when from a trusted address and with dispute periods', async () => {
-      await distributor.connect(guardian).toggleTrusted(bob.address);
-      await distributor.connect(guardian).setDisputePeriod(1);
+      await distributor.connect(governor).toggleTrusted(bob.address);
+      await distributor.connect(governor).setDisputePeriod(1);
       await distributor.connect(bob).updateTree(merkleTree);
       const merkleTree2 = {
         merkleRoot: web3.utils.keccak256('MERKLE_ROOT_2'),
@@ -356,7 +344,7 @@ contract('Distributor', () => {
           .unix() + 7200,
       );
 
-      // Updating the tree should work for the guardian but not for Bob
+      // Updating the tree should work for the governor but not for Bob
       const merkleTree4 = {
         merkleRoot: web3.utils.keccak256('MERKLE_ROOT_4'),
         ipfsHash: web3.utils.keccak256('IPFS_HASH_4'),
@@ -366,7 +354,7 @@ contract('Distributor', () => {
         distributor,
         'NotTrusted',
       );
-      await distributor.connect(guardian).updateTree(merkleTree4);
+      await distributor.connect(governor).updateTree(merkleTree4);
       expect((await distributor.tree()).merkleRoot).to.be.equal(web3.utils.keccak256('MERKLE_ROOT_4'));
       expect((await distributor.tree()).ipfsHash).to.be.equal(web3.utils.keccak256('IPFS_HASH_4'));
       expect((await distributor.lastTree()).merkleRoot).to.be.equal(web3.utils.keccak256('MERKLE_ROOT_3'));
@@ -382,10 +370,10 @@ contract('Distributor', () => {
   });
   describe('disputeTree', () => {
     it('reverts - non allowance', async () => {
-      await distributor.connect(guardian).setDisputePeriod(1);
-      await distributor.connect(guardian).updateTree(merkleTree);
-      await distributor.connect(guardian).setDisputeToken(angle.address);
-      await distributor.connect(guardian).setDisputeAmount(parseEther('1'));
+      await distributor.connect(governor).setDisputePeriod(1);
+      await distributor.connect(governor).updateTree(merkleTree);
+      await distributor.connect(governor).setDisputeToken(angle.address);
+      await distributor.connect(governor).setDisputeAmount(parseEther('1'));
       await expect(distributor.connect(alice).disputeTree('I do not like it')).to.be.revertedWith(
         'ERC20: insufficient allowance',
       );
@@ -402,10 +390,10 @@ contract('Distributor', () => {
       );
     });
     it('reverts - dispute ongoing', async () => {
-      await distributor.connect(guardian).setDisputePeriod(1);
-      await distributor.connect(guardian).updateTree(merkleTree);
-      await distributor.connect(guardian).setDisputeToken(angle.address);
-      await distributor.connect(guardian).setDisputeAmount(parseEther('1'));
+      await distributor.connect(governor).setDisputePeriod(1);
+      await distributor.connect(governor).updateTree(merkleTree);
+      await distributor.connect(governor).setDisputeToken(angle.address);
+      await distributor.connect(governor).setDisputeAmount(parseEther('1'));
       await angle.mint(alice.address, parseEther('1.3'));
       await angle.connect(alice).approve(distributor.address, parseEther('1'));
       const receipt = await (await distributor.connect(alice).disputeTree('I do not like it')).wait();
@@ -419,10 +407,10 @@ contract('Distributor', () => {
       );
     });
     it('success - dispute created', async () => {
-      await distributor.connect(guardian).setDisputePeriod(1);
-      await distributor.connect(guardian).updateTree(merkleTree);
-      await distributor.connect(guardian).setDisputeToken(angle.address);
-      await distributor.connect(guardian).setDisputeAmount(parseEther('1'));
+      await distributor.connect(governor).setDisputePeriod(1);
+      await distributor.connect(governor).updateTree(merkleTree);
+      await distributor.connect(governor).setDisputeToken(angle.address);
+      await distributor.connect(governor).setDisputeAmount(parseEther('1'));
       await angle.mint(alice.address, parseEther('1.3'));
       await angle.connect(alice).approve(distributor.address, parseEther('1'));
       const receipt = await (await distributor.connect(alice).disputeTree('I do not like it')).wait();
@@ -440,26 +428,26 @@ contract('Distributor', () => {
     });
   });
   describe('resolveDispute', () => {
-    it('reverts - non governor or guardian or not dispute', async () => {
+    it('reverts - non governor or governor or not dispute', async () => {
       await expect(distributor.connect(alice).resolveDispute(false)).to.be.revertedWithCustomError(
         distributor,
         'NotGovernorOrGuardian',
       );
-      await expect(distributor.connect(guardian).resolveDispute(false)).to.be.revertedWithCustomError(
+      await expect(distributor.connect(governor).resolveDispute(false)).to.be.revertedWithCustomError(
         distributor,
         'NoDispute',
       );
     });
     it('success - invalid resolution', async () => {
-      await distributor.connect(guardian).setDisputePeriod(1);
-      await distributor.connect(guardian).updateTree(merkleTree);
-      await distributor.connect(guardian).setDisputeToken(angle.address);
-      await distributor.connect(guardian).setDisputeAmount(parseEther('1'));
+      await distributor.connect(governor).setDisputePeriod(1);
+      await distributor.connect(governor).updateTree(merkleTree);
+      await distributor.connect(governor).setDisputeToken(angle.address);
+      await distributor.connect(governor).setDisputeAmount(parseEther('1'));
       await angle.mint(alice.address, parseEther('1.3'));
       await angle.connect(alice).approve(distributor.address, parseEther('1'));
       await distributor.connect(alice).disputeTree('I do not like it');
       expect(await distributor.disputer()).to.be.equal(alice.address);
-      const receipt = await (await distributor.connect(guardian).resolveDispute(false)).wait();
+      const receipt = await (await distributor.connect(governor).resolveDispute(false)).wait();
       inReceipt(receipt, 'DisputeResolved', {
         valid: false,
       });
@@ -470,19 +458,19 @@ contract('Distributor', () => {
           .startOf('hour')
           .unix() + 7200,
       );
-      expect(await angle.balanceOf(guardian.address)).to.be.equal(parseEther('1'));
+      expect(await angle.balanceOf(governor.address)).to.be.equal(parseEther('1'));
       expect(await angle.balanceOf(alice.address)).to.be.equal(parseEther('0.3'));
     });
     it('success - valid resolution', async () => {
-      await distributor.connect(guardian).updateTree(merkleTree);
-      await distributor.connect(guardian).setDisputeToken(angle.address);
-      await distributor.connect(guardian).setDisputeAmount(parseEther('1'));
-      await distributor.connect(guardian).setDisputePeriod(1);
+      await distributor.connect(governor).updateTree(merkleTree);
+      await distributor.connect(governor).setDisputeToken(angle.address);
+      await distributor.connect(governor).setDisputeAmount(parseEther('1'));
+      await distributor.connect(governor).setDisputePeriod(1);
       const merkleTree2 = {
         merkleRoot: web3.utils.keccak256('MERKLE_ROOT_2'),
         ipfsHash: web3.utils.keccak256('IPFS_HASH_2'),
       };
-      await distributor.connect(guardian).updateTree(merkleTree2);
+      await distributor.connect(governor).updateTree(merkleTree2);
       expect((await distributor.tree()).merkleRoot).to.be.equal(web3.utils.keccak256('MERKLE_ROOT_2'));
       expect((await distributor.tree()).ipfsHash).to.be.equal(web3.utils.keccak256('IPFS_HASH_2'));
       expect((await distributor.lastTree()).merkleRoot).to.be.equal(web3.utils.keccak256('MERKLE_ROOT'));
@@ -491,7 +479,7 @@ contract('Distributor', () => {
       await angle.connect(alice).approve(distributor.address, parseEther('1'));
       await distributor.connect(alice).disputeTree('I do not like it');
       expect(await distributor.disputer()).to.be.equal(alice.address);
-      const receipt = await (await distributor.connect(guardian).resolveDispute(true)).wait();
+      const receipt = await (await distributor.connect(governor).resolveDispute(true)).wait();
       inReceipt(receipt, 'DisputeResolved', {
         valid: true,
       });
@@ -500,7 +488,7 @@ contract('Distributor', () => {
         ipfsHash: web3.utils.keccak256('IPFS_HASH'),
       });
       expect(await distributor.disputer()).to.be.equal(ZERO_ADDRESS);
-      expect(await angle.balanceOf(guardian.address)).to.be.equal(parseEther('0'));
+      expect(await angle.balanceOf(governor.address)).to.be.equal(parseEther('0'));
       expect(await angle.balanceOf(alice.address)).to.be.equal(parseEther('1.3'));
       expect(await distributor.endOfDisputePeriod()).to.be.equal(0);
       expect((await distributor.tree()).merkleRoot).to.be.equal(web3.utils.keccak256('MERKLE_ROOT'));
@@ -510,27 +498,27 @@ contract('Distributor', () => {
     });
   });
   describe('revokeTree', () => {
-    it('reverts - not guardian', async () => {
+    it('reverts - not governor', async () => {
       await expect(distributor.connect(alice).revokeTree()).to.be.revertedWithCustomError(
         distributor,
         'NotGovernorOrGuardian',
       );
     });
     it('reverts - when there is a live dispute', async () => {
-      await distributor.connect(guardian).setDisputePeriod(1);
-      await distributor.connect(guardian).updateTree(merkleTree);
-      await distributor.connect(guardian).setDisputeToken(angle.address);
-      await distributor.connect(guardian).setDisputeAmount(parseEther('1'));
+      await distributor.connect(governor).setDisputePeriod(1);
+      await distributor.connect(governor).updateTree(merkleTree);
+      await distributor.connect(governor).setDisputeToken(angle.address);
+      await distributor.connect(governor).setDisputeAmount(parseEther('1'));
       await angle.mint(alice.address, parseEther('1.3'));
       await angle.connect(alice).approve(distributor.address, parseEther('1'));
       await distributor.connect(alice).disputeTree('I do not like it');
-      await expect(distributor.connect(guardian).revokeTree()).to.be.revertedWithCustomError(
+      await expect(distributor.connect(governor).revokeTree()).to.be.revertedWithCustomError(
         distributor,
         'UnresolvedDispute',
       );
     });
     it('success - when there is a tree that is live', async () => {
-      await distributor.connect(guardian).toggleTrusted(bob.address);
+      await distributor.connect(governor).toggleTrusted(bob.address);
       await distributor.connect(bob).updateTree(merkleTree);
       expect(await distributor.endOfDisputePeriod()).to.be.equal(
         moment
@@ -538,7 +526,7 @@ contract('Distributor', () => {
           .startOf('hour')
           .unix() + 3600,
       );
-      const receipt = await (await distributor.connect(guardian).revokeTree()).wait();
+      const receipt = await (await distributor.connect(governor).revokeTree()).wait();
       inReceipt(receipt, 'TreeUpdated', {
         merkleRoot: emptyBytes,
         ipfsHash: emptyBytes,
@@ -551,7 +539,7 @@ contract('Distributor', () => {
       expect(await distributor.getMerkleRoot()).to.be.equal(emptyBytes);
     });
     it('success - when there is a tree that is pending', async () => {
-      await distributor.connect(guardian).toggleTrusted(bob.address);
+      await distributor.connect(governor).toggleTrusted(bob.address);
       await distributor.connect(bob).updateTree(merkleTree);
       const merkleTree2 = {
         merkleRoot: web3.utils.keccak256('MERKLE_ROOT_2'),
@@ -565,13 +553,13 @@ contract('Distributor', () => {
           .startOf('hour')
           .unix() + 3600,
       );
-      await distributor.connect(guardian).setDisputePeriod(1);
+      await distributor.connect(governor).setDisputePeriod(1);
       expect((await distributor.tree()).merkleRoot).to.be.equal(web3.utils.keccak256('MERKLE_ROOT_2'));
       expect((await distributor.tree()).ipfsHash).to.be.equal(web3.utils.keccak256('IPFS_HASH_2'));
       expect((await distributor.lastTree()).merkleRoot).to.be.equal(web3.utils.keccak256('MERKLE_ROOT'));
       expect((await distributor.lastTree()).ipfsHash).to.be.equal(web3.utils.keccak256('IPFS_HASH'));
       expect(await distributor.getMerkleRoot()).to.be.equal(web3.utils.keccak256('MERKLE_ROOT'));
-      const receipt = await (await distributor.connect(guardian).revokeTree()).wait();
+      const receipt = await (await distributor.connect(governor).revokeTree()).wait();
       inReceipt(receipt, 'TreeUpdated', {
         merkleRoot: web3.utils.keccak256('MERKLE_ROOT'),
         ipfsHash: web3.utils.keccak256('IPFS_HASH'),
@@ -598,14 +586,14 @@ contract('Distributor', () => {
     });
   });
   describe('setDisputePeriod', () => {
-    it('reverts - non guardian', async () => {
+    it('reverts - non governor', async () => {
       await expect(distributor.connect(alice).setDisputePeriod(10)).to.be.revertedWithCustomError(
         distributor,
-        'NotGovernorOrGuardian',
+        'NotGovernor',
       );
     });
     it('success - dispute period updated', async () => {
-      const receipt = await (await distributor.connect(guardian).setDisputePeriod(1)).wait();
+      const receipt = await (await distributor.connect(governor).setDisputePeriod(1)).wait();
       expect(await distributor.disputePeriod()).to.be.equal(1);
       inReceipt(receipt, 'DisputePeriodUpdated', {
         _disputePeriod: 1,
@@ -613,56 +601,56 @@ contract('Distributor', () => {
     });
   });
   describe('setDisputeToken', () => {
-    it('reverts - non guardian', async () => {
+    it('reverts - non governor', async () => {
       await expect(distributor.connect(alice).setDisputeToken(alice.address)).to.be.revertedWithCustomError(
         distributor,
-        'NotGovernorOrGuardian',
+        'NotGovernor',
       );
     });
     it('success - dispute amount updated', async () => {
-      const receipt = await (await distributor.connect(guardian).setDisputeToken(angle.address)).wait();
+      const receipt = await (await distributor.connect(governor).setDisputeToken(angle.address)).wait();
       inReceipt(receipt, 'DisputeTokenUpdated', {
         _disputeToken: angle.address,
       });
       expect(await distributor.disputeToken()).to.be.equal(angle.address);
     });
     it('reverts - when ongoing dispute', async () => {
-      await distributor.connect(guardian).setDisputePeriod(1);
-      await distributor.connect(guardian).updateTree(merkleTree);
-      await distributor.connect(guardian).setDisputeToken(angle.address);
-      await distributor.connect(guardian).setDisputeAmount(parseEther('1'));
+      await distributor.connect(governor).setDisputePeriod(1);
+      await distributor.connect(governor).updateTree(merkleTree);
+      await distributor.connect(governor).setDisputeToken(angle.address);
+      await distributor.connect(governor).setDisputeAmount(parseEther('1'));
       await angle.mint(alice.address, parseEther('1.3'));
       await angle.connect(alice).approve(distributor.address, parseEther('1'));
       await distributor.connect(alice).disputeTree('I do not like it');
-      await expect(distributor.connect(guardian).setDisputeToken(alice.address)).to.be.revertedWithCustomError(
+      await expect(distributor.connect(governor).setDisputeToken(alice.address)).to.be.revertedWithCustomError(
         distributor,
         'UnresolvedDispute',
       );
     });
   });
   describe('setDisputeAmount', () => {
-    it('reverts - non guardian', async () => {
+    it('reverts - non governor', async () => {
       await expect(distributor.connect(alice).setDisputeAmount(parseEther('0.33'))).to.be.revertedWithCustomError(
         distributor,
-        'NotGovernorOrGuardian',
+        'NotGovernor',
       );
     });
     it('success - dispute amount updated', async () => {
-      const receipt = await (await distributor.connect(guardian).setDisputeAmount(parseEther('0.33'))).wait();
+      const receipt = await (await distributor.connect(governor).setDisputeAmount(parseEther('0.33'))).wait();
       inReceipt(receipt, 'DisputeAmountUpdated', {
         _disputeAmount: parseEther('0.33'),
       });
       expect(await distributor.disputeAmount()).to.be.equal(parseEther('0.33'));
     });
     it('success - dispute amount updated', async () => {
-      await distributor.connect(guardian).setDisputePeriod(1);
-      await distributor.connect(guardian).updateTree(merkleTree);
-      await distributor.connect(guardian).setDisputeToken(angle.address);
-      await distributor.connect(guardian).setDisputeAmount(parseEther('1'));
+      await distributor.connect(governor).setDisputePeriod(1);
+      await distributor.connect(governor).updateTree(merkleTree);
+      await distributor.connect(governor).setDisputeToken(angle.address);
+      await distributor.connect(governor).setDisputeAmount(parseEther('1'));
       await angle.mint(alice.address, parseEther('1.3'));
       await angle.connect(alice).approve(distributor.address, parseEther('1'));
       await distributor.connect(alice).disputeTree('I do not like it');
-      await expect(distributor.connect(guardian).setDisputeAmount(parseEther('1.1'))).to.be.revertedWithCustomError(
+      await expect(distributor.connect(governor).setDisputeAmount(parseEther('1.1'))).to.be.revertedWithCustomError(
         distributor,
         'UnresolvedDispute',
       );
@@ -708,13 +696,13 @@ contract('Distributor', () => {
       ).to.be.revertedWithCustomError(distributor, 'InvalidLengths');
     });
     it('reverts - root is zero', async () => {
-      await distributor.connect(guardian).updateTree({ merkleRoot: constants.HashZero, ipfsHash: constants.HashZero });
+      await distributor.connect(governor).updateTree({ merkleRoot: constants.HashZero, ipfsHash: constants.HashZero });
       await expect(
         distributor.claim([alice.address], [angle.address], [parseEther('1')], [[web3.utils.keccak256('test')]]),
       ).to.be.revertedWithCustomError(distributor, 'InvalidUninitializedRoot');
     });
     it('reverts - invalid proof', async () => {
-      await distributor.connect(guardian).updateTree({ merkleRoot: keccak256('0x1F'), ipfsHash: constants.HashZero });
+      await distributor.connect(governor).updateTree({ merkleRoot: keccak256('0x1F'), ipfsHash: constants.HashZero });
       await time.increaseTo(await distributor.endOfDisputePeriod());
       await expect(
         distributor.claim([alice.address], [angle.address], [parseEther('1')], [[web3.utils.keccak256('test')]]),
@@ -743,7 +731,7 @@ contract('Distributor', () => {
       const proof = merkleTreeLib.getHexProof(leaf);
       await angle.mint(distributor.address, 10000);
       merkleTree.merkleRoot = root;
-      await distributor.connect(guardian).updateTree(merkleTree);
+      await distributor.connect(governor).updateTree(merkleTree);
 
       await expect(
         distributor.claim(['0x3931C80BF7a911fcda8b684b23A433D124b59F06'], [angle.address], [parseEther('1')], [proof]),
@@ -771,10 +759,10 @@ contract('Distributor', () => {
       const proof = merkleTreeLib.getHexProof(leaf);
       await angle.mint(distributor.address, parseEther('10'));
       merkleTree.merkleRoot = root;
-      await distributor.connect(guardian).updateTree(merkleTree);
+      await distributor.connect(governor).updateTree(merkleTree);
 
       await (
-        await distributor.connect(guardian).toggleOnlyOperatorCanClaim('0x3931C80BF7a911fcda8b684b23A433D124b59F06')
+        await distributor.connect(governor).toggleOnlyOperatorCanClaim('0x3931C80BF7a911fcda8b684b23A433D124b59F06')
       ).wait();
       await expect(
         distributor
@@ -804,14 +792,14 @@ contract('Distributor', () => {
       const proof = merkleTreeLib.getHexProof(leaf);
       await angle.mint(distributor.address, parseEther('10'));
       merkleTree.merkleRoot = root;
-      await distributor.connect(guardian).updateTree(merkleTree);
+      await distributor.connect(governor).updateTree(merkleTree);
       await time.increaseTo(await distributor.endOfDisputePeriod());
 
       await (
-        await distributor.connect(guardian).toggleOnlyOperatorCanClaim('0x3931C80BF7a911fcda8b684b23A433D124b59F06')
+        await distributor.connect(governor).toggleOnlyOperatorCanClaim('0x3931C80BF7a911fcda8b684b23A433D124b59F06')
       ).wait();
       await (
-        await distributor.connect(guardian).toggleOperator('0x3931C80BF7a911fcda8b684b23A433D124b59F06', bob.address)
+        await distributor.connect(governor).toggleOperator('0x3931C80BF7a911fcda8b684b23A433D124b59F06', bob.address)
       ).wait();
       const receipt = await (
         await distributor
@@ -854,7 +842,7 @@ contract('Distributor', () => {
       const proof = merkleTreeLib.getHexProof(leaf);
       await angle.mint(distributor.address, parseEther('10'));
       merkleTree.merkleRoot = root;
-      await distributor.connect(guardian).updateTree(merkleTree);
+      await distributor.connect(governor).updateTree(merkleTree);
       await time.increaseTo(await distributor.endOfDisputePeriod());
 
       const receipt = await (
@@ -899,7 +887,7 @@ contract('Distributor', () => {
       const proof2 = merkleTreeLib.getHexProof(elements[1]);
       await angle.mint(distributor.address, parseEther('10'));
       merkleTree.merkleRoot = root;
-      await distributor.connect(guardian).updateTree(merkleTree);
+      await distributor.connect(governor).updateTree(merkleTree);
       await time.increaseTo(await distributor.endOfDisputePeriod());
 
       const receipt = await (
@@ -954,7 +942,7 @@ contract('Distributor', () => {
       await angle.mint(distributor.address, parseEther('10'));
       await agEUR.mint(distributor.address, parseEther('0.5'));
       merkleTree.merkleRoot = root;
-      await distributor.connect(guardian).updateTree(merkleTree);
+      await distributor.connect(governor).updateTree(merkleTree);
       await time.increaseTo(await distributor.endOfDisputePeriod());
 
       const receipt = await (
@@ -1007,7 +995,7 @@ contract('Distributor', () => {
       await angle.mint(distributor.address, parseEther('10'));
       await agEUR.mint(distributor.address, parseEther('0.5'));
       merkleTree.merkleRoot = root;
-      await distributor.connect(guardian).updateTree(merkleTree);
+      await distributor.connect(governor).updateTree(merkleTree);
       await time.increaseTo(await distributor.endOfDisputePeriod());
 
       // Doing first claim
@@ -1047,7 +1035,7 @@ contract('Distributor', () => {
       const root2 = merkleTreeLib2.getHexRoot();
       const proof2 = merkleTreeLib2.getHexProof(elements[0]);
       merkleTree.merkleRoot = root2;
-      await distributor.connect(guardian).updateTree(merkleTree);
+      await distributor.connect(governor).updateTree(merkleTree);
       await time.increaseTo(await distributor.endOfDisputePeriod());
       const receipt2 = await (
         await distributor.claim(
@@ -1090,14 +1078,14 @@ contract('Distributor', () => {
       await angle.mint(distributor.address, parseEther('10'));
       await agEUR.mint(distributor.address, parseEther('0.5'));
       merkleTree.merkleRoot = root;
-      await distributor.connect(guardian).updateTree(merkleTree);
+      await distributor.connect(governor).updateTree(merkleTree);
       await time.increaseTo(await distributor.endOfDisputePeriod());
 
       const merkleTree2 = {
         merkleRoot: web3.utils.keccak256('MERKLE_ROOT_2'),
         ipfsHash: web3.utils.keccak256('IPFS_HASH_2'),
       };
-      await distributor.connect(guardian).updateTree(merkleTree2);
+      await distributor.connect(governor).updateTree(merkleTree2);
 
       // Claim is still correct
       const receipt = await (
@@ -1136,7 +1124,7 @@ contract('Distributor', () => {
       const root2 = merkleTreeLib2.getHexRoot();
       const proof2 = merkleTreeLib2.getHexProof(elements[0]);
       merkleTree.merkleRoot = root2;
-      await distributor.connect(guardian).updateTree(merkleTree);
+      await distributor.connect(governor).updateTree(merkleTree);
       // In this case new Merkle Tree is not effectively pushed
 
       await expect(
