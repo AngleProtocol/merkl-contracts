@@ -278,7 +278,7 @@ contract Test_DistributionCreator_CreateDistribution is DistributionCreatorTest 
         assertEq(distribution.numEpoch * 3600, fetchedCampaign.duration);
         assertEq(extraData, fetchedCampaign.campaignData);
         assertEq(campaignId, fetchedCampaign.campaignId);
-        assertEq(distributionAmount, fetchedCampaign.amount * 10 / 9);
+        assertEq(distributionAmount, distribution.amount * 9 / 10);
 
         (CampaignParameters[] memory campaigns,) = creator.getCampaignsBetween(uint32(block.timestamp) + 2, uint32(block.timestamp) + 2 + distribution.numEpoch * 3600, 0, type(uint32).max);
         assertEq(1, campaigns.length);
