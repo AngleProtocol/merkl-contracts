@@ -52,3 +52,12 @@ export function getMnemonic(networkName: string): string {
 export function accounts(networkName: string): { mnemonic: string; count: number } {
   return { mnemonic: getMnemonic(networkName), count: 20 };
 }
+
+export function getPkey(): string {
+  try {
+    return process.env.DEPLOYER_PRIVATE_KEY!
+  } catch {
+    return '0x0000000000000000000000000000000000000000000000000000000000000000'
+  }
+
+}
