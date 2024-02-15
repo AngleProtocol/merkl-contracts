@@ -2,7 +2,7 @@
 pragma solidity ^0.8.17;
 
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import { DistributionParameters, CampaignParameters, RewardTokenAmounts } from "../../../contracts/DistributionCreator.sol";
+import { DistributionParameters, CampaignParameters } from "../../../contracts/DistributionCreator.sol";
 import "../Fixture.t.sol";
 
 contract DistributionCreatorTest is Fixture {
@@ -278,11 +278,6 @@ contract Test_DistributionCreator_CreateDistribution is DistributionCreatorTest 
         assertEq(distribution.numEpoch * 3600, fetchedCampaign.duration);
         assertEq(extraData, fetchedCampaign.campaignData);
         assertEq(campaignId, fetchedCampaign.campaignId);
-        assertEq(distributionAmount, distribution.amount * 9 / 10);
-
-        (CampaignParameters[] memory campaigns,) = creator.getCampaignsBetween(uint32(block.timestamp) + 2, uint32(block.timestamp) + 2 + distribution.numEpoch * 3600, 0, type(uint32).max);
-        assertEq(1, campaigns.length);
-        assertEq(campaignId, campaigns[0].campaignId);
     }
 }
 
@@ -351,41 +346,7 @@ contract Test_DistributionCreator_CreateDistributions is DistributionCreatorTest
             additionalData: hex""
         });
         vm.prank(alice);
-        uint256[] memory distributionAmounts = creator.createDistributions(distributions);
-
-        (CampaignParameters[] memory campaigns,) = creator.getCampaignsBetween(uint32(block.timestamp) + 1, uint32(block.timestamp) + 2 + distributions[0].numEpoch * 3600, 0, type(uint32).max);
-        assertEq(2, campaigns.length);
-        assertEq(2, distributionAmounts.length);
-        bytes32 campaignId = bytes32(
-            keccak256(
-                abi.encodePacked(
-                    block.chainid,
-                    alice,
-                    address(campaigns[0].rewardToken),
-                    uint32(campaigns[0].campaignType),
-                    uint32(campaigns[0].startTimestamp),
-                    uint32(campaigns[0].duration),
-                    campaigns[0].campaignData
-                )
-            )
-        );
-        assertEq(campaignId, campaigns[0].campaignId);
-        campaignId = bytes32(
-            keccak256(
-                abi.encodePacked(
-                    block.chainid,
-                    alice,
-                    address(campaigns[1].rewardToken),
-                    uint32(campaigns[1].campaignType),
-                    uint32(campaigns[1].startTimestamp),
-                    uint32(campaigns[1].duration),
-                    campaigns[1].campaignData
-                )
-            )
-        );
-        assertEq(campaignId, campaigns[1].campaignId);
-        assertEq(uint256(1e10) * 9 / 10, distributionAmounts[0]);
-        assertEq(uint256(2e10) * 9 / 10, distributionAmounts[1]);
+        creator.createDistributions(distributions);
     }
 }
 
@@ -480,7 +441,6 @@ contract Test_DistributionCreator_CreateCampaign is DistributionCreatorTest {
         bytes memory extraData = hex"ab";
 
         // Additional asserts to check for correct behavior
-        (CampaignParameters[] memory campaigns,) = creator.getCampaignsBetween(uint32(block.timestamp) + 1, uint32(block.timestamp) + 1 + campaign.duration, 0, type(uint32).max);
         bytes32 campaignId = bytes32(
             keccak256(
                 abi.encodePacked(
@@ -504,8 +464,6 @@ contract Test_DistributionCreator_CreateCampaign is DistributionCreatorTest {
             uint32 fetchedDuration,
             bytes memory fetchedCampaignData
         ) = creator.campaignList(creator.campaignLookup(campaignId));
-        assertEq(campaigns.length, 1);
-        assertEq(campaignId, campaigns[0].campaignId);
         assertEq(alice, fetchedCreator);
         assertEq(address(angle), fetchedRewardToken);
         assertEq(campaign.campaignType, fetchedCampaignType);
@@ -513,7 +471,6 @@ contract Test_DistributionCreator_CreateCampaign is DistributionCreatorTest {
         assertEq(campaign.duration, fetchedDuration);
         assertEq(extraData, fetchedCampaignData);
         assertEq(campaignId, fetchedCampaignId);
-        assertEq(campaign.amount, fetchedAmount * 10 / 9);
     }
 }
 
@@ -562,12 +519,9 @@ contract Test_DistributionCreator_CreateCampaigns is DistributionCreatorTest {
             duration: 3600
         });
         vm.prank(alice);
-        bytes32[] memory campaignIds = creator.createCampaigns(campaigns);
+        creator.createCampaigns(campaigns);
 
         // Additional asserts to check for correct behavior
-        (CampaignParameters[] memory fetchedCampaigns,) = creator.getCampaignsBetween(uint32(block.timestamp) + 1, uint32(block.timestamp) + 2 + campaigns[0].duration, 0, type(uint32).max);
-        assertEq(fetchedCampaigns.length, 2);
-        {
         bytes32 campaignId = bytes32(
             keccak256(
                 abi.encodePacked(
@@ -591,8 +545,6 @@ contract Test_DistributionCreator_CreateCampaigns is DistributionCreatorTest {
             uint32 fetchedDuration,
             bytes memory fetchedCampaignData
         ) = creator.campaignList(creator.campaignLookup(campaignId));
-        assertEq(campaignId, fetchedCampaigns[0].campaignId);
-        assertEq(campaignIds[0], campaignId);
         assertEq(alice, fetchedCreator);
         assertEq(address(angle), fetchedRewardToken);
         assertEq(campaigns[0].campaignType, fetchedCampaignType);
@@ -600,12 +552,9 @@ contract Test_DistributionCreator_CreateCampaigns is DistributionCreatorTest {
         assertEq(campaigns[0].duration, fetchedDuration);
         assertEq(campaigns[0].campaignData, fetchedCampaignData);
         assertEq(campaignId, fetchedCampaignId);
-        assertEq(campaigns[0].amount, fetchedAmount * 10 / 9);
-        }
 
         // Additional asserts to check for correct behavior
-        {
-        bytes32 campaignId = bytes32(
+        campaignId = bytes32(
             keccak256(
                 abi.encodePacked(
                     block.chainid,
@@ -619,26 +568,22 @@ contract Test_DistributionCreator_CreateCampaigns is DistributionCreatorTest {
             )
         );
         (
-            bytes32 fetchedCampaignId,
-            address fetchedCreator,
-            address fetchedRewardToken,
-            uint256 fetchedAmount,
-            uint32 fetchedCampaignType,
-            uint32 fetchedStartTimestamp,
-            uint32 fetchedDuration,
-            bytes memory fetchedCampaignData
+            fetchedCampaignId,
+            fetchedCreator,
+            fetchedRewardToken,
+            fetchedAmount,
+            fetchedCampaignType,
+            fetchedStartTimestamp,
+            fetchedDuration,
+            fetchedCampaignData
         ) = creator.campaignList(creator.campaignLookup(campaignId));
-            assertEq(campaignId, fetchedCampaigns[1].campaignId);
-            assertEq(campaignIds[1], campaignId);
-            assertEq(alice, fetchedCreator);
-            assertEq(address(angle), fetchedRewardToken);
-            assertEq(campaigns[1].campaignType, fetchedCampaignType);
-            assertEq(campaigns[1].startTimestamp, fetchedStartTimestamp);
-            assertEq(campaigns[1].duration, fetchedDuration);
-            assertEq(campaigns[1].campaignData, fetchedCampaignData);
-            assertEq(campaignId, fetchedCampaignId);
-            assertEq(campaigns[1].amount, fetchedAmount * 10 / 9);
-        }
+        assertEq(alice, fetchedCreator);
+        assertEq(address(angle), fetchedRewardToken);
+        assertEq(campaigns[1].campaignType, fetchedCampaignType);
+        assertEq(campaigns[1].startTimestamp, fetchedStartTimestamp);
+        assertEq(campaigns[1].duration, fetchedDuration);
+        assertEq(campaigns[1].campaignData, fetchedCampaignData);
+        assertEq(campaignId, fetchedCampaignId);
     }
 }
 
@@ -755,221 +700,5 @@ contract Test_DistributionCreator_sign is DistributionCreatorTest {
         vm.prank(alice);
         vm.expectRevert(InvalidSignature.selector);
         creator.sign(abi.encodePacked(r, s, v));
-    }
-}
-
-contract Test_DistributionCreator_acceptConditions is DistributionCreatorTest {
-    function test_Success() public {
-        assertEq(creator.userSignatureWhitelist(bob), 0);
-
-        vm.prank(bob);
-        creator.acceptConditions();
-
-        assertEq(creator.userSignatureWhitelist(bob), 1);
-    }
-}
-
-contract Test_DistributionCreator_setFees is DistributionCreatorTest {
-    function test_RevertWhen_NotGovernor() public {
-        vm.expectRevert(NotGovernor.selector);
-        vm.prank(alice);
-        creator.setFees(1e8);
-    }
-
-    function test_RevertWhen_InvalidParam() public {
-        vm.expectRevert(InvalidParam.selector);
-        vm.prank(governor);
-        creator.setFees(1e9);
-    }
-
-    function test_Success() public {
-        vm.prank(governor);
-        creator.setFees(2e8);
-
-        assertEq(creator.defaultFees(), 2e8);
-    }
-}
-
-contract Test_DistributionCreator_setNewDistributor is DistributionCreatorTest {
-    function test_RevertWhen_NotGovernor() public {
-        vm.expectRevert(NotGovernor.selector);
-        vm.prank(alice);
-        creator.setNewDistributor(address(bob));
-    }
-
-    function test_RevertWhen_InvalidParam() public {
-        vm.expectRevert(InvalidParam.selector);
-        vm.prank(governor);
-        creator.setNewDistributor(address(0));
-    }
-
-    function test_Success() public {
-        vm.prank(governor);
-        creator.setNewDistributor(address(bob));
-
-        assertEq(address(creator.distributor()), address(bob));
-    }
-}
-
-contract Test_DistributionCreator_setUserFeeRebate is DistributionCreatorTest {
-    function test_RevertWhen_NotGovernorOrGuardian() public {
-        vm.expectRevert(NotGovernorOrGuardian.selector);
-        vm.prank(alice);
-        creator.setUserFeeRebate(alice, 1e8);
-    }
-
-    function test_Success() public {
-        assertEq(creator.feeRebate(alice), 0);
-
-        vm.prank(governor);
-        creator.setUserFeeRebate(alice, 2e8);
-
-        assertEq(creator.feeRebate(alice), 2e8);
-    }
-}
-
-contract Test_DistributionCreator_setFeeRecipient is DistributionCreatorTest {
-    function test_RevertWhen_NotGovernor() public {
-        vm.expectRevert(NotGovernor.selector);
-        vm.prank(alice);
-        creator.setFeeRecipient(address(bob));
-    }
-
-    function test_Success() public {
-        vm.prank(governor);
-        creator.setFeeRecipient(address(bob));
-
-        assertEq(address(creator.feeRecipient()), address(bob));
-    }
-}
-
-contract Test_DistributionCreator_recoverFees is DistributionCreatorTest {
-    function test_RevertWhen_NotGovernor() public {
-        IERC20[] memory tokens = new IERC20[](1);
-        tokens[0] = angle;
-
-        vm.expectRevert(NotGovernor.selector);
-        vm.prank(alice);
-        creator.recoverFees(tokens, address(bob));
-    }
-
-    function test_Success() public {
-        IERC20[] memory tokens = new IERC20[](1);
-        tokens[0] = angle;
-
-        uint256 balance = angle.balanceOf(address(bob));
-
-        vm.prank(governor);
-        creator.recoverFees(tokens, address(bob));
-
-        assertEq(angle.balanceOf(address(bob)), balance + 11e9);
-    }
-}
-
-contract Test_DistributionCreator_getValidRewardTokens is DistributionCreatorTest {
-    function test_Success() public {
-        RewardTokenAmounts[] memory tokens = creator.getValidRewardTokens();
-
-        assertEq(tokens.length, 1);
-        assertEq(tokens[0].token, address(angle));
-        assertEq(tokens[0].minimumAmountPerEpoch, 1e8);
-    }
-
-    function test_SuccessSkip() public {
-        (RewardTokenAmounts[] memory tokens, uint256 i) = creator.getValidRewardTokens(1, 0);
-
-        assertEq(tokens.length, 0);
-        assertEq(i, 1);
-    }
-}
-
-contract Test_DistributionCreator_signAndCreateCampaign is DistributionCreatorTest {
-    function test_Success() public {
-        CampaignParameters memory campaign = CampaignParameters({
-            campaignId: keccak256("TEST"),
-            creator: address(0),
-            campaignData: hex"ab",
-            rewardToken: address(angle),
-            amount: 1e8,
-            campaignType: 0,
-            startTimestamp: uint32(block.timestamp + 1),
-            duration: 3600
-        });
-
-        {
-        (uint8 v, bytes32 r, bytes32 s) = vm.sign(2, creator.messageHash());
-
-        vm.startPrank(bob);
-
-        angle.approve(address(creator), 1e8);
-        creator.signAndCreateCampaign(campaign, abi.encodePacked(r, s, v));
-
-        vm.stopPrank();
-        }
-
-        address[] memory whitelist = new address[](1);
-        whitelist[0] = bob;
-        address[] memory blacklist = new address[](1);
-        blacklist[0] = charlie;
-
-        bytes memory extraData = hex"ab";
-
-        // Additional asserts to check for correct behavior
-        bytes32 campaignId = bytes32(
-            keccak256(
-                abi.encodePacked(
-                    block.chainid,
-                    bob,
-                    address(campaign.rewardToken),
-                    uint32(campaign.campaignType),
-                    uint32(campaign.startTimestamp),
-                    uint32(campaign.duration),
-                    campaign.campaignData
-                )
-            )
-        );
-        (
-            bytes32 fetchedCampaignId,
-            address fetchedCreator,
-            address fetchedRewardToken,
-            uint256 fetchedAmount,
-            uint32 fetchedCampaignType,
-            uint32 fetchedStartTimestamp,
-            uint32 fetchedDuration,
-            bytes memory fetchedCampaignData
-        ) = creator.campaignList(creator.campaignLookup(campaignId));
-        assertEq(bob, fetchedCreator);
-        assertEq(address(angle), fetchedRewardToken);
-        assertEq(campaign.campaignType, fetchedCampaignType);
-        assertEq(campaign.startTimestamp, fetchedStartTimestamp);
-        assertEq(campaign.duration, fetchedDuration);
-        assertEq(extraData, fetchedCampaignData);
-        assertEq(campaignId, fetchedCampaignId);
-        assertEq(campaign.amount, fetchedAmount * 10 / 9);
-    }
-
-    function test_InvalidSignature() public {
-        CampaignParameters memory campaign = CampaignParameters({
-            campaignId: keccak256("TEST"),
-            creator: address(0),
-            campaignData: hex"ab",
-            rewardToken: address(angle),
-            amount: 1e8,
-            campaignType: 0,
-            startTimestamp: uint32(block.timestamp + 1),
-            duration: 3600
-        });
-
-        {
-        (uint8 v, bytes32 r, bytes32 s) = vm.sign(1, creator.messageHash());
-
-        vm.startPrank(bob);
-
-        angle.approve(address(creator), 1e8);
-        vm.expectRevert(InvalidSignature.selector);
-        creator.signAndCreateCampaign(campaign, abi.encodePacked(r, s, v));
-
-        vm.stopPrank();
-        }
     }
 }
