@@ -1,6 +1,7 @@
 import { deployments, ethers } from 'hardhat';
 
 import { DistributionCreator, DistributionCreator__factory } from '../typechain';
+import { parseEther,parseUnits } from 'ethers/lib/utils';
 
 async function main() {
   let manager: DistributionCreator;
@@ -17,8 +18,10 @@ async function main() {
   await (
     await manager
       .connect(deployer)
-      .setRewardTokenMinAmounts(['0x0D1E753a25eBda689453309112904807625bEFBe'], [200000000000000000000000])
+      .setRewardTokenMinAmounts(['0xa709aaD0691Fc67279577566640ae1D6515c1b81'], [parseEther('0.04')])
   ).wait();
+  // 18 decimals
+  // 000000000000000000
 }
 
 main().catch(error => {

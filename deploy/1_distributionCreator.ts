@@ -26,17 +26,17 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
   console.log('Now deploying DistributionCreator');
   console.log('Starting with the implementation');
   console.log('deployer ', await deployer.getBalance());
-  await deploy('DistributionCreator_Implementation_7', {
+  await deploy('DistributionCreator_Implementation_V2_0', {
     contract: 'DistributionCreator',
     from: deployer.address,
     log: !argv.ci,
   });
 
-  const implementationAddress = (await ethers.getContract('DistributionCreator_Implementation_7')).address;
+  const implementationAddress = (await ethers.getContract('DistributionCreator_Implementation_V2_0')).address;
 
   console.log(`Successfully deployed the implementation for DistributionCreator at ${implementationAddress}`);
   console.log('');
-
+  /*
   const distributor = (await deployments.get('Distributor')).address;
   console.log('Now deploying the Proxy');
 
@@ -60,6 +60,7 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
   console.log('Contract successfully initialized');
   console.log('');
   console.log(await contract.core());
+  */
 
   /* Once good some functions need to be called to have everything setup.
 
@@ -78,5 +79,5 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
 };
 
 func.tags = ['distributionCreator'];
-func.dependencies = [''];
+func.dependencies = ['distributor'];
 export default func;

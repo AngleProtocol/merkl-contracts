@@ -2,6 +2,12 @@
 
 pragma solidity ^0.8.17;
 
+error CampaignDoesNotExist();
+error CampaignAlreadyExists();
+error CampaignDurationBelowHour();
+error CampaignRewardTokenNotWhitelisted();
+error CampaignRewardTooLow();
+error CampaignSouldStartInFuture();
 error InvalidDispute();
 error InvalidLengths();
 error InvalidParam();

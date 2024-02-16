@@ -127,24 +127,24 @@ contract('MerklGaugeMiddleman', () => {
         rewardId: web3.utils.soliditySha3('TEST') as string,
         additionalData: web3.utils.soliditySha3('test2ng') as string,
       };
-      await expect(middleman.connect(guardian).setGauge(ZERO_ADDRESS, params)).to.be.revertedWithCustomError(
+      await expect(middleman.connect(governor).setGauge(ZERO_ADDRESS, params)).to.be.revertedWithCustomError(
         middleman,
         'InvalidParams',
       );
-      await expect(middleman.connect(guardian).setGauge(alice.address, params0)).to.be.revertedWithCustomError(
+      await expect(middleman.connect(governor).setGauge(alice.address, params0)).to.be.revertedWithCustomError(
         middleman,
         'InvalidParams',
       );
       // Pool does not have valid tokens 0 and 1
-      await expect(middleman.connect(guardian).setGauge(alice.address, params)).to.be.revertedWithCustomError(
+      await expect(middleman.connect(governor).setGauge(alice.address, params)).to.be.revertedWithCustomError(
         middleman,
         'InvalidParams',
       );
-      await expect(middleman.connect(guardian).setGauge(bob.address, params1)).to.be.reverted;
+      await expect(middleman.connect(governor).setGauge(bob.address, params1)).to.be.reverted;
     });
     it('success - value updated - token 0', async () => {
       await pool.setToken(agEUR, 0);
-      const receipt = await (await middleman.connect(guardian).setGauge(alice.address, params)).wait();
+      const receipt = await (await middleman.connect(governor).setGauge(alice.address, params)).wait();
       inReceipt(receipt, 'GaugeSet', {
         gauge: alice.address,
       });
@@ -164,7 +164,7 @@ contract('MerklGaugeMiddleman', () => {
     });
     it('success - value updated - token 1', async () => {
       await pool.setToken(agEUR, 1);
-      const receipt = await (await middleman.connect(guardian).setGauge(alice.address, params)).wait();
+      const receipt = await (await middleman.connect(governor).setGauge(alice.address, params)).wait();
       inReceipt(receipt, 'GaugeSet', {
         gauge: alice.address,
       });
@@ -186,7 +186,7 @@ contract('MerklGaugeMiddleman', () => {
   describe('notifyReward', () => {
     it('reverts - invalid params', async () => {
       await pool.setToken(agEUR, 1);
-      await middleman.connect(guardian).setGauge(alice.address, params);
+      await middleman.connect(governor).setGauge(alice.address, params);
       await expect(middleman.connect(bob).notifyReward(ZERO_ADDRESS, parseEther('0.5'))).to.be.revertedWithCustomError(
         middleman,
         'InvalidParams',
@@ -197,74 +197,80 @@ contract('MerklGaugeMiddleman', () => {
     });
     it('success - rewards well sent', async () => {
       await pool.setToken(agEUR, 1);
-      await middleman.connect(guardian).setGauge(alice.address, params);
+      await middleman.connect(governor).setGauge(alice.address, params);
       await angle.connect(alice).transfer(middleman.address, parseEther('0.7'));
       expect(await angle.balanceOf(middleman.address)).to.be.equal(parseEther('0.7'));
       await middleman.connect(alice).notifyReward(alice.address, parseEther('0.7'));
-      expect(await manager.nonces(middleman.address)).to.be.equal(1);
-      expect(await angle.balanceOf(manager.address)).to.be.equal(parseEther('0'));
-      expect(await angle.balanceOf(bob.address)).to.be.equal(parseEther('0.7'));
+      const time = await latestTime();
+      expect(await angle.balanceOf(manager.address)).to.be.equal(parseEther('0.07'));
+      expect(await angle.balanceOf(bob.address)).to.be.equal(parseEther('0.63'));
       expect(await angle.balanceOf(middleman.address)).to.be.equal(parseEther('0'));
       expect(await angle.balanceOf(alice.address)).to.be.equal(parseEther('999.3'));
-      const reward = await manager.distributionList(0);
-      expect(reward.uniV3Pool).to.be.equal(pool.address);
+      const reward = await manager.campaignList(0);
+      expect(reward.campaignType).to.be.equal(2);
+      expect(reward.creator).to.be.equal(middleman.address);
+      expect(reward.amount).to.be.equal(parseEther('0.63'));
       expect(reward.rewardToken).to.be.equal(angle.address);
-      expect(reward.amount).to.be.equal(parseEther('0.7'));
-      expect(reward.propToken0).to.be.equal(4000);
-      expect(reward.propToken1).to.be.equal(2000);
-      expect(reward.propFees).to.be.equal(4000);
-      expect(reward.isOutOfRangeIncentivized).to.be.equal(0);
-      expect(reward.epochStart).to.be.equal(await pool.round(await latestTime()));
-      expect(reward.numEpoch).to.be.equal(1);
-      expect(reward.boostedReward).to.be.equal(0);
-      expect(reward.boostingAddress).to.be.equal(ZERO_ADDRESS);
-      const rewardId = solidityKeccak256(['address', 'uint256'], [middleman.address, 0]);
-      expect(reward.rewardId).to.be.equal(rewardId);
+      expect(reward.startTimestamp).to.be.equal(time);
+      expect(reward.duration).to.be.equal(1 * 60 * 60);
+      const campaignData = ethers.utils.defaultAbiCoder.encode(
+        ['address', 'uint', 'uint', 'uint', 'uint', 'address', 'uint', 'address[]', 'address[]', 'string'],
+        [pool.address, 4000, 4000, 2000, 0, ZERO_ADDRESS, 0, [alice.address], [], '0x'],
+      );
+      expect(reward.campaignData).to.be.equal(campaignData);
+      const campaignId = solidityKeccak256(
+        ['uint256', 'address', 'address', 'uint32', 'uint32', 'uint32', 'bytes'],
+        [await deployer.getChainId(), middleman.address, angle.address, 2, time, 1 * 60 * 60, campaignData],
+      );
+      expect(reward.campaignId).to.be.equal(campaignId);
     });
     it('success - rewards well sent - when gauge not whitelisted but tx origin is', async () => {
       await pool.setToken(agEUR, 1);
-      await middleman.connect(guardian).setGauge(alice.address, params);
+      await middleman.connect(governor).setGauge(alice.address, params);
       await angle.connect(alice).transfer(middleman.address, parseEther('0.7'));
       expect(await angle.balanceOf(middleman.address)).to.be.equal(parseEther('0.7'));
-      await manager.connect(guardian).toggleSigningWhitelist(middleman.address);
+      await manager.connect(governor).toggleSigningWhitelist(middleman.address);
       expect(await manager.userSignatureWhitelist(middleman.address)).to.be.equal(0);
-      await manager.connect(guardian).setMessage('hello');
+      await manager.connect(governor).setMessage('hello');
 
       await expect(
         middleman.connect(alice).notifyReward(alice.address, parseEther('0.7')),
       ).to.be.revertedWithCustomError(manager, 'NotSigned');
 
-      await manager.connect(guardian).toggleSigningWhitelist(alice.address);
+      await manager.connect(governor).toggleSigningWhitelist(alice.address);
       expect(await manager.userSignatureWhitelist(alice.address)).to.be.equal(1);
       await middleman.connect(alice).notifyReward(alice.address, parseEther('0.7'));
-      expect(await manager.nonces(middleman.address)).to.be.equal(1);
-      expect(await angle.balanceOf(manager.address)).to.be.equal(parseEther('0'));
-      expect(await angle.balanceOf(bob.address)).to.be.equal(parseEther('0.7'));
+      const time = await latestTime();
+      expect(await angle.balanceOf(manager.address)).to.be.equal(parseEther('0.07'));
+      expect(await angle.balanceOf(bob.address)).to.be.equal(parseEther('0.63'));
       expect(await angle.balanceOf(middleman.address)).to.be.equal(parseEther('0'));
       expect(await angle.balanceOf(alice.address)).to.be.equal(parseEther('999.3'));
-      const reward = await manager.distributionList(0);
-      expect(reward.uniV3Pool).to.be.equal(pool.address);
+      const reward = await manager.campaignList(0);
+      expect(reward.campaignType).to.be.equal(2);
+      expect(reward.creator).to.be.equal(middleman.address);
+      expect(reward.amount).to.be.equal(parseEther('0.63'));
       expect(reward.rewardToken).to.be.equal(angle.address);
-      expect(reward.amount).to.be.equal(parseEther('0.7'));
-      expect(reward.propToken0).to.be.equal(4000);
-      expect(reward.propToken1).to.be.equal(2000);
-      expect(reward.propFees).to.be.equal(4000);
-      expect(reward.isOutOfRangeIncentivized).to.be.equal(0);
-      expect(reward.epochStart).to.be.equal(await pool.round(await latestTime()));
-      expect(reward.numEpoch).to.be.equal(1);
-      expect(reward.boostedReward).to.be.equal(0);
-      expect(reward.boostingAddress).to.be.equal(ZERO_ADDRESS);
-      const rewardId = solidityKeccak256(['address', 'uint256'], [middleman.address, 0]);
-      expect(reward.rewardId).to.be.equal(rewardId);
+      expect(reward.startTimestamp).to.be.equal(time);
+      expect(reward.duration).to.be.equal(1 * 60 * 60);
+      const campaignData = ethers.utils.defaultAbiCoder.encode(
+        ['address', 'uint', 'uint', 'uint', 'uint', 'address', 'uint', 'address[]', 'address[]', 'string'],
+        [pool.address, 4000, 4000, 2000, 0, ZERO_ADDRESS, 0, [alice.address], [], '0x'],
+      );
+      expect(reward.campaignData).to.be.equal(campaignData);
+      const campaignId = solidityKeccak256(
+        ['uint256', 'address', 'address', 'uint32', 'uint32', 'uint32', 'bytes'],
+        [await deployer.getChainId(), middleman.address, angle.address, 2, time, 1 * 60 * 60, campaignData],
+      );
+      expect(reward.campaignId).to.be.equal(campaignId);
     });
     it('success - rewards well sent - when gauge not whitelisted but tx origin has signed', async () => {
       await pool.setToken(agEUR, 1);
-      await middleman.connect(guardian).setGauge(alice.address, params);
+      await middleman.connect(governor).setGauge(alice.address, params);
       await angle.connect(alice).transfer(middleman.address, parseEther('0.7'));
       expect(await angle.balanceOf(middleman.address)).to.be.equal(parseEther('0.7'));
-      await manager.connect(guardian).toggleSigningWhitelist(middleman.address);
+      await manager.connect(governor).toggleSigningWhitelist(middleman.address);
       expect(await manager.userSignatureWhitelist(middleman.address)).to.be.equal(0);
-      await manager.connect(guardian).setMessage('hello');
+      await manager.connect(governor).setMessage('hello');
       await expect(
         middleman.connect(alice).notifyReward(alice.address, parseEther('0.7')),
       ).to.be.revertedWithCustomError(manager, 'NotSigned');
@@ -279,29 +285,32 @@ contract('MerklGaugeMiddleman', () => {
       });
 
       await middleman.connect(alice).notifyReward(alice.address, parseEther('0.7'));
-      expect(await manager.nonces(middleman.address)).to.be.equal(1);
-      expect(await angle.balanceOf(manager.address)).to.be.equal(parseEther('0'));
-      expect(await angle.balanceOf(bob.address)).to.be.equal(parseEther('0.7'));
+      const time = await latestTime();
+      expect(await angle.balanceOf(manager.address)).to.be.equal(parseEther('0.07'));
+      expect(await angle.balanceOf(bob.address)).to.be.equal(parseEther('0.63'));
       expect(await angle.balanceOf(middleman.address)).to.be.equal(parseEther('0'));
       expect(await angle.balanceOf(alice.address)).to.be.equal(parseEther('999.3'));
-      const reward = await manager.distributionList(0);
-      expect(reward.uniV3Pool).to.be.equal(pool.address);
+      const reward = await manager.campaignList(0);
+      expect(reward.campaignType).to.be.equal(2);
+      expect(reward.creator).to.be.equal(middleman.address);
+      expect(reward.amount).to.be.equal(parseEther('0.63'));
       expect(reward.rewardToken).to.be.equal(angle.address);
-      expect(reward.amount).to.be.equal(parseEther('0.7'));
-      expect(reward.propToken0).to.be.equal(4000);
-      expect(reward.propToken1).to.be.equal(2000);
-      expect(reward.propFees).to.be.equal(4000);
-      expect(reward.isOutOfRangeIncentivized).to.be.equal(0);
-      expect(reward.epochStart).to.be.equal(await pool.round(await latestTime()));
-      expect(reward.numEpoch).to.be.equal(1);
-      expect(reward.boostedReward).to.be.equal(0);
-      expect(reward.boostingAddress).to.be.equal(ZERO_ADDRESS);
-      const rewardId = solidityKeccak256(['address', 'uint256'], [middleman.address, 0]);
-      expect(reward.rewardId).to.be.equal(rewardId);
+      expect(reward.startTimestamp).to.be.equal(time);
+      expect(reward.duration).to.be.equal(1 * 60 * 60);
+      const campaignData = ethers.utils.defaultAbiCoder.encode(
+        ['address', 'uint', 'uint', 'uint', 'uint', 'address', 'uint', 'address[]', 'address[]', 'string'],
+        [pool.address, 4000, 4000, 2000, 0, ZERO_ADDRESS, 0, [alice.address], [], '0x'],
+      );
+      expect(reward.campaignData).to.be.equal(campaignData);
+      const campaignId = solidityKeccak256(
+        ['uint256', 'address', 'address', 'uint32', 'uint32', 'uint32', 'bytes'],
+        [await deployer.getChainId(), middleman.address, angle.address, 2, time, 1 * 60 * 60, campaignData],
+      );
+      expect(reward.campaignId).to.be.equal(campaignId);
     });
     it('success - rewards well sent when zero amount', async () => {
       await pool.setToken(agEUR, 1);
-      await middleman.connect(guardian).setGauge(alice.address, params);
+      await middleman.connect(governor).setGauge(alice.address, params);
       await angle.connect(alice).transfer(middleman.address, parseEther('0.7'));
       expect(await angle.balanceOf(middleman.address)).to.be.equal(parseEther('0.7'));
       expect(await angle.balanceOf(alice.address)).to.be.equal(parseEther('999.3'));
@@ -309,35 +318,37 @@ contract('MerklGaugeMiddleman', () => {
       await middleman.connect(alice).notifyReward(alice.address, parseEther('0'));
       expect(await angle.balanceOf(alice.address)).to.be.equal(parseEther('1000'));
       expect(await angle.balanceOf(middleman.address)).to.be.equal(parseEther('0'));
-      expect(await manager.nonces(middleman.address)).to.be.equal(0);
       expect(await angle.balanceOf(manager.address)).to.be.equal(parseEther('0'));
       expect(await angle.balanceOf(bob.address)).to.be.equal(parseEther('0'));
     });
     it('success - rewards sent back when inferior to min distribution amount', async () => {
       await pool.setToken(agEUR, 1);
-      await middleman.connect(guardian).setGauge(alice.address, params);
+      await middleman.connect(governor).setGauge(alice.address, params);
       await angle.connect(alice).transfer(middleman.address, parseEther('0.7'));
       expect(await angle.balanceOf(middleman.address)).to.be.equal(parseEther('0.7'));
       await middleman.connect(alice).notifyReward(alice.address, parseEther('0'));
-      expect(await angle.balanceOf(manager.address)).to.be.equal(parseEther('0'));
-      expect(await angle.balanceOf(bob.address)).to.be.equal(parseEther('0.7'));
-      expect(await manager.nonces(middleman.address)).to.be.equal(1);
+      const time = await latestTime();
+      expect(await angle.balanceOf(manager.address)).to.be.equal(parseEther('0.07'));
+      expect(await angle.balanceOf(bob.address)).to.be.equal(parseEther('0.63'));
       expect(await angle.balanceOf(middleman.address)).to.be.equal(parseEther('0'));
       expect(await angle.balanceOf(alice.address)).to.be.equal(parseEther('999.3'));
-      const reward = await manager.distributionList(0);
-      expect(reward.uniV3Pool).to.be.equal(pool.address);
+      const reward = await manager.campaignList(0);
+      expect(reward.campaignType).to.be.equal(2);
+      expect(reward.creator).to.be.equal(middleman.address);
+      expect(reward.amount).to.be.equal(parseEther('0.63'));
       expect(reward.rewardToken).to.be.equal(angle.address);
-      expect(reward.amount).to.be.equal(parseEther('0.7'));
-      expect(reward.propToken0).to.be.equal(4000);
-      expect(reward.propToken1).to.be.equal(2000);
-      expect(reward.propFees).to.be.equal(4000);
-      expect(reward.isOutOfRangeIncentivized).to.be.equal(0);
-      expect(reward.epochStart).to.be.equal(await pool.round(await latestTime()));
-      expect(reward.numEpoch).to.be.equal(1);
-      expect(reward.boostedReward).to.be.equal(0);
-      expect(reward.boostingAddress).to.be.equal(ZERO_ADDRESS);
-      const rewardId = solidityKeccak256(['address', 'uint256'], [middleman.address, 0]);
-      expect(reward.rewardId).to.be.equal(rewardId);
+      expect(reward.startTimestamp).to.be.equal(time);
+      expect(reward.duration).to.be.equal(1 * 60 * 60);
+      const campaignData = ethers.utils.defaultAbiCoder.encode(
+        ['address', 'uint', 'uint', 'uint', 'uint', 'address', 'uint', 'address[]', 'address[]', 'string'],
+        [pool.address, 4000, 4000, 2000, 0, ZERO_ADDRESS, 0, [alice.address], [], '0x'],
+      );
+      expect(reward.campaignData).to.be.equal(campaignData);
+      const campaignId = solidityKeccak256(
+        ['uint256', 'address', 'address', 'uint32', 'uint32', 'uint32', 'bytes'],
+        [await deployer.getChainId(), middleman.address, angle.address, 2, time, 1 * 60 * 60, campaignData],
+      );
+      expect(reward.campaignId).to.be.equal(campaignId);
     });
     it('success - rewards sent for different gauges at once', async () => {
       const params0 = {
@@ -358,80 +369,91 @@ contract('MerklGaugeMiddleman', () => {
         additionalData: web3.utils.soliditySha3('test2ng') as string,
       };
       await pool.setToken(agEUR, 1);
-      await middleman.connect(guardian).setGauge(alice.address, params);
-      await middleman.connect(guardian).setGauge(bob.address, params0);
+      await middleman.connect(governor).setGauge(alice.address, params);
+      await middleman.connect(governor).setGauge(bob.address, params0);
+
       await middleman.connect(alice).notifyReward(alice.address, parseEther('0'));
       await angle.connect(alice).transfer(middleman.address, parseEther('0.7'));
       await middleman.connect(alice).notifyReward(alice.address, parseEther('0.7'));
+      const time = await latestTime();
       await angle.connect(alice).transfer(middleman.address, parseEther('0.8'));
       await middleman.connect(alice).notifyReward(bob.address, parseEther('0.8'));
+      const time2 = await latestTime();
 
-      expect(await manager.nonces(middleman.address)).to.be.equal(2);
-      expect(await angle.balanceOf(manager.address)).to.be.equal(parseEther('0'));
-      expect(await angle.balanceOf(bob.address)).to.be.equal(parseEther('1.5'));
+      expect(await angle.balanceOf(manager.address)).to.be.equal(parseEther('0.15'));
+      expect(await angle.balanceOf(bob.address)).to.be.equal(parseEther('1.35'));
       expect(await angle.balanceOf(middleman.address)).to.be.equal(parseEther('0'));
       expect(await angle.balanceOf(alice.address)).to.be.equal(parseEther('998.5'));
-      const reward = await manager.distributionList(0);
-      expect(reward.uniV3Pool).to.be.equal(pool.address);
+      const reward = await manager.campaignList(0);
+      expect(reward.campaignType).to.be.equal(2);
+      expect(reward.creator).to.be.equal(middleman.address);
+      expect(reward.amount).to.be.equal(parseEther('0.63'));
       expect(reward.rewardToken).to.be.equal(angle.address);
-      expect(reward.amount).to.be.equal(parseEther('0.7'));
-      expect(reward.propToken0).to.be.equal(4000);
-      expect(reward.propToken1).to.be.equal(2000);
-      expect(reward.propFees).to.be.equal(4000);
-      expect(reward.isOutOfRangeIncentivized).to.be.equal(0);
-      expect(reward.epochStart).to.be.equal(await pool.round(await latestTime()));
-      expect(reward.numEpoch).to.be.equal(1);
-      expect(reward.boostedReward).to.be.equal(0);
-      expect(reward.boostingAddress).to.be.equal(ZERO_ADDRESS);
-      const rewardId = solidityKeccak256(['address', 'uint256'], [middleman.address, 0]);
-      expect(reward.rewardId).to.be.equal(rewardId);
+      expect(reward.startTimestamp).to.be.equal(time);
+      expect(reward.duration).to.be.equal(1 * 60 * 60);
+      const campaignData = ethers.utils.defaultAbiCoder.encode(
+        ['address', 'uint', 'uint', 'uint', 'uint', 'address', 'uint', 'address[]', 'address[]', 'string'],
+        [pool.address, 4000, 4000, 2000, 0, ZERO_ADDRESS, 0, [alice.address], [], '0x'],
+      );
+      expect(reward.campaignData).to.be.equal(campaignData);
+      const campaignId = solidityKeccak256(
+        ['uint256', 'address', 'address', 'uint32', 'uint32', 'uint32', 'bytes'],
+        [await deployer.getChainId(), middleman.address, angle.address, 2, time, 1 * 60 * 60, campaignData],
+      );
+      expect(reward.campaignId).to.be.equal(campaignId);
 
-      const reward2 = await manager.distributionList(1);
-      expect(reward2.uniV3Pool).to.be.equal(pool.address);
+      const reward2 = await manager.campaignList(1);
+      expect(reward2.campaignType).to.be.equal(2);
+      expect(reward2.creator).to.be.equal(middleman.address);
+      expect(reward2.amount).to.be.equal(parseEther('0.72'));
       expect(reward2.rewardToken).to.be.equal(angle.address);
-      expect(reward2.amount).to.be.equal(parseEther('0.8'));
-      expect(reward2.propToken0).to.be.equal(3000);
-      expect(reward2.propToken1).to.be.equal(2000);
-      expect(reward2.propFees).to.be.equal(5000);
-      expect(reward2.isOutOfRangeIncentivized).to.be.equal(0);
-      expect(reward2.epochStart).to.be.equal(await pool.round(await latestTime()));
-      expect(reward2.numEpoch).to.be.equal(10);
-      expect(reward2.boostedReward).to.be.equal(0);
-      expect(reward2.boostingAddress).to.be.equal(ZERO_ADDRESS);
-      const rewardId2 = solidityKeccak256(['address', 'uint256'], [middleman.address, 1]);
-      expect(reward2.rewardId).to.be.equal(rewardId2);
+      expect(reward2.startTimestamp).to.be.equal(time2);
+      expect(reward2.duration).to.be.equal(10 * 60 * 60);
+      const campaignData2 = ethers.utils.defaultAbiCoder.encode(
+        ['address', 'uint', 'uint', 'uint', 'uint', 'address', 'uint', 'address[]', 'address[]', 'string'],
+        [pool.address, 5000, 3000, 2000, 0, ZERO_ADDRESS, 0, [], [], '0x'],
+      );
+      expect(reward2.campaignData).to.be.equal(campaignData2);
+      const campaignId2 = solidityKeccak256(
+        ['uint256', 'address', 'address', 'uint32', 'uint32', 'uint32', 'bytes'],
+        [await deployer.getChainId(), middleman.address, angle.address, 2, time2, 10 * 60 * 60, campaignData2],
+      );
+      expect(reward2.campaignId).to.be.equal(campaignId2);
     });
   });
   describe('notifyRewardWithAmount', () => {
     it('success - rewards well sent', async () => {
       await pool.setToken(agEUR, 1);
-      await middleman.connect(guardian).setGauge(alice.address, params);
+      await middleman.connect(governor).setGauge(alice.address, params);
       await angle.connect(alice).approve(middleman.address, parseEther('0.7'));
       expect(await angle.balanceOf(middleman.address)).to.be.equal(parseEther('0'));
       await middleman.connect(alice).notifyRewardWithTransfer(alice.address, parseEther('0.7'));
-      expect(await manager.nonces(middleman.address)).to.be.equal(1);
-      expect(await angle.balanceOf(manager.address)).to.be.equal(parseEther('0'));
-      expect(await angle.balanceOf(bob.address)).to.be.equal(parseEther('0.7'));
+      const time = await latestTime();
+      expect(await angle.balanceOf(manager.address)).to.be.equal(parseEther('0.07'));
+      expect(await angle.balanceOf(bob.address)).to.be.equal(parseEther('0.63'));
       expect(await angle.balanceOf(middleman.address)).to.be.equal(parseEther('0'));
       expect(await angle.balanceOf(alice.address)).to.be.equal(parseEther('999.3'));
-      const reward = await manager.distributionList(0);
-      expect(reward.uniV3Pool).to.be.equal(pool.address);
+      const reward = await manager.campaignList(0);
+      expect(reward.campaignType).to.be.equal(2);
+      expect(reward.creator).to.be.equal(middleman.address);
+      expect(reward.amount).to.be.equal(parseEther('0.63'));
       expect(reward.rewardToken).to.be.equal(angle.address);
-      expect(reward.amount).to.be.equal(parseEther('0.7'));
-      expect(reward.propToken0).to.be.equal(4000);
-      expect(reward.propToken1).to.be.equal(2000);
-      expect(reward.propFees).to.be.equal(4000);
-      expect(reward.isOutOfRangeIncentivized).to.be.equal(0);
-      expect(reward.epochStart).to.be.equal(await pool.round(await latestTime()));
-      expect(reward.numEpoch).to.be.equal(1);
-      expect(reward.boostedReward).to.be.equal(0);
-      expect(reward.boostingAddress).to.be.equal(ZERO_ADDRESS);
-      const rewardId = solidityKeccak256(['address', 'uint256'], [middleman.address, 0]);
-      expect(reward.rewardId).to.be.equal(rewardId);
+      expect(reward.startTimestamp).to.be.equal(time);
+      expect(reward.duration).to.be.equal(1 * 60 * 60);
+      const campaignData = ethers.utils.defaultAbiCoder.encode(
+        ['address', 'uint', 'uint', 'uint', 'uint', 'address', 'uint', 'address[]', 'address[]', 'string'],
+        [pool.address, 4000, 4000, 2000, 0, ZERO_ADDRESS, 0, [alice.address], [], '0x'],
+      );
+      expect(reward.campaignData).to.be.equal(campaignData);
+      const campaignId = solidityKeccak256(
+        ['uint256', 'address', 'address', 'uint32', 'uint32', 'uint32', 'bytes'],
+        [await deployer.getChainId(), middleman.address, angle.address, 2, time, 1 * 60 * 60, campaignData],
+      );
+      expect(reward.campaignId).to.be.equal(campaignId);
     });
     it('reverts - no approval', async () => {
       await pool.setToken(agEUR, 1);
-      await middleman.connect(guardian).setGauge(alice.address, params);
+      await middleman.connect(governor).setGauge(alice.address, params);
       await angle.connect(alice).approve(middleman.address, 0);
       await expect(middleman.connect(alice).notifyRewardWithTransfer(alice.address, parseEther('0.7'))).to.be.reverted;
     });

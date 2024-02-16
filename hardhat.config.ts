@@ -15,17 +15,27 @@ import '@nomiclabs/hardhat-solhint';
 import '@tenderly/hardhat-tenderly';
 import '@typechain/hardhat';
 
+import { parseEther } from 'ethers/lib/utils';
 import { TASK_COMPILE_SOLIDITY_GET_SOURCE_PATHS } from 'hardhat/builtin-tasks/task-names';
 import { HardhatUserConfig, subtask } from 'hardhat/config';
+import { HardhatNetworkAccountsUserConfig } from 'hardhat/types';
 import yargs from 'yargs';
 
-import { accounts, etherscanKey, nodeUrl } from './utils/network';
+import { accounts, etherscanKey, getPkey, nodeUrl } from './utils/network';
 
 // Otherwise, ".sol" files from "test" are picked up during compilation and throw an error
 subtask(TASK_COMPILE_SOLIDITY_GET_SOURCE_PATHS).setAction(async (_, __, runSuper) => {
   const paths = await runSuper();
   return paths.filter((p: string) => !p.includes('/test/foundry/'));
 });
+
+const accountsPkey: HardhatNetworkAccountsUserConfig = [
+  { privateKey: getPkey(), balance: parseEther('1000').toString() },
+];
+
+const accountsOldDeployer: HardhatNetworkAccountsUserConfig = accounts('old_deployer');
+const accountsMerklDeployer: HardhatNetworkAccountsUserConfig = accounts('merkl_deployer');
+const accountsGovernorSidechain: HardhatNetworkAccountsUserConfig = accounts('governor_sidechain');
 
 const argv = yargs
   .env('')
@@ -159,7 +169,7 @@ const config: HardhatUserConfig = {
     mainnet: {
       live: true,
       url: nodeUrl('mainnet'),
-      accounts: accounts('mainnet'),
+      accounts: [getPkey()],
       gas: 'auto',
       gasMultiplier: 1.3,
       chainId: 1,

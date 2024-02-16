@@ -1,6 +1,7 @@
 # <img src="logo.svg" alt="Merkl Contracts" height="40px"> Merkl Contracts
 
 [![CI](https://github.com/AngleProtocol/merkl-contracts/actions/workflows/ci.yml/badge.svg)](https://github.com/AngleProtocol/merkl-contracts/actions)
+[![Coverage](https://codecov.io/gh/AngleProtocol/merkl-contracts/branch/main/graph/badge.svg)](https://codecov.io/gh/AngleProtocol/merkl-contracts)
 
 This repository contains the smart contracts of the Merkl product developed by Angle.
 

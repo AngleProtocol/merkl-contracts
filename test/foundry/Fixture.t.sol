@@ -3,6 +3,7 @@
 pragma solidity ^0.8.17;
 
 import { Test, stdError } from "forge-std/Test.sol";
+
 import { IERC20, IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import { DistributionCreator } from "../../contracts/DistributionCreator.sol";
