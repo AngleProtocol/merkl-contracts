@@ -2,7 +2,7 @@
 pragma solidity ^0.8.17;
 
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import { DistributionParameters, CampaignParameters } from "../../../contracts/DistributionCreator.sol";
+import { DistributionParameters, CampaignParameters, RewardTokenAmounts } from "../../../contracts/DistributionCreator.sol";
 import "../Fixture.t.sol";
 
 contract DistributionCreatorTest is Fixture {
