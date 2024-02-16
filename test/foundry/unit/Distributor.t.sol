@@ -7,13 +7,6 @@ import "../Fixture.t.sol";
 contract DistributorCreatorTest is Fixture {
     Distributor public distributor;
     Distributor public distributorImpl;
-    bytes32[] public hashes;
-
-    struct Claim {
-        address user;
-        address token;
-        uint256 amount;
-    }
 
     function setUp() public virtual override {
         super.setUp();
@@ -29,36 +22,10 @@ contract DistributorCreatorTest is Fixture {
         vm.stopPrank();
 
         angle.mint(address(alice), 100e18);
-
-        Claim[4] memory transactions = [
-            Claim({user: alice, token: address(angle), amount: 1e18}),
-            Claim({user: bob, token: address(angle), amount: 10e18}),
-            Claim({user: charlie, token: address(angle), amount: 3e18}),
-            Claim({user: dylan, token: address(angle), amount: 2e18})
-        ];
-
-        for (uint i = 0; i < transactions.length; i++) {
-            hashes.push(keccak256(abi.encodePacked(transactions[i].user, transactions[i].token, transactions[i].amount)));
-        }
-
-        uint n = transactions.length;
-        uint offset = 0;
-
-        while (n > 0) {
-            for (uint i = 0; i < n - 1; i += 2) {
-                hashes.push(
-                    keccak256(
-                        abi.encodePacked(hashes[offset + i], hashes[offset + i + 1])
-                    )
-                );
-            }
-            offset += n;
-            n = n / 2;
-        }
     }
 
     function getRoot() public view returns (bytes32) {
-        return hashes[hashes.length - 1];
+        return keccak256(abi.encodePacked("MERKLE_ROOT"));
     }
 }
 
@@ -177,7 +144,7 @@ contract Test_Distributor_setDisputeToken is DistributorCreatorTest {
     function test_Success() public {
         vm.prank(governor);
         distributor.setDisputeToken(angle);
-        assertEq(address(distributor.disputeToken()), address(0));
+        assertEq(address(distributor.disputeToken()), address(angle));
     }
 }
 
@@ -400,28 +367,75 @@ contract Test_Distributor_resolveDispute is DistributorCreatorTest {
     }
 }
 
-/*
 contract Test_Distributor_claim is DistributorCreatorTest {
     function test_RevertWhen_NotWhitelisted() public {
-        bytes32[] memory proofs = new bytes32[](1);
+        vm.prank(governor);
+        distributor.updateTree(MerkleTree({merkleRoot: getRoot(), ipfsHash: keccak256("IPFS_HASH")}));
+
+        vm.warp(distributor.endOfDisputePeriod() + 1);
+
+        vm.prank(bob);
+        distributor.toggleOnlyOperatorCanClaim(bob);
+
+        bytes32[][] memory proofs = new bytes32[][](1);
         address[] memory users = new address[](1);
         address[] memory tokens = new address[](1);
         uint256[] memory amounts = new uint256[](1);
-        proofs[0] = hashes[0];
+        proofs[0] = new bytes32[](1);
         users[0] = bob;
         tokens[0] = address(angle);
         amounts[0] = 1e18;
 
         vm.expectRevert(NotWhitelisted.selector);
+        vm.prank(alice);
+        distributor.claim(users, tokens, amounts, proofs);
+    }
+
+    function test_RevertWhen_InvalidLengths() public {
+        vm.prank(governor);
+        distributor.updateTree(MerkleTree({merkleRoot: getRoot(), ipfsHash: keccak256("IPFS_HASH")}));
+
+        vm.warp(distributor.endOfDisputePeriod() + 1);
+
+        bytes32[][] memory proofs = new bytes32[][](1);
+        address[] memory users = new address[](0);
+        address[] memory tokens = new address[](1);
+        uint256[] memory amounts = new uint256[](1);
+
+        vm.expectRevert(InvalidLengths.selector);
+        distributor.claim(users, tokens, amounts, proofs);
+
+        users = new address[](2);
+        vm.expectRevert(InvalidLengths.selector);
+        distributor.claim(users, tokens, amounts, proofs);
+
+        users = new address[](1);
+        proofs = new bytes32[][](0);
+        vm.expectRevert(InvalidLengths.selector);
+        distributor.claim(users, tokens, amounts, proofs);
+
+        proofs = new bytes32[][](1);
+        tokens = new address[](0);
+        vm.expectRevert(InvalidLengths.selector);
+        distributor.claim(users, tokens, amounts, proofs);
+
+        tokens = new address[](1);
+        amounts = new uint256[](0);
+        vm.expectRevert(InvalidLengths.selector);
         distributor.claim(users, tokens, amounts, proofs);
     }
 
     function test_RevertWhen_InvalidProof() public {
-        bytes32[] memory proofs = new bytes32[](1);
+        vm.prank(governor);
+        distributor.updateTree(MerkleTree({merkleRoot: getRoot(), ipfsHash: keccak256("IPFS_HASH")}));
+
+        vm.warp(distributor.endOfDisputePeriod() + 1);
+
+        bytes32[][] memory proofs = new bytes32[][](1);
         address[] memory users = new address[](1);
         address[] memory tokens = new address[](1);
         uint256[] memory amounts = new uint256[](1);
-        proofs[0] = "0x";
+        proofs[0] = new bytes32[](1);
         users[0] = bob;
         tokens[0] = address(angle);
         amounts[0] = 1e18;
@@ -430,20 +444,76 @@ contract Test_Distributor_claim is DistributorCreatorTest {
         distributor.claim(users, tokens, amounts, proofs);
     }
 
-    function test_Success() public {
-        distributor.updateTree(MerkleTree({merkleRoot: getRoot(), ipfsHash: keccak256("IPFS_HASH")}));
+    function test_SuccessGovernor() public {
+        console.log(alice, bob, address(angle), address(agEUR));
+        vm.prank(governor);
+        distributor.updateTree(MerkleTree({merkleRoot: bytes32(0x0b70a97c062cb747158b89e27df5bbda859ba072232efcbe92e383e9d74b8555), ipfsHash: keccak256("IPFS_HASH")}));
 
-        bytes32[] memory proofs = new bytes32[](1);
-        address[] memory users = new address[](1);
-        address[] memory tokens = new address[](1);
-        uint256[] memory amounts = new uint256[](1);
-        proofs[0] = hashes[0];
-        users[0] = bob;
+        angle.mint(address(distributor), 1e18);
+        agEUR.mint(address(distributor), 5e17);
+
+        vm.warp(distributor.endOfDisputePeriod() + 1);
+
+        bytes32[][] memory proofs = new bytes32[][](2);
+        address[] memory users = new address[](2);
+        address[] memory tokens = new address[](2);
+        uint256[] memory amounts = new uint256[](2);
+        proofs[0] = new bytes32[](1);
+        proofs[0][0] = bytes32(0x6f46ee2909b99367a0d9932a11f1bdb85c9354480c9de277d21086f9a8925c0a);
+        users[0] = alice;
         tokens[0] = address(angle);
         amounts[0] = 1e18;
-        uint256 balance = angle.balanceOf(address(bob));
+        proofs[1] = new bytes32[](1);
+        proofs[1][0] = bytes32(0x3a64e591d79db8530701e6f3dbdd95dc74681291b327d0ce4acc97024a61430c);
+        users[1] = bob;
+        tokens[1] = address(agEUR);
+        amounts[1] = 5e17;
+
+        uint256 aliceBalance = angle.balanceOf(address(alice));
+        uint256 bobBalance = agEUR.balanceOf(address(bob));
+
+        vm.prank(governor);
         distributor.claim(users, tokens, amounts, proofs);
-        assertEq(angle.balanceOf(address(bob)), balance + 1e18);
+
+        assertEq(angle.balanceOf(address(alice)), aliceBalance + 1e18);
+        assertEq(agEUR.balanceOf(address(bob)), bobBalance + 5e17);
+    }
+
+    function test_SuccessOperator() public {
+        console.log(alice, bob, address(angle), address(agEUR));
+        vm.prank(governor);
+        distributor.updateTree(MerkleTree({merkleRoot: bytes32(0x0b70a97c062cb747158b89e27df5bbda859ba072232efcbe92e383e9d74b8555), ipfsHash: keccak256("IPFS_HASH")}));
+
+        angle.mint(address(distributor), 1e18);
+        agEUR.mint(address(distributor), 5e17);
+
+        vm.warp(distributor.endOfDisputePeriod() + 1);
+
+        bytes32[][] memory proofs = new bytes32[][](2);
+        address[] memory users = new address[](2);
+        address[] memory tokens = new address[](2);
+        uint256[] memory amounts = new uint256[](2);
+        proofs[0] = new bytes32[](1);
+        proofs[0][0] = bytes32(0x6f46ee2909b99367a0d9932a11f1bdb85c9354480c9de277d21086f9a8925c0a);
+        users[0] = alice;
+        tokens[0] = address(angle);
+        amounts[0] = 1e18;
+        proofs[1] = new bytes32[](1);
+        proofs[1][0] = bytes32(0x3a64e591d79db8530701e6f3dbdd95dc74681291b327d0ce4acc97024a61430c);
+        users[1] = bob;
+        tokens[1] = address(agEUR);
+        amounts[1] = 5e17;
+
+        uint256 aliceBalance = angle.balanceOf(address(alice));
+        uint256 bobBalance = agEUR.balanceOf(address(bob));
+
+        vm.prank(alice);
+        distributor.toggleOperator(alice, bob);
+
+        vm.prank(bob);
+        distributor.claim(users, tokens, amounts, proofs);
+
+        assertEq(angle.balanceOf(address(alice)), aliceBalance + 1e18);
+        assertEq(agEUR.balanceOf(address(bob)), bobBalance + 5e17);
     }
 }
-*/
