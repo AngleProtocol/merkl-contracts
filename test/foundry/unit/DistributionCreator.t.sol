@@ -702,3 +702,269 @@ contract Test_DistributionCreator_sign is DistributionCreatorTest {
         creator.sign(abi.encodePacked(r, s, v));
     }
 }
+
+contract Test_DistributionCreator_acceptConditions is DistributionCreatorTest {
+    function test_Success() public {
+        assertEq(creator.userSignatureWhitelist(bob), 0);
+
+        vm.prank(bob);
+        creator.acceptConditions();
+
+        assertEq(creator.userSignatureWhitelist(bob), 1);
+    }
+}
+
+contract Test_DistributionCreator_setFees is DistributionCreatorTest {
+    function test_RevertWhen_NotGovernor() public {
+        vm.expectRevert(NotGovernor.selector);
+        vm.prank(alice);
+        creator.setFees(1e8);
+    }
+
+    function test_RevertWhen_InvalidParam() public {
+        vm.expectRevert(InvalidParam.selector);
+        vm.prank(governor);
+        creator.setFees(1e9);
+    }
+
+    function test_Success() public {
+        vm.prank(governor);
+        creator.setFees(2e8);
+
+        assertEq(creator.defaultFees(), 2e8);
+    }
+}
+
+contract Test_DistributionCreator_setNewDistributor is DistributionCreatorTest {
+    function test_RevertWhen_NotGovernor() public {
+        vm.expectRevert(NotGovernor.selector);
+        vm.prank(alice);
+        creator.setNewDistributor(address(bob));
+    }
+
+    function test_RevertWhen_InvalidParam() public {
+        vm.expectRevert(InvalidParam.selector);
+        vm.prank(governor);
+        creator.setNewDistributor(address(0));
+    }
+
+    function test_Success() public {
+        vm.prank(governor);
+        creator.setNewDistributor(address(bob));
+
+        assertEq(address(creator.distributor()), address(bob));
+    }
+}
+
+contract Test_DistributionCreator_setUserFeeRebate is DistributionCreatorTest {
+    function test_RevertWhen_NotGovernorOrGuardian() public {
+        vm.expectRevert(NotGovernorOrGuardian.selector);
+        vm.prank(alice);
+        creator.setUserFeeRebate(alice, 1e8);
+    }
+
+    function test_Success() public {
+        assertEq(creator.feeRebate(alice), 0);
+
+        vm.prank(governor);
+        creator.setUserFeeRebate(alice, 2e8);
+
+        assertEq(creator.feeRebate(alice), 2e8);
+    }
+}
+
+contract Test_DistributionCreator_setFeeRecipient is DistributionCreatorTest {
+    function test_RevertWhen_NotGovernor() public {
+        vm.expectRevert(NotGovernor.selector);
+        vm.prank(alice);
+        creator.setFeeRecipient(address(bob));
+    }
+
+    function test_Success() public {
+        vm.prank(governor);
+        creator.setFeeRecipient(address(bob));
+
+        assertEq(address(creator.feeRecipient()), address(bob));
+    }
+}
+
+contract Test_DistributionCreator_recoverFees is DistributionCreatorTest {
+    function test_RevertWhen_NotGovernor() public {
+        IERC20[] memory tokens = new IERC20[](1);
+        tokens[0] = angle;
+
+        vm.expectRevert(NotGovernor.selector);
+        vm.prank(alice);
+        creator.recoverFees(tokens, address(bob));
+    }
+
+    function test_Success() public {
+        IERC20[] memory tokens = new IERC20[](1);
+        tokens[0] = angle;
+
+        uint256 balance = angle.balanceOf(address(bob));
+
+        vm.prank(governor);
+        creator.recoverFees(tokens, address(bob));
+
+        assertEq(angle.balanceOf(address(bob)), balance + 11e9);
+    }
+}
+
+contract Test_DistributionCreator_getValidRewardTokens is DistributionCreatorTest {
+    function test_Success() public {
+        RewardTokenAmounts[] memory tokens = creator.getValidRewardTokens();
+
+        assertEq(tokens.length, 1);
+        assertEq(tokens[0].token, address(angle));
+        assertEq(tokens[0].minimumAmountPerEpoch, 1e8);
+    }
+
+    function test_SuccessSkip() public {
+        (RewardTokenAmounts[] memory tokens, uint256 i) = creator.getValidRewardTokens(1, 0);
+
+        assertEq(tokens.length, 0);
+        assertEq(i, 1);
+    }
+}
+
+contract Test_DistributionCreator_signAndCreateCampaign is DistributionCreatorTest {
+    function test_Success() public {
+        CampaignParameters memory campaign = CampaignParameters({
+            campaignId: keccak256("TEST"),
+            creator: address(0),
+            campaignData: hex"ab",
+            rewardToken: address(angle),
+            amount: 1e8,
+            campaignType: 0,
+            startTimestamp: uint32(block.timestamp + 1),
+            duration: 3600
+        });
+
+        {
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(2, creator.messageHash());
+
+        vm.startPrank(bob);
+
+        angle.approve(address(creator), 1e8);
+        creator.signAndCreateCampaign(campaign, abi.encodePacked(r, s, v));
+
+        vm.stopPrank();
+        }
+
+        address[] memory whitelist = new address[](1);
+        whitelist[0] = bob;
+        address[] memory blacklist = new address[](1);
+        blacklist[0] = charlie;
+
+        bytes memory extraData = hex"ab";
+
+        // Additional asserts to check for correct behavior
+        bytes32 campaignId = bytes32(
+            keccak256(
+                abi.encodePacked(
+                    block.chainid,
+                    bob,
+                    address(campaign.rewardToken),
+                    uint32(campaign.campaignType),
+                    uint32(campaign.startTimestamp),
+                    uint32(campaign.duration),
+                    campaign.campaignData
+                )
+            )
+        );
+        (
+            bytes32 fetchedCampaignId,
+            address fetchedCreator,
+            address fetchedRewardToken,
+            uint256 fetchedAmount,
+            uint32 fetchedCampaignType,
+            uint32 fetchedStartTimestamp,
+            uint32 fetchedDuration,
+            bytes memory fetchedCampaignData
+        ) = creator.campaignList(creator.campaignLookup(campaignId));
+        assertEq(bob, fetchedCreator);
+        assertEq(address(angle), fetchedRewardToken);
+        assertEq(campaign.campaignType, fetchedCampaignType);
+        assertEq(campaign.startTimestamp, fetchedStartTimestamp);
+        assertEq(campaign.duration, fetchedDuration);
+        assertEq(extraData, fetchedCampaignData);
+        assertEq(campaignId, fetchedCampaignId);
+        assertEq(campaign.amount, fetchedAmount * 10 / 9);
+    }
+
+    function test_InvalidSignature() public {
+        CampaignParameters memory campaign = CampaignParameters({
+            campaignId: keccak256("TEST"),
+            creator: address(0),
+            campaignData: hex"ab",
+            rewardToken: address(angle),
+            amount: 1e8,
+            campaignType: 0,
+            startTimestamp: uint32(block.timestamp + 1),
+            duration: 3600
+        });
+
+        {
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(1, creator.messageHash());
+
+        vm.startPrank(bob);
+
+        angle.approve(address(creator), 1e8);
+        vm.expectRevert(InvalidSignature.selector);
+        creator.signAndCreateCampaign(campaign, abi.encodePacked(r, s, v));
+
+        vm.stopPrank();
+        }
+    }
+}
+
+contract DistributionCreatorForkTest is Test {
+    DistributionCreator public creator;
+
+    function setUp() public {
+        vm.createSelectFork(vm.envString("ETH_NODE_URI_ARBITRUM"));
+
+        creator = DistributionCreator(0x8BB4C975Ff3c250e0ceEA271728547f3802B36Fd);
+    }
+}
+
+contract Test_DistributionCreator_distribution is DistributionCreatorForkTest {
+
+    function test_Success() public {
+        CampaignParameters memory distribution = creator.distribution(0);
+
+        assertEq(distribution.campaignId, bytes32(0x7570c9deb1660ed82ff01f760b2883edb9bdb881933b0e4085854d0d717ea268));
+        assertEq(distribution.creator, address(0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496));
+        assertEq(distribution.rewardToken, address(0xE0688A2FE90d0f93F17f273235031062a210d691));
+        assertEq(distribution.amount, 9700000000000000000000);
+        assertEq(distribution.campaignType, 2);
+        assertEq(distribution.startTimestamp, 1681380000);
+        assertEq(distribution.duration, 86400);
+        assertEq(distribution.campaignData, hex"000000000000000000000000149e36e72726e0bcea5c59d40df2c43f60f5a22d0000000000000000000000000000000000000000000000000000000000000bb800000000000000000000000000000000000000000000000000000000000007d000000000000000000000000000000000000000000000000000000000000013880000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000140000000000000000000000000000000000000000000000000000000000000016000000000000000000000000000000000000000000000000000000000000001800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000023078000000000000000000000000000000000000000000000000000000000000");
+    }
+}
+
+contract Test_DistributionCreator_getDistributionsBetweenEpochs is DistributionCreatorForkTest {
+
+    function test_Success() public {
+        (DistributionParameters[] memory distributions,) = creator.getDistributionsBetweenEpochs(1681380000, 1681380000 + 3600, 0, type(uint32).max);
+
+        assertEq(distributions.length, 1);
+        assertEq(distributions[0].uniV3Pool, address(0x149e36E72726e0BceA5c59d40df2c43F60f5A22D));
+        assertEq(distributions[0].rewardToken, address(0xE0688A2FE90d0f93F17f273235031062a210d691));
+        assertEq(distributions[0].amount, 9700000000000000000000);
+        assertEq(distributions[0].positionWrappers.length, 0);
+        assertEq(distributions[0].wrapperTypes.length, 0);
+        assertEq(distributions[0].propToken0, 2000);
+        assertEq(distributions[0].propToken1, 5000);
+        assertEq(distributions[0].propFees, 3000);
+        assertEq(distributions[0].isOutOfRangeIncentivized, 0);
+        assertEq(distributions[0].epochStart, 1681380000);
+        assertEq(distributions[0].numEpoch, 24);
+        assertEq(distributions[0].boostedReward, 0);
+        assertEq(distributions[0].boostingAddress, address(0));
+        assertEq(distributions[0].rewardId, bytes32(0x7570c9deb1660ed82ff01f760b2883edb9bdb881933b0e4085854d0d717ea268));
+        assertEq(distributions[0].additionalData, hex"290decd9548b62a8d60345a988386fc84ba6bc95484008f6362f93160ef3e563");
+    }
+}
