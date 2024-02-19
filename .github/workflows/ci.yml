@@ -148,6 +148,8 @@ jobs:
         env:
           FOUNDRY_FUZZ_RUNS: '5000'
           ETH_NODE_URI_OPTIMISM: ${{ secrets.ETH_NODE_URI_OPTIMISM }}
+          ETH_NODE_URI_ARBITRUM: ${{ secrets.ETH_NODE_URI_ARBITRUM }}
+          ETH_NODE_URI_MAINNET: ${{ secrets.ETH_NODE_URI_MAINNET }}
 
       - name: 'Add test summary'
         run: |
@@ -184,6 +186,8 @@ jobs:
         run: "yarn ci:coverage"
         env:
           ETH_NODE_URI_OPTIMISM: ${{ secrets.ETH_NODE_URI_OPTIMISM }}
+          ETH_NODE_URI_ARBITRUM: ${{ secrets.ETH_NODE_URI_ARBITRUM }}
+          ETH_NODE_URI_MAINNET: ${{ secrets.ETH_NODE_URI_MAINNET }}
 
       - name: "Upload coverage report to Codecov"
         uses: "codecov/codecov-action@v3"
