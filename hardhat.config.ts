@@ -14,14 +14,14 @@ import '@nomiclabs/hardhat-truffle5';
 import '@nomiclabs/hardhat-solhint';
 import '@tenderly/hardhat-tenderly';
 import '@typechain/hardhat';
-import { HardhatNetworkAccountsUserConfig } from 'hardhat/types';
-import { parseEther } from 'ethers/lib/utils';
 
+import { parseEther } from 'ethers/lib/utils';
 import { TASK_COMPILE_SOLIDITY_GET_SOURCE_PATHS } from 'hardhat/builtin-tasks/task-names';
 import { HardhatUserConfig, subtask } from 'hardhat/config';
+import { HardhatNetworkAccountsUserConfig } from 'hardhat/types';
 import yargs from 'yargs';
 
-import { accounts, etherscanKey, nodeUrl, getPkey } from './utils/network';
+import { accounts, etherscanKey, getPkey, nodeUrl } from './utils/network';
 
 // Otherwise, ".sol" files from "test" are picked up during compilation and throw an error
 subtask(TASK_COMPILE_SOLIDITY_GET_SOURCE_PATHS).setAction(async (_, __, runSuper) => {
@@ -195,7 +195,7 @@ const config: HardhatUserConfig = {
     optimism: {
       live: true,
       url: nodeUrl('optimism'),
-      accounts: accounts('optimism'),
+      accounts: [getPkey()],
       gas: 'auto',
       chainId: 10,
       verify: {
@@ -207,7 +207,7 @@ const config: HardhatUserConfig = {
     arbitrum: {
       live: true,
       url: nodeUrl('arbitrum'),
-      accounts: accounts('arbitrum'),
+      accounts: [getPkey()],
       gas: 'auto',
       chainId: 42161,
       verify: {
