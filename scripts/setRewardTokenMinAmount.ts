@@ -19,7 +19,7 @@ async function main() {
   await (
     await manager
       .connect(deployer)
-      .setRewardTokenMinAmounts(['0xEdb73D4ED90bE7A49D06d0D940055e6d181d22fa','0xB60acD2057067DC9ed8c083f5aa227a244044fD6'], [parseEther('10'),parseAmount.gwei('0.0015')])
+      .setRewardTokenMinAmounts(['0xA7c167f58833c5e25848837f45A1372491A535eD'], [parseAmount.usdc(1)])
   ).wait();
   // 18 decimals
   // 000000000000000000

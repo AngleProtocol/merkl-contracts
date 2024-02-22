@@ -5,13 +5,18 @@ import yargs from 'yargs';
 import { Distributor, Distributor__factory } from '../typechain';
 const argv = yargs.env('').boolean('ci').parseSync();
 
+// Before running this deployment, make sure that on borrow-contracts the ProxyAdminAngleLabs and CoreMerkl
+// contracts were deployed with:
+// - governor of CoreMerkl: AngleLabs address
+// - guardian: the deployer address
+// Admin of ProxyAdmin: AngleLabs multisig
 const func: DeployFunction = async ({ deployments, ethers, network }) => {
   const { deploy } = deployments;
   const { deployer } = await ethers.getNamedSigners();
 
   let core: string;
   // TODO: change the coreMerkl address to that of the desired chain
-  core = '0x3E399AE5B4D8bc0021e53b51c8BCdD66DD62c03b';
+  core = '0x5183f032bf42109cD370B9559FD22207e432301E';
   /*
   if (!network.live) {
     // If we're in mainnet fork, we're using the `CoreBorrow` address from mainnet
@@ -38,24 +43,23 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
 
   console.log(`Successfully deployed the implementation for Distributor at ${implementationAddress}`);
   console.log('');
-  /*
+  
   console.log('Now deploying the Proxy');
 
-  await deploy('TestDistributor', {
+  await deploy('Distributor', {
     contract: 'ERC1967Proxy',
     from: deployer.address,
     args: [implementationAddress, '0x'],
     log: !argv.ci,
   });
 
-  const distributor = (await deployments.get('TestDistributor')).address;
+  const distributor = (await deployments.get('Distributor')).address;
   console.log(`Successfully deployed contract at the address ${distributor}`);
   console.log('Initializing the contract');
   const contract = new ethers.Contract(distributor, Distributor__factory.createInterface(), deployer) as Distributor;
   await (await contract.connect(deployer).initialize(core)).wait();
   console.log('Contract successfully initialized');
   console.log('');
-  */
 };
 
 func.tags = ['distributor'];

@@ -15,7 +15,8 @@ async function main() {
   ) as DistributionCreator;
 
   console.log('Toggling signature whitelist');
-  await (await manager.connect(deployer).toggleSigningWhitelist(deployer.address)).wait();
+  const address = '0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701'
+  await (await manager.connect(deployer).toggleSigningWhitelist(address)).wait();
 }
 
 main().catch(error => {

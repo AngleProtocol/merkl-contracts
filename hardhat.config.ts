@@ -91,7 +91,7 @@ const config: HardhatUserConfig = {
   // For the lists of Chain ID: https://chainlist.org
   networks: {
     hardhat: {
-      accounts: accountsPkey,
+      accounts: accountsMerklDeployer,
       live: false,
       blockGasLimit: 125e5,
       initialBaseFeePerGas: 0,
@@ -114,8 +114,10 @@ const config: HardhatUserConfig = {
         blockNumber: 17614765,
         */
         // Arbitrum
+        /*
         url: nodeUrl('arbitrum'),
         blockNumber: 19356874,
+        */
         /*
         url: nodeUrl('arbitrum'),
         blockNumber: 19356874,
@@ -131,6 +133,8 @@ const config: HardhatUserConfig = {
         url: nodeUrl('gnosis'),
         blockNumber: 14188687,
         */
+        url: nodeUrl('immutable'),
+        blockNumber: 3160413,
       },
       mining: argv.disableAutoMining
         ? {
@@ -170,7 +174,7 @@ const config: HardhatUserConfig = {
     optimism: {
       live: true,
       url: nodeUrl('optimism'),
-      accounts: accountsOldDeployer,
+      accounts: [getPkey()],
       gas: 'auto',
       chainId: 10,
       verify: {
@@ -317,6 +321,18 @@ const config: HardhatUserConfig = {
       verify: {
         etherscan: {
           apiKey: etherscanKey('coredao'),
+        },
+      },
+    },
+    immutable: {
+      live: true,
+      url: nodeUrl('immutable'),
+      accounts: accountsMerklDeployer,
+      gas: 'auto',
+      chainId: 13371,
+      verify: {
+        etherscan: {
+          apiKey: etherscanKey('immutable'),
         },
       },
     },
