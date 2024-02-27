@@ -11,7 +11,7 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
 
   let core: string;
   // TODO: change the coreMerkl address to that of the desired chain
-  core = '0x5183f032bf42109cD370B9559FD22207e432301E';
+  core = '0xE9169817EdBFe5FCF629eD8b3C2a34E2a50ec84C';
   /*
   if (!network.live) {
     // If we're in mainnet fork, we're using the `CoreBorrow` address from mainnet

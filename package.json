@@ -6,7 +6,7 @@
     "ci:coverage": "forge coverage --ir-minimum --report lcov && yarn lcov:clean",
     "lcov:clean": "lcov --remove lcov.info -o lcov.info 'test/**' 'scripts/**' 'contracts/mock/**' 'contracts/deprecated/**' 'contracts/external/**'",
     "lcov:generate-html": "genhtml lcov.info --output=coverage",
-    "deploy": "hardhat deploy --tags aglaMerkl --network",
+    "deploy": "hardhat deploy --tags distributionCreator --network",
     "etherscan": "hardhat etherscan-verify --network",
     "foundry:compile": "forge build --optimize --optimizer-runs 1000",
     "foundry:coverage": "forge coverage --ir-minimum --report lcov && yarn lcov:clean && yarn lcov:generate-html",

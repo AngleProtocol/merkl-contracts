@@ -75,6 +75,16 @@ const config: HardhatUserConfig = {
           viaIR: false,
         },
       },
+      'contracts/mock/DistributionCreatorUpdatable.sol': {
+        version: '0.8.17',
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 1,
+          },
+          viaIR: false,
+        },
+      },
       'contracts/deprecated/OldDistributionCreator.sol': {
         version: '0.8.17',
         settings: {
@@ -347,7 +357,7 @@ const config: HardhatUserConfig = {
     scroll: {
       live: true,
       url: nodeUrl('scroll'),
-      accounts: accountsMerklDeployer,
+      accounts: [getPkey()],
       gas: 'auto',
       chainId: 534352,
       verify: {
@@ -359,7 +369,7 @@ const config: HardhatUserConfig = {
     manta: {
       live: true,
       url: nodeUrl('manta'),
-      accounts: accountsMerklDeployer,
+      accounts: [getPkey()],
       gas: 'auto',
       chainId: 169,
       verify: {
