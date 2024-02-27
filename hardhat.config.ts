@@ -133,8 +133,16 @@ const config: HardhatUserConfig = {
         url: nodeUrl('gnosis'),
         blockNumber: 14188687,
         */
+       /*
         url: nodeUrl('immutable'),
         blockNumber: 3160413,
+        */
+       /*
+        url: nodeUrl('manta'),
+        blockNumber: 1479731,
+        */
+        url: nodeUrl('scroll'),
+        blockNumber: 3670869,
       },
       mining: argv.disableAutoMining
         ? {
@@ -147,7 +155,7 @@ const config: HardhatUserConfig = {
     polygon: {
       live: true,
       url: nodeUrl('polygon'),
-      accounts: accountsOldDeployer,
+      accounts: [getPkey()],
       gas: 'auto',
       gasMultiplier: 3,
       chainId: 137,
@@ -333,6 +341,30 @@ const config: HardhatUserConfig = {
       verify: {
         etherscan: {
           apiKey: etherscanKey('immutable'),
+        },
+      },
+    },
+    scroll: {
+      live: true,
+      url: nodeUrl('scroll'),
+      accounts: accountsMerklDeployer,
+      gas: 'auto',
+      chainId: 534352,
+      verify: {
+        etherscan: {
+          apiKey: etherscanKey('scroll'),
+        },
+      },
+    },
+    manta: {
+      live: true,
+      url: nodeUrl('manta'),
+      accounts: accountsMerklDeployer,
+      gas: 'auto',
+      chainId: 169,
+      verify: {
+        etherscan: {
+          apiKey: etherscanKey('manta'),
         },
       },
     },
