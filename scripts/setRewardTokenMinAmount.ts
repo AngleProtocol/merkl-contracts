@@ -1,12 +1,19 @@
 import { deployments, ethers } from 'hardhat';
 
 import { DistributionCreator, DistributionCreator__factory } from '../typechain';
-import { parseEther,parseUnits } from 'ethers/lib/utils';
+import { parseEther,parseUnits, getAddress } from 'ethers/lib/utils';
+import { registry } from '@angleprotocol/sdk';
 
 async function main() {
   let manager: DistributionCreator;
   const { deployer } = await ethers.getNamedSigners();
-  const managerAddress = (await deployments.get('DistributionCreator')).address;
+  const chainId = (await deployer.provider?.getNetwork())?.chainId;
+  console.log('chainId', chainId)
+  const managerAddress = registry(chainId as unknown as number)?.Merkl?.DistributionCreator // (await deployments.get('DistributionCreator')).address;
+
+  if (!managerAddress) {
+    throw new Error('Manager address not found');
+  }
 
   manager = new ethers.Contract(
     managerAddress,
@@ -15,13 +22,20 @@ async function main() {
   ) as DistributionCreator;
 
   console.log('Setting reward token min amount');
-  await (
+  
+  const token = {
+    address: '',
+    decimals: 0,
+    minAmount: '0',
+  }
+
+  const res = await (
     await manager
       .connect(deployer)
-      .setRewardTokenMinAmounts(['0xa709aaD0691Fc67279577566640ae1D6515c1b81'], [parseEther('0.04')])
+      .setRewardTokenMinAmounts([getAddress(token.address)], [parseUnits(token.minAmount, token.decimals)])
   ).wait();
-  // 18 decimals
-  // 000000000000000000
+  
+  console.log(res);
 }
 
 main().catch(error => {

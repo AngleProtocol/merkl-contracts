@@ -22,7 +22,7 @@
     "hardhat:test": "hardhat test",
     "check-upgradeability": "hardhat run scripts/checkUpgradeability.ts",
     "license": "hardhat prepend-spdx-license",
-    "node:fork": "FORK=true hardhat node --tags",
+    "node:fork": "FORK=true hardhat node",
     "size": "yarn hardhat:compile && hardhat size-contracts",
     "lint": "yarn lint:sol && yarn lint:js",
     "lint:check": "yarn lint:sol:check && yarn lint:js:check",
