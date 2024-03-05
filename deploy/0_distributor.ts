@@ -17,7 +17,7 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
   let core: string;
   // TODO: change the coreMerkl address to that of the desired chain
   // Merkl deployer: 0x9f76a95AA7535bb0893cf88A146396e00ed21A12
-  
+
   core = '0xE9169817EdBFe5FCF629eD8b3C2a34E2a50ec84C';
   /*
   if (!network.live) {

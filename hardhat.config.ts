@@ -151,8 +151,12 @@ const config: HardhatUserConfig = {
         url: nodeUrl('manta'),
         blockNumber: 1479731,
         */
+       /*
         url: nodeUrl('scroll'),
         blockNumber: 3670869,
+        */
+        url: nodeUrl('blast'),
+        blockNumber: 421659,
       },
       mining: argv.disableAutoMining
         ? {
@@ -313,6 +317,19 @@ const config: HardhatUserConfig = {
       verify: {
         etherscan: {
           apiKey: etherscanKey('filecoin'),
+        },
+      },
+    },
+    blast: {
+      live: true,
+      url: nodeUrl('blast'),
+      accounts: accountsMerklDeployer,
+      gas: 'auto',
+      gasMultiplier: 1.3,
+      chainId: 81457,
+      verify: {
+        etherscan: {
+          apiKey: etherscanKey('blast'),
         },
       },
     },
