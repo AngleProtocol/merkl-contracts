@@ -370,6 +370,19 @@ const config: HardhatUserConfig = {
         },
       },
     },
+    blast: {
+      live: true,
+      url: nodeUrl('blast'),
+      accounts: [getPkey()],
+      gas: 'auto',
+      gasMultiplier: 1.3,
+      chainId: 81457,
+      verify: {
+        etherscan: {
+          apiKey: etherscanKey('blast'),
+        },
+      },
+    },
   },
   paths: {
     sources: './contracts',
