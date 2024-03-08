@@ -383,6 +383,19 @@ const config: HardhatUserConfig = {
         },
       },
     },
+    immutablezkevm: {
+      live: true,
+      url: nodeUrl('immutablezkevm'),
+      accounts: [getPkey()],
+      gas: 'auto',
+      gasMultiplier: 1.3,
+      chainId: 13371,
+      verify: {
+        etherscan: {
+          apiKey: etherscanKey('immutablezkevm'),
+        },
+      },
+    },
   },
   paths: {
     sources: './contracts',
