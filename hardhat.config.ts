@@ -29,13 +29,8 @@ subtask(TASK_COMPILE_SOLIDITY_GET_SOURCE_PATHS).setAction(async (_, __, runSuper
   return paths.filter((p: string) => !p.includes('/test/foundry/'));
 });
 
-const accountsPkey: HardhatNetworkAccountsUserConfig = [
-  { privateKey: getPkey(), balance: parseEther('1000').toString() },
-];
-
 const accountsOldDeployer: HardhatNetworkAccountsUserConfig = accounts('old_deployer');
 const accountsMerklDeployer: HardhatNetworkAccountsUserConfig = accounts('merkl_deployer');
-const accountsGovernorSidechain: HardhatNetworkAccountsUserConfig = accounts('governor_sidechain');
 
 const argv = yargs
   .env('')
@@ -143,15 +138,15 @@ const config: HardhatUserConfig = {
         url: nodeUrl('gnosis'),
         blockNumber: 14188687,
         */
-       /*
+        /*
         url: nodeUrl('immutable'),
         blockNumber: 3160413,
         */
-       /*
+        /*
         url: nodeUrl('manta'),
         blockNumber: 1479731,
         */
-       /*
+        /*
         url: nodeUrl('scroll'),
         blockNumber: 3670869,
         */
