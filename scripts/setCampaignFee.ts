@@ -21,18 +21,18 @@ async function main() {
     deployer,
   ) as DistributionCreator;
 
-  console.log('Setting reward token min amount');
+  console.log('Setting campaign Fees');
   
-  const token = {
-    address: '',
-    decimals: 6,
-    minAmount: '',
+  const campaignFee = {
+    fee: '0.5',
+    campaignType: '4',
   }
 
+  console.log(campaignFee.campaignType, parseUnits(campaignFee.fee, 7).toString())
   const res = await (
     await manager
       .connect(deployer)
-      .setRewardTokenMinAmounts([getAddress(token.address)], [parseUnits(token.minAmount, token.decimals)])
+      .setCampaignFees(campaignFee.campaignType, parseUnits(campaignFee.fee, 7))
   ).wait();
   
   console.log(res);
