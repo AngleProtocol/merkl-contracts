@@ -11,7 +11,7 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
 
   let core: string;
   // TODO: change the coreMerkl address to that of the desired chain
-  core = '0x3E399AE5B4D8bc0021e53b51c8BCdD66DD62c03b';
+  core = '0xE9169817EdBFe5FCF629eD8b3C2a34E2a50ec84C';
   /*
   if (!network.live) {
     // If we're in mainnet fork, we're using the `CoreBorrow` address from mainnet
@@ -36,7 +36,7 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
 
   console.log(`Successfully deployed the implementation for DistributionCreator at ${implementationAddress}`);
   console.log('');
-  /*
+  
   const distributor = (await deployments.get('Distributor')).address;
   console.log('Now deploying the Proxy');
 
@@ -60,12 +60,10 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
   console.log('Contract successfully initialized');
   console.log('');
   console.log(await contract.core());
-  */
 
   /* Once good some functions need to be called to have everything setup.
 
   In the `DistributionCreator` contract:
-  - `toggleTokenWhitelist` -> for agEUR and stEUR
   - `setRewardTokenMinAmounts`
   - `setFeeRecipient -> angleLabs
   - `setMessage` ->

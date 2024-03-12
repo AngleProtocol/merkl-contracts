@@ -54,7 +54,7 @@ export function accounts(networkName: string): { mnemonic: string; count: number
 }
 
 export function getPkey(): string {
-  if (process.env.DEPLOYER_PRIVATE_KEY) {
+  if (process.env.DEPLOYER_PRIVATE_KEY && process.env.DEPLOYER_PRIVATE_KEY !=='') {
     return process.env.DEPLOYER_PRIVATE_KEY;
   } else {
     return '0x0000000000000000000000000000000000000000000000000000000000000000';
