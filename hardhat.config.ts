@@ -15,7 +15,6 @@ import '@nomiclabs/hardhat-solhint';
 import '@tenderly/hardhat-tenderly';
 import '@typechain/hardhat';
 
-import { parseEther } from 'ethers/lib/utils';
 import { TASK_COMPILE_SOLIDITY_GET_SOURCE_PATHS } from 'hardhat/builtin-tasks/task-names';
 import { HardhatUserConfig, subtask } from 'hardhat/config';
 import { HardhatNetworkAccountsUserConfig } from 'hardhat/types';
@@ -29,7 +28,7 @@ subtask(TASK_COMPILE_SOLIDITY_GET_SOURCE_PATHS).setAction(async (_, __, runSuper
   return paths.filter((p: string) => !p.includes('/test/foundry/'));
 });
 
-const accountsOldDeployer: HardhatNetworkAccountsUserConfig = accounts('old_deployer');
+const accountsPkey = [getPkey()];
 const accountsMerklDeployer: HardhatNetworkAccountsUserConfig = accounts('merkl_deployer');
 
 const argv = yargs
@@ -96,7 +95,6 @@ const config: HardhatUserConfig = {
   // For the lists of Chain ID: https://chainlist.org
   networks: {
     hardhat: {
-      accounts: accountsPkey,
       live: false,
       blockGasLimit: 125e5,
       initialBaseFeePerGas: 0,
@@ -355,7 +353,7 @@ const config: HardhatUserConfig = {
     blast: {
       live: true,
       url: nodeUrl('blast'),
-      accounts: accountsMerklDeployer,
+      accounts: [getPkey()],
       gas: 'auto',
       gasMultiplier: 1.3,
       chainId: 81457,
@@ -391,19 +389,6 @@ const config: HardhatUserConfig = {
         },
       },
     },
-    blast: {
-      live: true,
-      url: nodeUrl('blast'),
-      accounts: [getPkey()],
-      gas: 'auto',
-      gasMultiplier: 1.3,
-      chainId: 81457,
-      verify: {
-        etherscan: {
-          apiKey: etherscanKey('blast'),
-        },
-      },
-    },
     immutablezkevm: {
       live: true,
       url: nodeUrl('immutablezkevm'),
@@ -414,6 +399,9 @@ const config: HardhatUserConfig = {
       verify: {
         etherscan: {
           apiKey: etherscanKey('immutablezkevm'),
+        },
+      },
+    },
     immutable: {
       live: true,
       url: nodeUrl('immutable'),
