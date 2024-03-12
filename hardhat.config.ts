@@ -29,13 +29,8 @@ subtask(TASK_COMPILE_SOLIDITY_GET_SOURCE_PATHS).setAction(async (_, __, runSuper
   return paths.filter((p: string) => !p.includes('/test/foundry/'));
 });
 
-const accountsPkey: HardhatNetworkAccountsUserConfig = [
-  { privateKey: getPkey(), balance: parseEther('1000').toString() },
-];
-
 const accountsOldDeployer: HardhatNetworkAccountsUserConfig = accounts('old_deployer');
 const accountsMerklDeployer: HardhatNetworkAccountsUserConfig = accounts('merkl_deployer');
-const accountsGovernorSidechain: HardhatNetworkAccountsUserConfig = accounts('governor_sidechain');
 
 const argv = yargs
   .env('')
@@ -70,7 +65,17 @@ const config: HardhatUserConfig = {
         settings: {
           optimizer: {
             enabled: true,
-            runs: 100,
+            runs: 1,
+          },
+          viaIR: false,
+        },
+      },
+      'contracts/mock/DistributionCreatorUpdatable.sol': {
+        version: '0.8.17',
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 1,
           },
           viaIR: false,
         },
@@ -80,7 +85,7 @@ const config: HardhatUserConfig = {
         settings: {
           optimizer: {
             enabled: true,
-            runs: 100,
+            runs: 1,
           },
           viaIR: false,
         },
@@ -98,10 +103,10 @@ const config: HardhatUserConfig = {
       hardfork: 'london',
       forking: {
         enabled: argv.fork || false,
-        /*
         // Mainnet
+        /*
         url: nodeUrl('fork'),
-        blockNumber: 16671190,
+        blockNumber: 19127150,
         */
         // Polygon
         /*
@@ -129,8 +134,24 @@ const config: HardhatUserConfig = {
         /*
         url: nodeUrl('coredao'),
         */
+        /*
         url: nodeUrl('gnosis'),
-        // blockNumber: 14188687,
+        blockNumber: 14188687,
+        */
+        /*
+        url: nodeUrl('immutable'),
+        blockNumber: 3160413,
+        */
+        /*
+        url: nodeUrl('manta'),
+        blockNumber: 1479731,
+        */
+        /*
+        url: nodeUrl('scroll'),
+        blockNumber: 3670869,
+        */
+        url: nodeUrl('blast'),
+        blockNumber: 421659,
       },
       mining: argv.disableAutoMining
         ? {
@@ -145,8 +166,8 @@ const config: HardhatUserConfig = {
       url: nodeUrl('polygon'),
       accounts: [getPkey()],
       gas: 'auto',
+      gasMultiplier: 3,
       chainId: 137,
-      // gasPrice: 400e9,
       gasPrice: 'auto',
       verify: {
         etherscan: {
@@ -176,19 +197,6 @@ const config: HardhatUserConfig = {
       verify: {
         etherscan: {
           apiKey: etherscanKey('mainnet'),
-        },
-      },
-    },
-    goerli: {
-      live: true,
-      url: nodeUrl('goerli'),
-      accounts: accounts('goerli'),
-      gas: 'auto',
-      gasMultiplier: 1.3,
-      chainId: 1,
-      verify: {
-        etherscan: {
-          apiKey: etherscanKey('goerli'),
         },
       },
     },
@@ -257,7 +265,7 @@ const config: HardhatUserConfig = {
       url: nodeUrl('gnosis'),
       accounts: [getPkey()],
       gas: 'auto',
-      gasMultiplier: 2,
+      gasMultiplier: 3,
       chainId: 100,
       initialBaseFeePerGas: 2000000000,
       verify: {
@@ -344,6 +352,19 @@ const config: HardhatUserConfig = {
         },
       },
     },
+    blast: {
+      live: true,
+      url: nodeUrl('blast'),
+      accounts: accountsMerklDeployer,
+      gas: 'auto',
+      gasMultiplier: 1.3,
+      chainId: 81457,
+      verify: {
+        etherscan: {
+          apiKey: etherscanKey('blast'),
+        },
+      },
+    },
     thundercore: {
       live: true,
       url: nodeUrl('thundercore'),
@@ -393,6 +414,39 @@ const config: HardhatUserConfig = {
       verify: {
         etherscan: {
           apiKey: etherscanKey('immutablezkevm'),
+    immutable: {
+      live: true,
+      url: nodeUrl('immutable'),
+      accounts: accountsMerklDeployer,
+      gas: 'auto',
+      chainId: 13371,
+      verify: {
+        etherscan: {
+          apiKey: etherscanKey('immutable'),
+        },
+      },
+    },
+    scroll: {
+      live: true,
+      url: nodeUrl('scroll'),
+      accounts: [getPkey()],
+      gas: 'auto',
+      chainId: 534352,
+      verify: {
+        etherscan: {
+          apiKey: etherscanKey('scroll'),
+        },
+      },
+    },
+    manta: {
+      live: true,
+      url: nodeUrl('manta'),
+      accounts: [getPkey()],
+      gas: 'auto',
+      chainId: 169,
+      verify: {
+        etherscan: {
+          apiKey: etherscanKey('manta'),
         },
       },
     },
