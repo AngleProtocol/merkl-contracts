@@ -369,7 +369,7 @@ const config: HardhatUserConfig = {
     mode: {
       live: true,
       url: nodeUrl('mode'),
-      accounts: accountsMerklDeployer,
+      accounts: [getPkey()],
       gas: 'auto',
       gasMultiplier: 1.3,
       chainId: 34443,
