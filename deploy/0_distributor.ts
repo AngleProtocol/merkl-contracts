@@ -29,7 +29,7 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
   }
   */
 
-  console.log('Let us get started with deployment');
+  console.log('Let us get started with deployment, deploying with this address');
   console.log(deployer.address);
 
   console.log('Now deploying Distributor');

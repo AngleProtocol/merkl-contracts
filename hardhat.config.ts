@@ -99,6 +99,7 @@ const config: HardhatUserConfig = {
       blockGasLimit: 125e5,
       initialBaseFeePerGas: 0,
       hardfork: 'london',
+      accounts: accountsMerklDeployer,
       forking: {
         enabled: argv.fork || false,
         // Mainnet
@@ -148,8 +149,10 @@ const config: HardhatUserConfig = {
         url: nodeUrl('scroll'),
         blockNumber: 3670869,
         */
-        url: nodeUrl('blast'),
-        blockNumber: 421659,
+        // url: nodeUrl('blast'),
+        // blockNumber: 421659,
+        url: nodeUrl('mode'),
+        blockNumber: 5080867,
       },
       mining: argv.disableAutoMining
         ? {
@@ -157,7 +160,7 @@ const config: HardhatUserConfig = {
             interval: 1000,
           }
         : { auto: true },
-      chainId: 100,
+      chainId: 34443,
     },
     polygon: {
       live: true,
@@ -360,6 +363,19 @@ const config: HardhatUserConfig = {
       verify: {
         etherscan: {
           apiKey: etherscanKey('blast'),
+        },
+      },
+    },
+    mode: {
+      live: true,
+      url: nodeUrl('mode'),
+      accounts: accountsMerklDeployer,
+      gas: 'auto',
+      gasMultiplier: 1.3,
+      chainId: 34443,
+      verify: {
+        etherscan: {
+          apiKey: etherscanKey('mode'),
         },
       },
     },
