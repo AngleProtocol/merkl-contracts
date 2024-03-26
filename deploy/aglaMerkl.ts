@@ -16,7 +16,7 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
   await deploy(implementationName, {
     contract: implementationName,
     from: deployer.address,
-    args: ["aglaMerkl","aglaMerkl",6],
+    args: ["aglaMerkl","aglaMerkl", 6],
     log: !argv.ci,
   });
 

@@ -1,5 +1,6 @@
 import { DeployFunction } from 'hardhat-deploy/types';
 import yargs from 'yargs';
+import * as readline from 'readline';
 
 import { DistributionCreator, DistributionCreator__factory } from '../typechain';
 import { parseAmount } from '../utils/bignumber';
