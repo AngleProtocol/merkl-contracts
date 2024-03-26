@@ -151,8 +151,8 @@ const config: HardhatUserConfig = {
         */
         // url: nodeUrl('blast'),
         // blockNumber: 421659,
-        url: nodeUrl('mode'),
-        blockNumber: 5080867,
+        url: nodeUrl('astar'),
+        blockNumber: 5820572,
       },
       mining: argv.disableAutoMining
         ? {
@@ -160,7 +160,7 @@ const config: HardhatUserConfig = {
             interval: 1000,
           }
         : { auto: true },
-      chainId: 34443,
+      chainId: 592,
     },
     polygon: {
       live: true,
@@ -451,6 +451,30 @@ const config: HardhatUserConfig = {
       verify: {
         etherscan: {
           apiKey: etherscanKey('manta'),
+        },
+      },
+    },
+    astar: {
+      live: true,
+      url: nodeUrl('astar'),
+      accounts: [getPkey()],
+      gas: 'auto',
+      chainId: 592,
+      verify: {
+        etherscan: {
+          apiKey: etherscanKey('astar'),
+        },
+      },
+    },
+    astarzkevm: {
+      live: true,
+      url: nodeUrl('astarzkevm'),
+      accounts: [getPkey()],
+      gas: 'auto',
+      chainId: 3776,
+      verify: {
+        etherscan: {
+          apiKey: etherscanKey('astarzkevm'),
         },
       },
     },

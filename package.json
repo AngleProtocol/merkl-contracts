@@ -8,6 +8,8 @@
     "lcov:generate-html": "genhtml lcov.info --output=coverage",
     "deploy:blast": "hardhat deploy --tags distributionCreator --network blast",
     "deploy:mode": "hardhat deploy --tags distributionCreator --network mode",
+    "deploy:astar": "hardhat deploy --tags distributionCreator --network astar",
+    "deploy:astarzkevm": "hardhat deploy --tags distributionCreator --network astarzkevm",
     "deploy:fork": "FORK=true hardhat node --tags distributionCreator",
     "deploy:agla": "hardhat deploy --tags aglaMerkl --network",
     "etherscan": "hardhat etherscan-verify --network",
