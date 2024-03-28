@@ -11,8 +11,24 @@ import "../utils/UUPSHelper.sol";
 contract RadiantCoupon is UUPSHelper, ERC20Upgradeable {
     using SafeERC20 for IERC20;
 
+    // ================================= VARIABLES =================================
+
     /// @notice `Core` contract handling access control
     ICore public core;
+
+    // =================================== EVENTS ==================================
+
+    event Recovered(address indexed token, address indexed to, uint256 amount);
+
+    // ================================= MODIFIERS =================================
+
+    /// @notice Checks whether the `msg.sender` has the governor role or the guardian role
+    modifier onlyGovernor() {
+        if (!core.isGovernor(msg.sender)) revert NotGovernor();
+        _;
+    }
+
+    // ================================= FUNCTIONS =================================
 
     function initialize() public initializer {
         __ERC20_init("RadiantCoupon", "cpRDNT");
@@ -39,6 +55,12 @@ contract RadiantCoupon is UUPSHelper, ERC20Upgradeable {
             _burn(to, amount);
             // HERE CALL THE VESTING CONTRACT TO STAKE ON BEHALF OF THE USER
         }
+    }
+
+    /// @notice Recovers any ERC20 token
+    function recoverERC20(address tokenAddress, address to, uint256 amountToRecover) external onlyGovernor {
+        IERC20(tokenAddress).safeTransfer(to, amountToRecover);
+        emit Recovered(tokenAddress, to, amountToRecover);
     }
 
     /// @inheritdoc UUPSUpgradeable
