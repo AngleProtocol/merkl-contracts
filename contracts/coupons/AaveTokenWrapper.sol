@@ -23,6 +23,11 @@ contract AaveTokenWrapper is UUPSHelper, ERC20Upgradeable {
 
     mapping(address => uint256) public isMasterClaimer;
     mapping(address => address) public delegateReceiver;
+    mapping(address => uint256) public permissionlessClaim;
+
+    error NotGovernor();
+    error ZeroAddress();
+    error InvalidClaim();
 
     // =================================== EVENTS ==================================
 
@@ -62,19 +67,17 @@ contract AaveTokenWrapper is UUPSHelper, ERC20Upgradeable {
             IERC20(token).safeTransferFrom(from, address(this), amount);
             _mint(from, amount); // These are then transfered to the distributor
         }
-        if (to == feeManager) {
-            IERC20(token).safeTransferFrom(from, feeManager, amount);
-            _mint(from, amount); // These are then transferred to the fee manager
-        }
     }
 
     function _afterTokenTransfer(address from, address to, uint256 amount) internal override {
         if (from == address(distributor)) {
-            if (tx.origin == to || isMasterClaimer[msg.sender] == 1) {
+            if (tx.origin == to || permissionlessClaim[to] == 1 || isMasterClaimer[tx.origin] == 1) {
                 _handleClaim(to, amount);
             } else if (allowance(to, tx.origin) > amount) {
                 _spendAllowance(to, tx.origin, amount);
                 _handleClaim(to, amount);
+            } else {
+                revert InvalidClaim();
             }
         }
     }
@@ -98,6 +101,11 @@ contract AaveTokenWrapper is UUPSHelper, ERC20Upgradeable {
     function toggleMasterClaimer(address claimer) external onlyGovernor {
         uint256 claimStatus = 1 - isMasterClaimer[claimer];
         isMasterClaimer[claimer] = claimStatus;
+    }
+
+    function togglePermissionlessClaim() external {
+        uint256 permission = 1 - permissionlessClaim[msg.sender];
+        permissionlessClaim[msg.sender] = permission;
     }
 
     function updateDelegateReceiver(address receiver) external {

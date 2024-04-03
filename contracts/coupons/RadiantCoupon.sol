@@ -41,6 +41,7 @@ contract RadiantCoupon is UUPSHelper, ERC20Upgradeable {
             IERC20(RADIANT).safeTransferFrom(from, address(this), amount);
             _mint(from, amount); // These are then transfered to the distributor
         }
+        // TODO: check allowance issue
         if (to == address(FEE_MANAGER)) {
             IERC20(RADIANT).safeTransferFrom(from, address(FEE_MANAGER), amount);
             _mint(from, amount); // These are then transferred to the fee manager
@@ -50,8 +51,7 @@ contract RadiantCoupon is UUPSHelper, ERC20Upgradeable {
     function _afterTokenTransfer(address from, address to, uint256 amount) internal override {
         if (to == address(FEE_MANAGER)) {
             _burn(to, amount); // To avoid having any token aside from on the distributor
-        }
-        if (from == address(DISTRIBUTOR)) {
+        } else if (from == address(DISTRIBUTOR)) {
             _burn(to, amount);
             // HERE CALL THE VESTING CONTRACT TO STAKE ON BEHALF OF THE USER
         }
