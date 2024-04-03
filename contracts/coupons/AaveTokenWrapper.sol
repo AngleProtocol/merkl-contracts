@@ -19,14 +19,11 @@ contract AaveTokenWrapper is UUPSHelper, ERC20Upgradeable {
     // could be put as immutable in non upgradeable contract
     address public token;
     address public distributor;
-    address public feeManager;
 
     mapping(address => uint256) public isMasterClaimer;
     mapping(address => address) public delegateReceiver;
     mapping(address => uint256) public permissionlessClaim;
 
-    error NotGovernor();
-    error ZeroAddress();
     error InvalidClaim();
 
     // =================================== EVENTS ==================================
@@ -43,21 +40,15 @@ contract AaveTokenWrapper is UUPSHelper, ERC20Upgradeable {
 
     // ================================= FUNCTIONS =================================
 
-    function initialize(
-        address underlyingToken,
-        address _distributor,
-        address _feeManager,
-        address _core
-    ) public initializer {
+    function initialize(address underlyingToken, address _distributor, address _core) public initializer {
         // TODO could fetch name and symbol based on real token
         __ERC20_init("AaveTokenWrapper", "ATW");
         __UUPSUpgradeable_init();
-        if (underlyingToken == address(0) || _distributor == address(0) || _feeManager == address(0))
-            revert ZeroAddress();
-        token = underlyingToken;
-        feeManager = _feeManager;
-        distributor = _distributor;
+        if (underlyingToken == address(0) || _distributor == address(0)) revert ZeroAddress();
         ICore(_core).isGovernor(msg.sender);
+        token = underlyingToken;
+        distributor = _distributor;
+
         core = ICore(_core);
     }
 
