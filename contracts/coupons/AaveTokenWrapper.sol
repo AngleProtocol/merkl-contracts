@@ -5,6 +5,7 @@ pragma solidity ^0.8.17;
 import { ERC20Upgradeable } from "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
+import "../DistributionCreator.sol";
 
 import "../utils/UUPSHelper.sol";
 
@@ -19,6 +20,7 @@ contract AaveTokenWrapper is UUPSHelper, ERC20Upgradeable {
     // could be put as immutable in non upgradeable contract
     address public token;
     address public distributor;
+    address public distributionCreator;
 
     mapping(address => uint256) public isMasterClaimer;
     mapping(address => address) public delegateReceiver;
@@ -40,15 +42,21 @@ contract AaveTokenWrapper is UUPSHelper, ERC20Upgradeable {
 
     // ================================= FUNCTIONS =================================
 
-    function initialize(address underlyingToken, address _distributor, address _core) public initializer {
+    function initialize(
+        address underlyingToken,
+        address _distributor,
+        address _core,
+        address _distributionCreator
+    ) public initializer {
         // TODO could fetch name and symbol based on real token
         __ERC20_init("AaveTokenWrapper", "ATW");
         __UUPSUpgradeable_init();
-        if (underlyingToken == address(0) || _distributor == address(0)) revert ZeroAddress();
+        if (underlyingToken == address(0) || _distributor == address(0) || _distributionCreator == address(0))
+            revert ZeroAddress();
         ICore(_core).isGovernor(msg.sender);
         token = underlyingToken;
         distributor = _distributor;
-
+        distributionCreator = _distributionCreator;
         core = ICore(_core);
     }
 
@@ -57,6 +65,11 @@ contract AaveTokenWrapper is UUPSHelper, ERC20Upgradeable {
         if (to == distributor) {
             IERC20(token).safeTransferFrom(from, address(this), amount);
             _mint(from, amount); // These are then transfered to the distributor
+        } else {
+            if (to == _getFeeRecipient()) {
+                IERC20(token).safeTransferFrom(from, to, amount);
+                _mint(from, amount);
+            }
         }
     }
 
@@ -70,6 +83,9 @@ contract AaveTokenWrapper is UUPSHelper, ERC20Upgradeable {
             } else {
                 revert InvalidClaim();
             }
+        } else if (to == _getFeeRecipient()) {
+            // To avoid having any token aside from the distributor
+            _burn(to, amount);
         }
     }
 
@@ -81,6 +97,12 @@ contract AaveTokenWrapper is UUPSHelper, ERC20Upgradeable {
         } else {
             IERC20(token).safeTransfer(delegate, amount);
         }
+    }
+
+    function _getFeeRecipient() internal view returns (address feeRecipient) {
+        address _distributionCreator = distributionCreator;
+        feeRecipient = DistributionCreator(_distributionCreator).feeRecipient();
+        feeRecipient = feeRecipient == address(0) ? _distributionCreator : feeRecipient;
     }
 
     /// @notice Recovers any ERC20 token
