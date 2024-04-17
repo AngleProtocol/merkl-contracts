@@ -9,7 +9,7 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
   const { deploy } = deployments;
   const { deployer } = await ethers.getNamedSigners();
 
-  const couponName = 'RadiantCoupon';
+  const couponName = 'RadiantMerklTokenWrapper';
   const distributionCreator = DistributionCreator__factory.connect('0x8BB4C975Ff3c250e0ceEA271728547f3802B36Fd', deployer)
   const core = await distributionCreator.core()
 
@@ -40,5 +40,5 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
   console.log('');
 };
 
-func.tags = ['coupon'];
+func.tags = ['mtw'];
 export default func;
