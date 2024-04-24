@@ -37,7 +37,7 @@ contract RadiantMerklTokenWrapper is BaseMerklTokenWrapper {
         // Needs an RDNT approval beforehand, this is how mints of coupons are done
         if (to == DISTRIBUTOR) {
             IERC20(_UNDERLYING).safeTransferFrom(from, address(this), amount);
-            _mint(from, amount); // These are then transfered to the distributor
+            _mint(from, amount); // These are then transferred to the distributor
         }
 
         // Will be burn right after, to avoid having any token aside from on the distributor
