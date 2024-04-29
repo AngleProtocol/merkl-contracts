@@ -250,7 +250,9 @@ const config: HardhatUserConfig = {
       live: true,
       url: nodeUrl('bsc'),
       accounts: [getPkey()],
-      gas: 'auto',
+      gas: 10000000,
+      gasMultiplier: 3,
+      gasPrice: 'auto',
       chainId: 56,
       verify: {
         etherscan: {
