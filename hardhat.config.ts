@@ -99,6 +99,7 @@ const config: HardhatUserConfig = {
       blockGasLimit: 125e5,
       initialBaseFeePerGas: 0,
       hardfork: 'london',
+      accounts: accountsMerklDeployer,
       forking: {
         enabled: argv.fork || false,
         // Mainnet
@@ -148,8 +149,10 @@ const config: HardhatUserConfig = {
         url: nodeUrl('scroll'),
         blockNumber: 3670869,
         */
-        url: nodeUrl('blast'),
-        blockNumber: 421659,
+        // url: nodeUrl('blast'),
+        // blockNumber: 421659,
+        url: nodeUrl('astar'),
+        blockNumber: 5820572,
       },
       mining: argv.disableAutoMining
         ? {
@@ -157,7 +160,7 @@ const config: HardhatUserConfig = {
             interval: 1000,
           }
         : { auto: true },
-      chainId: 100,
+      chainId: 592,
     },
     polygon: {
       live: true,
@@ -365,6 +368,19 @@ const config: HardhatUserConfig = {
         },
       },
     },
+    mode: {
+      live: true,
+      url: nodeUrl('mode'),
+      accounts: [getPkey()],
+      gas: 'auto',
+      gasMultiplier: 1.3,
+      chainId: 34443,
+      verify: {
+        etherscan: {
+          apiKey: etherscanKey('mode'),
+        },
+      },
+    },
     thundercore: {
       live: true,
       url: nodeUrl('thundercore'),
@@ -437,6 +453,30 @@ const config: HardhatUserConfig = {
       verify: {
         etherscan: {
           apiKey: etherscanKey('manta'),
+        },
+      },
+    },
+    astar: {
+      live: true,
+      url: nodeUrl('astar'),
+      accounts: [getPkey()],
+      gas: 'auto',
+      chainId: 592,
+      verify: {
+        etherscan: {
+          apiKey: etherscanKey('astar'),
+        },
+      },
+    },
+    astarzkevm: {
+      live: true,
+      url: nodeUrl('astarzkevm'),
+      accounts: [getPkey()],
+      gas: 'auto',
+      chainId: 3776,
+      verify: {
+        etherscan: {
+          apiKey: etherscanKey('astarzkevm'),
         },
       },
     },

@@ -1,6 +1,7 @@
 import { ChainId, CONTRACTS_ADDRESSES, registry } from '@angleprotocol/sdk';
 import { DeployFunction } from 'hardhat-deploy/types';
 import yargs from 'yargs';
+import * as readline from 'readline';
 
 import { Distributor, Distributor__factory } from '../typechain';
 const argv = yargs.env('').boolean('ci').parseSync();
@@ -29,7 +30,7 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
   }
   */
 
-  console.log('Let us get started with deployment');
+  console.log('Let us get started with deployment, deploying with this address');
   console.log(deployer.address);
 
   console.log('Now deploying Distributor');
