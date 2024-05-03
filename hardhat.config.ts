@@ -323,11 +323,14 @@ const config: HardhatUserConfig = {
       gas: 'auto',
       gasMultiplier: 1.3,
       chainId: 324,
+      ethNetwork: nodeUrl('mainnet'),
+      verifyURL: 'https://zksync2-mainnet-explorer.zksync.io/contract_verification',
       verify: {
         etherscan: {
           apiKey: etherscanKey('zksync'),
         },
       },
+      zksync: true,
     },
     mantle: {
       live: true,

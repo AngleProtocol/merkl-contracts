@@ -7,10 +7,10 @@
   resolved "https://registry.yarnpkg.com/@aashutoshrathi/word-wrap/-/word-wrap-1.2.6.tgz#bd9154aec9983f77b3a034ecaa015c2e4201f6cf"
   integrity sha512-1Yjs2SvM8TflER/OD3cOjhWWOZb58A2t7wpE2S9XfBYTiIl+XFhQG2bjy4Pu1I+EAlCNUzRDYDdFwFYUKvXcIA==
 
-"@angleprotocol/sdk@0.34.4":
-  version "0.34.4"
-  resolved "https://npm.pkg.github.com/download/@angleprotocol/sdk/0.34.4/423d2a54e1cd7c6116cd2b95825f4d1572f4a497#423d2a54e1cd7c6116cd2b95825f4d1572f4a497"
-  integrity sha512-iHsOQtdqj15qVbGJ8RtkHy6qAqLM6Bsm9FaPvf+msBSENaHcoIpQnzxl1pt+pUyF1YKyj0gxsev4NHF5lO0pcA==
+"@angleprotocol/sdk@2.0.0":
+  version "2.0.0"
+  resolved "https://npm.pkg.github.com/download/@angleprotocol/sdk/2.0.0/ad9abe640e359f4411575f0e8ca4e20f52b1d51c#ad9abe640e359f4411575f0e8ca4e20f52b1d51c"
+  integrity sha512-RTDYV2EyoWFBgTPdFd6mMdrFT7PuC9gyMKkOXgnutCBdrW+S4h2kLsTQzxcjli8eIw9LqYO9HVNFPQNfJbmd4Q==
   dependencies:
     "@apollo/client" "^3.7.17"
     "@typechain/ethers-v5" "^10.0.0"
@@ -23,7 +23,7 @@
     lodash "^4.17.21"
     merkletreejs "^0.3.10"
     tiny-invariant "^1.1.0"
-    typechain "^8.0.0"
+    typechain "^8.3.2"
 
 "@apollo/client@^3.7.17":
   version "3.9.0"
@@ -10007,10 +10007,10 @@ type@^2.5.0:
   resolved "https://registry.npmjs.org/type/-/type-2.6.0.tgz"
   integrity sha512-eiDBDOmkih5pMbo9OqsqPRGMljLodLcwd5XD5JbtNB0o89xZAwynY9EdCDsJU7LtcVCClu9DvM7/0Ep1hYX3EQ==
 
-typechain@^8.0.0:
-  version "8.0.0"
-  resolved "https://registry.npmjs.org/typechain/-/typechain-8.0.0.tgz"
-  integrity sha512-rqDfDYc9voVAhmfVfAwzg3VYFvhvs5ck1X9T/iWkX745Cul4t+V/smjnyqrbDzWDbzD93xfld1epg7Y/uFAesQ==
+typechain@^8.1.0:
+  version "8.1.0"
+  resolved "https://registry.npmjs.org/typechain/-/typechain-8.1.0.tgz"
+  integrity sha512-5jToLgKTjHdI1VKqs/K8BLYy42Sr3o8bV5ojh4MnR9ExHO83cyyUdw+7+vMJCpKXUiVUvARM4qmHTFuyaCMAZQ==
   dependencies:
     "@types/prettier" "^2.1.1"
     debug "^4.3.1"
@@ -10023,10 +10023,10 @@ typechain@^8.0.0:
     ts-command-line-args "^2.2.0"
     ts-essentials "^7.0.1"
 
-typechain@^8.1.0:
-  version "8.1.0"
-  resolved "https://registry.npmjs.org/typechain/-/typechain-8.1.0.tgz"
-  integrity sha512-5jToLgKTjHdI1VKqs/K8BLYy42Sr3o8bV5ojh4MnR9ExHO83cyyUdw+7+vMJCpKXUiVUvARM4qmHTFuyaCMAZQ==
+typechain@^8.3.2:
+  version "8.3.2"
+  resolved "https://registry.yarnpkg.com/typechain/-/typechain-8.3.2.tgz#1090dd8d9c57b6ef2aed3640a516bdbf01b00d73"
+  integrity sha512-x/sQYr5w9K7yv3es7jo4KTX05CLxOf7TRWwoHlrjRh8H82G64g+k7VuWPJlgMo6qrjfCulOdfBjiaDtmhFYD/Q==
   dependencies:
     "@types/prettier" "^2.1.1"
     debug "^4.3.1"

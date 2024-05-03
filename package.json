@@ -13,7 +13,7 @@
     "deploy:fork": "FORK=true hardhat node --tags distributionCreator",
     "deploy:agla": "hardhat deploy --tags aglaMerkl --network",
     "deploy": "hardhat deploy --tags mtw --network",
-    "hardhat etherscan-verify --network",
+    "etherscan": "hardhat etherscan-verify --network",
     "foundry:compile": "forge build --optimize --optimizer-runs 1000",
     "foundry:coverage": "forge coverage --ir-minimum --report lcov && yarn lcov:clean && yarn lcov:generate-html",
     "foundry:deploy": "forge script --broadcast --verify -vvvv",
@@ -45,7 +45,7 @@
     "url": "https://github.com/AngleProtocol/merkl-contracts/issues"
   },
   "devDependencies": {
-    "@angleprotocol/sdk": "0.34.4",
+    "@angleprotocol/sdk": "2.0.0",
     "@ethersproject/abi": "^5.7.0",
     "@ethersproject/providers": "^5.7.1",
     "@nomicfoundation/hardhat-chai-matchers": "^1.0.3",
