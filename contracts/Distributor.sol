@@ -248,7 +248,7 @@ contract Distributor is UUPSHelper {
 
     /// @notice Resolve the ongoing dispute, if any
     /// @param valid Whether the dispute was valid
-    function resolveDispute(bool valid) external onlyGovernorOrGuardian {
+    function resolveDispute(bool valid) external onlyGovernor {
         if (disputer == address(0)) revert NoDispute();
         if (valid) {
             IERC20(disputeToken).safeTransfer(disputer, disputeAmount);
@@ -264,7 +264,7 @@ contract Distributor is UUPSHelper {
 
     /// @notice Allows the governor or the guardian of this contract to fallback to the last version of the tree
     /// immediately
-    function revokeTree() external onlyGovernorOrGuardian {
+    function revokeTree() external onlyGovernor {
         if (disputer != address(0)) revert UnresolvedDispute();
         _revokeTree();
     }
