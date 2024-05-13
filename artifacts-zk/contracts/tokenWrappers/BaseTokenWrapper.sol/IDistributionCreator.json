@@ -1,0 +1,38 @@
+{
+  "_format": "hh-zksolc-artifact-1",
+  "contractName": "IDistributionCreator",
+  "sourceName": "contracts/tokenWrappers/BaseTokenWrapper.sol",
+  "abi": [
+    {
+      "inputs": [],
+      "name": "distributor",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "feeRecipient",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "linkReferences": {},
+  "deployedLinkReferences": {},
+  "factoryDeps": {}
+}

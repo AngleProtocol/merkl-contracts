@@ -1,0 +1,266 @@
+{
+  "_format": "hh-zksolc-artifact-1",
+  "contractName": "IDistributionCreator",
+  "sourceName": "contracts/deprecated/OldDistributionCreator.sol",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "bytes32",
+              "name": "rewardId",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "uniV3Pool",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "rewardToken",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address[]",
+              "name": "positionWrappers",
+              "type": "address[]"
+            },
+            {
+              "internalType": "uint32[]",
+              "name": "wrapperTypes",
+              "type": "uint32[]"
+            },
+            {
+              "internalType": "uint32",
+              "name": "propToken0",
+              "type": "uint32"
+            },
+            {
+              "internalType": "uint32",
+              "name": "propToken1",
+              "type": "uint32"
+            },
+            {
+              "internalType": "uint32",
+              "name": "propFees",
+              "type": "uint32"
+            },
+            {
+              "internalType": "uint32",
+              "name": "epochStart",
+              "type": "uint32"
+            },
+            {
+              "internalType": "uint32",
+              "name": "numEpoch",
+              "type": "uint32"
+            },
+            {
+              "internalType": "uint32",
+              "name": "isOutOfRangeIncentivized",
+              "type": "uint32"
+            },
+            {
+              "internalType": "uint32",
+              "name": "boostedReward",
+              "type": "uint32"
+            },
+            {
+              "internalType": "address",
+              "name": "boostingAddress",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes",
+              "name": "additionalData",
+              "type": "bytes"
+            }
+          ],
+          "internalType": "struct DistributionParameters",
+          "name": "distribution",
+          "type": "tuple"
+        }
+      ],
+      "name": "tryGetExtensiveDistributionParameters",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "success",
+          "type": "bool"
+        },
+        {
+          "components": [
+            {
+              "components": [
+                {
+                  "internalType": "bytes32",
+                  "name": "rewardId",
+                  "type": "bytes32"
+                },
+                {
+                  "internalType": "address",
+                  "name": "uniV3Pool",
+                  "type": "address"
+                },
+                {
+                  "internalType": "address",
+                  "name": "rewardToken",
+                  "type": "address"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "amount",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "address[]",
+                  "name": "positionWrappers",
+                  "type": "address[]"
+                },
+                {
+                  "internalType": "uint32[]",
+                  "name": "wrapperTypes",
+                  "type": "uint32[]"
+                },
+                {
+                  "internalType": "uint32",
+                  "name": "propToken0",
+                  "type": "uint32"
+                },
+                {
+                  "internalType": "uint32",
+                  "name": "propToken1",
+                  "type": "uint32"
+                },
+                {
+                  "internalType": "uint32",
+                  "name": "propFees",
+                  "type": "uint32"
+                },
+                {
+                  "internalType": "uint32",
+                  "name": "epochStart",
+                  "type": "uint32"
+                },
+                {
+                  "internalType": "uint32",
+                  "name": "numEpoch",
+                  "type": "uint32"
+                },
+                {
+                  "internalType": "uint32",
+                  "name": "isOutOfRangeIncentivized",
+                  "type": "uint32"
+                },
+                {
+                  "internalType": "uint32",
+                  "name": "boostedReward",
+                  "type": "uint32"
+                },
+                {
+                  "internalType": "address",
+                  "name": "boostingAddress",
+                  "type": "address"
+                },
+                {
+                  "internalType": "bytes",
+                  "name": "additionalData",
+                  "type": "bytes"
+                }
+              ],
+              "internalType": "struct DistributionParameters",
+              "name": "base",
+              "type": "tuple"
+            },
+            {
+              "internalType": "uint24",
+              "name": "poolFee",
+              "type": "uint24"
+            },
+            {
+              "components": [
+                {
+                  "internalType": "address",
+                  "name": "add",
+                  "type": "address"
+                },
+                {
+                  "internalType": "uint8",
+                  "name": "decimals",
+                  "type": "uint8"
+                },
+                {
+                  "internalType": "string",
+                  "name": "symbol",
+                  "type": "string"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "poolBalance",
+                  "type": "uint256"
+                }
+              ],
+              "internalType": "struct UniswapTokenData",
+              "name": "token0",
+              "type": "tuple"
+            },
+            {
+              "components": [
+                {
+                  "internalType": "address",
+                  "name": "add",
+                  "type": "address"
+                },
+                {
+                  "internalType": "uint8",
+                  "name": "decimals",
+                  "type": "uint8"
+                },
+                {
+                  "internalType": "string",
+                  "name": "symbol",
+                  "type": "string"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "poolBalance",
+                  "type": "uint256"
+                }
+              ],
+              "internalType": "struct UniswapTokenData",
+              "name": "token1",
+              "type": "tuple"
+            },
+            {
+              "internalType": "string",
+              "name": "rewardTokenSymbol",
+              "type": "string"
+            },
+            {
+              "internalType": "uint8",
+              "name": "rewardTokenDecimals",
+              "type": "uint8"
+            }
+          ],
+          "internalType": "struct ExtensiveDistributionParameters",
+          "name": "extensiveParams",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "linkReferences": {},
+  "deployedLinkReferences": {},
+  "factoryDeps": {}
+}

@@ -1,0 +1,20 @@
+{
+  "_format": "hh-zksolc-artifact-1",
+  "contractName": "Proxy",
+  "sourceName": "@openzeppelin/contracts/proxy/Proxy.sol",
+  "abi": [
+    {
+      "stateMutability": "payable",
+      "type": "fallback"
+    },
+    {
+      "stateMutability": "payable",
+      "type": "receive"
+    }
+  ],
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "linkReferences": {},
+  "deployedLinkReferences": {},
+  "factoryDeps": {}
+}

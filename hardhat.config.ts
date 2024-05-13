@@ -5,15 +5,20 @@
 import 'dotenv/config';
 import 'hardhat-contract-sizer';
 import 'hardhat-spdx-license-identifier';
+// import 'hardhat-docgen';
 import 'hardhat-deploy';
 import 'hardhat-abi-exporter';
-import '@nomicfoundation/hardhat-chai-matchers'; /** NEW FEATURE - https://hardhat.org/hardhat-chai-matchers/docs/reference#.revertedwithcustomerror */
-import '@nomicfoundation/hardhat-toolbox'; /** NEW FEATURE */
-import '@openzeppelin/hardhat-upgrades';
+import '@nomiclabs/hardhat-ethers';
 import '@nomiclabs/hardhat-truffle5';
 import '@nomiclabs/hardhat-solhint';
+// import '@nomiclabs/hardhat-etherscan';
+import 'solidity-coverage';
 import '@tenderly/hardhat-tenderly';
 import '@typechain/hardhat';
+// import '@nomicfoundation/hardhat-foundry';
+import '@matterlabs/hardhat-zksync-solc';
+import '@matterlabs/hardhat-zksync-verify';
+import '@matterlabs/hardhat-zksync-deploy';
 
 import { TASK_COMPILE_SOLIDITY_GET_SOURCE_PATHS } from 'hardhat/builtin-tasks/task-names';
 import { HardhatUserConfig, subtask } from 'hardhat/config';
@@ -319,7 +324,7 @@ const config: HardhatUserConfig = {
     zksync: {
       live: true,
       url: nodeUrl('zksync'),
-      accounts: [getPkey()],
+      accounts: accounts('merkl'),
       gas: 'auto',
       gasMultiplier: 1.3,
       chainId: 324,
