@@ -183,8 +183,8 @@ contract Distributor is UUPSHelper {
             address token = tokens[i];
             uint256 amount = amounts[i];
 
-            // Checking if only an approved operator can claim for `user`
-            if (onlyOperatorCanClaim[user] == 1 && operators[user][msg.sender] == 0) revert NotWhitelisted();
+            // Only approved operator can claim for `user`
+            if (operators[user][msg.sender] == 0) revert NotWhitelisted();
 
             // Verifying proof
             bytes32 leaf = keccak256(abi.encode(user, token, amount));
