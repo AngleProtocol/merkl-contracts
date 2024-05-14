@@ -183,8 +183,8 @@ contract Distributor is UUPSHelper {
             address token = tokens[i];
             uint256 amount = amounts[i];
 
-            // Checking if only an approved operator can claim for `user`
-            if (onlyOperatorCanClaim[user] == 1 && operators[user][msg.sender] == 0) revert NotWhitelisted();
+            // Only approved operator can claim for `user`
+            if (msg.sender != user && operators[user][msg.sender] == 0) revert NotWhitelisted();
 
             // Verifying proof
             bytes32 leaf = keccak256(abi.encode(user, token, amount));
@@ -248,7 +248,7 @@ contract Distributor is UUPSHelper {
 
     /// @notice Resolve the ongoing dispute, if any
     /// @param valid Whether the dispute was valid
-    function resolveDispute(bool valid) external onlyGovernorOrGuardian {
+    function resolveDispute(bool valid) external onlyGovernor {
         if (disputer == address(0)) revert NoDispute();
         if (valid) {
             IERC20(disputeToken).safeTransfer(disputer, disputeAmount);
@@ -262,14 +262,15 @@ contract Distributor is UUPSHelper {
         emit DisputeResolved(valid);
     }
 
-    /// @notice Allows the governor or the guardian of this contract to fallback to the last version of the tree
+    /// @notice Allows the governor of this contract to fallback to the last version of the tree
     /// immediately
-    function revokeTree() external onlyGovernorOrGuardian {
+    function revokeTree() external onlyGovernor {
         if (disputer != address(0)) revert UnresolvedDispute();
         _revokeTree();
     }
 
     /// @notice Toggles permissioned claiming for a given user
+    /// @dev deprecated
     function toggleOnlyOperatorCanClaim(address user) external onlyTrustedOrUser(user) {
         uint256 oldValue = onlyOperatorCanClaim[user];
         onlyOperatorCanClaim[user] = 1 - oldValue;

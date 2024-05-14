@@ -253,7 +253,7 @@ const config: HardhatUserConfig = {
       live: true,
       url: nodeUrl('bsc'),
       accounts: [getPkey()],
-      gas: 10000000,
+      gas: 60000000,
       gasMultiplier: 3,
       gasPrice: 'auto',
       chainId: 56,
