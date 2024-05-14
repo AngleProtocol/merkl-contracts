@@ -262,7 +262,7 @@ contract Distributor is UUPSHelper {
         emit DisputeResolved(valid);
     }
 
-    /// @notice Allows the governor or the guardian of this contract to fallback to the last version of the tree
+    /// @notice Allows the governor of this contract to fallback to the last version of the tree
     /// immediately
     function revokeTree() external onlyGovernor {
         if (disputer != address(0)) revert UnresolvedDispute();
@@ -270,6 +270,7 @@ contract Distributor is UUPSHelper {
     }
 
     /// @notice Toggles permissioned claiming for a given user
+    /// @dev deprecated
     function toggleOnlyOperatorCanClaim(address user) external onlyTrustedOrUser(user) {
         uint256 oldValue = onlyOperatorCanClaim[user];
         onlyOperatorCanClaim[user] = 1 - oldValue;
