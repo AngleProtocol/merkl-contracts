@@ -3410,8 +3410,8 @@
       ]
     },
     "/Users/picodes/Documents/Angle/merkl-contracts/contracts/Distributor.sol": {
-      "lastModificationDate": 1711475231495,
-      "contentHash": "a68097cd2e86e1abbef539e24f19ee3d",
+      "lastModificationDate": 1715689292305,
+      "contentHash": "cc3440dffd519b35f91e80a6d25ff292",
       "sourceName": "contracts/Distributor.sol",
       "solcConfig": {
         "version": "0.8.17",

@@ -48,8 +48,8 @@ const func: DeployFunction = async (hre) => {
   console.log('Now deploying Distributor');
   console.log('Starting with the implementation');
 
-  let artifact = await deployer.loadArtifact('MockToken');
-  let implem = await hre.deployer.deploy(artifact, ["aglaMerkl","aglaMerkl", 6]);
+  let artifact = await deployer.loadArtifact('Distributor');
+  let implem = await hre.deployer.deploy(artifact, []);
   let implemAddress = await implem.getAddress();
   console.log(implemAddress)
 
