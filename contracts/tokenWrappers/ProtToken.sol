@@ -11,7 +11,9 @@ import "../utils/Errors.sol";
 /// @notice Base token contract that can only be minted
 contract ProtToken is ERC20 {
     mapping(address => bool) public minters;
+    mapping(address => bool) public whitelistedRecipients;
     ICore public core;
+    uint8 public allowedTransfers;
 
     constructor(string memory name_, string memory symbol_, address _minter, address _core) ERC20(name_, symbol_) {
         if (_core == address(0) || _minter == address(0)) revert ZeroAddress();
@@ -37,11 +39,36 @@ contract ProtToken is ERC20 {
         _mint(account, amount);
     }
 
-    function burn(address account, uint256 amount) public onlyMinter {
+    function burn(address account, uint256 amount) external onlyMinter {
         _burn(account, amount);
     }
 
-    function toggleMinter(address minter) public onlyGovernorOrGuardian {
+    function mintBatch(address[] memory accounts, uint256[] memory amounts) external onlyMinter {
+        uint256 length = accounts.length;
+        for (uint256 i = 0; i < length; ++i) {
+            _mint(accounts[i], amounts[i]);
+        }
+    }
+
+    function toggleMinter(address minter) external onlyGovernorOrGuardian {
         minters[minter] = !minters[minter];
+    }
+
+    function toggleAllowedTransfers() external onlyGovernorOrGuardian {
+        allowedTransfers = 1 - allowedTransfers;
+    }
+
+    function toggleWhitelistedRecipient(address recipient) external onlyGovernorOrGuardian {
+        whitelistedRecipients[recipient] = !whitelistedRecipients[recipient];
+    }
+
+    function _beforeTokenTransfer(address from, address to, uint256) internal view override {
+        if (
+            allowedTransfers == 0 &&
+            from != address(0) &&
+            to != address(0) &&
+            !whitelistedRecipients[from] &&
+            !whitelistedRecipients[to]
+        ) revert NotAllowed();
     }
 }

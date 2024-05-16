@@ -17,6 +17,7 @@ error InvalidUninitializedRoot();
 error InvalidReward();
 error InvalidSignature();
 error NoDispute();
+error NotAllowed();
 error NotGovernor();
 error NotGovernorOrGuardian();
 error NotSigned();
