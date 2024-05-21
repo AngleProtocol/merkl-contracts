@@ -1,5 +1,6 @@
 import { DeployFunction } from 'hardhat-deploy/types';
 import yargs from 'yargs';
+import { ERC20, ERC20__factory, MockToken, MockToken__factory } from '../typechain';
 
 const argv = yargs.env('').boolean('ci').parseSync();
 
@@ -21,6 +22,11 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
   });
 
   const implementationAddress = (await ethers.getContract(implementationName)).address;
+
+  const tokenContract = new ethers.Contract(implementationAddress, MockToken__factory.createInterface(), deployer) as MockToken;
+
+  await tokenContract.mint(deployer.address, "1000000000000000000000000000");
+  
 
   console.log(`Successfully deployed the contract ${implementationName} at ${implementationAddress}`);
   console.log('');

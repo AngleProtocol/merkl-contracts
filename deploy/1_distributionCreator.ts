@@ -4,6 +4,7 @@ import * as readline from 'readline';
 
 import { DistributionCreator, DistributionCreator__factory } from '../typechain';
 import { parseAmount } from '../utils/bignumber';
+import { CoreBorrow__factory } from '@angleprotocol/sdk';
 const argv = yargs.env('').boolean('ci').parseSync();
 
 const func: DeployFunction = async ({ deployments, ethers, network }) => {
@@ -11,8 +12,12 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
   const { deployer } = await ethers.getNamedSigners();
 
   let core: string;
-  // TODO: change the coreMerkl address to that of the desired chain
-  core = '0xE9169817EdBFe5FCF629eD8b3C2a34E2a50ec84C';
+  core = '0x1899D4cC1BFf96038f9E8f5ecc898c70E2ff72ee';
+  const coreContract = new ethers.Contract(core, CoreBorrow__factory.createInterface(), deployer) as any;
+  if (await coreContract.GOVERNOR_ROLE()!= '0x7935bd0ae54bc31f548c14dba4d37c5c64b3f8ca900cb468fb8abd54d5894f55') throw 'Invalid Core Merkl'
+
+  if (deployer.address !== '0x9f76a95AA7535bb0893cf88A146396e00ed21A12') throw `Invalid deployer address: ${deployer.address}`;
+ 
   /*
   if (!network.live) {
     // If we're in mainnet fork, we're using the `CoreBorrow` address from mainnet
