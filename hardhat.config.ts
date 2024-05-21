@@ -151,8 +151,8 @@ const config: HardhatUserConfig = {
         */
         // url: nodeUrl('blast'),
         // blockNumber: 421659,
-        url: nodeUrl('astar'),
-        blockNumber: 5820572,
+        url: nodeUrl('fuse'),
+        blockNumber: 10,
       },
       mining: argv.disableAutoMining
         ? {
@@ -410,11 +410,26 @@ const config: HardhatUserConfig = {
         },
       },
     },
+    xlayer: {
+      live: true,
+      url: nodeUrl('xlayer'),
+      accounts: [getPkey()],
+      gas: 'auto',
+      chainId: 196,
+    },
+    fuse: {
+      live: true,
+      url: nodeUrl('fuse'),
+      accounts: [getPkey()],
+      gas: 'auto',
+      chainId: 122,
+    },
     immutablezkevm: {
       live: true,
       url: nodeUrl('immutablezkevm'),
       accounts: [getPkey()],
       gas: 'auto',
+      gasPrice: 'auto',
       gasMultiplier: 1.3,
       chainId: 13371,
       verify: {
