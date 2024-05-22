@@ -6,33 +6,34 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import { ICore } from "../interfaces/ICore.sol";
 import "../utils/Errors.sol";
 
-/// @title ProtToken
+/// @title PointToken
 /// @author Angle Labs, Inc.
-/// @notice Base token contract that can only be minted
-contract ProtToken is ERC20 {
+/// @notice Reference contract for points systems within Merkl
+contract PointToken is ERC20 {
     mapping(address => bool) public minters;
     mapping(address => bool) public whitelistedRecipients;
-    ICore public core;
+    ICore public accessControlManager;
     uint8 public allowedTransfers;
 
-    constructor(string memory name_, string memory symbol_, address _minter, address _core) ERC20(name_, symbol_) {
-        if (_core == address(0) || _minter == address(0)) revert ZeroAddress();
-        core = ICore(_core);
+    constructor(
+        string memory name_,
+        string memory symbol_,
+        address _minter,
+        address _accessControlManager
+    ) ERC20(name_, symbol_) {
+        if (_accessControlManager == address(0) || _minter == address(0)) revert ZeroAddress();
+        accessControlManager = ICore(_accessControlManager);
         minters[_minter] = true;
     }
 
     modifier onlyGovernorOrGuardian() {
-        if (!core.isGovernorOrGuardian(msg.sender)) revert NotGovernorOrGuardian();
+        if (!accessControlManager.isGovernorOrGuardian(msg.sender)) revert NotGovernorOrGuardian();
         _;
     }
 
     modifier onlyMinter() {
         if (!minters[msg.sender]) revert NotTrusted();
         _;
-    }
-
-    function decimals() public pure override returns (uint8) {
-        return 18;
     }
 
     function mint(address account, uint256 amount) external onlyMinter {
