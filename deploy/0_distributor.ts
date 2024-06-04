@@ -18,7 +18,7 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
   let core: string;
   // TODO: change the coreMerkl address to that of the desired chain
 
-  core = '0x1899D4cC1BFf96038f9E8f5ecc898c70E2ff72ee';
+  core = '0x1746f9bb465d3747fe9C2CfE7759F4B871a06d3C';
   const coreContract = new ethers.Contract(core, CoreBorrow__factory.createInterface(), deployer) as any;
   if (await coreContract.GOVERNOR_ROLE()!= '0x7935bd0ae54bc31f548c14dba4d37c5c64b3f8ca900cb468fb8abd54d5894f55') throw 'Invalid Core Merkl'
 
@@ -39,11 +39,11 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
   console.log('Now deploying Distributor');
   console.log('Starting with the implementation');
 
-  await deploy('Distributor_Implementation_V2_1', {
-    contract: 'Distributor',
-    from: deployer.address,
-    log: !argv.ci,
-  });
+  // await deploy('Distributor_Implementation_V2_1', {
+  //   contract: 'Distributor',
+  //   from: deployer.address,
+  //   log: !argv.ci,
+  // });
 
   const implementationAddress = (await ethers.getContract('Distributor_Implementation_V2_1')).address;
  
@@ -52,18 +52,18 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
   
   console.log('Now deploying the Proxy');
 
-  await deploy('Distributor', {
-    contract: 'ERC1967Proxy',
-    from: deployer.address,
-    args: [implementationAddress, '0x'],
-    log: !argv.ci,
-  });
+  // await deploy('Distributor', {
+  //   contract: 'ERC1967Proxy',
+  //   from: deployer.address,
+  //   args: [implementationAddress, '0x'],
+  //   log: !argv.ci,
+  // });
 
   const distributor = (await deployments.get('Distributor')).address;
   console.log(`Successfully deployed contract at the address ${distributor}`);
   console.log('Initializing the contract');
   const contract = new ethers.Contract(distributor, Distributor__factory.createInterface(), deployer) as Distributor;
-  await (await contract.connect(deployer).initialize(core)).wait();
+  // await (await contract.connect(deployer).initialize(core)).wait();
   console.log('Contract successfully initialized');
   console.log('');
 };

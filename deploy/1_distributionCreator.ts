@@ -12,7 +12,7 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
   const { deployer } = await ethers.getNamedSigners();
 
   let core: string;
-  core = '0x1899D4cC1BFf96038f9E8f5ecc898c70E2ff72ee';
+  core = '0x1746f9bb465d3747fe9C2CfE7759F4B871a06d3C';
   const coreContract = new ethers.Contract(core, CoreBorrow__factory.createInterface(), deployer) as any;
   if (await coreContract.GOVERNOR_ROLE()!= '0x7935bd0ae54bc31f548c14dba4d37c5c64b3f8ca900cb468fb8abd54d5894f55') throw 'Invalid Core Merkl'
 
