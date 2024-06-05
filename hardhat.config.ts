@@ -151,8 +151,8 @@ const config: HardhatUserConfig = {
         */
         // url: nodeUrl('blast'),
         // blockNumber: 421659,
-        url: nodeUrl('fuse'),
-        blockNumber: 10,
+        url: nodeUrl('taiko'),
+        blockNumber: 34653,
       },
       mining: argv.disableAutoMining
         ? {
@@ -416,6 +416,13 @@ const config: HardhatUserConfig = {
       accounts: [getPkey()],
       gas: 'auto',
       chainId: 196,
+    },
+    taiko: {
+      live: true,
+      url: nodeUrl('taiko'),
+      accounts: accountsMerklDeployer,
+      gas: 'auto',
+      chainId: 167000,
     },
     fuse: {
       live: true,
