@@ -29,7 +29,7 @@ subtask(TASK_COMPILE_SOLIDITY_GET_SOURCE_PATHS).setAction(async (_, __, runSuper
 });
 
 const accountsPkey = [getPkey()];
-const accountsMerklDeployer: HardhatNetworkAccountsUserConfig = accounts('merkl_deployer');
+const accountsMerklDeployer: HardhatNetworkAccountsUserConfig = accounts('taiko');
 
 const argv = yargs
   .env('')
@@ -152,7 +152,7 @@ const config: HardhatUserConfig = {
         // url: nodeUrl('blast'),
         // blockNumber: 421659,
         url: nodeUrl('taiko'),
-        blockNumber: 34653,
+        blockNumber: 34646,
       },
       mining: argv.disableAutoMining
         ? {
@@ -420,7 +420,7 @@ const config: HardhatUserConfig = {
     taiko: {
       live: true,
       url: nodeUrl('taiko'),
-      accounts: accountsMerklDeployer,
+      accounts: [getPkey()],
       gas: 'auto',
       chainId: 167000,
     },
@@ -540,7 +540,20 @@ const config: HardhatUserConfig = {
     spacing: 2,
   },
   etherscan: {
-    apiKey: process.env.ETHERSCAN_API_KEY,
+    // apiKey: process.env.ETHERSCAN_API_KEY,
+    apiKey:{
+      taiko: etherscanKey('taiko')
+    },
+    customChains:[
+      {
+        network: 'taiko',
+        chainId: 167000,
+        urls: {
+          apiURL: "https://api.taikoscan.io/api",
+          browserURL: "https://taikoscan.io/"
+        },
+      },
+    ],
   },
   typechain: {
     outDir: 'typechain',
