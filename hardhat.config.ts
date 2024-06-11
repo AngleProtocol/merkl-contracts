@@ -151,8 +151,8 @@ const config: HardhatUserConfig = {
         */
         // url: nodeUrl('blast'),
         // blockNumber: 421659,
-        url: nodeUrl('taiko'),
-        blockNumber: 34646,
+        url: nodeUrl('rootstock'),
+        blockNumber: 6384211,
       },
       mining: argv.disableAutoMining
         ? {
