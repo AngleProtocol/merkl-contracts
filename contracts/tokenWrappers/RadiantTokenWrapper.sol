@@ -10,7 +10,7 @@ import { BaseMerklTokenWrapper } from "./BaseTokenWrapper.sol";
 
 interface IVesting {
     function rdntToken() external view returns (address);
-    function vestTokens(address, uint256, bool) external returns (address);
+    function vestTokens(address, uint256, bool) external;
 }
 
 /// @title Radiant MTW
