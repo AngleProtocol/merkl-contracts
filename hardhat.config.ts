@@ -31,6 +31,7 @@ subtask(TASK_COMPILE_SOLIDITY_GET_SOURCE_PATHS).setAction(async (_, __, runSuper
 const accountsPkey = [getPkey()];
 const accountsMerklDeployer: HardhatNetworkAccountsUserConfig = accounts('taiko');
 
+
 const argv = yargs
   .env('')
   .boolean('enableGasReport')
@@ -478,6 +479,18 @@ const config: HardhatUserConfig = {
       verify: {
         etherscan: {
           apiKey: etherscanKey('manta'),
+        },
+      },
+    },
+    sei: {
+      live: true,
+      url: nodeUrl('sei'),
+      accounts: accountsMerklDeployer,
+      gas: 'auto',
+      chainId: 1329,
+      verify: {
+        etherscan: {
+          apiKey: etherscanKey('sei'),
         },
       },
     },
