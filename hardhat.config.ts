@@ -20,7 +20,7 @@ import { HardhatUserConfig, subtask } from 'hardhat/config';
 import { HardhatNetworkAccountsUserConfig } from 'hardhat/types';
 import yargs from 'yargs';
 
-import { accounts, etherscanKey, getPkey, nodeUrl } from './utils/network';
+import { accounts, etherscanKey, getMnemonic, getPkey, nodeUrl } from './utils/network';
 
 // Otherwise, ".sol" files from "test" are picked up during compilation and throw an error
 subtask(TASK_COMPILE_SOLIDITY_GET_SOURCE_PATHS).setAction(async (_, __, runSuper) => {
@@ -99,7 +99,7 @@ const config: HardhatUserConfig = {
       blockGasLimit: 125e5,
       initialBaseFeePerGas: 0,
       hardfork: 'london',
-      accounts: accountsMerklDeployer,
+      accounts: accounts("rootstock"),
       forking: {
         enabled: argv.fork || false,
         // Mainnet
@@ -151,8 +151,8 @@ const config: HardhatUserConfig = {
         */
         // url: nodeUrl('blast'),
         // blockNumber: 421659,
-        url: nodeUrl('fuse'),
-        blockNumber: 10,
+        url: nodeUrl('rootstock'),
+        blockNumber: 6384211,
       },
       mining: argv.disableAutoMining
         ? {
@@ -495,6 +495,18 @@ const config: HardhatUserConfig = {
       verify: {
         etherscan: {
           apiKey: etherscanKey('astarzkevm'),
+        },
+      },
+    },
+    rootstock: {
+      live: true,
+      url: nodeUrl('rootstock'),
+      accounts: accounts("rootstock"),
+      gas: 'auto',
+      chainId: 30,
+      verify: {
+        etherscan: {
+          apiKey: etherscanKey('rootstock'),
         },
       },
     },
