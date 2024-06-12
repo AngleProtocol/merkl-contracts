@@ -7,6 +7,7 @@
     "lcov:clean": "lcov --remove lcov.info -o lcov.info 'test/**' 'scripts/**' 'contracts/mock/**' 'contracts/deprecated/**' 'contracts/external/**'",
     "lcov:generate-html": "genhtml lcov.info --output=coverage",
     "deploy:blast": "hardhat deploy --tags distributionCreator --network blast",
+    "deploy:taiko": "hardhat deploy --tags distributionCreator --network taiko",
     "deploy:mode": "hardhat deploy --tags distributionCreator --network mode",
     "deploy:astar": "hardhat deploy --tags distributionCreator --network astar",
     "deploy:astarzkevm": "hardhat deploy --tags distributionCreator --network astarzkevm",
