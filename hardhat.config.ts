@@ -29,7 +29,7 @@ subtask(TASK_COMPILE_SOLIDITY_GET_SOURCE_PATHS).setAction(async (_, __, runSuper
 });
 
 const accountsPkey = [getPkey()];
-const accountsMerklDeployer: HardhatNetworkAccountsUserConfig = accounts('taiko');
+const accountsMerklDeployer: HardhatNetworkAccountsUserConfig = accounts('moonbeam');
 
 
 const argv = yargs
@@ -100,7 +100,7 @@ const config: HardhatUserConfig = {
       blockGasLimit: 125e5,
       initialBaseFeePerGas: 0,
       hardfork: 'london',
-      accounts: accounts("rootstock"),
+      accounts: accountsMerklDeployer,
       forking: {
         enabled: argv.fork || false,
         // Mainnet
@@ -152,8 +152,8 @@ const config: HardhatUserConfig = {
         */
         // url: nodeUrl('blast'),
         // blockNumber: 421659,
-        url: nodeUrl('rootstock'),
-        blockNumber: 6384211,
+        url: nodeUrl('moonbeam'),
+        blockNumber: 6359990,
       },
       mining: argv.disableAutoMining
         ? {
@@ -530,6 +530,19 @@ const config: HardhatUserConfig = {
         },
       },
     },
+    moonbeam: {
+      live: true,
+      url: nodeUrl('moonbeam'),
+      accounts: accountsMerklDeployer,
+      gas: 'auto',
+      gasMultiplier: 1.3,
+      chainId: 1284,
+      verify: {
+        etherscan: {
+          apiKey: etherscanKey('moonbeam'),
+        },
+      },
+    },
   },
   paths: {
     sources: './contracts',
@@ -566,9 +579,7 @@ const config: HardhatUserConfig = {
   },
   etherscan: {
     // apiKey: process.env.ETHERSCAN_API_KEY,
-    apiKey:{
-      taiko: etherscanKey('taiko')
-    },
+    apiKey:etherscanKey('moonbeam'),
     customChains:[
       {
         network: 'taiko',
