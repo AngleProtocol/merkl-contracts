@@ -39,11 +39,11 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
   console.log('Now deploying Distributor');
   console.log('Starting with the implementation');
 
-  // await deploy('Distributor_Implementation_V2_1', {
-  //   contract: 'Distributor',
-  //   from: deployer.address,
-  //   log: !argv.ci,
-  // });
+  await deploy('Distributor_Implementation_V2_1', {
+    contract: 'Distributor',
+    from: deployer.address,
+    log: !argv.ci,
+  });
 
   const implementationAddress = (await ethers.getContract('Distributor_Implementation_V2_1')).address;
  
@@ -52,18 +52,18 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
   
   console.log('Now deploying the Proxy');
 
-  // await deploy('Distributor', {
-  //   contract: 'ERC1967Proxy',
-  //   from: deployer.address,
-  //   args: [implementationAddress, '0x'],
-  //   log: !argv.ci,
-  // });
+  await deploy('Distributor', {
+    contract: 'ERC1967Proxy',
+    from: deployer.address,
+    args: [implementationAddress, '0x'],
+    log: !argv.ci,
+  });
 
   const distributor = (await deployments.get('Distributor')).address;
   console.log(`Successfully deployed contract at the address ${distributor}`);
   console.log('Initializing the contract');
   const contract = new ethers.Contract(distributor, Distributor__factory.createInterface(), deployer) as Distributor;
-  // await (await contract.connect(deployer).initialize(core)).wait();
+  await (await contract.connect(deployer).initialize(core)).wait();
   console.log('Contract successfully initialized');
   console.log('');
 };
