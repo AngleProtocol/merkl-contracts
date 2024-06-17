@@ -37,8 +37,8 @@ contract StakedToken is ERC4626 {
             stakerCooldown[to] = getNextCooldownTimestamp(0, amount, to, balanceOf(to));
         } else if (to == address(0)) {
             uint256 cooldownEndTimestamp = stakerCooldown[from] + COOLDOWN_SECONDS;
-            if (block.timestamp > cooldownEndTimestamp) revert InsufficientCooldown();
-            if (block.timestamp - cooldownEndTimestamp <= UNSTAKE_WINDOW) revert UnstakeWindowFinished();
+            if (block.timestamp <= cooldownEndTimestamp) revert InsufficientCooldown();
+            if (block.timestamp > cooldownEndTimestamp + UNSTAKE_WINDOW) revert UnstakeWindowFinished();
         } else if (from != to) {
             uint256 previousSenderCooldown = stakerCooldown[from];
             stakerCooldown[to] = getNextCooldownTimestamp(previousSenderCooldown, amount, to, balanceOf(to));
