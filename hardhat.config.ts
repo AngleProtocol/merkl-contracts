@@ -152,8 +152,8 @@ const config: HardhatUserConfig = {
         */
         // url: nodeUrl('blast'),
         // blockNumber: 421659,
-        url: nodeUrl('moonbeam'),
-        blockNumber: 6359990,
+        url: nodeUrl('skale'),
+        blockNumber: 5563900,
       },
       mining: argv.disableAutoMining
         ? {
@@ -533,13 +533,26 @@ const config: HardhatUserConfig = {
     moonbeam: {
       live: true,
       url: nodeUrl('moonbeam'),
-      accounts: accountsMerklDeployer,
+      accounts: [getPkey()],
       gas: 'auto',
       gasMultiplier: 1.3,
       chainId: 1284,
       verify: {
         etherscan: {
           apiKey: etherscanKey('moonbeam'),
+        },
+      },
+    },
+    skale: {
+      live: true,
+      url: nodeUrl('skale'),
+      accounts: [getPkey()],
+      gas: 'auto',
+      gasMultiplier: 1.3,
+      chainId: 2046399126,
+      verify: {
+        etherscan: {
+          apiKey: etherscanKey('skale'),
         },
       },
     },
@@ -579,7 +592,7 @@ const config: HardhatUserConfig = {
   },
   etherscan: {
     // apiKey: process.env.ETHERSCAN_API_KEY,
-    apiKey:etherscanKey('moonbeam'),
+    apiKey:etherscanKey('skale'),
     customChains:[
       {
         network: 'taiko',
@@ -587,6 +600,14 @@ const config: HardhatUserConfig = {
         urls: {
           apiURL: "https://api.taikoscan.io/api",
           browserURL: "https://taikoscan.io/"
+        },
+      },
+      {
+        network: 'skale',
+        chainId: 2046399126,
+        urls: {
+          apiURL: 'https://internal-hubs.explorer.mainnet.skalenodes.com:10001/api',
+          browserURL: 'https://elated-tan-skat.explorer.mainnet.skalenodes.com/',
         },
       },
     ],
