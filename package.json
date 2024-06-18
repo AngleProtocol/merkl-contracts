@@ -9,6 +9,7 @@
     "deploy:blast": "hardhat deploy --tags distributionCreator --network blast",
     "deploy:taiko": "hardhat deploy --tags distributionCreator --network taiko",
     "deploy:moonbeam": "hardhat deploy --tags distributionCreator --network moonbeam",
+    "deploy:skale": "hardhat deploy --tags distributionCreator --network skale",
     "deploy:mode": "hardhat deploy --tags distributionCreator --network mode",
     "deploy:astar": "hardhat deploy --tags distributionCreator --network astar",
     "deploy:astarzkevm": "hardhat deploy --tags distributionCreator --network astarzkevm",
