@@ -24,7 +24,7 @@ contract RadiantMerklTokenWrapper is BaseMerklTokenWrapper {
 
     // ================================= CONSTANTS =================================
 
-    IVesting public constant VESTING = IVesting(0x76ba3eC5f5adBf1C58c91e86502232317EeA72dE);
+    IVesting public constant VESTING = IVesting(0x28E395a54a64284DBA39652921Cd99924f4e3797);
     address internal immutable _UNDERLYING = VESTING.rdntToken();
 
     // ================================= FUNCTIONS =================================

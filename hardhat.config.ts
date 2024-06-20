@@ -449,7 +449,7 @@ const config: HardhatUserConfig = {
     immutable: {
       live: true,
       url: nodeUrl('immutable'),
-      accounts: accountsMerklDeployer,
+      accounts: [getPkey()],
       gas: 'auto',
       chainId: 13371,
       verify: {
@@ -461,7 +461,7 @@ const config: HardhatUserConfig = {
     scroll: {
       live: true,
       url: nodeUrl('scroll'),
-      accounts: [getPkey()],
+      accounts: accountsMerklDeployer,
       gas: 'auto',
       chainId: 534352,
       verify: {
@@ -499,6 +499,7 @@ const config: HardhatUserConfig = {
       url: nodeUrl('astar'),
       accounts: [getPkey()],
       gas: 'auto',
+      gasPrice: 'auto',
       chainId: 592,
       verify: {
         etherscan: {
@@ -511,6 +512,7 @@ const config: HardhatUserConfig = {
       url: nodeUrl('astarzkevm'),
       accounts: [getPkey()],
       gas: 'auto',
+      gasPrice: 'auto',
       chainId: 3776,
       verify: {
         etherscan: {
