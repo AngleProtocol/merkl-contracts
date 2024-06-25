@@ -29,7 +29,7 @@ subtask(TASK_COMPILE_SOLIDITY_GET_SOURCE_PATHS).setAction(async (_, __, runSuper
 });
 
 const accountsPkey = [getPkey()];
-const accountsMerklDeployer: HardhatNetworkAccountsUserConfig = accounts('moonbeam');
+const accountsMerklDeployer: HardhatNetworkAccountsUserConfig = accounts('celo');
 
 
 const argv = yargs
@@ -152,8 +152,8 @@ const config: HardhatUserConfig = {
         */
         // url: nodeUrl('blast'),
         // blockNumber: 421659,
-        url: nodeUrl('skale'),
-        blockNumber: 5563900,
+        url: nodeUrl('celo'),
+        blockNumber: 26327340,
       },
       mining: argv.disableAutoMining
         ? {
@@ -161,7 +161,7 @@ const config: HardhatUserConfig = {
             interval: 1000,
           }
         : { auto: true },
-      chainId: 592,
+      chainId: 42220,
     },
     polygon: {
       live: true,
@@ -494,6 +494,18 @@ const config: HardhatUserConfig = {
         },
       },
     },
+    celo: {
+      live: true,
+      url: nodeUrl('celo'),
+      accounts: accountsMerklDeployer,
+      gas: 'auto',
+      chainId: 42220,
+      verify: {
+        etherscan: {
+          apiKey: etherscanKey('celo'),
+        },
+      },
+    },
     astar: {
       live: true,
       url: nodeUrl('astar'),
@@ -594,7 +606,7 @@ const config: HardhatUserConfig = {
   },
   etherscan: {
     // apiKey: process.env.ETHERSCAN_API_KEY,
-    apiKey:etherscanKey('skale'),
+    apiKey:etherscanKey('celo'),
     customChains:[
       {
         network: 'taiko',
@@ -602,6 +614,14 @@ const config: HardhatUserConfig = {
         urls: {
           apiURL: "https://api.taikoscan.io/api",
           browserURL: "https://taikoscan.io/"
+        },
+      },
+      {
+        network: 'celo',
+        chainId: 42220,
+        urls: {
+          apiURL: 'https://api.celoscan.io/api',
+          browserURL: 'https://celoscan.io/',
         },
       },
       {
