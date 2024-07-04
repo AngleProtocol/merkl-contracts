@@ -29,7 +29,7 @@ subtask(TASK_COMPILE_SOLIDITY_GET_SOURCE_PATHS).setAction(async (_, __, runSuper
 });
 
 const accountsPkey = [getPkey()];
-const accountsMerklDeployer: HardhatNetworkAccountsUserConfig = accounts('celo');
+const accountsMerklDeployer: HardhatNetworkAccountsUserConfig = accounts('fraxtal');
 
 
 const argv = yargs
@@ -152,8 +152,8 @@ const config: HardhatUserConfig = {
         */
         // url: nodeUrl('blast'),
         // blockNumber: 421659,
-        url: nodeUrl('celo'),
-        blockNumber: 26327340,
+        url: nodeUrl('fraxtal'),
+        blockNumber: 6644000,
       },
       mining: argv.disableAutoMining
         ? {
@@ -506,6 +506,18 @@ const config: HardhatUserConfig = {
         },
       },
     },
+    fraxtal: {
+      live: true,
+      url: nodeUrl('fraxtal'),
+      accounts: accountsMerklDeployer,
+      gas: 'auto',
+      chainId: 252,
+      verify: {
+        etherscan: {
+          apiKey: etherscanKey('fraxtal'),
+        },
+      },
+    },
     astar: {
       live: true,
       url: nodeUrl('astar'),
@@ -606,7 +618,7 @@ const config: HardhatUserConfig = {
   },
   etherscan: {
     // apiKey: process.env.ETHERSCAN_API_KEY,
-    apiKey:etherscanKey('celo'),
+    apiKey:etherscanKey('fraxtal'),
     customChains:[
       {
         network: 'taiko',
@@ -622,6 +634,14 @@ const config: HardhatUserConfig = {
         urls: {
           apiURL: 'https://api.celoscan.io/api',
           browserURL: 'https://celoscan.io/',
+        },
+      },
+      {
+        network: 'fraxtal',
+        chainId: 252,
+        urls: {
+          apiURL: 'https://api.fraxscan.com/api',
+          browserURL: 'https://fraxscan.com/',
         },
       },
       {
