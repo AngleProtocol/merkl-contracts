@@ -304,6 +304,19 @@ const config: HardhatUserConfig = {
         },
       },
     },
+    bob: {
+      live: true,
+      url: nodeUrl('bob'),
+      accounts: [getPkey()],
+      gas: 'auto',
+      gasMultiplier: 1.3,
+      chainId: 60808,
+      verify: {
+        etherscan: {
+          apiKey: etherscanKey('bob'),
+        },
+      },
+    },
     linea: {
       live: true,
       url: nodeUrl('linea'),

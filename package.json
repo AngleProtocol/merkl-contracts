@@ -16,6 +16,7 @@
     "deploy:astar": "hardhat deploy --tags distributionCreator --network astar",
     "deploy:astarzkevm": "hardhat deploy --tags distributionCreator --network astarzkevm",
     "deploy:sei": "hardhat deploy --tags distributionCreator --network sei",
+    "deploy:bob": "hardhat deploy --tags distributionCreator --network bob",
     "deploy:fork": "FORK=true hardhat node --tags distributionCreator",
     "deploy:agla": "hardhat deploy --tags aglaMerkl --network",
     "deploy": "hardhat deploy --tags distributionCreator --network",
