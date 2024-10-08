@@ -60,3 +60,11 @@ export function getPkey(): string {
     return '0x0000000000000000000000000000000000000000000000000000000000000000';
   }
 }
+
+export function getMerklAccount(): { mnemonic: string; count: number } {
+  if (process.env.MNEMONIC_MERKL_DEPLOYER && process.env.MNEMONIC_MERKL_DEPLOYER !=='') {
+    return { mnemonic: process.env.MNEMONIC_MERKL_DEPLOYER, count: 20 };
+  } else {
+    return  { mnemonic: '', count: 20 };
+  }
+}

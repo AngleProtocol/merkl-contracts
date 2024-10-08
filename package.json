@@ -17,6 +17,7 @@
     "deploy:astarzkevm": "hardhat deploy --tags distributionCreator --network astarzkevm",
     "deploy:sei": "hardhat deploy --tags distributionCreator --network sei",
     "deploy:bob": "hardhat deploy --tags distributionCreator --network bob",
+    "deploy:worldchain": "hardhat deploy --tags distributionCreator --network worldchain",
     "deploy:fork": "FORK=true hardhat node --tags distributionCreator",
     "deploy:agla": "hardhat deploy --tags aglaMerkl --network",
     "deploy": "hardhat deploy --tags distributionCreator --network",
@@ -52,7 +53,7 @@
     "url": "https://github.com/AngleProtocol/merkl-contracts/issues"
   },
   "devDependencies": {
-    "@angleprotocol/sdk": "2.7.0",
+    "@angleprotocol/sdk": "2.28.34",
     "@ethersproject/abi": "^5.7.0",
     "@ethersproject/providers": "^5.7.1",
     "@nomicfoundation/hardhat-chai-matchers": "^1.0.3",
