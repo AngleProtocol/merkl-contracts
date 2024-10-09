@@ -16,25 +16,25 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
   console.log(`Deploying Coupon`);
   console.log('Starting with the implementation');
 
-  await deploy(`${couponName}_Implementation`, {
+  await deploy(`${couponName}_Implementation_V2`, {
     contract: couponName,
     from: deployer.address,
     args: [],
     log: !argv.ci,
   });
 
-  const implementationAddress = (await ethers.getContract(`${couponName}_Implementation`)).address;
+  const implementationAddress = (await ethers.getContract(`${couponName}_Implementation_V2`)).address;
 
   console.log('Starting with the implementation');
 
-  const distributorInterface = Distributor__factory.createInterface();
+  // const distributorInterface = Distributor__factory.createInterface();
 
-  await deploy(`${couponName}_Proxy`, {
-    contract: 'ERC1967Proxy',
-    from: deployer.address,
-    args: [implementationAddress, distributorInterface.encodeFunctionData('initialize', [core])],
-    log: !argv.ci,
-  });
+  // await deploy(`${couponName}_Proxy`, {
+  //   contract: 'ERC1967Proxy',
+  //   from: deployer.address,
+  //   args: [implementationAddress, distributorInterface.encodeFunctionData('initialize', [core])],
+  //   log: !argv.ci,
+  // });
 
   console.log(`Successfully deployed the contract ${couponName} at ${implementationAddress}`);
   console.log('');
