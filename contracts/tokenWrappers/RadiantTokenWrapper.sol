@@ -24,7 +24,7 @@ contract RadiantMerklTokenWrapper is BaseMerklTokenWrapper {
 
     // ================================= CONSTANTS =================================
 
-    IVesting public constant VESTING = IVesting(0x28E395a54a64284DBA39652921Cd99924f4e3797);
+    IVesting public constant VESTING = IVesting(0x76ba3eC5f5adBf1C58c91e86502232317EeA72dE);
     address internal immutable _UNDERLYING = VESTING.rdntToken();
 
     // ================================= FUNCTIONS =================================
@@ -59,5 +59,10 @@ contract RadiantMerklTokenWrapper is BaseMerklTokenWrapper {
             IERC20(_UNDERLYING).transfer(address(VESTING), amount);
             VESTING.vestTokens(to, amount, true);
         }
+    }
+
+    function overrideNameAndSymbol() public onlyGovernor {
+        _name = string.concat("Merkl Token Wrapper - ", IERC20Metadata(token()).name());
+        _symbol = string.concat("mtw", IERC20Metadata(token()).symbol());
     }
 }
