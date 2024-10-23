@@ -47,6 +47,7 @@ import "./utils/UUPSHelper.sol";
 import { CampaignParameters } from "./struct/CampaignParameters.sol";
 import { DistributionParameters } from "./struct/DistributionParameters.sol";
 import { RewardTokenAmounts } from "./struct/RewardTokenAmounts.sol";
+import { Distributor } from "./Distributor.sol";
 
 /// @title DistributionCreator
 /// @author Angle Labs, Inc.
@@ -127,6 +128,12 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @notice Maps a campaign type to the fees for this specific campaign
     mapping(uint32 => uint256) public campaignSpecificFees;
 
+    /// @notice Maps a campaignId to a potential override written
+    mapping(bytes32 => CampaignParameters) public campaignOverrides;
+
+    /// @notice Maps a campaignId to the block numbers at which it's been updated
+    mapping(bytes32 => uint256[]) public campaignOverridesBlocks;
+
     /*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                                                         EVENTS                                                      
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
@@ -135,9 +142,11 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     event FeeRebateUpdated(address indexed user, uint256 userFeeRebate);
     event FeeRecipientUpdated(address indexed _feeRecipient);
     event FeesSet(uint256 _fees);
+    event CampaignOverride(bytes32 _campaignId, address indexed from, address indexed to);
     event CampaignSpecificFeesSet(uint32 campaignType, uint256 _fees);
     event MessageUpdated(bytes32 _messageHash);
     event NewCampaign(CampaignParameters campaign);
+    event NewCampaignOverride(bytes32 _campaignId, CampaignParameters campaign);
     event NewDistribution(DistributionParameters distribution, address indexed sender);
     event RewardTokenMinimumAmountUpdated(address indexed token, uint256 amount);
     event TokenWhitelistToggled(address indexed token, uint256 toggleStatus);
@@ -263,6 +272,30 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         return distributionAmounts;
     }
 
+    /// @notice Overrides a campaign with new parameters
+    /// @dev Some overrides maybe incorrect, but their correctness cannot be checked onchain. It is up to the Merkl
+    /// engine to check the validity of the override. If the override is invalid, then the first campaign details
+    /// will still apply.
+    /// @dev Some fields in the new campaign parameters will be disregarded anyway (like the amount)
+    function overrideCampaign(bytes32 _campaignId, CampaignParameters memory newCampaign) external {
+        CampaignParameters memory _campaign = campaign(_campaignId);
+        if (_campaign.creator != msg.sender) revert InvalidOverride();
+        campaignOverrides[_campaignId] = newCampaign;
+        campaignOverridesBlocks[_campaignId].push(block.number);
+        emit NewCampaignOverride(_campaignId, newCampaign);
+    }
+
+    /// @notice Reallocates rewards of a given campaign from one address to another
+    /// @dev To prevent manipulations by campaign creators, this function can only be called by the
+    /// initial campaign creator if the `from` address has never claimed any reward on the chain
+    /// @dev It is meant to be used for the case of addresses accruing rewards but unable to claim them
+    function reallocateCampaignRewards(bytes32 _campaignId, address from, address to) external {
+        CampaignParameters memory _campaign = campaign(_campaignId);
+        (uint208 amount, uint48 timestamp, ) = Distributor(distributor).claimed(from, _campaign.rewardToken);
+        if (_campaign.creator != msg.sender || amount == 0 || timestamp == 0) revert InvalidOverride();
+        emit CampaignOverride(_campaignId, from, to);
+    }
+
     /*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                                                         GETTERS                                                     
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
@@ -280,12 +313,42 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     }
 
     /// @notice Returns the campaign parameters of a given campaignId
-    function campaign(bytes32 _campaignId) external view returns (CampaignParameters memory) {
+    /// @dev If a campaign has been overriden, this function still shows the original state of the campaign
+    function campaign(bytes32 _campaignId) public view returns (CampaignParameters memory) {
         return campaignList[campaignLookup(_campaignId)];
+    }
+
+    /// @notice Returns the block numbers at which a campaign has been overriden
+    /// @dev Reverts if the campaign has not been overriden
+    /// @dev There cannot be two overrides at the same block
+    function getCampaignOverrideBlocks(bytes32 _campaignId) public view returns (uint256[] memory) {
+        uint256 length;
+        uint256 returnSize = campaignOverridesBlocks[_campaignId].length;
+        if (returnSize == 0) revert NoOverrideForCampaign();
+        uint256[] memory blockOverrides = new uint256[](returnSize);
+        uint32 i;
+        uint256 lastBlockNumber;
+        while (i < returnSize) {
+            uint256 blockOverrideNumber = campaignOverridesBlocks[_campaignId][i];
+            if (blockOverrideNumber != lastBlockNumber) {
+                blockOverrides[length] = blockOverrideNumber;
+                length += 1;
+                lastBlockNumber = blockOverrideNumber;
+            }
+            unchecked {
+                ++i;
+            }
+            if (length == returnSize) break;
+        }
+        assembly {
+            mstore(blockOverrides, length)
+        }
+        return blockOverrides;
     }
 
     /// @notice Returns the campaign ID for a given campaign
     /// @dev The campaign ID is computed as the hash of the following parameters:
+    ///  - `campaign.chainId`
     ///  - `campaign.creator`
     ///  - `campaign.rewardToken`
     ///  - `campaign.campaignType`
@@ -340,22 +403,6 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         uint32 first
     ) external view returns (CampaignParameters[] memory, uint256 lastIndexCampaign) {
         return _getCampaignsBetween(start, end, skip, first);
-    }
-
-    /// @notice Gets all the distributions which were live at some point between `start` and `end` timestamp
-    /// @param skip Disregard distibutions with a global index lower than `skip`
-    /// @param first Limit the length of the returned array to `first`
-    /// @return searchDistributions Eligible distributions
-    /// @return lastIndexDistribution Index of the last distribution assessed in the list of all distributions
-    /// @dev For pagniation purpose, in case of out of gas, you can call back the same function but with `skip` set to `lastIndexDistribution`
-    /// @dev Not to be queried on-chain and hence not optimized for gas consumption
-    function getDistributionsBetweenEpochs(
-        uint32 epochStart,
-        uint32 epochEnd,
-        uint32 skip,
-        uint32 first
-    ) external view returns (DistributionParameters[] memory, uint256 lastIndexDistribution) {
-        return _getDistributionsBetweenEpochs(_getRoundedEpoch(epochStart), _getRoundedEpoch(epochEnd), skip, first);
     }
 
     /*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -419,7 +466,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
             uint256 amount = amounts[i];
             // Basic logic check to make sure there are no duplicates in the `rewardTokens` table. If a token is
             // removed then re-added, it will appear as a duplicate in the list
-            if (amount > 0 && rewardTokenMinAmounts[tokens[i]] == 0) rewardTokens.push(tokens[i]);
+            if (amount != 0 && rewardTokenMinAmounts[tokens[i]] == 0) rewardTokens.push(tokens[i]);
             rewardTokenMinAmounts[tokens[i]] = amount;
             emit RewardTokenMinimumAmountUpdated(tokens[i], amount);
         }
@@ -603,35 +650,6 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         return (activeRewards, i);
     }
 
-    /// @notice Internal version of `getDistributionsBetweenEpochs`
-    function _getDistributionsBetweenEpochs(
-        uint32 epochStart,
-        uint32 epochEnd,
-        uint32 skip,
-        uint32 first
-    ) internal view returns (DistributionParameters[] memory, uint256) {
-        uint256 length;
-        uint256 distributionListLength = distributionList.length;
-        uint256 returnSize = first > distributionListLength ? distributionListLength : first;
-        DistributionParameters[] memory activeRewards = new DistributionParameters[](returnSize);
-        uint32 i = skip;
-        while (i < distributionListLength) {
-            DistributionParameters memory d = distributionList[i];
-            if (d.epochStart + d.numEpoch * HOUR > epochStart && d.epochStart < epochEnd) {
-                activeRewards[length] = d;
-                length += 1;
-            }
-            unchecked {
-                ++i;
-            }
-            if (length == returnSize) break;
-        }
-        assembly {
-            mstore(activeRewards, length)
-        }
-        return (activeRewards, i);
-    }
-
     /// @notice Builds the list of valid reward tokens
     function _getValidRewardTokens(
         uint32 skip,
@@ -665,5 +683,5 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
      * variables without shifting down storage in the inheritance chain.
      * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
      */
-    uint256[33] private __gap;
+    uint256[31] private __gap;
 }
