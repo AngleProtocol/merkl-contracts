@@ -28,7 +28,7 @@ abstract contract BaseMerklTokenWrapper is UUPSHelper, ERC20Upgradeable {
     // ================================= VARIABLES =================================
 
     /// @notice `Core` contract handling access control
-    ICore public core;
+    IAccessControlManager public core;
 
     // =================================== EVENTS ==================================
 
@@ -50,7 +50,7 @@ abstract contract BaseMerklTokenWrapper is UUPSHelper, ERC20Upgradeable {
         return true;
     }
 
-    function initialize(ICore _core) public initializer onlyProxy {
+    function initialize(IAccessControlManager _core) public initializer onlyProxy {
         __ERC20_init(
             string.concat("Merkl Token Wrapper - ", IERC20Metadata(token()).name()),
             string.concat("mtw", IERC20Metadata(token()).symbol())

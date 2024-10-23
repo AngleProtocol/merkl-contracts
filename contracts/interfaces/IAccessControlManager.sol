@@ -2,10 +2,10 @@
 
 pragma solidity ^0.8.17;
 
-/// @title ICore
+/// @title IAccessControlManager
 /// @author Angle Labs, Inc.
-/// @notice Interface for the `Core` contracts of smart contract modules used in Angle Labs contracts
-interface ICore {
+/// @notice Interface for the `AccessControlManager` contracts of Merkl contracts
+interface IAccessControlManager {
     /// @notice Checks whether an address is governor
     /// @param admin Address to check
     /// @return Whether the address has the `GOVERNOR_ROLE` or not

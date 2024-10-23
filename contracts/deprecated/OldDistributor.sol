@@ -77,8 +77,8 @@ contract Distributor is UUPSHelper {
     /// @notice Token to deposit to freeze the roots update
     IERC20 public disputeToken;
 
-    /// @notice `Core` contract handling access control
-    ICore public core;
+    /// @notice `AccessControlManager` contract handling access control
+    IAccessControlManager public core;
 
     /// @notice Address which created the dispute
     /// @dev Used to store if there is an ongoing dispute
@@ -147,7 +147,7 @@ contract Distributor is UUPSHelper {
 
     constructor() initializer {}
 
-    function initialize(ICore _core) external initializer {
+    function initialize(IAccessControlManager _core) external initializer {
         if (address(_core) == address(0)) revert ZeroAddress();
         core = _core;
     }
