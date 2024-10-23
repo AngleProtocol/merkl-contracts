@@ -97,13 +97,7 @@ contract MerklGaugeMiddleman {
     /// @notice Specifies the reward distribution parameters for `gauge`
     function setGauge(address gauge, DistributionParameters memory params) external {
         if (!accessControlManager.isGovernorOrGuardian(msg.sender)) revert NotGovernorOrGuardian();
-        DistributionCreator manager = merklDistributionCreator();
-        if (
-            gauge == address(0) ||
-            params.rewardToken != address(angle()) ||
-            (manager.isWhitelistedToken(IUniswapV3Pool(params.uniV3Pool).token0()) == 0 &&
-                manager.isWhitelistedToken(IUniswapV3Pool(params.uniV3Pool).token1()) == 0)
-        ) revert InvalidParams();
+        if (gauge == address(0) || params.rewardToken != address(angle())) revert InvalidParams();
         gaugeParams[gauge] = params;
         emit GaugeSet(gauge);
     }

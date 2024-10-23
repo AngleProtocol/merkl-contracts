@@ -31,7 +31,6 @@ subtask(TASK_COMPILE_SOLIDITY_GET_SOURCE_PATHS).setAction(async (_, __, runSuper
 const accountsPkey = [getPkey()];
 const accountsMerklDeployer: HardhatNetworkAccountsUserConfig = accounts('fraxtal');
 
-
 const argv = yargs
   .env('')
   .boolean('enableGasReport')
@@ -570,7 +569,7 @@ const config: HardhatUserConfig = {
     rootstock: {
       live: true,
       url: nodeUrl('rootstock'),
-      accounts: accounts("rootstock"),
+      accounts: accounts('rootstock'),
       gas: 'auto',
       chainId: 30,
       verify: {
@@ -641,14 +640,14 @@ const config: HardhatUserConfig = {
   },
   etherscan: {
     // apiKey: process.env.ETHERSCAN_API_KEY,
-    apiKey:etherscanKey('fraxtal'),
-    customChains:[
+    apiKey: etherscanKey('fraxtal'),
+    customChains: [
       {
         network: 'taiko',
         chainId: 167000,
         urls: {
-          apiURL: "https://api.taikoscan.io/api",
-          browserURL: "https://taikoscan.io/"
+          apiURL: 'https://api.taikoscan.io/api',
+          browserURL: 'https://taikoscan.io/',
         },
       },
       {
