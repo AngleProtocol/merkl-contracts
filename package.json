@@ -10,6 +10,7 @@
     "deploy:taiko": "hardhat deploy --tags distributionCreator --network taiko",
     "deploy:moonbeam": "hardhat deploy --tags distributionCreator --network moonbeam",
     "deploy:fraxtal": "hardhat deploy --tags distributionCreator --network fraxtal",
+    "deploy:fantom": "hardhat deploy --tags distributionCreator --network fantom",
     "deploy:skale": "hardhat deploy --tags distributionCreator --network skale",
     "deploy:celo": "hardhat deploy --tags distributionCreator --network celo",
     "deploy:mode": "hardhat deploy --tags distributionCreator --network mode",
