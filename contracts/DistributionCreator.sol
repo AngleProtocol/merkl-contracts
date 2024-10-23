@@ -70,8 +70,8 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
 
     uint256 public immutable CHAIN_ID = block.chainid;
 
-    /// @notice `Core` contract handling access control
-    ICore public core;
+    /// @notice Contract handling access control
+    IAccessControlManager public core;
 
     /// @notice Contract distributing rewards to users
     address public distributor;
@@ -182,7 +182,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
                                                       CONSTRUCTOR                                                   
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
-    function initialize(ICore _core, address _distributor, uint256 _fees) external initializer {
+    function initialize(IAccessControlManager _core, address _distributor, uint256 _fees) external initializer {
         if (address(_core) == address(0) || _distributor == address(0)) revert ZeroAddress();
         if (_fees >= BASE_9) revert InvalidParam();
         distributor = _distributor;

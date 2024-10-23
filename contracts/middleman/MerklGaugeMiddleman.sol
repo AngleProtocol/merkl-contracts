@@ -52,7 +52,7 @@ contract MerklGaugeMiddleman {
     // ================================= PARAMETERS ================================
 
     /// @notice Contract handling access control
-    ICore public accessControlManager;
+    IAccessControlManager public accessControlManager;
 
     /// @notice Maps a gauge to its reward parameters
     mapping(address => DistributionParameters) public gaugeParams;
@@ -61,7 +61,7 @@ contract MerklGaugeMiddleman {
 
     event GaugeSet(address indexed gauge);
 
-    constructor(ICore _accessControlManager) {
+    constructor(IAccessControlManager _accessControlManager) {
         if (address(_accessControlManager) == address(0)) revert ZeroAddress();
         accessControlManager = _accessControlManager;
         IERC20 _angle = angle();
