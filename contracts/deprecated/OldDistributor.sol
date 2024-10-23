@@ -58,9 +58,9 @@ struct Claim {
 }
 
 /// @title Distributor
-/// @notice Allows LPs on AMMs with concentrated liquidity to claim the rewards that were distributed to them
+/// @notice Allows to claim rewards distributed to them through Merkl
 /// @author Angle Labs. Inc
-contract OldDistributor is UUPSHelper {
+contract Distributor is UUPSHelper {
     using SafeERC20 for IERC20;
 
     /// @notice Epoch duration
@@ -130,6 +130,12 @@ contract OldDistributor is UUPSHelper {
         _;
     }
 
+    /// @notice Checks whether the `msg.sender` has the governor role or the guardian role
+    modifier onlyGovernor() {
+        if (!core.isGovernor(msg.sender)) revert NotGovernor();
+        _;
+    }
+
     /// @notice Checks whether the `msg.sender` is the `user` address or is a trusted address
     modifier onlyTrustedOrUser(address user) {
         if (user != msg.sender && canUpdateMerkleRoot[msg.sender] != 1 && !core.isGovernorOrGuardian(msg.sender))
@@ -147,7 +153,7 @@ contract OldDistributor is UUPSHelper {
     }
 
     /// @inheritdoc UUPSUpgradeable
-    function _authorizeUpgrade(address) internal view override onlyGuardianUpgrader(core) {}
+    function _authorizeUpgrade(address) internal view override onlyGovernorUpgrader(core) {}
 
     // =============================== MAIN FUNCTION ===============================
 
@@ -177,8 +183,8 @@ contract OldDistributor is UUPSHelper {
             address token = tokens[i];
             uint256 amount = amounts[i];
 
-            // Checking if only an approved operator can claim for `user`
-            if (onlyOperatorCanClaim[user] == 1 && operators[user][msg.sender] == 0) revert NotWhitelisted();
+            // Only approved operator can claim for `user`
+            if (msg.sender != user && tx.origin != user && operators[user][msg.sender] == 0) revert NotWhitelisted();
 
             // Verifying proof
             bytes32 leaf = keccak256(abi.encode(user, token, amount));
@@ -205,7 +211,7 @@ contract OldDistributor is UUPSHelper {
     // ============================ GOVERNANCE FUNCTIONS ===========================
 
     /// @notice Adds or removes EOAs which are trusted to update the Merkle root
-    function toggleTrusted(address eoa) external onlyGovernorOrGuardian {
+    function toggleTrusted(address eoa) external onlyGovernor {
         uint256 trustedStatus = 1 - canUpdateMerkleRoot[eoa];
         canUpdateMerkleRoot[eoa] = trustedStatus;
         emit TrustedToggled(eoa, trustedStatus == 1);
@@ -218,7 +224,7 @@ contract OldDistributor is UUPSHelper {
             // A trusted address cannot update a tree right after a precedent tree update otherwise it can de facto
             // validate a tree which has not passed the dispute period
             ((canUpdateMerkleRoot[msg.sender] != 1 || block.timestamp < endOfDisputePeriod) &&
-                !core.isGovernorOrGuardian(msg.sender))
+                !core.isGovernor(msg.sender))
         ) revert NotTrusted();
         MerkleTree memory _lastTree = tree;
         tree = _tree;
@@ -242,7 +248,7 @@ contract OldDistributor is UUPSHelper {
 
     /// @notice Resolve the ongoing dispute, if any
     /// @param valid Whether the dispute was valid
-    function resolveDispute(bool valid) external onlyGovernorOrGuardian {
+    function resolveDispute(bool valid) external onlyGovernor {
         if (disputer == address(0)) revert NoDispute();
         if (valid) {
             IERC20(disputeToken).safeTransfer(disputer, disputeAmount);
@@ -256,14 +262,15 @@ contract OldDistributor is UUPSHelper {
         emit DisputeResolved(valid);
     }
 
-    /// @notice Allows the governor or the guardian of this contract to fallback to the last version of the tree
+    /// @notice Allows the governor of this contract to fallback to the last version of the tree
     /// immediately
-    function revokeTree() external onlyGovernorOrGuardian {
+    function revokeTree() external onlyGovernor {
         if (disputer != address(0)) revert UnresolvedDispute();
         _revokeTree();
     }
 
     /// @notice Toggles permissioned claiming for a given user
+    /// @dev deprecated
     function toggleOnlyOperatorCanClaim(address user) external onlyTrustedOrUser(user) {
         uint256 oldValue = onlyOperatorCanClaim[user];
         onlyOperatorCanClaim[user] = 1 - oldValue;
@@ -278,26 +285,26 @@ contract OldDistributor is UUPSHelper {
     }
 
     /// @notice Recovers any ERC20 token
-    function recoverERC20(address tokenAddress, address to, uint256 amountToRecover) external onlyGovernorOrGuardian {
+    function recoverERC20(address tokenAddress, address to, uint256 amountToRecover) external onlyGovernor {
         IERC20(tokenAddress).safeTransfer(to, amountToRecover);
         emit Recovered(tokenAddress, to, amountToRecover);
     }
 
     /// @notice Sets the dispute period after which a tree update becomes effective
-    function setDisputePeriod(uint48 _disputePeriod) external onlyGovernorOrGuardian {
+    function setDisputePeriod(uint48 _disputePeriod) external onlyGovernor {
         disputePeriod = uint48(_disputePeriod);
         emit DisputePeriodUpdated(_disputePeriod);
     }
 
     /// @notice Sets the token used as a caution during disputes
-    function setDisputeToken(IERC20 _disputeToken) external onlyGovernorOrGuardian {
+    function setDisputeToken(IERC20 _disputeToken) external onlyGovernor {
         if (disputer != address(0)) revert UnresolvedDispute();
         disputeToken = _disputeToken;
         emit DisputeTokenUpdated(address(_disputeToken));
     }
 
     /// @notice Sets the amount of `disputeToken` used as a caution during disputes
-    function setDisputeAmount(uint256 _disputeAmount) external onlyGovernorOrGuardian {
+    function setDisputeAmount(uint256 _disputeAmount) external onlyGovernor {
         if (disputer != address(0)) revert UnresolvedDispute();
         disputeAmount = _disputeAmount;
         emit DisputeAmountUpdated(_disputeAmount);
