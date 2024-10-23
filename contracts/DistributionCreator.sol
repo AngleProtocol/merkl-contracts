@@ -140,11 +140,11 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     event FeeRebateUpdated(address indexed user, uint256 userFeeRebate);
     event FeeRecipientUpdated(address indexed _feeRecipient);
     event FeesSet(uint256 _fees);
-    event CampaignOverride(bytes32 _campaignId, address indexed from, address indexed to);
+    event CampaignOverride(bytes32 _campaignId, CampaignParameters campaign);
+    event CampaignReallocation(bytes32 _campaignId, address indexed from, address indexed to);
     event CampaignSpecificFeesSet(uint32 campaignType, uint256 _fees);
     event MessageUpdated(bytes32 _messageHash);
     event NewCampaign(CampaignParameters campaign);
-    event NewCampaignOverride(bytes32 _campaignId, CampaignParameters campaign);
     event NewDistribution(DistributionParameters distribution, address indexed sender);
     event RewardTokenMinimumAmountUpdated(address indexed token, uint256 amount);
     event TokenWhitelistToggled(address indexed token, uint256 toggleStatus);
@@ -280,7 +280,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         if (_campaign.creator != msg.sender) revert InvalidOverride();
         campaignOverrides[_campaignId] = newCampaign;
         campaignOverridesBlocks[_campaignId].push(block.number);
-        emit NewCampaignOverride(_campaignId, newCampaign);
+        emit CampaignOverride(_campaignId, newCampaign);
     }
 
     /// @notice Reallocates rewards of a given campaign from one address to another
@@ -290,8 +290,8 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     function reallocateCampaignRewards(bytes32 _campaignId, address from, address to) external {
         CampaignParameters memory _campaign = campaign(_campaignId);
         (uint208 amount, uint48 timestamp, ) = Distributor(distributor).claimed(from, _campaign.rewardToken);
-        if (_campaign.creator != msg.sender || amount == 0 || timestamp == 0) revert InvalidOverride();
-        emit CampaignOverride(_campaignId, from, to);
+        if (_campaign.creator != msg.sender || amount != 0 || timestamp != 0) revert InvalidOverride();
+        emit CampaignReallocation(_campaignId, from, to);
     }
 
     /*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
