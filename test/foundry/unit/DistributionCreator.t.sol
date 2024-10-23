@@ -96,24 +96,24 @@ contract Test_DistributionCreator_Initialize is DistributionCreatorTest {
 
     function test_RevertWhen_CalledOnImplem() public {
         vm.expectRevert("Initializable: contract is already initialized");
-        creatorImpl.initialize(ICore(address(0)), address(bob), 1e8);
+        creatorImpl.initialize(IAccessControlManager(address(0)), address(bob), 1e8);
     }
 
     function test_RevertWhen_ZeroAddress() public {
         vm.expectRevert(ZeroAddress.selector);
-        d.initialize(ICore(address(0)), address(bob), 1e8);
+        d.initialize(IAccessControlManager(address(0)), address(bob), 1e8);
 
         vm.expectRevert(ZeroAddress.selector);
-        d.initialize(ICore(address(coreBorrow)), address(0), 1e8);
+        d.initialize(IAccessControlManager(address(coreBorrow)), address(0), 1e8);
     }
 
     function test_RevertWhen_InvalidParam() public {
         vm.expectRevert(InvalidParam.selector);
-        d.initialize(ICore(address(coreBorrow)), address(bob), 1e9);
+        d.initialize(IAccessControlManager(address(coreBorrow)), address(bob), 1e9);
     }
 
     function test_Success() public {
-        d.initialize(ICore(address(coreBorrow)), address(bob), 1e8);
+        d.initialize(IAccessControlManager(address(coreBorrow)), address(bob), 1e8);
 
         assertEq(address(d.distributor()), address(bob));
         assertEq(address(d.core()), address(coreBorrow));
@@ -842,14 +842,14 @@ contract Test_DistributionCreator_signAndCreateCampaign is DistributionCreatorTe
         });
 
         {
-        (uint8 v, bytes32 r, bytes32 s) = vm.sign(2, creator.messageHash());
+            (uint8 v, bytes32 r, bytes32 s) = vm.sign(2, creator.messageHash());
 
-        vm.startPrank(bob);
+            vm.startPrank(bob);
 
-        angle.approve(address(creator), 1e8);
-        creator.signAndCreateCampaign(campaign, abi.encodePacked(r, s, v));
+            angle.approve(address(creator), 1e8);
+            creator.signAndCreateCampaign(campaign, abi.encodePacked(r, s, v));
 
-        vm.stopPrank();
+            vm.stopPrank();
         }
 
         address[] memory whitelist = new address[](1);
@@ -890,7 +890,7 @@ contract Test_DistributionCreator_signAndCreateCampaign is DistributionCreatorTe
         assertEq(campaign.duration, fetchedDuration);
         assertEq(extraData, fetchedCampaignData);
         assertEq(campaignId, fetchedCampaignId);
-        assertEq(campaign.amount, fetchedAmount * 10 / 9);
+        assertEq(campaign.amount, (fetchedAmount * 10) / 9);
     }
 
     function test_InvalidSignature() public {
@@ -906,15 +906,15 @@ contract Test_DistributionCreator_signAndCreateCampaign is DistributionCreatorTe
         });
 
         {
-        (uint8 v, bytes32 r, bytes32 s) = vm.sign(1, creator.messageHash());
+            (uint8 v, bytes32 r, bytes32 s) = vm.sign(1, creator.messageHash());
 
-        vm.startPrank(bob);
+            vm.startPrank(bob);
 
-        angle.approve(address(creator), 1e8);
-        vm.expectRevert(InvalidSignature.selector);
-        creator.signAndCreateCampaign(campaign, abi.encodePacked(r, s, v));
+            angle.approve(address(creator), 1e8);
+            vm.expectRevert(InvalidSignature.selector);
+            creator.signAndCreateCampaign(campaign, abi.encodePacked(r, s, v));
 
-        vm.stopPrank();
+            vm.stopPrank();
         }
     }
 }
@@ -930,7 +930,6 @@ contract DistributionCreatorForkTest is Test {
 }
 
 contract Test_DistributionCreator_distribution is DistributionCreatorForkTest {
-
     function test_Success() public {
         CampaignParameters memory distribution = creator.distribution(0);
 
@@ -941,14 +940,21 @@ contract Test_DistributionCreator_distribution is DistributionCreatorForkTest {
         assertEq(distribution.campaignType, 2);
         assertEq(distribution.startTimestamp, 1681380000);
         assertEq(distribution.duration, 86400);
-        assertEq(distribution.campaignData, hex"000000000000000000000000149e36e72726e0bcea5c59d40df2c43f60f5a22d0000000000000000000000000000000000000000000000000000000000000bb800000000000000000000000000000000000000000000000000000000000007d000000000000000000000000000000000000000000000000000000000000013880000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000140000000000000000000000000000000000000000000000000000000000000016000000000000000000000000000000000000000000000000000000000000001800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000023078000000000000000000000000000000000000000000000000000000000000");
+        assertEq(
+            distribution.campaignData,
+            hex"000000000000000000000000149e36e72726e0bcea5c59d40df2c43f60f5a22d0000000000000000000000000000000000000000000000000000000000000bb800000000000000000000000000000000000000000000000000000000000007d000000000000000000000000000000000000000000000000000000000000013880000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000140000000000000000000000000000000000000000000000000000000000000016000000000000000000000000000000000000000000000000000000000000001800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000023078000000000000000000000000000000000000000000000000000000000000"
+        );
     }
 }
 
 contract Test_DistributionCreator_getDistributionsBetweenEpochs is DistributionCreatorForkTest {
-
     function test_Success() public {
-        (DistributionParameters[] memory distributions,) = creator.getDistributionsBetweenEpochs(1681380000, 1681380000 + 3600, 0, type(uint32).max);
+        (DistributionParameters[] memory distributions, ) = creator.getDistributionsBetweenEpochs(
+            1681380000,
+            1681380000 + 3600,
+            0,
+            type(uint32).max
+        );
 
         assertEq(distributions.length, 1);
         assertEq(distributions[0].uniV3Pool, address(0x149e36E72726e0BceA5c59d40df2c43F60f5A22D));
@@ -964,7 +970,13 @@ contract Test_DistributionCreator_getDistributionsBetweenEpochs is DistributionC
         assertEq(distributions[0].numEpoch, 24);
         assertEq(distributions[0].boostedReward, 0);
         assertEq(distributions[0].boostingAddress, address(0));
-        assertEq(distributions[0].rewardId, bytes32(0x7570c9deb1660ed82ff01f760b2883edb9bdb881933b0e4085854d0d717ea268));
-        assertEq(distributions[0].additionalData, hex"290decd9548b62a8d60345a988386fc84ba6bc95484008f6362f93160ef3e563");
+        assertEq(
+            distributions[0].rewardId,
+            bytes32(0x7570c9deb1660ed82ff01f760b2883edb9bdb881933b0e4085854d0d717ea268)
+        );
+        assertEq(
+            distributions[0].additionalData,
+            hex"290decd9548b62a8d60345a988386fc84ba6bc95484008f6362f93160ef3e563"
+        );
     }
 }

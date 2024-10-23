@@ -13,7 +13,7 @@ contract DistributorCreatorTest is Fixture {
 
         distributorImpl = new Distributor();
         distributor = Distributor(deployUUPS(address(distributorImpl), hex""));
-        distributor.initialize(ICore(address(coreBorrow)));
+        distributor.initialize(IAccessControlManager(address(coreBorrow)));
 
         vm.startPrank(governor);
         distributor.setDisputeAmount(1e18);
@@ -39,16 +39,16 @@ contract Test_Distributor_Initialize is DistributorCreatorTest {
 
     function test_RevertWhen_CalledOnImplem() public {
         vm.expectRevert("Initializable: contract is already initialized");
-        distributorImpl.initialize(ICore(address(0)));
+        distributorImpl.initialize(IAccessControlManager(address(0)));
     }
 
     function test_RevertWhen_ZeroAddress() public {
         vm.expectRevert(ZeroAddress.selector);
-        d.initialize(ICore(address(0)));
+        d.initialize(IAccessControlManager(address(0)));
     }
 
     function test_Success() public {
-        d.initialize(ICore(address(coreBorrow)));
+        d.initialize(IAccessControlManager(address(coreBorrow)));
 
         assertEq(address(coreBorrow), address(d.core()));
     }
@@ -164,12 +164,12 @@ contract Test_Distributor_setDisputeAmount is DistributorCreatorTest {
 contract Test_Distributor_updateTree is DistributorCreatorTest {
     function test_RevertWhen_NotTrusted() public {
         vm.expectRevert(NotTrusted.selector);
-        distributor.updateTree(MerkleTree({merkleRoot: getRoot(), ipfsHash: keccak256("IPFS_HASH")}));
+        distributor.updateTree(MerkleTree({ merkleRoot: getRoot(), ipfsHash: keccak256("IPFS_HASH") }));
     }
 
     function test_RevertWhen_DisputeOngoing() public {
         vm.prank(governor);
-        distributor.updateTree(MerkleTree({merkleRoot: getRoot(), ipfsHash: keccak256("IPFS_HASH")}));
+        distributor.updateTree(MerkleTree({ merkleRoot: getRoot(), ipfsHash: keccak256("IPFS_HASH") }));
 
         vm.warp(distributor.endOfDisputePeriod() - 1);
         vm.startPrank(alice);
@@ -179,12 +179,12 @@ contract Test_Distributor_updateTree is DistributorCreatorTest {
 
         vm.expectRevert(NotTrusted.selector);
         vm.prank(governor);
-        distributor.updateTree(MerkleTree({merkleRoot: getRoot(), ipfsHash: keccak256("IPFS_HASH")}));
+        distributor.updateTree(MerkleTree({ merkleRoot: getRoot(), ipfsHash: keccak256("IPFS_HASH") }));
     }
 
     function test_RevertWhen_DisputeNotFinished() public {
         vm.prank(governor);
-        distributor.updateTree(MerkleTree({merkleRoot: getRoot(), ipfsHash: keccak256("IPFS_HASH")}));
+        distributor.updateTree(MerkleTree({ merkleRoot: getRoot(), ipfsHash: keccak256("IPFS_HASH") }));
 
         vm.warp(distributor.endOfDisputePeriod() - 1);
         vm.startPrank(alice);
@@ -196,12 +196,12 @@ contract Test_Distributor_updateTree is DistributorCreatorTest {
 
         vm.expectRevert(NotTrusted.selector);
         vm.prank(governor);
-        distributor.updateTree(MerkleTree({merkleRoot: getRoot(), ipfsHash: keccak256("IPFS_HASH")}));
+        distributor.updateTree(MerkleTree({ merkleRoot: getRoot(), ipfsHash: keccak256("IPFS_HASH") }));
     }
 
     function test_Success() public {
         vm.prank(governor);
-        distributor.updateTree(MerkleTree({merkleRoot: getRoot(), ipfsHash: keccak256("IPFS_HASH")}));
+        distributor.updateTree(MerkleTree({ merkleRoot: getRoot(), ipfsHash: keccak256("IPFS_HASH") }));
 
         (bytes32 merkleRoot, bytes32 ipfsHash) = distributor.tree();
         assertEq(merkleRoot, getRoot());
@@ -220,7 +220,7 @@ contract Test_Distributor_updateTree is DistributorCreatorTest {
         assertEq(merkleRoot, getRoot());
 
         vm.prank(governor);
-        distributor.updateTree(MerkleTree({merkleRoot: getRoot(), ipfsHash: keccak256("IPFS_HAS")}));
+        distributor.updateTree(MerkleTree({ merkleRoot: getRoot(), ipfsHash: keccak256("IPFS_HAS") }));
 
         (merkleRoot, ipfsHash) = distributor.lastTree();
         assertEq(merkleRoot, getRoot());
@@ -231,7 +231,7 @@ contract Test_Distributor_updateTree is DistributorCreatorTest {
 contract Test_Distributor_revokeTree is DistributorCreatorTest {
     function test_RevertWhen_NotGovernorOrGuardian() public {
         vm.prank(governor);
-        distributor.updateTree(MerkleTree({merkleRoot: getRoot(), ipfsHash: keccak256("IPFS_HASH")}));
+        distributor.updateTree(MerkleTree({ merkleRoot: getRoot(), ipfsHash: keccak256("IPFS_HASH") }));
 
         vm.expectRevert(NotGovernorOrGuardian.selector);
         distributor.revokeTree();
@@ -239,7 +239,7 @@ contract Test_Distributor_revokeTree is DistributorCreatorTest {
 
     function test_RevertWhen_UnresolvedDispute() public {
         vm.prank(governor);
-        distributor.updateTree(MerkleTree({merkleRoot: getRoot(), ipfsHash: keccak256("IPFS_HASH")}));
+        distributor.updateTree(MerkleTree({ merkleRoot: getRoot(), ipfsHash: keccak256("IPFS_HASH") }));
 
         vm.warp(distributor.endOfDisputePeriod() - 1);
         vm.startPrank(alice);
@@ -254,7 +254,7 @@ contract Test_Distributor_revokeTree is DistributorCreatorTest {
 
     function test_Success() public {
         vm.prank(governor);
-        distributor.updateTree(MerkleTree({merkleRoot: getRoot(), ipfsHash: keccak256("IPFS_HASH")}));
+        distributor.updateTree(MerkleTree({ merkleRoot: getRoot(), ipfsHash: keccak256("IPFS_HASH") }));
 
         vm.prank(governor);
         distributor.revokeTree();
@@ -271,7 +271,7 @@ contract Test_Distributor_revokeTree is DistributorCreatorTest {
 contract Test_Distributor_disputeTree is DistributorCreatorTest {
     function test_RevertWhen_UnresolvedDispute() public {
         vm.prank(governor);
-        distributor.updateTree(MerkleTree({merkleRoot: getRoot(), ipfsHash: keccak256("IPFS_HASH")}));
+        distributor.updateTree(MerkleTree({ merkleRoot: getRoot(), ipfsHash: keccak256("IPFS_HASH") }));
 
         vm.warp(distributor.endOfDisputePeriod() - 1);
         vm.startPrank(alice);
@@ -292,7 +292,7 @@ contract Test_Distributor_disputeTree is DistributorCreatorTest {
 
     function test_Success() public {
         vm.prank(governor);
-        distributor.updateTree(MerkleTree({merkleRoot: getRoot(), ipfsHash: keccak256("IPFS_HASH")}));
+        distributor.updateTree(MerkleTree({ merkleRoot: getRoot(), ipfsHash: keccak256("IPFS_HASH") }));
 
         vm.warp(distributor.endOfDisputePeriod() - 1);
         vm.startPrank(alice);
@@ -318,7 +318,7 @@ contract Test_Distributor_resolveDispute is DistributorCreatorTest {
 
     function test_SuccessValid() public {
         vm.prank(governor);
-        distributor.updateTree(MerkleTree({merkleRoot: getRoot(), ipfsHash: keccak256("IPFS_HASH")}));
+        distributor.updateTree(MerkleTree({ merkleRoot: getRoot(), ipfsHash: keccak256("IPFS_HASH") }));
 
         vm.warp(distributor.endOfDisputePeriod() - 1);
         vm.startPrank(alice);
@@ -343,7 +343,7 @@ contract Test_Distributor_resolveDispute is DistributorCreatorTest {
 
     function test_SuccessInvalid() public {
         vm.prank(governor);
-        distributor.updateTree(MerkleTree({merkleRoot: getRoot(), ipfsHash: keccak256("IPFS_HASH")}));
+        distributor.updateTree(MerkleTree({ merkleRoot: getRoot(), ipfsHash: keccak256("IPFS_HASH") }));
 
         vm.warp(distributor.endOfDisputePeriod() - 1);
         vm.startPrank(alice);
@@ -370,7 +370,7 @@ contract Test_Distributor_resolveDispute is DistributorCreatorTest {
 contract Test_Distributor_claim is DistributorCreatorTest {
     function test_RevertWhen_NotWhitelisted() public {
         vm.prank(governor);
-        distributor.updateTree(MerkleTree({merkleRoot: getRoot(), ipfsHash: keccak256("IPFS_HASH")}));
+        distributor.updateTree(MerkleTree({ merkleRoot: getRoot(), ipfsHash: keccak256("IPFS_HASH") }));
 
         vm.warp(distributor.endOfDisputePeriod() + 1);
 
@@ -393,7 +393,7 @@ contract Test_Distributor_claim is DistributorCreatorTest {
 
     function test_RevertWhen_InvalidLengths() public {
         vm.prank(governor);
-        distributor.updateTree(MerkleTree({merkleRoot: getRoot(), ipfsHash: keccak256("IPFS_HASH")}));
+        distributor.updateTree(MerkleTree({ merkleRoot: getRoot(), ipfsHash: keccak256("IPFS_HASH") }));
 
         vm.warp(distributor.endOfDisputePeriod() + 1);
 
@@ -427,7 +427,7 @@ contract Test_Distributor_claim is DistributorCreatorTest {
 
     function test_RevertWhen_InvalidProof() public {
         vm.prank(governor);
-        distributor.updateTree(MerkleTree({merkleRoot: getRoot(), ipfsHash: keccak256("IPFS_HASH")}));
+        distributor.updateTree(MerkleTree({ merkleRoot: getRoot(), ipfsHash: keccak256("IPFS_HASH") }));
 
         vm.warp(distributor.endOfDisputePeriod() + 1);
 
@@ -447,7 +447,12 @@ contract Test_Distributor_claim is DistributorCreatorTest {
     function test_SuccessGovernor() public {
         console.log(alice, bob, address(angle), address(agEUR));
         vm.prank(governor);
-        distributor.updateTree(MerkleTree({merkleRoot: bytes32(0x0b70a97c062cb747158b89e27df5bbda859ba072232efcbe92e383e9d74b8555), ipfsHash: keccak256("IPFS_HASH")}));
+        distributor.updateTree(
+            MerkleTree({
+                merkleRoot: bytes32(0x0b70a97c062cb747158b89e27df5bbda859ba072232efcbe92e383e9d74b8555),
+                ipfsHash: keccak256("IPFS_HASH")
+            })
+        );
 
         angle.mint(address(distributor), 1e18);
         agEUR.mint(address(distributor), 5e17);
@@ -482,7 +487,12 @@ contract Test_Distributor_claim is DistributorCreatorTest {
     function test_SuccessOperator() public {
         console.log(alice, bob, address(angle), address(agEUR));
         vm.prank(governor);
-        distributor.updateTree(MerkleTree({merkleRoot: bytes32(0x0b70a97c062cb747158b89e27df5bbda859ba072232efcbe92e383e9d74b8555), ipfsHash: keccak256("IPFS_HASH")}));
+        distributor.updateTree(
+            MerkleTree({
+                merkleRoot: bytes32(0x0b70a97c062cb747158b89e27df5bbda859ba072232efcbe92e383e9d74b8555),
+                ipfsHash: keccak256("IPFS_HASH")
+            })
+        );
 
         angle.mint(address(distributor), 1e18);
         agEUR.mint(address(distributor), 5e17);
