@@ -20,7 +20,7 @@ import { HardhatUserConfig, subtask } from 'hardhat/config';
 import { HardhatNetworkAccountsUserConfig } from 'hardhat/types';
 import yargs from 'yargs';
 
-import { accounts, etherscanKey, getMnemonic, getPkey, nodeUrl } from './utils/network';
+import { accounts, etherscanKey, getMerklAccount, getMnemonic, getPkey, nodeUrl } from './utils/network';
 
 // Otherwise, ".sol" files from "test" are picked up during compilation and throw an error
 subtask(TASK_COMPILE_SOLIDITY_GET_SOURCE_PATHS).setAction(async (_, __, runSuper) => {
@@ -29,8 +29,7 @@ subtask(TASK_COMPILE_SOLIDITY_GET_SOURCE_PATHS).setAction(async (_, __, runSuper
 });
 
 const accountsPkey = [getPkey()];
-const accountsMerklDeployer: HardhatNetworkAccountsUserConfig = accounts('fraxtal');
-
+const accountsMerklDeployer: HardhatNetworkAccountsUserConfig = getMerklAccount();
 
 const argv = yargs
   .env('')
@@ -110,7 +109,7 @@ const config: HardhatUserConfig = {
       blockGasLimit: 125e5,
       initialBaseFeePerGas: 0,
       hardfork: 'london',
-      accounts: accountsMerklDeployer,
+      accounts: accounts('worldchain'),
       forking: {
         enabled: argv.fork || false,
         // Mainnet
@@ -162,8 +161,10 @@ const config: HardhatUserConfig = {
         */
         // url: nodeUrl('blast'),
         // blockNumber: 421659,
-        url: nodeUrl('fraxtal'),
-        blockNumber: 6644000,
+        // url: nodeUrl('fraxtal'),
+        // blockNumber: 6644000,
+        url: nodeUrl('worldchain'),
+        blockNumber: 4521455,
       },
       mining: argv.disableAutoMining
         ? {
@@ -484,7 +485,7 @@ const config: HardhatUserConfig = {
     scroll: {
       live: true,
       url: nodeUrl('scroll'),
-      accounts: accountsMerklDeployer,
+      accounts: [getPkey()],
       gas: 'auto',
       chainId: 534352,
       verify: {
@@ -508,7 +509,7 @@ const config: HardhatUserConfig = {
     sei: {
       live: true,
       url: nodeUrl('sei'),
-      accounts: accountsMerklDeployer,
+      accounts: [getPkey()],
       gas: 'auto',
       chainId: 1329,
       verify: {
@@ -520,7 +521,7 @@ const config: HardhatUserConfig = {
     celo: {
       live: true,
       url: nodeUrl('celo'),
-      accounts: accountsMerklDeployer,
+      accounts: [getPkey()],
       gas: 'auto',
       chainId: 42220,
       verify: {
@@ -605,6 +606,18 @@ const config: HardhatUserConfig = {
         },
       },
     },
+    worldchain: {
+      live: true,
+      url: nodeUrl('worldchain'),
+      accounts: accountsMerklDeployer,
+      gas: 'auto',
+      chainId: 480,
+      verify: {
+        etherscan: {
+          apiKey: etherscanKey('worldchain'),
+        },
+      },
+    },
   },
   paths: {
     sources: './contracts',
@@ -641,7 +654,9 @@ const config: HardhatUserConfig = {
   },
   etherscan: {
     // apiKey: process.env.ETHERSCAN_API_KEY,
-    apiKey:etherscanKey('fraxtal'),
+    apiKey: {
+      worldchain: etherscanKey('worldchain'),
+    },
     customChains:[
       {
         network: 'taiko',
@@ -673,6 +688,14 @@ const config: HardhatUserConfig = {
         urls: {
           apiURL: 'https://internal-hubs.explorer.mainnet.skalenodes.com:10001/api',
           browserURL: 'https://elated-tan-skat.explorer.mainnet.skalenodes.com/',
+        },
+      },
+      {
+        network: 'worldchain',
+        chainId: 480,
+        urls: {
+          apiURL: "https://worldchain-mainnet.explorer.alchemy.com/api",
+          browserURL: 'https://worldchain-mainnet.explorer.alchemy.com/',
         },
       },
     ],
