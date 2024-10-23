@@ -84,13 +84,47 @@ forge update
 
 ## Verifying
 
-Blast: `yarn etherscan blast --api-url https://api.blastscan.io --solc-input --license BUSL-1.1`
-Mantle: `yarn etherscan mantle --api-url https://api.routescan.io/v2/network/mainnet/evm/43114/etherscan/api --solc-input --license BUSL-1.1`
-Mode: `yarn etherscan mode --api-url https://api.routescan.io/v2/network/mainnet/evm/34443/etherscan/api --solc-input --license BUSL-1.1`
-ImmutableZKEVM: `yarn etherscan immutablezkevm --api-url https://explorer.immutable.com/api --solc-input --license BUSL-1.1`
-Scroll:`yarn etherscan scroll --api-url https://api.scrollscan.com --solc-input --license BUSL-1.1`
-Gnosis:`yarn etherscan gnosis --api-url https://api.gnosisscan.io --solc-input --license BUSL-1.1`
-Linea:`yarn etherscan linea --api-url https://api.lineascan.build --solc-input --license BUSL-1.1`
+Blast:
+
+```
+yarn etherscan blast --api-url https://api.blastscan.io --solc-input --license BUSL-1.1
+```
+
+Mantle:
+
+```
+yarn etherscan mantle --api-url https://api.routescan.io/v2/network/mainnet/evm/43114/etherscan/api --solc-input --license BUSL-1.1
+```
+
+Mode:
+
+```
+yarn etherscan mode --api-url https://api.routescan.io/v2/network/mainnet/evm/34443/etherscan/api --solc-input --license BUSL-1.1
+```
+
+ImmutableZKEVM:
+
+```
+yarn etherscan immutablezkevm --api-url https://explorer.immutable.com/api --solc-input --license BUSL-1.1
+```
+
+Scroll:
+
+```
+yarn etherscan scroll --api-url https://api.scrollscan.com --solc-input --license BUSL-1.1
+```
+
+Gnosis:
+
+```
+yarn etherscan gnosis --api-url https://api.gnosisscan.io --solc-input --license BUSL-1.1
+```
+
+Linea:
+
+```
+yarn etherscan linea --api-url https://api.lineascan.build --solc-input --license BUSL-1.1
+```
 
 ## Audits
 
