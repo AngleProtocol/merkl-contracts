@@ -51,10 +51,10 @@ import { Distributor } from "./Distributor.sol";
 /// @author Angle Labs, Inc.
 /// @notice Manages the distribution of rewards through the Merkl system
 /// @dev This contract is mostly a helper for APIs built on top of Merkl
-/// @dev This contract is an upgraded version and distinguishes two types of different rewards:
+/// @dev This contract is distinguishes two types of different rewards:
 /// - distributions: type of campaign for concentrated liquidity pools created before Feb 15 2024,
 /// now deprecated
-/// - campaigns: the new more global name to describe any reward program on top of Merkl
+/// - campaigns: the more global name to describe any reward program on top of Merkl
 //solhint-disable
 contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     using SafeERC20 for IERC20;
@@ -421,6 +421,31 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         emit FeesSet(_defaultFees);
     }
 
+    /// @notice Recovers fees accrued on the contract for a list of `tokens`
+    function recoverFees(IERC20[] calldata tokens, address to) external onlyGovernor {
+        uint256 tokensLength = tokens.length;
+        for (uint256 i; i < tokensLength; ) {
+            tokens[i].safeTransfer(to, tokens[i].balanceOf(address(this)));
+            unchecked {
+                ++i;
+            }
+        }
+    }
+
+    /// @notice Sets a new address to receive fees
+    function setFeeRecipient(address _feeRecipient) external onlyGovernor {
+        feeRecipient = _feeRecipient;
+        emit FeeRecipientUpdated(_feeRecipient);
+    }
+
+    /// @notice Sets the message that needs to be signed by users before posting rewards
+    function setMessage(string memory _message) external onlyGovernor {
+        message = _message;
+        bytes32 _messageHash = ECDSA.toEthSignedMessageHash(bytes(_message));
+        messageHash = _messageHash;
+        emit MessageUpdated(_messageHash);
+    }
+
     /// @notice Sets the fees specific for a campaign
     /// @dev To waive the fees for a campaign, set its fees to 1
     function setCampaignFees(uint32 campaignType, uint256 _fees) external onlyGovernorOrGuardian {
@@ -434,17 +459,6 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         uint256 toggleStatus = 1 - isWhitelistedToken[token];
         isWhitelistedToken[token] = toggleStatus;
         emit TokenWhitelistToggled(token, toggleStatus);
-    }
-
-    /// @notice Recovers fees accrued on the contract for a list of `tokens`
-    function recoverFees(IERC20[] calldata tokens, address to) external onlyGovernor {
-        uint256 tokensLength = tokens.length;
-        for (uint256 i; i < tokensLength; ) {
-            tokens[i].safeTransfer(to, tokens[i].balanceOf(address(this)));
-            unchecked {
-                ++i;
-            }
-        }
     }
 
     /// @notice Sets fee rebates for a given user
@@ -468,20 +482,6 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
             rewardTokenMinAmounts[tokens[i]] = amount;
             emit RewardTokenMinimumAmountUpdated(tokens[i], amount);
         }
-    }
-
-    /// @notice Sets a new address to receive fees
-    function setFeeRecipient(address _feeRecipient) external onlyGovernor {
-        feeRecipient = _feeRecipient;
-        emit FeeRecipientUpdated(_feeRecipient);
-    }
-
-    /// @notice Sets the message that needs to be signed by users before posting rewards
-    function setMessage(string memory _message) external onlyGovernor {
-        message = _message;
-        bytes32 _messageHash = ECDSA.toEthSignedMessageHash(bytes(_message));
-        messageHash = _messageHash;
-        emit MessageUpdated(_messageHash);
     }
 
     /// @notice Toggles the whitelist status for `user` when it comes to signing messages before depositing rewards.

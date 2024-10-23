@@ -46,7 +46,7 @@ import { CampaignParameters } from "../struct/CampaignParameters.sol";
 import { DistributionParameters } from "../struct/DistributionParameters.sol";
 import { RewardTokenAmounts } from "../struct/RewardTokenAmounts.sol";
 
-/// @title DistributionCreator
+/// @title OldDistributionCreator
 /// @author Angle Labs, Inc.
 /// @notice Manages the distribution of rewards through the Merkl system
 /// @dev This contract is mostly a helper for APIs built on top of Merkl
@@ -55,7 +55,7 @@ import { RewardTokenAmounts } from "../struct/RewardTokenAmounts.sol";
 /// now deprecated
 /// - campaigns: the new more global name to describe any reward program on top of Merkl
 //solhint-disable
-contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
+contract OldDistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     using SafeERC20 for IERC20;
 
     /*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////

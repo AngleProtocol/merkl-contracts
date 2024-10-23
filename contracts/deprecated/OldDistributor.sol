@@ -57,10 +57,10 @@ struct Claim {
     bytes32 merkleRoot;
 }
 
-/// @title Distributor
+/// @title OldDistributor
 /// @notice Allows to claim rewards distributed to them through Merkl
 /// @author Angle Labs. Inc
-contract Distributor is UUPSHelper {
+contract OldDistributor is UUPSHelper {
     using SafeERC20 for IERC20;
 
     /// @notice Epoch duration
