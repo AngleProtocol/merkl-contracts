@@ -93,23 +93,6 @@ contract Test_Distributor_toggleOperator is DistributorTest {
     }
 }
 
-contract Test_Distributor_toggleOnlyOperatorCanClaim is DistributorTest {
-    function test_RevertWhen_NotTrusted() public {
-        vm.expectRevert(Errors.NotTrusted.selector);
-        distributor.toggleOnlyOperatorCanClaim(bob);
-    }
-
-    function test_Success() public {
-        vm.prank(governor);
-        distributor.toggleOnlyOperatorCanClaim(bob);
-        assertEq(distributor.onlyOperatorCanClaim(bob), 1);
-
-        vm.prank(bob);
-        distributor.toggleOnlyOperatorCanClaim(bob);
-        assertEq(distributor.onlyOperatorCanClaim(bob), 0);
-    }
-}
-
 contract Test_Distributor_recoverERC20 is DistributorTest {
     function test_RevertWhen_NotGovernor() public {
         vm.expectRevert(Errors.NotGovernor.selector);
@@ -378,9 +361,6 @@ contract Test_Distributor_claim is DistributorTest {
         distributor.updateTree(MerkleTree({ merkleRoot: getRoot(), ipfsHash: keccak256("IPFS_HASH") }));
 
         vm.warp(distributor.endOfDisputePeriod() + 1);
-
-        vm.prank(bob);
-        distributor.toggleOnlyOperatorCanClaim(bob);
 
         bytes32[][] memory proofs = new bytes32[][](1);
         address[] memory users = new address[](1);
