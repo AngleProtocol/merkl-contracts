@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.17;
 
-import "../middleman/MerklGaugeMiddleman.sol";
+import "../partners/middleman/MerklGaugeMiddleman.sol";
 
 contract MockMerklGaugeMiddleman is MerklGaugeMiddleman {
     address public angleDistributorAddress;
