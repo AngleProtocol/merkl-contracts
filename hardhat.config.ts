@@ -534,7 +534,7 @@ const config: HardhatUserConfig = {
     fraxtal: {
       live: true,
       url: nodeUrl('fraxtal'),
-      accounts: accountsMerklDeployer,
+      accounts: [getPkey()],
       gas: 'auto',
       chainId: 252,
       verify: {
@@ -572,7 +572,7 @@ const config: HardhatUserConfig = {
     rootstock: {
       live: true,
       url: nodeUrl('rootstock'),
-      accounts: accounts("rootstock"),
+      accounts: [getPkey()],
       gas: 'auto',
       chainId: 30,
       verify: {
@@ -610,7 +610,7 @@ const config: HardhatUserConfig = {
     worldchain: {
       live: true,
       url: nodeUrl('worldchain'),
-      accounts: accountsMerklDeployer,
+      accounts: [getPkey()],
       gas: 'auto',
       chainId: 480,
       verify: {
