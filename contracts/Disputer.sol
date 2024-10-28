@@ -9,14 +9,19 @@ contract Disputer is Ownable {
     Distributor public distributor;
     mapping(address => bool) public whitelist;
 
-    // ================================= ERRORS =================================
+    /*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                                                        ERRORS                                                      
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
     error NotWhitelisted();
     error DisputeFundsTransferFailed();
     error EthNotAccepted();
     error UnresolvedDispute();
     error WithdrawalFailed();
-    // ================================= MODIFIERS =================================
+
+    /*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                                                       MODIFIERS                                                    
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
     /// @notice Checks whether the `msg.sender` is a whitelisted address
     modifier onlyWhitelisted() {
@@ -24,10 +29,15 @@ contract Disputer is Ownable {
         _;
     }
 
-    // ================================ CONSTRUCTOR ================================
+    /*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                                                      CONSTRUCTOR                                                   
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
     constructor(address _owner, address[] memory _initialWhitelist, Distributor _distributor) {
         distributor = _distributor;
+
+        // Set infinite approval for the distributor
+        IERC20(_distributor.disputeToken()).approve(address(_distributor), type(uint256).max);
         uint256 length = _initialWhitelist.length;
         for (uint256 i; i < length; ) {
             whitelist[_initialWhitelist[i]] = true;
@@ -53,12 +63,6 @@ contract Disputer is Ownable {
             }
         }
 
-        // Ensure sufficient allowance
-        uint256 currentAllowance = IERC20(disputeToken).allowance(address(this), address(distributor));
-        if (currentAllowance < disputeAmount) {
-            IERC20(disputeToken).approve(address(distributor), disputeAmount);
-        }
-
         // Attempt to dispute
         distributor.disputeTree(reason);
     }
@@ -81,7 +85,9 @@ contract Disputer is Ownable {
         if (!success) revert WithdrawalFailed();
     }
 
-    // =============================== SETTERS FUNCTIONS ===============================
+    /*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                                                   SETTERS FUNCTIONS                                                
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
     /// @notice Adds an address to the whitelist
     /// @dev Only the owner can add addresses to the whitelist
@@ -101,6 +107,10 @@ contract Disputer is Ownable {
     /// @dev Only the owner can set the distributor
     /// @param _distributor Distributor to set
     function setDistributor(Distributor _distributor) external onlyOwner {
+        // Remove approval from old distributor
+        IERC20(distributor.disputeToken()).approve(address(distributor), 0);
         distributor = _distributor;
+        // Set infinite approval for new distributor
+        IERC20(_distributor.disputeToken()).approve(address(_distributor), type(uint256).max);
     }
 }
