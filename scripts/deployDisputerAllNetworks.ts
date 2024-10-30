@@ -3,8 +3,10 @@ import hre from 'hardhat';
 
 async function main() {
   const networks = Object.keys(hre.config.networks);
-  const chainsToSkip = ['hardhat', 'localhost', 'celo'];
-  // celo is skipped because CreateX is not deployed on it
+  const chainsToSkip = ['hardhat', 'localhost', 'celo', 'astarzkevm', 'astar',  'aurora', 'filecoin', 'avalanche'];
+  // celo is skipped because CreateX is not detected on it, weird because https://celoscan.io/address/0xba5Ed099633D3B313e4D5F7bdc1305d3c28ba5Ed
+  // astarzkevm and astar are skipped because CreateX is not deployed on it
+  // others (aurora, filecoin, avalanche) are skipped because Merkl is not deployed on it
 
   for (const network of networks) {
     // Skip default hardhat network and localhost
