@@ -20,6 +20,7 @@ error InvalidReward();
 error InvalidSignature();
 error NoDispute();
 error NoOverrideForCampaign();
+error NotAllowed();
 error NotGovernor();
 error NotGovernorOrGuardian();
 error NotSigned();
