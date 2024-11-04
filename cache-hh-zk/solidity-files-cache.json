@@ -2,7 +2,7 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "/Users/picodes/Documents/Angle/merkl-contracts/contracts/DistributionCreator.sol": {
-      "lastModificationDate": 1711475231494,
+      "lastModificationDate": 1728391890459,
       "contentHash": "e288b7899b31041a4cfd167515ec9400",
       "sourceName": "contracts/DistributionCreator.sol",
       "solcConfig": {
@@ -28,14 +28,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -67,13 +67,14 @@
       "contentHash": "9cb1fdfaafdcf3b3cf1d0fe508256ab6",
       "sourceName": "contracts/tokenWrappers/AaveTokenWrapper.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -92,14 +93,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -126,13 +127,14 @@
       "contentHash": "3aa814bd13f66d8c95d36b76d3975261",
       "sourceName": "contracts/utils/UUPSHelper.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -151,14 +153,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -179,17 +181,18 @@
       ]
     },
     "/Users/picodes/Documents/Angle/merkl-contracts/node_modules/@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol": {
-      "lastModificationDate": 1714726645184,
+      "lastModificationDate": 1728901524042,
       "contentHash": "3731d62752408e56578b89ac293659c6",
       "sourceName": "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -208,14 +211,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -237,17 +240,18 @@
       ]
     },
     "/Users/picodes/Documents/Angle/merkl-contracts/node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol": {
-      "lastModificationDate": 1714731099607,
+      "lastModificationDate": 1730741003736,
       "contentHash": "1b5d667d3740d866eca0352758e59827",
       "sourceName": "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -266,14 +270,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -294,17 +298,18 @@
       ]
     },
     "/Users/picodes/Documents/Angle/merkl-contracts/node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol": {
-      "lastModificationDate": 1714731099608,
+      "lastModificationDate": 1730741003733,
       "contentHash": "909ab67fc5c25033fe6cd364f8c056f9",
       "sourceName": "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -323,14 +328,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -353,13 +358,14 @@
       "contentHash": "1edf4a97c2f44371c48cfb3d30f4caf6",
       "sourceName": "contracts/struct/DistributionParameters.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -378,14 +384,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -404,13 +410,14 @@
       "contentHash": "1ee0010e8ca0b11068ccc8846c6ef8c5",
       "sourceName": "contracts/struct/CampaignParameters.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -429,14 +436,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -455,13 +462,14 @@
       "contentHash": "9be843713171b3a783e755a6b39d298a",
       "sourceName": "contracts/interfaces/external/uniswap/IUniswapV3Pool.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -480,14 +488,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -508,13 +516,14 @@
       "contentHash": "b48e5f52723a4771fd1350e4ad01b4ba",
       "sourceName": "contracts/struct/RewardTokenAmounts.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -533,14 +542,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -555,17 +564,18 @@
       "artifacts": []
     },
     "/Users/picodes/Documents/Angle/merkl-contracts/node_modules/@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol": {
-      "lastModificationDate": 1714726640880,
+      "lastModificationDate": 1728901517196,
       "contentHash": "1453fc85149da6598faf08c46b88182d",
       "sourceName": "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -584,14 +594,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -610,17 +620,18 @@
       ]
     },
     "/Users/picodes/Documents/Angle/merkl-contracts/node_modules/@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol": {
-      "lastModificationDate": 1714731097875,
+      "lastModificationDate": 1730740998435,
       "contentHash": "53d16b3bec482493405bdc74852eb2cd",
       "sourceName": "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -639,14 +650,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -666,17 +677,18 @@
       ]
     },
     "/Users/picodes/Documents/Angle/merkl-contracts/node_modules/@openzeppelin/contracts/utils/cryptography/ECDSA.sol": {
-      "lastModificationDate": 1714731097874,
+      "lastModificationDate": 1730740998434,
       "contentHash": "d822a8a9468649cab463f29f5decf5cc",
       "sourceName": "@openzeppelin/contracts/utils/cryptography/ECDSA.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -695,14 +707,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -725,13 +737,14 @@
       "contentHash": "0c8b53853dbdfe07d9ec618fe6a476c9",
       "sourceName": "contracts/interfaces/ICore.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -750,14 +763,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -778,13 +791,14 @@
       "contentHash": "dd1657acfd6a5ef52fb5bc9fd1769e21",
       "sourceName": "contracts/utils/Errors.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -803,14 +817,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -825,17 +839,18 @@
       "artifacts": []
     },
     "/Users/picodes/Documents/Angle/merkl-contracts/node_modules/@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol": {
-      "lastModificationDate": 1714726645184,
+      "lastModificationDate": 1728901524041,
       "contentHash": "e271d7f01f6ba5cb9dbe19c49180243d",
       "sourceName": "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -854,14 +869,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -882,17 +897,18 @@
       ]
     },
     "/Users/picodes/Documents/Angle/merkl-contracts/node_modules/@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol": {
-      "lastModificationDate": 1714726645184,
+      "lastModificationDate": 1728901524042,
       "contentHash": "fc5844e59776a976987884e4d9814c7d",
       "sourceName": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -911,14 +927,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -937,17 +953,18 @@
       ]
     },
     "/Users/picodes/Documents/Angle/merkl-contracts/node_modules/@openzeppelin/contracts-upgradeable/interfaces/draft-IERC1822Upgradeable.sol": {
-      "lastModificationDate": 1714726640916,
+      "lastModificationDate": 1728901517203,
       "contentHash": "a6883cfd85607b16c121a02728369eb3",
       "sourceName": "@openzeppelin/contracts-upgradeable/interfaces/draft-IERC1822Upgradeable.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -966,14 +983,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -990,17 +1007,18 @@
       ]
     },
     "/Users/picodes/Documents/Angle/merkl-contracts/node_modules/@openzeppelin/contracts-upgradeable/proxy/ERC1967/ERC1967UpgradeUpgradeable.sol": {
-      "lastModificationDate": 1714726645184,
+      "lastModificationDate": 1728901524039,
       "contentHash": "d1ceeaa35b60471b1c6e50d29d70354a",
       "sourceName": "@openzeppelin/contracts-upgradeable/proxy/ERC1967/ERC1967UpgradeUpgradeable.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -1019,14 +1037,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -1049,17 +1067,18 @@
       ]
     },
     "/Users/picodes/Documents/Angle/merkl-contracts/node_modules/@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol": {
-      "lastModificationDate": 1714726640917,
+      "lastModificationDate": 1728901517198,
       "contentHash": "228f256dbb21393bc9ad02648e222f74",
       "sourceName": "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -1078,14 +1097,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -1102,17 +1121,18 @@
       ]
     },
     "/Users/picodes/Documents/Angle/merkl-contracts/node_modules/@openzeppelin/contracts-upgradeable/utils/StorageSlotUpgradeable.sol": {
-      "lastModificationDate": 1714726640920,
+      "lastModificationDate": 1728901517198,
       "contentHash": "731fafe5fdaca6e0749253ab7ce7d3b9",
       "sourceName": "@openzeppelin/contracts-upgradeable/utils/StorageSlotUpgradeable.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -1131,14 +1151,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -1155,17 +1175,18 @@
       ]
     },
     "/Users/picodes/Documents/Angle/merkl-contracts/node_modules/@openzeppelin/contracts-upgradeable/proxy/beacon/IBeaconUpgradeable.sol": {
-      "lastModificationDate": 1714726645184,
+      "lastModificationDate": 1728901524039,
       "contentHash": "21bffd733b4ca013e125a0ffe2e52254",
       "sourceName": "@openzeppelin/contracts-upgradeable/proxy/beacon/IBeaconUpgradeable.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -1184,14 +1205,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -1208,17 +1229,18 @@
       ]
     },
     "/Users/picodes/Documents/Angle/merkl-contracts/node_modules/@openzeppelin/contracts/interfaces/IERC1271.sol": {
-      "lastModificationDate": 1714731094917,
+      "lastModificationDate": 1730740984691,
       "contentHash": "8fe867b95c856b204f954a1910e28a1e",
       "sourceName": "@openzeppelin/contracts/interfaces/IERC1271.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -1237,14 +1259,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -1261,17 +1283,18 @@
       ]
     },
     "/Users/picodes/Documents/Angle/merkl-contracts/node_modules/@openzeppelin/contracts/utils/Strings.sol": {
-      "lastModificationDate": 1714731094920,
+      "lastModificationDate": 1730740984688,
       "contentHash": "48686fc32a22a3754b8e63321857dd2a",
       "sourceName": "@openzeppelin/contracts/utils/Strings.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -1290,14 +1313,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -1317,17 +1340,18 @@
       ]
     },
     "/Users/picodes/Documents/Angle/merkl-contracts/node_modules/@openzeppelin/contracts/utils/math/Math.sol": {
-      "lastModificationDate": 1714731097865,
+      "lastModificationDate": 1730740998432,
       "contentHash": "fe63409d8a06818b926cf89e0ea88b1b",
       "sourceName": "@openzeppelin/contracts/utils/math/Math.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -1346,14 +1370,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -1370,17 +1394,18 @@
       ]
     },
     "/Users/picodes/Documents/Angle/merkl-contracts/node_modules/@openzeppelin/contracts/utils/math/SignedMath.sol": {
-      "lastModificationDate": 1714731097865,
+      "lastModificationDate": 1730740998432,
       "contentHash": "9488ebd4daacfee8ad04811600d7d061",
       "sourceName": "@openzeppelin/contracts/utils/math/SignedMath.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -1399,14 +1424,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -1423,17 +1448,18 @@
       ]
     },
     "/Users/picodes/Documents/Angle/merkl-contracts/node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol": {
-      "lastModificationDate": 1714731097818,
+      "lastModificationDate": 1730740998366,
       "contentHash": "df36f7051335cd1e748b1b6463b7fdd3",
       "sourceName": "@openzeppelin/contracts/token/ERC20/IERC20.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -1452,14 +1478,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -1476,17 +1502,18 @@
       ]
     },
     "/Users/picodes/Documents/Angle/merkl-contracts/node_modules/@openzeppelin/contracts/utils/Address.sol": {
-      "lastModificationDate": 1714731094919,
+      "lastModificationDate": 1730740984688,
       "contentHash": "211ffd288c1588ba8c10eae668ca3c66",
       "sourceName": "@openzeppelin/contracts/utils/Address.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -1505,14 +1532,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -1529,17 +1556,18 @@
       ]
     },
     "/Users/picodes/Documents/Angle/merkl-contracts/node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Permit.sol": {
-      "lastModificationDate": 1714731099604,
+      "lastModificationDate": 1730741003724,
       "contentHash": "525fcdad8d171312933f47baf01d1ed8",
       "sourceName": "@openzeppelin/contracts/token/ERC20/extensions/IERC20Permit.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -1558,14 +1586,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -1582,17 +1610,18 @@
       ]
     },
     "/Users/picodes/Documents/Angle/merkl-contracts/node_modules/@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol": {
-      "lastModificationDate": 1714726645184,
+      "lastModificationDate": 1728901524041,
       "contentHash": "a9ed3c7bc7d9ebb5e34f20829274f088",
       "sourceName": "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -1611,14 +1640,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -1635,17 +1664,18 @@
       ]
     },
     "/Users/picodes/Documents/Angle/merkl-contracts/node_modules/@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol": {
-      "lastModificationDate": 1714726640919,
+      "lastModificationDate": 1728901517198,
       "contentHash": "6200b84950eb05b4a92a39fd1d6e0f9b",
       "sourceName": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -1664,14 +1694,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -1690,17 +1720,18 @@
       ]
     },
     "/Users/picodes/Documents/Angle/merkl-contracts/node_modules/@openzeppelin/contracts-upgradeable/token/ERC20/extensions/IERC20MetadataUpgradeable.sol": {
-      "lastModificationDate": 1714726647381,
+      "lastModificationDate": 1728901526435,
       "contentHash": "9efcd5467a7f0bf533910ee8a267adb2",
       "sourceName": "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/IERC20MetadataUpgradeable.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -1719,14 +1750,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -1745,17 +1776,18 @@
       ]
     },
     "/Users/picodes/Documents/Angle/merkl-contracts/node_modules/@openzeppelin/contracts/interfaces/IERC4626.sol": {
-      "lastModificationDate": 1714731094918,
+      "lastModificationDate": 1730740984691,
       "contentHash": "97b05d54ca57043277fa79b29a968da9",
       "sourceName": "@openzeppelin/contracts/interfaces/IERC4626.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -1774,14 +1806,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -1801,17 +1833,18 @@
       ]
     },
     "/Users/picodes/Documents/Angle/merkl-contracts/node_modules/@openzeppelin/contracts/token/ERC20/extensions/ERC4626.sol": {
-      "lastModificationDate": 1714731099608,
+      "lastModificationDate": 1730741003732,
       "contentHash": "6a49e30f074c0972eee2950b9c1647a1",
       "sourceName": "@openzeppelin/contracts/token/ERC20/extensions/ERC4626.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -1830,14 +1863,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -1859,17 +1892,18 @@
       ]
     },
     "/Users/picodes/Documents/Angle/merkl-contracts/node_modules/@openzeppelin/contracts/token/ERC20/ERC20.sol": {
-      "lastModificationDate": 1714731097820,
+      "lastModificationDate": 1730740998370,
       "contentHash": "3ae5166c6827a9cf1a7a462d1632b464",
       "sourceName": "@openzeppelin/contracts/token/ERC20/ERC20.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -1888,14 +1922,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -1916,17 +1950,18 @@
       ]
     },
     "/Users/picodes/Documents/Angle/merkl-contracts/node_modules/@openzeppelin/contracts/utils/Context.sol": {
-      "lastModificationDate": 1714731094919,
+      "lastModificationDate": 1730740984688,
       "contentHash": "f07feb4a44b1a4872370da5aa70e8e46",
       "sourceName": "@openzeppelin/contracts/utils/Context.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -1945,14 +1980,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -1969,17 +2004,18 @@
       ]
     },
     "/Users/picodes/Documents/Angle/merkl-contracts/node_modules/@openzeppelin/contracts/utils/cryptography/EIP712.sol": {
-      "lastModificationDate": 1714731097873,
+      "lastModificationDate": 1730740998402,
       "contentHash": "459aeb9cc3fc3c6d67d30ffefb724aba",
       "sourceName": "@openzeppelin/contracts/utils/cryptography/EIP712.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -1998,14 +2034,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -2026,17 +2062,18 @@
       ]
     },
     "/Users/picodes/Documents/Angle/merkl-contracts/node_modules/@openzeppelin/contracts/utils/ShortStrings.sol": {
-      "lastModificationDate": 1714731094918,
+      "lastModificationDate": 1730740984686,
       "contentHash": "8dde288da49722a70f34ee369be4bfba",
       "sourceName": "@openzeppelin/contracts/utils/ShortStrings.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -2055,14 +2092,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -2081,17 +2118,18 @@
       ]
     },
     "/Users/picodes/Documents/Angle/merkl-contracts/node_modules/@openzeppelin/contracts/interfaces/IERC5267.sol": {
-      "lastModificationDate": 1714731094916,
+      "lastModificationDate": 1730740984688,
       "contentHash": "b1756048024350a162c3be27c04aa652",
       "sourceName": "@openzeppelin/contracts/interfaces/IERC5267.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -2110,14 +2148,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -2134,17 +2172,18 @@
       ]
     },
     "/Users/picodes/Documents/Angle/merkl-contracts/node_modules/@openzeppelin/contracts/utils/StorageSlot.sol": {
-      "lastModificationDate": 1714731094919,
+      "lastModificationDate": 1730740984688,
       "contentHash": "682f7dd1f2e1147c8390e7575deceb2d",
       "sourceName": "@openzeppelin/contracts/utils/StorageSlot.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -2163,14 +2202,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -2187,17 +2226,18 @@
       ]
     },
     "/Users/picodes/Documents/Angle/merkl-contracts/node_modules/@openzeppelin/contracts/proxy/ERC1967/ERC1967Upgrade.sol": {
-      "lastModificationDate": 1714731097876,
+      "lastModificationDate": 1730740998357,
       "contentHash": "a127706394bead18392601a20d44867a",
       "sourceName": "@openzeppelin/contracts/proxy/ERC1967/ERC1967Upgrade.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -2216,14 +2256,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -2246,17 +2286,18 @@
       ]
     },
     "/Users/picodes/Documents/Angle/merkl-contracts/node_modules/@openzeppelin/contracts/proxy/beacon/IBeacon.sol": {
-      "lastModificationDate": 1714731097875,
+      "lastModificationDate": 1730740998372,
       "contentHash": "b6bd23bf19e90b771337037706470933",
       "sourceName": "@openzeppelin/contracts/proxy/beacon/IBeacon.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -2275,14 +2316,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -2299,17 +2340,18 @@
       ]
     },
     "/Users/picodes/Documents/Angle/merkl-contracts/node_modules/@openzeppelin/contracts/interfaces/IERC1967.sol": {
-      "lastModificationDate": 1714731094916,
+      "lastModificationDate": 1730740984687,
       "contentHash": "d0d060231a45da7a1eecbb5cd286fa40",
       "sourceName": "@openzeppelin/contracts/interfaces/IERC1967.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -2328,14 +2370,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -2352,17 +2394,18 @@
       ]
     },
     "/Users/picodes/Documents/Angle/merkl-contracts/node_modules/@openzeppelin/contracts/interfaces/draft-IERC1822.sol": {
-      "lastModificationDate": 1714731094919,
+      "lastModificationDate": 1730740984701,
       "contentHash": "2858d98e74e67987ec81b39605230b74",
       "sourceName": "@openzeppelin/contracts/interfaces/draft-IERC1822.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -2381,14 +2424,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -2405,17 +2448,18 @@
       ]
     },
     "/Users/picodes/Documents/Angle/merkl-contracts/node_modules/@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol": {
-      "lastModificationDate": 1714731097875,
+      "lastModificationDate": 1730740998360,
       "contentHash": "3fc3c7c0a2956f36e766691bb9473b06",
       "sourceName": "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -2434,14 +2478,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -2461,17 +2505,18 @@
       ]
     },
     "/Users/picodes/Documents/Angle/merkl-contracts/node_modules/@openzeppelin/contracts/proxy/Proxy.sol": {
-      "lastModificationDate": 1714731094921,
+      "lastModificationDate": 1730740984688,
       "contentHash": "40b3d81a836d50ff47e03893dcaaf204",
       "sourceName": "@openzeppelin/contracts/proxy/Proxy.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -2490,14 +2535,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -2518,13 +2563,14 @@
       "contentHash": "30f23931d0d036224faf6dc3466ae1cd",
       "sourceName": "contracts/external/TransparentUpgradeableProxy.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -2543,14 +2589,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -2573,13 +2619,14 @@
       "contentHash": "7f9f6a3fb51228f5d98d4d0c88a815fd",
       "sourceName": "contracts/external/ProxyAdmin.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -2598,14 +2645,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -2625,17 +2672,18 @@
       ]
     },
     "/Users/picodes/Documents/Angle/merkl-contracts/node_modules/@openzeppelin/contracts/access/Ownable.sol": {
-      "lastModificationDate": 1714731094916,
+      "lastModificationDate": 1730740984687,
       "contentHash": "5a20b2cad87ddb61c7a3a6af21289e28",
       "sourceName": "@openzeppelin/contracts/access/Ownable.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -2654,14 +2702,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -2680,17 +2728,18 @@
       ]
     },
     "/Users/picodes/Documents/Angle/merkl-contracts/node_modules/@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol": {
-      "lastModificationDate": 1714731099604,
+      "lastModificationDate": 1730741003728,
       "contentHash": "4cbcb1f6d01e01a02b6407bb67a78400",
       "sourceName": "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -2709,14 +2758,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -2739,17 +2788,18 @@
       ]
     },
     "/Users/picodes/Documents/Angle/merkl-contracts/node_modules/@openzeppelin/contracts/utils/Counters.sol": {
-      "lastModificationDate": 1714731094919,
+      "lastModificationDate": 1730740984688,
       "contentHash": "74654e3ae5d7f39555055dfe244dab7a",
       "sourceName": "@openzeppelin/contracts/utils/Counters.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -2768,14 +2818,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -2792,17 +2842,18 @@
       ]
     },
     "/Users/picodes/Documents/Angle/merkl-contracts/node_modules/@openzeppelin/contracts/token/ERC20/extensions/draft-ERC20Permit.sol": {
-      "lastModificationDate": 1714731099608,
+      "lastModificationDate": 1730741003736,
       "contentHash": "0ebe4a60af340ba617d3fb68db43c990",
       "sourceName": "@openzeppelin/contracts/token/ERC20/extensions/draft-ERC20Permit.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -2821,14 +2872,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -2849,13 +2900,14 @@
       "contentHash": "c9a9192278240755ee22d7b3a5ea64e4",
       "sourceName": "contracts/mock/MockTokenPermit.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -2874,14 +2926,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -2906,13 +2958,14 @@
       "contentHash": "73f7edf58c75a82130ed0530c9f03dd6",
       "sourceName": "contracts/mock/MockToken.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -2931,14 +2984,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -2961,13 +3014,14 @@
       "contentHash": "73e0f95628fbb2d5f1f75e93d9f95c5d",
       "sourceName": "contracts/middleman/MerklFraxIncentivizationHandler.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -2986,14 +3040,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -3019,13 +3073,14 @@
       "contentHash": "ffe4643589f064e83615aa5c15ae4dcf",
       "sourceName": "contracts/mock/MockMerklFraxIncentivizationHandler.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -3044,14 +3099,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -3074,13 +3129,14 @@
       "contentHash": "85ba43a44326698f010ada4dced7bdf3",
       "sourceName": "contracts/interfaces/ITreasury.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -3099,14 +3155,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -3130,13 +3186,14 @@
       "contentHash": "f90a3a697cd66758985e71572b81d6b6",
       "sourceName": "contracts/interfaces/IAgToken.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -3155,14 +3212,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -3181,17 +3238,18 @@
       ]
     },
     "/Users/picodes/Documents/Angle/merkl-contracts/contracts/tokenWrappers/RadiantTokenWrapper.sol": {
-      "lastModificationDate": 1714404886095,
+      "lastModificationDate": 1730740713150,
       "contentHash": "bc3ad646136bbb0afd8ace97d9335a93",
       "sourceName": "contracts/tokenWrappers/RadiantTokenWrapper.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -3210,14 +3268,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -3244,13 +3302,14 @@
       "contentHash": "07ce5f17da628dbec547417ecb4e1cb1",
       "sourceName": "contracts/tokenWrappers/BaseTokenWrapper.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -3269,14 +3328,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -3303,13 +3362,14 @@
       "contentHash": "43055198334a76e7dbd3960b7c9a97b3",
       "sourceName": "contracts/deprecated/OldDistributor.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -3328,14 +3388,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -3357,17 +3417,18 @@
       ]
     },
     "/Users/picodes/Documents/Angle/merkl-contracts/node_modules/@openzeppelin/contracts/utils/math/SafeCast.sol": {
-      "lastModificationDate": 1714731097868,
+      "lastModificationDate": 1730740998432,
       "contentHash": "67cf2dfe1d1c22b4ea7f242e8a17f431",
       "sourceName": "@openzeppelin/contracts/utils/math/SafeCast.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -3386,14 +3447,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -3410,17 +3471,18 @@
       ]
     },
     "/Users/picodes/Documents/Angle/merkl-contracts/contracts/Distributor.sol": {
-      "lastModificationDate": 1715689292305,
+      "lastModificationDate": 1730740713150,
       "contentHash": "cc3440dffd519b35f91e80a6d25ff292",
       "sourceName": "contracts/Distributor.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -3439,14 +3501,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -3472,13 +3534,14 @@
       "contentHash": "4fbe24319cef6ec3b1df9d052399641b",
       "sourceName": "contracts/external/AccessControlUpgradeable.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -3497,14 +3560,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -3524,17 +3587,18 @@
       ]
     },
     "/Users/picodes/Documents/Angle/merkl-contracts/node_modules/@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol": {
-      "lastModificationDate": 1714726640920,
+      "lastModificationDate": 1728901517198,
       "contentHash": "3805d0267faeda96624b50a67ca89f08",
       "sourceName": "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -3553,14 +3617,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -3579,17 +3643,18 @@
       ]
     },
     "/Users/picodes/Documents/Angle/merkl-contracts/node_modules/@openzeppelin/contracts-upgradeable/utils/math/MathUpgradeable.sol": {
-      "lastModificationDate": 1714726645186,
+      "lastModificationDate": 1728901524079,
       "contentHash": "469f71655418cc5f328fcc9bfdf10e9a",
       "sourceName": "@openzeppelin/contracts-upgradeable/utils/math/MathUpgradeable.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -3608,14 +3673,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -3636,13 +3701,14 @@
       "contentHash": "6dbbb57f2e9255ee5ff7eee8348eae7b",
       "sourceName": "contracts/mock/AngleDistributorEvents.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -3661,14 +3727,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -3695,13 +3761,14 @@
       "contentHash": "77dedf48b441ac441ecc03775ee2893d",
       "sourceName": "contracts/interfaces/CoreModuleInterfaces.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -3720,14 +3787,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -3751,13 +3818,14 @@
       "contentHash": "4d070b74b290e6155f8a332e3558ade7",
       "sourceName": "contracts/mock/AngleDistributor.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -3776,14 +3844,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -3806,13 +3874,14 @@
       "contentHash": "0c791e0ee6a73738e1977dd5cd9fbfac",
       "sourceName": "contracts/struct/ExtensiveDistributionParameters.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -3831,14 +3900,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -3859,13 +3928,14 @@
       "contentHash": "3c4e9c2b0c9d8eb2b0aa38ee15c779ab",
       "sourceName": "contracts/interfaces/external/algebra/IAlgebraPool.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -3884,14 +3954,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -3908,17 +3978,18 @@
       ]
     },
     "/Users/picodes/Documents/Angle/merkl-contracts/contracts/tokenWrappers/StakedToken.sol": {
-      "lastModificationDate": 1714404886095,
+      "lastModificationDate": 1730740713152,
       "contentHash": "e5050beb74c2dfee3465e015b7d7c1e8",
       "sourceName": "contracts/tokenWrappers/StakedToken.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -3937,14 +4008,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -3968,13 +4039,14 @@
       "contentHash": "741e9ea0779754f96752d1b2bca838f8",
       "sourceName": "contracts/middleman/MerklGaugeMiddleman.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -3993,14 +4065,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -4025,13 +4097,14 @@
       "contentHash": "fdb6f657c7dddebc6ad5dd1d28b73809",
       "sourceName": "contracts/mock/MockMerklGaugeMiddleman.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -4050,14 +4123,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -4080,13 +4153,14 @@
       "contentHash": "ca21f2282051b41520d9e202b71766e2",
       "sourceName": "contracts/middleman/MerklGaugeMiddlemanPolygon.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -4105,14 +4179,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -4135,13 +4209,14 @@
       "contentHash": "e6ff3282ab23bfd22aa91accd98f149d",
       "sourceName": "contracts/mock/MockCoreBorrow.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -4160,14 +4235,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -4188,13 +4263,14 @@
       "contentHash": "5217dadd240723e91983d594429e2d48",
       "sourceName": "contracts/mock/MockPool.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -4213,14 +4289,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -4241,13 +4317,14 @@
       "contentHash": "eaf9288f9c0e94c565f7d0a56f5158a2",
       "sourceName": "contracts/mock/MockTreasury.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -4266,14 +4343,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -4294,13 +4371,14 @@
       "contentHash": "368076d32bc84d9f62acd67279ee1c76",
       "sourceName": "contracts/mock/MockUniswapV3Pool.sol",
       "solcConfig": {
-        "version": "0.8.17",
+        "version": "0.8.24",
         "settings": {
           "optimizer": {
             "enabled": true,
             "mode": "3"
           },
           "viaIR": false,
+          "evmVersion": "paris",
           "outputSelection": {
             "*": {
               "*": [
@@ -4319,14 +4397,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -4369,14 +4447,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -4431,14 +4509,14 @@
           "libraries": {}
         },
         "zksolc": {
-          "version": "1.4.1",
+          "version": "1.5.7",
           "compilerSource": "binary",
           "settings": {
             "optimizer": {
               "enabled": true,
               "mode": "3"
             },
-            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.4.1",
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
             "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
             "areLibrariesMissing": false,
             "experimental": {},
@@ -4454,6 +4532,64 @@
       ],
       "artifacts": [
         "DistributionCreatorUpdatable"
+      ]
+    },
+    "/Users/picodes/Documents/Angle/merkl-contracts/contracts/Disputer.sol": {
+      "lastModificationDate": 1730740780688,
+      "contentHash": "8d7e6110b07dfc01c6ef1a7da96e97d7",
+      "sourceName": "contracts/Disputer.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "mode": "3"
+          },
+          "viaIR": false,
+          "evmVersion": "paris",
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.methodIdentifiers",
+                "metadata",
+                "devdoc",
+                "userdoc",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "libraries": {}
+        },
+        "zksolc": {
+          "version": "1.5.7",
+          "compilerSource": "binary",
+          "settings": {
+            "optimizer": {
+              "enabled": true,
+              "mode": "3"
+            },
+            "compilerPath": "/Users/picodes/Library/Caches/hardhat-nodejs/compilers-v2/zksolc/zksolc-v1.5.7",
+            "missingLibrariesPath": "./.zksolc-libraries-cache/missingLibraryDependencies.json",
+            "areLibrariesMissing": false,
+            "experimental": {},
+            "libraries": {}
+          }
+        }
+      },
+      "imports": [
+        "@openzeppelin/contracts/token/ERC20/IERC20.sol",
+        "@openzeppelin/contracts/access/Ownable.sol",
+        "./Distributor.sol"
+      ],
+      "versionPragmas": [
+        "0.8.24"
+      ],
+      "artifacts": [
+        "Disputer"
       ]
     }
   }

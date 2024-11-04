@@ -53,7 +53,7 @@ const config: HardhatUserConfig = {
   solidity: {
     compilers: [
       {
-        version: '0.8.17',
+        version: '0.8.24',
         settings: {
           optimizer: {
             enabled: true,
@@ -105,6 +105,7 @@ const config: HardhatUserConfig = {
       initialBaseFeePerGas: 0,
       hardfork: 'london',
       accounts: accountsMerklDeployer,
+      zksync: true,
       forking: {
         enabled: argv.fork || false,
         // Mainnet
@@ -324,7 +325,7 @@ const config: HardhatUserConfig = {
     zksync: {
       live: true,
       url: nodeUrl('zksync'),
-      accounts: accounts('merkl'),
+      accounts: [getPkey()],
       gas: 'auto',
       gasMultiplier: 1.3,
       chainId: 324,
