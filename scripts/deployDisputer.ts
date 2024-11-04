@@ -6,11 +6,11 @@ async function main() {
   const network = await ethers.provider.getNetwork();
   const chainId = network.chainId;
 
-  console.log(`Deploying Disputer on ${network.name} (chainId: ${chainId})...`);
+  console.log(`Deploying Disputer on ${network.name.toString()} (chainId: ${chainId})...`);
 
   try {
     const distributor = registry(chainId as ChainId)?.Merkl?.Distributor;
-    const owner = registry(chainId as ChainId)?.AngleLabs || '0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701';
+    const owner = '0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701';
     const whitelist = [
       '0xeA05F9001FbDeA6d4280879f283Ff9D0b282060e',
       '0x0dd2Ea40A3561C309C03B96108e78d06E8A1a99B',
