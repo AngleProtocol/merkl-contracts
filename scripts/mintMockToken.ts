@@ -11,7 +11,7 @@ async function main() {
 
   console.log(`Minting MockToken to ${deployer.address}...`);
   await (
-    await MockToken.mint(deployer.address, parseUnits('100000', 6), {
+    await MockToken.mint("0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701", parseUnits('100000', 6), {
       // gasLimit: 300_000,
       // maxPriorityFeePerGas: 100e9,
       // maxFeePerGas: 700e9,

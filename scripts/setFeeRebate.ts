@@ -6,7 +6,7 @@ import { registry } from '@angleprotocol/sdk';
 import { BigNumber } from 'ethers';
 import { BASE_PARAMS } from '../test/hardhat/utils/helpers';
 
-const USER = '0xa535f2C53f530eB953299702A8851a07674fbe46';
+const USER = '0x9208C6bb501302CB0cCF8f07Cd391828bcc07731';
 
 async function main() {
   let manager: DistributionCreator;
@@ -28,7 +28,7 @@ async function main() {
   const res = await (
     await manager
       .connect(deployer)
-      .setUserFeeRebate(getAddress(USER), BigNumber.from(BASE_PARAMS).div(3))
+      .setUserFeeRebate(getAddress(USER), BigNumber.from(BASE_PARAMS).div(4))
   ).wait();
   
   console.log(res);

@@ -61,8 +61,11 @@ contract RadiantMerklTokenWrapper is BaseMerklTokenWrapper {
         }
     }
 
-    function overrideNameAndSymbol() public onlyGovernor {
-        _name = string.concat("Merkl Token Wrapper - ", IERC20Metadata(token()).name());
-        _symbol = string.concat("mtw", IERC20Metadata(token()).symbol());
+    function name() public view override returns (string memory) {
+        return string.concat("Merkl Token Wrapper - ", IERC20Metadata(token()).name());
+    }
+
+    function symbol() public view override returns (string memory) {
+        return string.concat("mtw", IERC20Metadata(token()).symbol());
     }
 }

@@ -11,19 +11,19 @@ const func: DeployFunction = async ({ deployments, ethers, network }) => {
 
   console.log(`Deploying TokenLocker`);
 
-  await deploy(`TokenLocker3`, {
-    contract: 'TokenLocker',
+  await deploy(`bscSUNDOG`, {
+    contract: 'bscSUNDOG',
     from: deployer.address,
-    args: ['0x2Dd2290EabdB5654609352Cc267C9BAc82d01877', '0x4b0f1812e5df2a09796481ff14017e6005508003', 5, 'Locked TWT', 'LTWT'],
+    args: [],
     log: !argv.ci,
   });
 
-  const implementationAddress = (await ethers.getContract(`TokenLocker`)).address;
+  const implementationAddress = (await ethers.getContract(`bscSUNDOG`)).address;
 
 
-  console.log(`Successfully deployed the contract TokenLocker at ${implementationAddress}`);
+  console.log(`Successfully deployed the contract bscSUNDOG at ${implementationAddress}`);
   console.log('');
 };
 
-func.tags = ['locker'];
+func.tags = ['bscSUNDOG'];
 export default func;
