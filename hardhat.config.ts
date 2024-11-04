@@ -8,8 +8,8 @@ import 'hardhat-spdx-license-identifier';
 import 'hardhat-deploy';
 import 'hardhat-abi-exporter';
 import '@nomicfoundation/hardhat-chai-matchers'; /** NEW FEATURE - https://hardhat.org/hardhat-chai-matchers/docs/reference#.revertedwithcustomerror */
-// import '@nomicfoundation/hardhat-toolbox'; /** NEW FEATURE */ Commented out because conflicts with hardhat-verify used in ignition
-import "@nomicfoundation/hardhat-ignition-ethers";
+import '@nomicfoundation/hardhat-toolbox'; /** NEW FEATURE */ //Commented out because conflicts with hardhat-verify used in ignition
+// import "@nomicfoundation/hardhat-ignition-ethers";
 import '@openzeppelin/hardhat-upgrades';
 import '@nomiclabs/hardhat-truffle5';
 import '@nomiclabs/hardhat-solhint';
@@ -706,14 +706,14 @@ const config: HardhatUserConfig = {
     target: 'ethers-v5',
   },
   // for Ignition configuration
-  ignition: {
-    strategyConfig: {
-      create2: {
-        // You need to provide a salt for the create2 strategy, right side is the default value, create DEPLOY_SALT in .env to override
-        salt: vars.get("DEPLOY_SALT", "0x864d5a9e8bb9797ab0590f13795ecfa333a384d48915c7578f26415e05b249d3"),
-      }
-    }
-  },
+  // ignition: {
+  //   strategyConfig: {
+  //     create2: {
+  //       // You need to provide a salt for the create2 strategy, right side is the default value, create DEPLOY_SALT in .env to override
+  //       salt: vars.get("DEPLOY_SALT", "0x864d5a9e8bb9797ab0590f13795ecfa333a384d48915c7578f26415e05b249d3"),
+  //     }
+  //   }
+  // },
 };
 
 export default config;
