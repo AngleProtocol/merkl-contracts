@@ -40,7 +40,7 @@ contract DisputerTest is Fixture {
 
         vm.startPrank(bob);
 
-        vm.expectRevert("ERC20: transfer amount exceeds balance");
+        vm.expectRevert("ERC20: insufficient allowance");
         disputer.toggleDispute("reason");
     }
 
