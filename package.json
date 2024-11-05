@@ -34,6 +34,7 @@
     "hardhat:coverage": "hardhat coverage",
     "hardhat:deploy": "hardhat deploy --network linea --tags",
     "hardhat:test": "hardhat test",
+    "resolve-dispute": "hardhat run scripts/buildDisputeResolution.ts",
     "check-upgradeability": "hardhat run scripts/checkUpgradeability.ts",
     "license": "hardhat prepend-spdx-license",
     "node:fork": "FORK=true hardhat node",

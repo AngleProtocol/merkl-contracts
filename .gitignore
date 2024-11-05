@@ -18,6 +18,9 @@ typechain
 slither-audit.txt
 slither
 
+# Dispute payloads
+*_dispute.json
+
 # Test output
 coverage
 coverage.json
