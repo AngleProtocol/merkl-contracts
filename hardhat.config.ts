@@ -16,8 +16,8 @@ import '@tenderly/hardhat-tenderly';
 import '@typechain/hardhat';
 
 import { TASK_COMPILE_SOLIDITY_GET_SOURCE_PATHS } from 'hardhat/builtin-tasks/task-names';
-import { HardhatUserConfig, subtask } from 'hardhat/config';
-import { HardhatNetworkAccountsUserConfig } from 'hardhat/types';
+import { type HardhatUserConfig, subtask } from 'hardhat/config';
+import type { HardhatNetworkAccountsUserConfig } from 'hardhat/types';
 import yargs from 'yargs';
 
 import { accounts, etherscanKey, getMerklAccount, getMnemonic, getPkey, nodeUrl } from './utils/network';
@@ -41,7 +41,7 @@ const argv = yargs
   .parseSync();
 
 if (argv.enableGasReport) {
-  import('hardhat-gas-reporter'); // eslint-disable-line
+	import("hardhat-gas-reporter"); // eslint-disable-line
 }
 
 const config: HardhatUserConfig = {
@@ -571,7 +571,7 @@ const config: HardhatUserConfig = {
     rootstock: {
       live: true,
       url: nodeUrl('rootstock'),
-      accounts: accounts("rootstock"),
+      accounts: accounts('rootstock'),
       gas: 'auto',
       chainId: 30,
       verify: {
@@ -657,13 +657,13 @@ const config: HardhatUserConfig = {
     apiKey: {
       worldchain: etherscanKey('worldchain'),
     },
-    customChains:[
+    customChains: [
       {
         network: 'taiko',
         chainId: 167000,
         urls: {
-          apiURL: "https://api.taikoscan.io/api",
-          browserURL: "https://taikoscan.io/"
+          apiURL: 'https://api.taikoscan.io/api',
+          browserURL: 'https://taikoscan.io/',
         },
       },
       {
@@ -694,8 +694,16 @@ const config: HardhatUserConfig = {
         network: 'worldchain',
         chainId: 480,
         urls: {
-          apiURL: "https://worldchain-mainnet.explorer.alchemy.com/api",
+          apiURL: 'https://worldchain-mainnet.explorer.alchemy.com/api',
           browserURL: 'https://worldchain-mainnet.explorer.alchemy.com/',
+        },
+      },
+      {
+        network: 'fantom',
+        chainId: 250,
+        urls: {
+          apiURL: 'https://api.ftmscan.com/api',
+          browserURL: 'https://ftmscan.com/',
         },
       },
     ],
