@@ -82,6 +82,10 @@ To update libraries:
 forge update
 ```
 
+## Access Control Schema
+
+![Access Control Schema](docs/access_control.svg)
+
 ## Verifying
 
 Blast: `yarn etherscan blast --api-url https://api.blastscan.io --solc-input --license BUSL-1.1`
