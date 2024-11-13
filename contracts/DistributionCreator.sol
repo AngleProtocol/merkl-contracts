@@ -141,7 +141,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     event FeeRecipientUpdated(address indexed _feeRecipient);
     event FeesSet(uint256 _fees);
     event CampaignOverride(bytes32 _campaignId, CampaignParameters campaign);
-    event CampaignReallocation(bytes32 _campaignId, address indexed from, address indexed to);
+    event CampaignReallocation(bytes32 _campaignId, address[] indexed from, address indexed to);
     event CampaignSpecificFeesSet(uint32 campaignType, uint256 _fees);
     event MessageUpdated(bytes32 _messageHash);
     event NewCampaign(CampaignParameters campaign);
@@ -277,7 +277,15 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @dev Some fields in the new campaign parameters will be disregarded anyway (like the amount)
     function overrideCampaign(bytes32 _campaignId, CampaignParameters memory newCampaign) external {
         CampaignParameters memory _campaign = campaign(_campaignId);
-        if (_campaign.creator != msg.sender) revert InvalidOverride();
+        if (
+            _campaign.creator != msg.sender ||
+            newCampaign.rewardToken != _campaign.rewardToken ||
+            newCampaign.amount != _campaign.amount ||
+            newCampaign.startTimestamp != _campaign.startTimestamp ||
+            // TODO we may want to be able to override the duration
+            // but we need to make sure that rewards/s is not an invariant in the engine
+            newCampaign.duration != _campaign.duration
+        ) revert InvalidOverride();
         campaignOverrides[_campaignId] = newCampaign;
         campaignOverridesBlocks[_campaignId].push(block.number);
         emit CampaignOverride(_campaignId, newCampaign);
@@ -286,12 +294,29 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @notice Reallocates rewards of a given campaign from one address to another
     /// @dev To prevent manipulations by campaign creators, this function can only be called by the
     /// initial campaign creator if the `from` address has never claimed any reward on the chain
+    /// @dev Compute engine should also make sure when reallocating rewards that `from` claimed amount
+    /// is still 0 - otherwise double allocation can happen
     /// @dev It is meant to be used for the case of addresses accruing rewards but unable to claim them
-    function reallocateCampaignRewards(bytes32 _campaignId, address from, address to) external {
+    function reallocateCampaignRewards(bytes32 _campaignId, address[] memory froms, address to) external {
         CampaignParameters memory _campaign = campaign(_campaignId);
-        (uint208 amount, uint48 timestamp, ) = Distributor(distributor).claimed(from, _campaign.rewardToken);
-        if (_campaign.creator != msg.sender || amount != 0 || timestamp != 0) revert InvalidOverride();
-        emit CampaignReallocation(_campaignId, from, to);
+        if (_campaign.creator != msg.sender) revert InvalidOverride();
+
+        uint256 fromsLength = froms.length;
+        address[] memory successfullFrom = new address[](fromsLength);
+        uint256 count = 0;
+        for (uint256 i; i < fromsLength; i++) {
+            (uint208 amount, uint48 timestamp, ) = Distributor(distributor).claimed(froms[i], _campaign.rewardToken);
+            if (amount == 0 && timestamp == 0) {
+                successfullFrom[count] = froms[i];
+                count++;
+            }
+        }
+        assembly {
+            mstore(successfullFrom, count)
+        }
+
+        if (count == 0) revert InvalidOverride();
+        emit CampaignReallocation(_campaignId, successfullFrom, to);
     }
 
     /*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -314,34 +339,6 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @dev If a campaign has been overriden, this function still shows the original state of the campaign
     function campaign(bytes32 _campaignId) public view returns (CampaignParameters memory) {
         return campaignList[campaignLookup(_campaignId)];
-    }
-
-    /// @notice Returns the block numbers at which a campaign has been overriden
-    /// @dev Reverts if the campaign has not been overriden
-    /// @dev There cannot be two overrides at the same block
-    function getCampaignOverrideBlocks(bytes32 _campaignId) public view returns (uint256[] memory) {
-        uint256 length;
-        uint256 returnSize = campaignOverridesBlocks[_campaignId].length;
-        if (returnSize == 0) revert NoOverrideForCampaign();
-        uint256[] memory blockOverrides = new uint256[](returnSize);
-        uint32 i;
-        uint256 lastBlockNumber;
-        while (i < returnSize) {
-            uint256 blockOverrideNumber = campaignOverridesBlocks[_campaignId][i];
-            if (blockOverrideNumber != lastBlockNumber) {
-                blockOverrides[length] = blockOverrideNumber;
-                length += 1;
-                lastBlockNumber = blockOverrideNumber;
-            }
-            unchecked {
-                ++i;
-            }
-            if (length == returnSize) break;
-        }
-        assembly {
-            mstore(blockOverrides, length)
-        }
-        return blockOverrides;
     }
 
     /// @notice Returns the campaign ID for a given campaign
