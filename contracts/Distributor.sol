@@ -223,9 +223,9 @@ contract Distributor is UUPSHelper {
         uint256[] calldata amounts,
         bytes32[][] calldata proofs
     ) external {
-        bytes memory data;
         address[] memory recipients = new address[](users.length);
-        _claim(users, tokens, amounts, proofs, recipients, data);
+        bytes[] memory datas = new bytes[](users.length);
+        _claim(users, tokens, amounts, proofs, recipients, datas);
     }
 
     /// @notice Same as the function above except that for each token claimed, the caller may set different
@@ -239,9 +239,9 @@ contract Distributor is UUPSHelper {
         uint256[] calldata amounts,
         bytes32[][] calldata proofs,
         address[] calldata recipients,
-        bytes memory data
+        bytes[] memory datas
     ) external {
-        _claim(users, tokens, amounts, proofs, recipients, data);
+        _claim(users, tokens, amounts, proofs, recipients, datas);
     }
 
     /// @notice Returns the Merkle root that is currently live for the contract
@@ -310,11 +310,11 @@ contract Distributor is UUPSHelper {
         emit TreeUpdated(_tree.merkleRoot, _tree.ipfsHash, _endOfPeriod);
     }
 
-    /// @notice Adds or removes EOAs which are trusted to update the Merkle root
-    function toggleTrusted(address eoa) external onlyGovernor {
-        uint256 trustedStatus = 1 - canUpdateMerkleRoot[eoa];
-        canUpdateMerkleRoot[eoa] = trustedStatus;
-        emit TrustedToggled(eoa, trustedStatus == 1);
+    /// @notice Adds or removes addresses which are trusted to update the Merkle root
+    function toggleTrusted(address trustAddress) external onlyGovernor {
+        uint256 trustedStatus = 1 - canUpdateMerkleRoot[trustAddress];
+        canUpdateMerkleRoot[trustAddress] = trustedStatus;
+        emit TrustedToggled(trustAddress, trustedStatus == 1);
     }
 
     /// @notice Prevents future contract upgrades
@@ -389,7 +389,7 @@ contract Distributor is UUPSHelper {
         uint256[] calldata amounts,
         bytes32[][] calldata proofs,
         address[] memory recipients,
-        bytes memory data
+        bytes[] memory datas
     ) internal nonReentrant {
         uint256 usersLength = users.length;
         if (
@@ -397,13 +397,15 @@ contract Distributor is UUPSHelper {
             usersLength != tokens.length ||
             usersLength != amounts.length ||
             usersLength != proofs.length ||
-            usersLength != recipients.length
+            usersLength != recipients.length ||
+            usersLength != datas.length
         ) revert Errors.InvalidLengths();
 
         for (uint256 i; i < usersLength; ) {
             address user = users[i];
             address token = tokens[i];
             uint256 amount = amounts[i];
+            bytes memory data = datas[i];
 
             // Only approved operator can claim for `user`
             if (msg.sender != user && tx.origin != user && operators[user][msg.sender] == 0)
