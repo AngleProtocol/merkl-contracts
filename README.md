@@ -10,7 +10,7 @@ It basically contains two contracts:
 - `DistributionCreator`: to which DAOs and individuals can deposit their rewards to incentivize a pool
 - `Distributor`: the contract where users can claim their rewards
 
-You can learn more about the Merkl system in the [documentation](https://docs.angle.money/side-products/merkl).
+You can learn more about the Merkl system in the [documentation](https://docs.merkl.xyz/).
 
 ## Setup
 
@@ -57,6 +57,20 @@ yarn hardhat:coverage
 
 ```bash
 yarn deploy mainnet
+```
+
+### Deploying with Ignition
+
+To deploy with Ignition, you need to set the `DEPLOY_SALT` environment variable.
+
+```bash
+yarn hardhat:deploy-ignition ignition/modules/Disputer.ts --network localhost --strategy create2
+```
+
+If you want to deploy Disputer on all networks, you can use the following command (if you want to skip validation you can set `HARDHAT_IGNITION_CONFIRM_DEPLOYMENT=true` in .env).
+
+```bash
+ts-node scripts/deployDisputerAllNetworks.ts
 ```
 
 ## Foundry Installation

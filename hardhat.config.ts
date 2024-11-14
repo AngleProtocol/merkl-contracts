@@ -8,7 +8,8 @@ import 'hardhat-spdx-license-identifier';
 import 'hardhat-deploy';
 import 'hardhat-abi-exporter';
 import '@nomicfoundation/hardhat-chai-matchers'; /** NEW FEATURE - https://hardhat.org/hardhat-chai-matchers/docs/reference#.revertedwithcustomerror */
-import '@nomicfoundation/hardhat-toolbox'; /** NEW FEATURE */
+import '@nomicfoundation/hardhat-toolbox'; /** NEW FEATURE */ //Commented out because conflicts with hardhat-verify used in ignition
+// import "@nomicfoundation/hardhat-ignition-ethers";
 import '@openzeppelin/hardhat-upgrades';
 import '@nomiclabs/hardhat-truffle5';
 import '@nomiclabs/hardhat-solhint';
@@ -16,7 +17,7 @@ import '@tenderly/hardhat-tenderly';
 import '@typechain/hardhat';
 
 import { TASK_COMPILE_SOLIDITY_GET_SOURCE_PATHS } from 'hardhat/builtin-tasks/task-names';
-import { HardhatUserConfig, subtask } from 'hardhat/config';
+import { HardhatUserConfig, subtask, vars } from 'hardhat/config';
 import { HardhatNetworkAccountsUserConfig } from 'hardhat/types';
 import yargs from 'yargs';
 
@@ -348,8 +349,8 @@ const config: HardhatUserConfig = {
       gas: 'auto',
       gasMultiplier: 1.3,
       chainId: 324,
-      ethNetwork: nodeUrl('mainnet'),
-      verifyURL: 'https://zksync2-mainnet-explorer.zksync.io/contract_verification',
+      // ethNetwork: nodeUrl('mainnet'),
+      // verifyURL: 'https://zksync2-mainnet-explorer.zksync.io/contract_verification',
       verify: {
         etherscan: {
           apiKey: etherscanKey('zksync'),
@@ -533,7 +534,7 @@ const config: HardhatUserConfig = {
     fraxtal: {
       live: true,
       url: nodeUrl('fraxtal'),
-      accounts: accountsMerklDeployer,
+      accounts: [getPkey()],
       gas: 'auto',
       chainId: 252,
       verify: {
@@ -571,7 +572,7 @@ const config: HardhatUserConfig = {
     rootstock: {
       live: true,
       url: nodeUrl('rootstock'),
-      accounts: accounts("rootstock"),
+      accounts: [getPkey()],
       gas: 'auto',
       chainId: 30,
       verify: {
@@ -609,7 +610,7 @@ const config: HardhatUserConfig = {
     worldchain: {
       live: true,
       url: nodeUrl('worldchain'),
-      accounts: accountsMerklDeployer,
+      accounts: [getPkey()],
       gas: 'auto',
       chainId: 480,
       verify: {
@@ -704,6 +705,15 @@ const config: HardhatUserConfig = {
     outDir: 'typechain',
     target: 'ethers-v5',
   },
+  // for Ignition configuration
+  // ignition: {
+  //   strategyConfig: {
+  //     create2: {
+  //       // You need to provide a salt for the create2 strategy, right side is the default value, create DEPLOY_SALT in .env to override
+  //       salt: vars.get("DEPLOY_SALT", "0x864d5a9e8bb9797ab0590f13795ecfa333a384d48915c7578f26415e05b249d3"),
+  //     }
+  //   }
+  // },
 };
 
 export default config;
