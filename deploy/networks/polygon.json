@@ -1,0 +1,10 @@
+{
+  "angleLabs": "0xc0c07644631543c3af2fA7230D387C5fA418a131",
+  "governor": "0xdA2D2f638D6fcbE306236583845e5822554c02EA",
+  "guardian": "0x3b9D32D0822A6351F415BeaB05251c1457FF6f8D",
+  "uniswapV3Router": "0xE592427A0AEce92De3Edee1F18E0157C05861564",
+  "oneInchRouter": "0x1111111254eeb25477b68fb85ed929f73a960582",
+  "angleRouter": "0x595AB88628CD1Af06706E25f10c485B651C47aa8",
+  "dust": "0",
+  "vaultsList": ["MAI"]
+}

@@ -1,0 +1,10 @@
+{
+  "angleLabs": "0x3350bef226F7BdCA874C5561320aB7EF9DC89E70",
+  "governor": "0xAA2DaCCAb539649D1839772C625108674154df0B",
+  "guardian": "0x55F01DDaE74b60e3c255BD2f619FEbdFce560a9C",
+  "uniswapV3Router": "0xE592427A0AEce92De3Edee1F18E0157C05861564",
+  "oneInchRouter": "0x1111111254eeb25477b68fb85ed929f73a960582",
+  "angleRouter": "0xC16B81Af351BA9e64C1a069E3Ab18c244A1E3049",
+  "dust": "0",
+  "vaultsList": ["wBTC"]
+}

@@ -23,4 +23,6 @@ interface ICore {
     /// @dev Governance should make sure when adding a governor to also give this governor the guardian
     /// role by calling the `addGovernor` function
     function isGovernorOrGuardian(address admin) external view returns (bool);
+
+    function GOVERNOR_ROLE() external view returns (bytes32);
 }

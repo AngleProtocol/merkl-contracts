@@ -8,6 +8,7 @@ cache_path = 'cache-forge'
 gas_reports = ["*"]
 via_ir = true
 optimizer_runs=100
+fs_permissions = [{ access = "read", path = "./deploy/networks" }]
 
 # solc_version = '0.8.17'
 
@@ -23,12 +24,75 @@ runs = 500
 via_ir = false
 
 [rpc_endpoints]
-mainnet = "${ETH_NODE_URI_MAINNET}"
-polygon = "${ETH_NODE_URI_POLYGON}"
-polygonzkevm = "${ETH_NODE_URI_POLYGONZKEVM}"
+mainnet = "${MAINNET_NODE_URI}"
+polygon = "${POLYGON_NODE_URI}"
+fantom = "${FANTOM_NODE_URI}"
+optimism = "${OPTIMISM_NODE_URI}"
+arbitrum = "${ARBITRUM_NODE_URI}"
+avalanche = "${AVALANCHE_NODE_URI}"
+aurora = "${AURORA_NODE_URI}"
+bsc = "${BSC_NODE_URI}"
+gnosis = "${GNOSIS_NODE_URI}"
+polygonzkevm = "${POLYGONZKEVM_NODE_URI}"
+base = "${BASE_NODE_URI}"
+bob = "${BOB_NODE_URI}"
+linea = "${LINEA_NODE_URI}"
+zksync = "${ZKSYNC_NODE_URI}"
+mantle = "${MANTLE_NODE_URI}"
+filecoin = "${FILECOIN_NODE_URI}"
+blast = "${BLAST_NODE_URI}"
+mode = "${MODE_NODE_URI}"
+thundercore = "${THUNDERCORE_NODE_URI}"
+coredao = "${COREDAO_NODE_URI}"
+xlayer = "${XLAYER_NODE_URI}"
+taiko = "${TAIKO_NODE_URI}"
+fuse = "${FUSE_NODE_URI}"
+immutable = "${IMMUTABLE_NODE_URI}"
+scroll = "${SCROLL_NODE_URI}"
+manta = "${MANTA_NODE_URI}"
+sei = "${SEI_NODE_URI}"
+celo = "${CELO_NODE_URI}"
+fraxtal = "${FRAXTAL_NODE_URI}"
+astar = "${ASTAR_NODE_URI}"
+astarzkevm = "${ASTARZKEVM_NODE_URI}"
+rootstock = "${ROOTSTOCK_NODE_URI}"
+moonbeam = "${MOONBEAM_NODE_URI}"
+skale = "${SKALE_NODE_URI}"
+worldchain = "${WORLDCHAIN_NODE_URI}"
 
 [etherscan]
 mainnet = { key = "${MAINNET_ETHERSCAN_API_KEY}" }
 polygon = { key = "${POLYGON_ETHERSCAN_API_KEY}" }
-gnosis = { key = "${GNOSIS_ETHERSCAN_API_KEY}" , url = "https://api.gnosisscan.io/api"}
-polygon-zkevm = { key = "${POLYGONZKEVM_ETHERSCAN_API_KEY}" , url = "https://api-zkevm.polygonscan.com/api"}
+fantom = { key = "${FANTOM_ETHERSCAN_API_KEY}" }
+optimism = { key = "${OPTIMISM_ETHERSCAN_API_KEY}" }
+arbitrum = { key = "${ARBITRUM_ETHERSCAN_API_KEY}" }
+avalanche = { key = "${AVALANCHE_ETHERSCAN_API_KEY}" }
+aurora = { key = "${AURORA_ETHERSCAN_API_KEY}" }
+bsc = { key = "${BSC_ETHERSCAN_API_KEY}" }
+gnosis = { key = "${GNOSIS_ETHERSCAN_API_KEY}" }
+polygonzkevm = { key = "${POLYGONZKEVM_ETHERSCAN_API_KEY}" }
+base = { key = "${BASE_ETHERSCAN_API_KEY}" }
+bob = { key = "${BOB_ETHERSCAN_API_KEY}" }
+linea = { key = "${LINEA_ETHERSCAN_API_KEY}" }
+zksync = { key = "${ZKSYNC_ETHERSCAN_API_KEY}" }
+mantle = { key = "${MANTLE_ETHERSCAN_API_KEY}" }
+filecoin = { key = "${FILECOIN_ETHERSCAN_API_KEY}" }
+blast = { key = "${BLAST_ETHERSCAN_API_KEY}" }
+mode = { key = "${MODE_ETHERSCAN_API_KEY}" }
+thundercore = { key = "${THUNDERCORE_ETHERSCAN_API_KEY}" }
+coredao = { key = "${COREDAO_ETHERSCAN_API_KEY}" }
+xlayer = { key = "${XLAYER_ETHERSCAN_API_KEY}" }
+taiko = { key = "${TAIKO_ETHERSCAN_API_KEY}" }
+fuse = { key = "${FUSE_ETHERSCAN_API_KEY}" }
+immutable = { key = "${IMMUTABLE_ETHERSCAN_API_KEY}" }
+scroll = { key = "${SCROLL_ETHERSCAN_API_KEY}" }
+manta = { key = "${MANTA_ETHERSCAN_API_KEY}" }
+sei = { key = "${SEI_ETHERSCAN_API_KEY}" }
+celo = { key = "${CELO_ETHERSCAN_API_KEY}" }
+fraxtal = { key = "${FRAXTAL_ETHERSCAN_API_KEY}" }
+astar = { key = "${ASTAR_ETHERSCAN_API_KEY}" }
+astarzkevm = { key = "${ASTARZKEVM_ETHERSCAN_API_KEY}" }
+rootstock = { key = "${ROOTSTOCK_ETHERSCAN_API_KEY}" }
+moonbeam = { key = "${MOONBEAM_ETHERSCAN_API_KEY}" }
+skale = { key = "${SKALE_ETHERSCAN_API_KEY}" }
+worldchain = { key = "${WORLDCHAIN_ETHERSCAN_API_KEY}" }

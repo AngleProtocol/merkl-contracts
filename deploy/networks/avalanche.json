@@ -1,0 +1,9 @@
+{
+  "angleLabs": "0xC493c5Fec851768deEB8F5ecba213e204A7256b6",
+  "governor": "0x43a7947A1288e65fAF30D8dDb3ca61Eaabd41613",
+  "guardian": "0xCcD44983f597aE4d4E2B70CF979597D63a10870D",
+  "oneInchRouter": "0x1111111254eeb25477b68fb85ed929f73a960582",
+  "uniswapV3Router": "0x0000000000000000000000000000000000000000",
+  "dust": "0",
+  "vaultsList": ["wAVAX", "USDC"]
+}

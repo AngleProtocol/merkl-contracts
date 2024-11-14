@@ -7,10 +7,10 @@
   resolved "https://registry.yarnpkg.com/@aashutoshrathi/word-wrap/-/word-wrap-1.2.6.tgz#bd9154aec9983f77b3a034ecaa015c2e4201f6cf"
   integrity sha512-1Yjs2SvM8TflER/OD3cOjhWWOZb58A2t7wpE2S9XfBYTiIl+XFhQG2bjy4Pu1I+EAlCNUzRDYDdFwFYUKvXcIA==
 
-"@angleprotocol/sdk@2.7.0":
-  version "2.7.0"
-  resolved "https://npm.pkg.github.com/download/@angleprotocol/sdk/2.7.0/1c2a1d32c4ca3792c2325d86d4830aed03f18442#1c2a1d32c4ca3792c2325d86d4830aed03f18442"
-  integrity sha512-CjLSxubhuRw68DP4u6Fpa/GnluaxB86FmAIC2W+ysF5o38nMP/TcHbWDK/WyM85QorZWT5AdzyS/fggyZrAUOA==
+"@angleprotocol/sdk@2.28.34":
+  version "2.28.34"
+  resolved "https://npm.pkg.github.com/download/@angleprotocol/sdk/2.28.34/cb2f80fa36f92e60dd96f5679d0a34565410c236#cb2f80fa36f92e60dd96f5679d0a34565410c236"
+  integrity sha512-+44iqaOYZX5hh/DURiThFhQEDDXKIlofoA2zwU3THv2XISaSE2x8t3UJoyYRwCzJrTuNXJSPu4MHzAgtLMF0Rg==
   dependencies:
     "@apollo/client" "^3.7.17"
     "@typechain/ethers-v5" "^10.0.0"
@@ -9189,10 +9189,10 @@ solc@0.7.3:
     semver "^5.5.0"
     tmp "0.0.33"
 
-solc@0.8.12:
-  version "0.8.12"
-  resolved "https://registry.npmjs.org/solc/-/solc-0.8.12.tgz"
-  integrity sha512-TU3anAhKWBQ/WrerJ9EcHrNwGOA1y5vIk5Flz7dBNamLDkX9VQTIwcKd3FiZsT0Ew8rSU7RTmJyGNHRGzP5TBA==
+solc@0.8.17:
+  version "0.8.17"
+  resolved "https://registry.yarnpkg.com/solc/-/solc-0.8.17.tgz#43f129ce31572625593677cc3ff53eb32100148c"
+  integrity sha512-AFCiJ+b4RosyyNhnfdVH4ZR1+TxiL91iluPjw0EJslIu4LXGM9NYqi2z5y8TqochC4tcH9QsHfwWhOIC9jPDKA==
   dependencies:
     command-exists "^1.2.8"
     commander "^8.1.0"
