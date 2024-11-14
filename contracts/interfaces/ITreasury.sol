@@ -26,4 +26,9 @@ interface ITreasury {
     /// @dev Access control is only kept in the `CoreBorrow` contract which means that this function
     /// queries the `CoreBorrow` contract
     function isGovernorOrGuardian(address admin) external view returns (bool);
+
+    /// @param _flashLoanModule Reference to the new flash loan module
+    /// @dev This function removes the minting right to the old flash loan module and grants
+    /// it to the new module
+    function setFlashLoanModule(address _flashLoanModule) external;
 }
