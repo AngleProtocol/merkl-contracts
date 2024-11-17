@@ -2,7 +2,7 @@ import 'dotenv/config';
 
 export function nodeUrl(networkName: string): string {
   if (networkName) {
-    const uri = process.env[networkName.toUpperCase() + '_NODE_URI'];
+    const uri = process.env['ETH_NODE_URI_' + networkName.toUpperCase()];
     if (uri && uri !== '') {
       return uri;
     }
@@ -36,7 +36,7 @@ export function etherscanKey(networkName: string): string {
 
 export function getMnemonic(networkName: string): string {
   if (networkName) {
-    const mnemonic = process.env[networkName.toUpperCase() + '_MNEMONIC'];
+    const mnemonic = process.env['MNEMONIC_' + networkName.toUpperCase()];
     if (mnemonic && mnemonic !== '') {
       return mnemonic;
     }
