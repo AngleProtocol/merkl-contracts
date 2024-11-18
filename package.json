@@ -24,6 +24,7 @@
     "etherscan": "hardhat etherscan-verify --network",
     "foundry:compile": "forge build --optimize --optimizer-runs 1000",
     "foundry:coverage": "forge coverage --ir-minimum --report lcov && yarn lcov:clean && yarn lcov:generate-html",
+    "foundry:script": "forge script -vvvv",
     "foundry:deploy": "forge script --broadcast --verify -vvvv",
     "foundry:gas": "forge test --gas-report",
     "foundry:run": "docker run -it --rm -v $(pwd):/app -w /app ghcr.io/foundry-rs/foundry sh",
@@ -55,7 +56,7 @@
     "url": "https://github.com/AngleProtocol/merkl-contracts/issues"
   },
   "devDependencies": {
-    "@angleprotocol/sdk": "2.28.34",
+    "@angleprotocol/sdk": "2.33.35",
     "@ethersproject/abi": "^5.7.0",
     "@ethersproject/providers": "^5.7.1",
     "@nomicfoundation/hardhat-chai-matchers": "^1.0.3",

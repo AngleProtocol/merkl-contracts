@@ -31,7 +31,7 @@ In order to interact with non local networks, you must create an `.env` that has
 - `ETH_NODE_URI`
 - `ETHERSCAN_API_KEY`
 
-You can copy paste the `.env.example` file into `.env` and fill with your keys/RPCs.
+You can copy paste the `.env.hardhat.example` or `.env.foundry.example` file into `.env` and fill with your keys/RPCs.
 
 Warning: always keep your confidential information safe.
 
@@ -55,8 +55,24 @@ yarn hardhat:coverage
 
 ### Deploying
 
+#### Hardhat
+
 ```bash
 yarn deploy mainnet
+```
+
+#### Foundry
+
+Run without broadcasting:
+
+```bash
+yarn foundry:script <path_to_script> --rpc-url <network>
+```
+
+Run with broadcasting:
+
+```bash
+yarn foundry:deploy <path_to_script> --rpc-url <network>
 ```
 
 ### Deploying with Ignition
