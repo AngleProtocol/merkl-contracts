@@ -17,6 +17,7 @@ import { ICore } from "../../contracts/interfaces/ICore.sol";
 import { BaseScript } from "../utils/Base.s.sol";
 import { MockToken } from "../../contracts/mock/MockToken.sol";
 
+// NOTE: Before running this script on a new chain, make sure to create the AngleLabs multisig and update the sdk with the new address
 contract MainDeployScript is Script, BaseScript, JsonReader {
     uint256 private DEPLOYER_PRIVATE_KEY;
     uint256 private MERKL_DEPLOYER_PRIVATE_KEY;
