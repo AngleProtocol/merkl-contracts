@@ -6,12 +6,12 @@ import { TransparentUpgradeableProxy } from "@openzeppelin/contracts/proxy/trans
 import { ProxyAdmin } from "@openzeppelin/contracts/proxy/transparent/ProxyAdmin.sol";
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import { console } from "forge-std/console.sol";
 
 import { CoreBorrow } from "../../contracts/core/CoreBorrow.sol";
 import { Disputer } from "../../contracts/Disputer.sol";
 import { Distributor } from "../../contracts/Distributor.sol";
 import { DistributionCreator } from "../../contracts/DistributionCreator.sol";
-import { console } from "forge-std/console.sol";
 import { JsonReader } from "../utils/JsonReader.sol";
 import { ICore } from "../../contracts/interfaces/ICore.sol";
 import { BaseScript } from "../utils/Base.s.sol";
@@ -255,10 +255,11 @@ contract MainDeployScript is Script, BaseScript, JsonReader {
         // Deploy MockToken with same parameters as in TypeScript
         MockToken token = new MockToken("aglaMerkl", "aglaMerkl", 6);
 
-        // Mint the same amount of tokens to the deployer
-        token.mint(msg.sender, 1000000000000000000000000000);
-
         console.log("AglaMerkl Token:", address(token));
+        console.log("Minting tokens to deployer:", DEPLOYER_ADDRESS);
+        // Mint the same amount of tokens to the deployer
+        token.mint(DEPLOYER_ADDRESS, 1000000000000000000000000000);
+
         return address(token);
     }
 
