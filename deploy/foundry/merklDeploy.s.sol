@@ -103,12 +103,13 @@ contract MainDeployScript is Script, BaseScript, JsonReader {
         console.log("ANGLE_LABS:", ANGLE_LABS);
 
         // Compute addresses from private keys
-        // DEPLOYER_ADDRESS = vm.addr(DEPLOYER_PRIVATE_KEY);
         DEPLOYER_ADDRESS = vm.addr(DEPLOYER_PRIVATE_KEY);
         MERKL_DEPLOYER_ADDRESS = vm.addr(MERKL_DEPLOYER_PRIVATE_KEY);
         console.log("DEPLOYER_ADDRESS:", DEPLOYER_ADDRESS);
         console.log("MERKL_DEPLOYER_ADDRESS:", MERKL_DEPLOYER_ADDRESS);
         console.log("DISPUTE TOKEN:", DISPUTE_TOKEN);
+
+        if (DEPLOYER_ADDRESS == ANGLE_LABS) revert("ANGLE_LABS cannot be the deployer address");
 
         // 1. Deploy using DEPLOYER_PRIVATE_KEY
         vm.startBroadcast(DEPLOYER_PRIVATE_KEY);
@@ -251,6 +252,11 @@ contract MainDeployScript is Script, BaseScript, JsonReader {
 
     function deployDisputer(address distributor) public returns (address) {
         console.log("\n=== Deploying Disputer ===");
+        // Check if deployer is the guardian
+        if (DEPLOYER_ADDRESS != GUARDIAN_ADDRESS) {
+            console.log("Skipping Disputer deployment - deployer is not the guardian");
+            return address(0);
+        }
 
         // Check if dispute token is set
         if (address(Distributor(distributor).disputeToken()) == address(0)) {
