@@ -60,6 +60,8 @@ rootstock = "${ROOTSTOCK_NODE_URI}"
 moonbeam = "${MOONBEAM_NODE_URI}"
 skale = "${SKALE_NODE_URI}"
 worldchain = "${WORLDCHAIN_NODE_URI}"
+lisk = "${LISK_NODE_URI}"
+etherlink = "${ETHERLINK_NODE_URI}"
 
 [etherscan]
 localhost = { url = "http://localhost:4000", key = "${LOCALHOST_ETHERSCAN_API_KEY}" }
@@ -98,3 +100,5 @@ rootstock = { chainId = 30, key = "${ROOTSTOCK_ETHERSCAN_API_KEY}" }
 moonbeam = { chainId = 1284, key = "${MOONBEAM_ETHERSCAN_API_KEY}" }
 skale = { chainId = 2046399126, key = "${SKALE_ETHERSCAN_API_KEY}" }
 worldchain = { chainId = 480, key = "${WORLDCHAIN_ETHERSCAN_API_KEY}" }
+lisk = { chainId = 1135, key = "${LISK_ETHERSCAN_API_KEY}", url = "https://blockscout.lisk.com/api/" }
+etherlink = { chainId = 42793, key = "${ETHERLINK_ETHERSCAN_API_KEY}", url= "https://explorer.etherlink.com/api" }
