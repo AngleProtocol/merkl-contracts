@@ -263,11 +263,14 @@ contract MainDeployScript is Script, BaseScript, JsonReader {
             console.log("Skipping Disputer deployment - dispute token not set");
             return address(0);
         }
-        // Deploy implementation directly (no proxy needed)
+
         address[] memory whitelist = new address[](3);
         whitelist[0] = 0xeA05F9001FbDeA6d4280879f283Ff9D0b282060e;
         whitelist[1] = 0x0dd2Ea40A3561C309C03B96108e78d06E8A1a99B;
         whitelist[2] = 0xF4c94b2FdC2efA4ad4b831f312E7eF74890705DA;
+
+        // Same on every chains
+        address createX = 0xba5Ed099633D3B313e4D5F7bdc1305d3c28ba5Ed;
 
         // Create initialization bytecode
         bytes
@@ -277,13 +280,19 @@ contract MainDeployScript is Script, BaseScript, JsonReader {
         //     abi.encode(GUARDIAN_ADDRESS, whitelist, distributor)
         // ); // weird - not equivalent to the above bytecode
 
-        // Use a deterministic salt
+        // Check if CreateX contract is deployed
+        uint256 codeSize;
+        assembly {
+            codeSize := extcodesize(createX)
+        }
+        if (codeSize == 0) {
+            console.log("Skipping Disputer deployment - CreateX contract not found on this chain");
+            return address(0);
+        }
+
+        // Deploy using the specified CREATE2 deployer and a deterministic salt
         bytes32 salt = vm.envBytes32("DEPLOY_SALT");
-
-        // Deploy using the specified CREATE2 deployer
-        address createX = 0xba5Ed099633D3B313e4D5F7bdc1305d3c28ba5Ed;
         bytes memory callData = abi.encodeWithSignature("deployCreate2(bytes32,bytes)", salt, bytecode);
-
         (bool success, bytes memory returnData) = createX.call(callData);
 
         require(success, "CREATE2 deployment failed");
