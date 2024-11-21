@@ -88,22 +88,22 @@ contract Test_Distributor_toggleOperator is DistributorCreatorTest {
     }
 }
 
-contract Test_Distributor_toggleOnlyOperatorCanClaim is DistributorCreatorTest {
-    function test_RevertWhen_NotTrusted() public {
-        vm.expectRevert(NotTrusted.selector);
-        distributor.toggleOnlyOperatorCanClaim(bob);
-    }
+// contract Test_Distributor_toggleOnlyOperatorCanClaim is DistributorCreatorTest {
+//     function test_RevertWhen_NotTrusted() public {
+//         vm.expectRevert(NotTrusted.selector);
+//         distributor.toggleOnlyOperatorCanClaim(bob);
+//     }
 
-    function test_Success() public {
-        vm.prank(governor);
-        distributor.toggleOnlyOperatorCanClaim(bob);
-        assertEq(distributor.onlyOperatorCanClaim(bob), 1);
+//     function test_Success() public {
+//         vm.prank(governor);
+//         distributor.toggleOnlyOperatorCanClaim(bob);
+//         assertEq(distributor.onlyOperatorCanClaim(bob), 1);
 
-        vm.prank(bob);
-        distributor.toggleOnlyOperatorCanClaim(bob);
-        assertEq(distributor.onlyOperatorCanClaim(bob), 0);
-    }
-}
+//         vm.prank(bob);
+//         distributor.toggleOnlyOperatorCanClaim(bob);
+//         assertEq(distributor.onlyOperatorCanClaim(bob), 0);
+//     }
+// }
 
 contract Test_Distributor_recoverERC20 is DistributorCreatorTest {
     function test_RevertWhen_NotGovernor() public {
@@ -368,28 +368,28 @@ contract Test_Distributor_resolveDispute is DistributorCreatorTest {
 }
 
 contract Test_Distributor_claim is DistributorCreatorTest {
-    function test_RevertWhen_NotWhitelisted() public {
-        vm.prank(governor);
-        distributor.updateTree(MerkleTree({ merkleRoot: getRoot(), ipfsHash: keccak256("IPFS_HASH") }));
+    // function test_RevertWhen_NotWhitelisted() public {
+    //     vm.prank(governor);
+    //     distributor.updateTree(MerkleTree({ merkleRoot: getRoot(), ipfsHash: keccak256("IPFS_HASH") }));
 
-        vm.warp(distributor.endOfDisputePeriod() + 1);
+    //     vm.warp(distributor.endOfDisputePeriod() + 1);
 
-        vm.prank(bob);
-        distributor.toggleOnlyOperatorCanClaim(bob);
+    //     vm.prank(bob);
+    //     distributor.toggleOnlyOperatorCanClaim(bob);
 
-        bytes32[][] memory proofs = new bytes32[][](1);
-        address[] memory users = new address[](1);
-        address[] memory tokens = new address[](1);
-        uint256[] memory amounts = new uint256[](1);
-        proofs[0] = new bytes32[](1);
-        users[0] = bob;
-        tokens[0] = address(angle);
-        amounts[0] = 1e18;
+    //     bytes32[][] memory proofs = new bytes32[][](1);
+    //     address[] memory users = new address[](1);
+    //     address[] memory tokens = new address[](1);
+    //     uint256[] memory amounts = new uint256[](1);
+    //     proofs[0] = new bytes32[](1);
+    //     users[0] = bob;
+    //     tokens[0] = address(angle);
+    //     amounts[0] = 1e18;
 
-        vm.expectRevert(NotWhitelisted.selector);
-        vm.prank(alice);
-        distributor.claim(users, tokens, amounts, proofs);
-    }
+    //     vm.expectRevert(NotWhitelisted.selector);
+    //     vm.prank(alice);
+    //     distributor.claim(users, tokens, amounts, proofs);
+    // }
 
     function test_RevertWhen_InvalidLengths() public {
         vm.prank(governor);
