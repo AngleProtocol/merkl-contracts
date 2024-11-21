@@ -18,7 +18,7 @@ contract DistributorTest is Fixture {
 
         distributorImpl = new Distributor();
         distributor = Distributor(deployUUPS(address(distributorImpl), hex""));
-        distributor.initialize(IAccessControlManager(address(AccessControlManager)));
+        distributor.initialize(IAccessControlManager(address(accessControlManager)));
 
         vm.startPrank(governor);
         distributor.setDisputeAmount(1e18);
@@ -53,9 +53,9 @@ contract Test_Distributor_Initialize is DistributorTest {
     }
 
     function test_Success() public {
-        d.initialize(IAccessControlManager(address(AccessControlManager)));
+        d.initialize(IAccessControlManager(address(accessControlManager)));
 
-        assertEq(address(AccessControlManager), address(d.accessControlManager()));
+        assertEq(address(accessControlManager), address(d.accessControlManager()));
     }
 }
 

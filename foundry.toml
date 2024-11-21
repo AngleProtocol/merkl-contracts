@@ -7,7 +7,7 @@ libs = ['node_modules']
 script = 'scripts'
 cache_path = 'cache-forge'
 gas_reports = ["*"]
-optimizer_runs=100
+optimizer_runs = 100
 fs_permissions = [{ access = "read", path = "./node_modules/@angleprotocol/sdk/dist/src/registry/registry.json" }]
 solc = "0.8.24"
 

@@ -8,6 +8,7 @@ import { DistributionCreator, DistributionParameters, CampaignParameters, Reward
 import { Errors } from "../../contracts/utils/Errors.sol";
 import { Fixture, IERC20 } from "../Fixture.t.sol";
 import { IAccessControlManager } from "../../contracts/interfaces/IAccessControlManager.sol";
+import { JsonReader } from "../../scripts/utils/JsonReader.sol";
 
 contract DistributionCreatorTest is Fixture {
     using SafeERC20 for IERC20;
@@ -108,19 +109,19 @@ contract Test_DistributionCreator_Initialize is DistributionCreatorTest {
         d.initialize(IAccessControlManager(address(0)), address(bob), 1e8);
 
         vm.expectRevert(Errors.ZeroAddress.selector);
-        d.initialize(IAccessControlManager(address(AccessControlManager)), address(0), 1e8);
+        d.initialize(IAccessControlManager(address(accessControlManager)), address(0), 1e8);
     }
 
     function test_RevertWhen_InvalidParam() public {
         vm.expectRevert(Errors.InvalidParam.selector);
-        d.initialize(IAccessControlManager(address(AccessControlManager)), address(bob), 1e9);
+        d.initialize(IAccessControlManager(address(accessControlManager)), address(bob), 1e9);
     }
 
     function test_Success() public {
-        d.initialize(IAccessControlManager(address(AccessControlManager)), address(bob), 1e8);
+        d.initialize(IAccessControlManager(address(accessControlManager)), address(bob), 1e8);
 
         assertEq(address(d.distributor()), address(bob));
-        assertEq(address(d.accessControlManager()), address(AccessControlManager));
+        assertEq(address(d.accessControlManager()), address(accessControlManager));
         assertEq(d.defaultFees(), 1e8);
     }
 }

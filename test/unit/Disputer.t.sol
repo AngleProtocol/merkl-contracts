@@ -75,7 +75,7 @@ contract DisputerTest is DistributorTest {
         // set up new distributor
         distributorImpl = new Distributor();
         distributor = Distributor(deployUUPS(address(distributorImpl), hex""));
-        distributor.initialize(IAccessControlManager(address(AccessControlManager)));
+        distributor.initialize(IAccessControlManager(address(accessControlManager)));
 
         distributor.setDisputeAmount(1e18);
         distributor.setDisputePeriod(1 days);

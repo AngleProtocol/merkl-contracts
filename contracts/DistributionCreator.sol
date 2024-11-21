@@ -53,7 +53,7 @@ import { Distributor } from "./Distributor.sol";
 /// @author Angle Labs, Inc.
 /// @notice Manages the distribution of rewards through the Merkl system
 /// @dev This contract is mostly a helper for APIs built on top of Merkl
-/// @dev This contract is distinguishes two types of different rewards:
+/// @dev This contract distinguishes two types of different rewards:
 /// - distributions: type of campaign for concentrated liquidity pools created before Feb 15 2024,
 /// now deprecated
 /// - campaigns: the more global name to describe any reward program on top of Merkl
@@ -132,7 +132,13 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     mapping(bytes32 => CampaignParameters) public campaignOverrides;
 
     /// @notice Maps a campaignId to the block numbers at which it's been updated
-    mapping(bytes32 => uint256[]) public campaignOverridesBlocks;
+    mapping(bytes32 => uint256[]) public campaignOverridesTimestamp;
+
+    /// @notice Maps one address to another one to reallocate rewards for a given campaign
+    mapping(bytes32 => mapping(address => address)) public campaignReallocation;
+
+    /// @notice List all reallocated address for a given campaign
+    mapping(bytes32 => address[]) public campaignListReallocation;
 
     /*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                                                         EVENTS                                                      
@@ -288,12 +294,18 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
             newCampaign.rewardToken != _campaign.rewardToken ||
             newCampaign.amount != _campaign.amount ||
             newCampaign.startTimestamp != _campaign.startTimestamp ||
-            // TODO we may want to be able to override the duration
-            // but we need to make sure that rewards/s is not an invariant in the engine
-            newCampaign.duration != _campaign.duration
+            // End timestamp should be in the future
+            newCampaign.duration <= block.timestamp - _campaign.startTimestamp
         ) revert Errors.InvalidOverride();
+
+        // Take a new fee to not trick the system by creating a campaign with the smallest fee
+        // and then overriding it with a campaign with a bigger fee
+        _computeFees(newCampaign.campaignType, newCampaign.amount, newCampaign.rewardToken);
+
+        newCampaign.campaignId = _campaignId;
+        newCampaign.creator = msg.sender;
         campaignOverrides[_campaignId] = newCampaign;
-        campaignOverridesBlocks[_campaignId].push(block.number);
+        campaignOverridesTimestamp[_campaignId].push(block.timestamp);
         emit CampaignOverride(_campaignId, newCampaign);
     }
 
@@ -305,7 +317,8 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @dev It is meant to be used for the case of addresses accruing rewards but unable to claim them
     function reallocateCampaignRewards(bytes32 _campaignId, address[] memory froms, address to) external {
         CampaignParameters memory _campaign = campaign(_campaignId);
-        if (_campaign.creator != msg.sender) revert Errors.InvalidOverride();
+        if (_campaign.creator != msg.sender || block.timestamp < _campaign.startTimestamp + _campaign.duration)
+            revert Errors.InvalidOverride();
 
         uint256 fromsLength = froms.length;
         address[] memory successfullFrom = new address[](fromsLength);
@@ -314,6 +327,8 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
             (uint208 amount, uint48 timestamp, ) = Distributor(distributor).claimed(froms[i], _campaign.rewardToken);
             if (amount == 0 && timestamp == 0) {
                 successfullFrom[count] = froms[i];
+                campaignReallocation[_campaignId][froms[i]] = to;
+                campaignListReallocation[_campaignId].push(froms[i]);
                 count++;
             }
         }
@@ -404,6 +419,14 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         uint32 first
     ) external view returns (CampaignParameters[] memory, uint256 lastIndexCampaign) {
         return _getCampaignsBetween(start, end, skip, first);
+    }
+
+    function getCampaignOverridesTimestamp(bytes32 _campaignId) external view returns (uint256[] memory) {
+        return campaignOverridesTimestamp[_campaignId];
+    }
+
+    function getCampaignListReallocation(bytes32 _campaignId) external view returns (address[] memory) {
+        return campaignListReallocation[_campaignId];
     }
 
     /*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -514,12 +537,13 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         if (newCampaign.creator == address(0)) newCampaign.creator = msg.sender;
 
         // Computing fees: these are waived for whitelisted addresses and if there is a whitelisted token in a pool
-        uint256 _fees = campaignSpecificFees[newCampaign.campaignType];
-        if (_fees == 1) _fees = 0;
-        else if (_fees == 0) _fees = defaultFees;
-        uint256 campaignAmountMinusFees = _computeFees(_fees, newCampaign.amount, newCampaign.rewardToken);
+        uint256 campaignAmountMinusFees = _computeFees(
+            newCampaign.campaignType,
+            newCampaign.amount,
+            newCampaign.rewardToken
+        );
+        IERC20(newCampaign.rewardToken).safeTransferFrom(msg.sender, distributor, campaignAmountMinusFees);
         newCampaign.amount = campaignAmountMinusFees;
-
         newCampaign.campaignId = campaignId(newCampaign);
 
         if (_campaignLookup[newCampaign.campaignId] != 0) revert Errors.CampaignAlreadyExists();
@@ -588,10 +612,14 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
 
     /// @notice Computes the fees to be taken on a campaign and transfers them to the fee recipient
     function _computeFees(
-        uint256 baseFeesValue,
+        uint32 campaignType,
         uint256 distributionAmount,
         address rewardToken
     ) internal returns (uint256 distributionAmountMinusFees) {
+        uint256 baseFeesValue = campaignSpecificFees[campaignType];
+        if (baseFeesValue == 1) baseFeesValue = 0;
+        else if (baseFeesValue == 0) baseFeesValue = defaultFees;
+
         uint256 _fees = (baseFeesValue * (BASE_9 - feeRebate[msg.sender])) / BASE_9;
         distributionAmountMinusFees = distributionAmount;
         if (_fees != 0) {
@@ -604,7 +632,6 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
                 distributionAmount - distributionAmountMinusFees
             );
         }
-        IERC20(rewardToken).safeTransferFrom(msg.sender, distributor, distributionAmountMinusFees);
     }
 
     /// @notice Internal version of the `sign` function
