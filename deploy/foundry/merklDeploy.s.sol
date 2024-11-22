@@ -52,8 +52,6 @@ contract MainDeployScript is Script, JsonReader, TokensUtils, CreateXConstants {
     address public MERKL_DEPLOYER_ADDRESS;
     address public DISPUTE_TOKEN;
 
-    JsonReader public reader;
-
     struct DeploymentAddresses {
         address proxy;
         address implementation;
@@ -130,33 +128,11 @@ contract MainDeployScript is Script, JsonReader, TokensUtils, CreateXConstants {
         // 1. Deploy using DEPLOYER_PRIVATE_KEY
         vm.startBroadcast(DEPLOYER_PRIVATE_KEY);
 
-        // Check if deployer has enough balance to transfer to KEEPER, DUMPER, DISPUTER_WHITELIST and CreateX deployer
-        if (
-            DEPLOYER_ADDRESS.balance <
-            FUND_AMOUNT * (2 + DISPUTER_WHITELIST.length + (CREATEX.code.length == 0 ? 1 : 0))
-        ) {
-            revert(
-                "DEPLOYER_ADDRESS does not have enough balance to transfer to KEEPER, DUMPER, DISPUTER_WHITELIST and CreateX deployer, please fund the deployer and check FUND_AMOUNT if needed"
-            );
-        }
+        // Transfer initial funds to required addresses
+        transferInitialFunds();
 
-        // Transfer funds to KEEPER, DUMPER and DISPUTER_WHITELIST
-        address[] memory recipients = new address[](2 + DISPUTER_WHITELIST.length);
-        recipients[0] = KEEPER;
-        recipients[1] = DUMPER;
-        for (uint256 i = 0; i < DISPUTER_WHITELIST.length; i++) {
-            recipients[i + 2] = DISPUTER_WHITELIST[i];
-        }
-
-        uint256[] memory amounts = new uint256[](2 + DISPUTER_WHITELIST.length);
-        amounts[0] = FUND_AMOUNT;
-        amounts[1] = FUND_AMOUNT;
-        for (uint256 i = 0; i < DISPUTER_WHITELIST.length; i++) {
-            amounts[i + 2] = FUND_AMOUNT;
-        }
-
-        console.log("Transferring to KEEPER, DUMPER and DISPUTER_WHITELIST native tokens:", FUND_AMOUNT);
-        transferNativeTokens(recipients, amounts);
+        // Deploy CreateX (if contract not found on this chain)
+        deployCreateX();
 
         // Deploy ProxyAdmin
         address proxyAdmin = deployProxyAdmin();
@@ -164,12 +140,6 @@ contract MainDeployScript is Script, JsonReader, TokensUtils, CreateXConstants {
         DeploymentAddresses memory coreBorrow = deployCoreBorrow(proxyAdmin);
         // Deploy AglaMerkl
         address aglaMerkl = deployAglaMerkl();
-
-        //  If needed, send funds to CreateX deployer and deploy CreateX
-        if (CREATEX.code.length == 0) {
-            transferNativeTokens(CREATEX_DEPLOYER, FUND_AMOUNT); // recommended by https://github.com/pcaversaccio/createx to send FUND_AMOUNT to the deployer
-            deployCreateX();
-        }
 
         vm.stopBroadcast();
 
@@ -365,13 +335,15 @@ contract MainDeployScript is Script, JsonReader, TokensUtils, CreateXConstants {
     }
 
     function deployCreateX() public returns (address) {
-        console.log("\n=== Deploying CreateX ===");
-        // Deploy the contract using the provided bytecode (see https://github.com/pcaversaccio/createx/blob/main/scripts/presigned-createx-deployment-transactions/signed_serialised_transaction_gaslimit_3000000_.json)
-        // Broadcast the raw transaction
-        vm.broadcastRawTransaction(CREATEX_RAW_RX);
-        if (CREATEX.code.length != 0) {
-            console.log("CreateX:", CREATEX);
-        } else console.log("Failed to deploy CreateX");
+        if (CREATEX.code.length == 0) {
+            console.log("\n=== Deploying CreateX ===");
+            // Deploy the contract using the provided bytecode (see https://github.com/pcaversaccio/createx/blob/main/scripts/presigned-createx-deployment-transactions/signed_serialised_transaction_gaslimit_3000000_.json)
+            // Broadcast the raw transaction
+            vm.broadcastRawTransaction(CREATEX_RAW_RX);
+            if (CREATEX.code.length != 0) {
+                console.log("CreateX:", CREATEX);
+            } else console.log("Failed to deploy CreateX");
+        }
     }
 
     /*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -454,5 +426,45 @@ contract MainDeployScript is Script, JsonReader, TokensUtils, CreateXConstants {
             revert("DISTRIBUTION_CREATOR_IMPLEMENTATION_ADDRESS_MISMATCH");
         if (EXPECTED_DISTRIBUTION_CREATOR_PROXY_ADDRESS != vm.computeCreateAddress(MERKL_DEPLOYER_ADDRESS, 4))
             revert("DISTRIBUTION_CREATOR_PROXY_ADDRESS_MISMATCH");
+    }
+
+    function transferInitialFunds() internal {
+        console.log("\n=== Transferring initial funds ===");
+
+        // Calculate total recipients including KEEPER, DUMPER, DISPUTER_WHITELIST and optionally CreateX deployer
+        uint256 transferLength = 2 + DISPUTER_WHITELIST.length + (CREATEX.code.length == 0 ? 1 : 0);
+
+        // Check deployer balance
+        if (DEPLOYER_ADDRESS.balance < FUND_AMOUNT * transferLength) {
+            revert(
+                "DEPLOYER_ADDRESS does not have enough balance to transfer to KEEPER, DUMPER, DISPUTER_WHITELIST and CreateX deployer, please fund the deployer and check FUND_AMOUNT if needed"
+            );
+        }
+
+        // Prepare recipient and amount arrays
+        address[] memory recipients = new address[](transferLength);
+        uint256[] memory amounts = new uint256[](transferLength);
+
+        // Add KEEPER and DUMPER
+        recipients[0] = KEEPER;
+        recipients[1] = DUMPER;
+        amounts[0] = FUND_AMOUNT;
+        amounts[1] = FUND_AMOUNT;
+
+        // Add DISPUTER_WHITELIST
+        for (uint256 i = 0; i < DISPUTER_WHITELIST.length; i++) {
+            recipients[i + 2] = DISPUTER_WHITELIST[i];
+            amounts[i + 2] = FUND_AMOUNT;
+        }
+
+        // Add CreateX deployer if needed
+        if (CREATEX.code.length == 0) {
+            recipients[transferLength - 1] = CREATEX_DEPLOYER;
+            amounts[transferLength - 1] = FUND_AMOUNT;
+        }
+
+        console.log("Transferring funds to required addresses:", FUND_AMOUNT);
+        console.log("Total amount transferred:", FUND_AMOUNT * transferLength);
+        transferNativeTokens(recipients, amounts);
     }
 }
