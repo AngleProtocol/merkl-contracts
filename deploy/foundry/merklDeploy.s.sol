@@ -220,7 +220,7 @@ contract MainDeployScript is Script, JsonReader, TokensUtils, CreateXConstants {
         console.log("CoreBorrow Implementation:", address(implementation));
 
         // Prepare initialization data
-        bytes memory initData = abi.encodeCall(CoreBorrow.initialize, (DEPLOYER_ADDRESS, GUARDIAN_ADDRESS));
+        bytes memory initData = abi.encodeCall(CoreBorrow.initialize, (DEPLOYER_ADDRESS, ANGLE_LABS));
 
         // Deploy proxy
         TransparentUpgradeableProxy proxy = new TransparentUpgradeableProxy(
