@@ -131,9 +131,12 @@ contract MainDeployScript is Script, JsonReader, TokensUtils, CreateXConstants {
         // Transfer initial funds to required addresses
         transferInitialFunds();
 
-        // Deploy CreateX (if contract not found on this chain)
+        vm.stopBroadcast();
+
+        // Deploy CreateX (if contract not found on this chain) without broadcasting since raw tx is already signed
         deployCreateX();
 
+        vm.startBroadcast(DEPLOYER_PRIVATE_KEY);
         // Deploy ProxyAdmin
         address proxyAdmin = deployProxyAdmin();
         // Deploy CoreBorrow
@@ -432,7 +435,7 @@ contract MainDeployScript is Script, JsonReader, TokensUtils, CreateXConstants {
         console.log("\n=== Transferring initial funds ===");
 
         // Calculate total recipients including KEEPER, DUMPER, DISPUTER_WHITELIST and optionally CreateX deployer
-        uint256 transferLength = 2 + DISPUTER_WHITELIST.length + (CREATEX.code.length == 0 ? 1 : 0);
+        uint256 transferLength = 3 + DISPUTER_WHITELIST.length + (CREATEX.code.length == 0 ? 1 : 0);
 
         // Check deployer balance
         if (DEPLOYER_ADDRESS.balance < FUND_AMOUNT * transferLength) {
@@ -445,16 +448,18 @@ contract MainDeployScript is Script, JsonReader, TokensUtils, CreateXConstants {
         address[] memory recipients = new address[](transferLength);
         uint256[] memory amounts = new uint256[](transferLength);
 
-        // Add KEEPER and DUMPER
+        // Add KEEPER, DUMPER and MERKL_DEPLOYER_ADDRESS
         recipients[0] = KEEPER;
         recipients[1] = DUMPER;
+        recipients[2] = MERKL_DEPLOYER_ADDRESS;
         amounts[0] = FUND_AMOUNT;
         amounts[1] = FUND_AMOUNT;
+        amounts[2] = FUND_AMOUNT;
 
         // Add DISPUTER_WHITELIST
         for (uint256 i = 0; i < DISPUTER_WHITELIST.length; i++) {
-            recipients[i + 2] = DISPUTER_WHITELIST[i];
-            amounts[i + 2] = FUND_AMOUNT;
+            recipients[i + 3] = DISPUTER_WHITELIST[i];
+            amounts[i + 3] = FUND_AMOUNT;
         }
 
         // Add CreateX deployer if needed
