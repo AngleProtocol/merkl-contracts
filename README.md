@@ -25,41 +25,18 @@ forge i
 
 ### Create `.env` file
 
-In order to interact with non local networks, you must create an `.env` that has, for all supported networks (Ethereum, Polygon and Arbitrum):
-
-- `MNEMONIC`
-- `ETH_NODE_URI`
-- `ETHERSCAN_API_KEY`
-
-You can copy paste the `.env.hardhat.example` or `.env.foundry.example` file into `.env` and fill with your keys/RPCs.
+You can copy paste `.env.example` file into `.env` and fill with your keys/RPCs.
 
 Warning: always keep your confidential information safe.
 
 ### Tests
 
-Contracts in this repo rely on Hardhat tests. You can run tests as follows:
-
 ```bash
 # Whole test suite
-yarn hardhat:test
-
-# Only one file
-yarn hardhat:test ./test/hardhat/distributor/distributor.test.ts
-```
-
-You can also check the coverage of the tests with:
-
-```bash
-yarn hardhat:coverage
+forge test
 ```
 
 ### Deploying
-
-#### Hardhat
-
-```bash
-yarn deploy mainnet
-```
 
 #### Foundry
 
@@ -73,20 +50,6 @@ Run with broadcasting:
 
 ```bash
 yarn foundry:deploy <path_to_script> --rpc-url <network>
-```
-
-### Deploying with Ignition
-
-To deploy with Ignition, you need to set the `DEPLOY_SALT` environment variable.
-
-```bash
-yarn hardhat:deploy-ignition ignition/modules/Disputer.ts --network localhost --strategy create2
-```
-
-If you want to deploy Disputer on all networks, you can use the following command (if you want to skip validation you can set `HARDHAT_IGNITION_CONFIRM_DEPLOYMENT=true` in .env).
-
-```bash
-ts-node scripts/deployDisputerAllNetworks.ts
 ```
 
 ## Foundry Installation
@@ -111,16 +74,6 @@ To update libraries:
 ```bash
 forge update
 ```
-
-## Verifying
-
-Blast: `yarn etherscan blast --api-url https://api.blastscan.io --solc-input --license BUSL-1.1`
-Mantle: `yarn etherscan mantle --api-url https://api.routescan.io/v2/network/mainnet/evm/43114/etherscan/api --solc-input --license BUSL-1.1`
-Mode: `yarn etherscan mode --api-url https://api.routescan.io/v2/network/mainnet/evm/34443/etherscan/api --solc-input --license BUSL-1.1`
-ImmutableZKEVM: `yarn etherscan immutablezkevm --api-url https://explorer.immutable.com/api --solc-input --license BUSL-1.1`
-Scroll:`yarn etherscan scroll --api-url https://api.scrollscan.com --solc-input --license BUSL-1.1`
-Gnosis:`yarn etherscan gnosis --api-url https://api.gnosisscan.io --solc-input --license BUSL-1.1`
-Linea:`yarn etherscan linea --api-url https://api.lineascan.build --solc-input --license BUSL-1.1`
 
 ## Audits
 
