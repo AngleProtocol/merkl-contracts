@@ -5,6 +5,8 @@ __pycache__
 .deps
 .docs
 .env
+.env.hardhat
+.env.foundry
 node_modules
 venv
 

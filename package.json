@@ -24,6 +24,7 @@
     "etherscan": "hardhat etherscan-verify --network",
     "foundry:compile": "forge build --optimize --optimizer-runs 1000",
     "foundry:coverage": "forge coverage --ir-minimum --report lcov && yarn lcov:clean && yarn lcov:generate-html",
+    "foundry:script": "forge script -vvvv",
     "foundry:deploy": "forge script --broadcast --verify -vvvv",
     "foundry:gas": "forge test --gas-report",
     "foundry:run": "docker run -it --rm -v $(pwd):/app -w /app ghcr.io/foundry-rs/foundry sh",
@@ -33,6 +34,7 @@
     "hardhat:compile": "hardhat compile",
     "hardhat:coverage": "hardhat coverage",
     "hardhat:deploy": "hardhat deploy --network linea --tags",
+    "hardhat:deploy-ignition": "hardhat ignition deploy",
     "hardhat:test": "hardhat test",
     "resolve-dispute": "hardhat run scripts/buildDisputeResolution.ts",
     "check-upgradeability": "hardhat run scripts/checkUpgradeability.ts",
@@ -54,11 +56,15 @@
     "url": "https://github.com/AngleProtocol/merkl-contracts/issues"
   },
   "devDependencies": {
-    "@angleprotocol/sdk": "2.28.34",
+    "@angleprotocol/sdk": "2.34.1",
     "@ethersproject/abi": "^5.7.0",
     "@ethersproject/providers": "^5.7.1",
     "@nomicfoundation/hardhat-chai-matchers": "^1.0.3",
+    "@nomicfoundation/hardhat-ethers": "^3.0.4",
+    "@nomicfoundation/hardhat-ignition": "^0.15.7",
+    "@nomicfoundation/hardhat-ignition-ethers": "^0.15.7",
     "@nomicfoundation/hardhat-toolbox": "^2.0.0",
+    "@nomicfoundation/hardhat-verify": "^2.0.11",
     "@nomiclabs/hardhat-ethers": "npm:hardhat-deploy-ethers",
     "@nomiclabs/hardhat-etherscan": "^3.1.5",
     "@nomiclabs/hardhat-solhint": "2.0.0",
@@ -91,7 +97,7 @@
     "eslint-plugin-promise": "^6.0.0",
     "eslint-plugin-standard": "5.0.0",
     "ethers": "^5.7.1",
-    "hardhat": "^2.19.4",
+    "hardhat": "^2.22.14",
     "hardhat-abi-exporter": "2.2.1",
     "hardhat-contract-sizer": "2.0.3",
     "hardhat-deploy": "^0.11.23",
@@ -117,7 +123,7 @@
     "ethereumjs-util": "^7.1.4",
     "fs-extra": "^10.0.0",
     "moment": "^2.29.4",
-    "solc": "0.8.12",
+    "solc": "0.8.17",
     "yargs": "^17.5.1"
   }
 }
