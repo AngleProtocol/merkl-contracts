@@ -12,13 +12,14 @@
   resolved "https://registry.yarnpkg.com/@adraffy/ens-normalize/-/ens-normalize-1.10.1.tgz#63430d04bd8c5e74f8d7d049338f1cd9d4f02069"
   integrity sha512-96Z2IP3mYmF1Xg2cDm8f1gWGf/HUVedQ3FMifV4kG/PQ4yEP51xDtRAEfhVNt5f/uzpNkZHwWQuUcu6D6K+Ekw==
 
-"@angleprotocol/sdk@2.33.35":
-  version "2.33.35"
-  resolved "https://npm.pkg.github.com/download/@angleprotocol/sdk/2.33.35/2f808a5847f32cdfad2b8f31aca39d381d85d98f#2f808a5847f32cdfad2b8f31aca39d381d85d98f"
-  integrity sha512-DT/lZU+BzEuSHMD3n0Q+bTI5MuCotv3h2J1HjZ1hK8WJWWpV2sBCYaIv41jKAUu/1f6bTjKASoe/rQpNG+x1aQ==
+"@angleprotocol/sdk@2.34.1":
+  version "2.34.1"
+  resolved "https://npm.pkg.github.com/download/@angleprotocol/sdk/2.34.1/60095c83d1e3f8057f8542418e312fae928e3c3c#60095c83d1e3f8057f8542418e312fae928e3c3c"
+  integrity sha512-jAaZj7haog2VapgtKvq5vXU+jH8ZGJvfSJqo2SmDIQKRPwNqX4PVFDOKlzRE5pHwqVPPxdT6QuDQb2v6nHuPPg==
   dependencies:
     "@apollo/client" "^3.7.17"
     "@typechain/ethers-v5" "^10.0.0"
+    "@types/lodash" "^4.17.13"
     axios "^1.7.7"
     bun-types "^1.1.27"
     class-transformer "^0.5.1"
@@ -29,6 +30,7 @@
     graphql-request "^3.6.1"
     jsbi "^4.3.0"
     keccak256 "^1.0.6"
+    lodash "^4.17.21"
     merkletreejs "^0.3.10"
     reflect-metadata "^0.2.2"
     tiny-invariant "^1.1.0"
@@ -2202,6 +2204,11 @@
   integrity sha512-xoBtGl5R9jeKUhc8ZqeYaRDx04qqJ10yhhXYGmJ4Jr8qKpvMsDQQrNUvF/wUJ4klOtmJeJM+p2Xo3zp9uaC3tw==
   dependencies:
     keyv "*"
+
+"@types/lodash@^4.17.13":
+  version "4.17.13"
+  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.17.13.tgz#786e2d67cfd95e32862143abe7463a7f90c300eb"
+  integrity sha512-lfx+dftrEZcdBPczf9d0Qv0x+j/rfNCMuC6OcfXmO8gkfeNAY88PgKUbvG56whcN23gc27yenwF6oJZXGFpYxg==
 
 "@types/lru-cache@^5.1.0":
   version "5.1.1"
