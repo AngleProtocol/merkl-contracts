@@ -75,3 +75,27 @@ contract RemoveFromWhitelist is DisputerScript {
         console.log("Address removed from whitelist:", account);
     }
 }
+
+// FundDisputerWhitelist script
+contract FundDisputerWhitelist is DisputerScript {
+    function run(uint256 fundAmount) external broadcast {
+        console.log("Chain ID:", block.chainid);
+
+        // Fund each whitelisted address
+        for (uint256 i = 0; i < DISPUTER_WHITELIST.length; i++) {
+            address recipient = DISPUTER_WHITELIST[i];
+            console.log("Funding whitelist address:", recipient);
+
+            // Transfer native token
+            (bool success, ) = recipient.call{ value: fundAmount }("");
+            require(success, "Transfer failed");
+
+            console.log("Funded with amount:", fundAmount);
+        }
+
+        // Print summary
+        console.log("\n=== Funding Summary ===");
+        console.log("Amount per address:", fundAmount);
+        console.log("Number of addresses funded:", DISPUTER_WHITELIST.length);
+    }
+}
