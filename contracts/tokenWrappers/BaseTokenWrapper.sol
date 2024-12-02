@@ -6,7 +6,9 @@ import { ERC20Upgradeable } from "@openzeppelin/contracts-upgradeable/token/ERC2
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import { IERC20, IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 
-import "../utils/UUPSHelper.sol";
+import { UUPSHelper } from "../utils/UUPSHelper.sol";
+import { ICore } from "../interfaces/ICore.sol";
+import { NotGovernor, ZeroAddress } from "../utils/Errors.sol";
 
 interface IDistributionCreator {
     function distributor() external view returns (address);
@@ -66,6 +68,6 @@ abstract contract BaseMerklTokenWrapper is UUPSHelper, ERC20Upgradeable {
         emit Recovered(tokenAddress, to, amountToRecover);
     }
 
-    /// @inheritdoc UUPSUpgradeable
+    /// @inheritdoc UUPSHelper
     function _authorizeUpgrade(address) internal view override onlyGovernorUpgrader(core) {}
 }

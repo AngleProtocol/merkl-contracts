@@ -15,6 +15,7 @@
     "foundry:setup": "curl -L https://foundry.paradigm.xyz | bash && foundryup && git submodule update --init --recursive",
     "foundry:size": "forge build --skip test --sizes",
     "foundry:test": "FOUNDRY_PROFILE=dev forge test -vvv",
+    "lint": "solhint --max-warnings 20 \"contracts/**/*.sol\"",
     "prettier": "prettier --ignore-path .gitignore --write '*.{js,ts,sol}'"
   },
   "keywords": [],

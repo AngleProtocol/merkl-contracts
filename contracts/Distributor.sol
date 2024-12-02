@@ -39,7 +39,9 @@ import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import { SafeCast } from "@openzeppelin/contracts/utils/math/SafeCast.sol";
 
-import "./utils/UUPSHelper.sol";
+import { UUPSHelper } from "./utils/UUPSHelper.sol";
+import { ICore } from "./interfaces/ICore.sol";
+import { NotWhitelisted, NotGovernor, NotGovernorOrGuardian, NotTrusted, InvalidLengths, InvalidProof, InvalidUninitializedRoot, NoDispute, UnresolvedDispute, ZeroAddress, InvalidDispute } from "./utils/Errors.sol";
 
 struct MerkleTree {
     // Root of a Merkle tree which leaves are `(address user, address token, uint amount)`
@@ -152,7 +154,7 @@ contract Distributor is UUPSHelper {
         core = _core;
     }
 
-    /// @inheritdoc UUPSUpgradeable
+    /// @inheritdoc UUPSHelper
     function _authorizeUpgrade(address) internal view override onlyGovernorUpgrader(core) {}
 
     // =============================== MAIN FUNCTION ===============================

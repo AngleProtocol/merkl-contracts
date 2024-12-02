@@ -18,6 +18,6 @@
     "reentrancy": "warn",
     "reason-string": "off",
     "func-visibility": ["warn", { "ignoreConstructors": true }],
-    "explicit-types": ["error","explicit"]
+    "explicit-types": ["error", "explicit"]
   }
 }

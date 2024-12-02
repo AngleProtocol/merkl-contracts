@@ -38,7 +38,7 @@ pragma solidity ^0.8.17;
 import { UUPSUpgradeable } from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
 import { ICore } from "../interfaces/ICore.sol";
-import "../utils/Errors.sol";
+import { NotGovernor, NotGovernorOrGuardian } from "./Errors.sol";
 
 /// @title UUPSHelper
 /// @notice Helper contract for UUPSUpgradeable contracts where the upgradeability is controlled by a specific address
@@ -56,4 +56,7 @@ abstract contract UUPSHelper is UUPSUpgradeable {
     }
 
     constructor() initializer {}
+
+    /// @inheritdoc UUPSUpgradeable
+    function _authorizeUpgrade(address newImplementation) internal virtual override {}
 }

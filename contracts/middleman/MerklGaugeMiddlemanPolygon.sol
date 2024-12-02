@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.17;
 
-import "./MerklGaugeMiddleman.sol";
+import { MerklGaugeMiddleman, ICore, IERC20 } from "./MerklGaugeMiddleman.sol";
 
 /// @title MerklGaugeMiddlemanPolygon
 /// @author Angle Labs, Inc.

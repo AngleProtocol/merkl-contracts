@@ -5,9 +5,10 @@ pragma solidity ^0.8.17;
 import { ERC20Upgradeable } from "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
-import "../DistributionCreator.sol";
-
-import "../utils/UUPSHelper.sol";
+import { DistributionCreator } from "../DistributionCreator.sol";
+import { UUPSHelper } from "../utils/UUPSHelper.sol";
+import { ICore } from "../interfaces/ICore.sol";
+import { ZeroAddress, NotGovernor } from "../utils/Errors.sol";
 
 contract AaveTokenWrapper is UUPSHelper, ERC20Upgradeable {
     using SafeERC20 for IERC20;
@@ -125,6 +126,6 @@ contract AaveTokenWrapper is UUPSHelper, ERC20Upgradeable {
         delegateReceiver[msg.sender] = receiver;
     }
 
-    /// @inheritdoc UUPSUpgradeable
+    /// @inheritdoc UUPSHelper
     function _authorizeUpgrade(address) internal view override onlyGovernorUpgrader(core) {}
 }

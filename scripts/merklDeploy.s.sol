@@ -398,7 +398,7 @@ contract MainDeployScript is Script, JsonReader, TokensUtils, CreateXConstants {
                                                          UTILS                                                      
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
-    function verifyMerklNonces() public {
+    function verifyMerklNonces() public view {
         address EXPECTED_DISTRIBUTOR_IMPLEMENTATION_ADDRESS = 0x918261fa5Dd9C3b1358cA911792E9bDF3c5CCa35;
         address EXPECTED_DISTRIBUTOR_PROXY_ADDRESS = 0x3Ef3D8bA38EBe18DB133cEc108f4D14CE00Dd9Ae;
         address EXPECTED_DISTRIBUTION_CREATOR_IMPLEMENTATION_ADDRESS = 0x7Db28175B63f154587BbB1Cae62D39Ea80A23383;
