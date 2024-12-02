@@ -4,11 +4,12 @@ pragma solidity ^0.8.17;
 import { Test } from "forge-std/Test.sol";
 import { console } from "forge-std/console.sol";
 
-import { Distributor, MerkleTree, ZeroAddress, NotGovernor, NotTrusted, InvalidLengths, InvalidProof, UnresolvedDispute, InvalidDispute, NoDispute, NotGovernorOrGuardian, NotWhitelisted } from "../../contracts/Distributor.sol";
+import { Distributor, MerkleTree } from "../../contracts/Distributor.sol";
 import { Fixture } from "../Fixture.t.sol";
 import { ICore } from "../../contracts/interfaces/ICore.sol";
+import { ZeroAddress, NotGovernor, NotTrusted, InvalidLengths, InvalidProof, UnresolvedDispute, InvalidDispute, NoDispute, NotGovernorOrGuardian, NotWhitelisted } from "../../contracts/utils/Errors.sol";
 
-contract DistributorCreatorTest is Fixture {
+contract DistributorTest is Fixture {
     Distributor public distributor;
     Distributor public distributorImpl;
 
@@ -33,7 +34,7 @@ contract DistributorCreatorTest is Fixture {
     }
 }
 
-contract Test_Distributor_Initialize is DistributorCreatorTest {
+contract Test_Distributor_Initialize is DistributorTest {
     Distributor d;
 
     function setUp() public override {
@@ -58,7 +59,7 @@ contract Test_Distributor_Initialize is DistributorCreatorTest {
     }
 }
 
-contract Test_Distributor_toggleTrusted is DistributorCreatorTest {
+contract Test_Distributor_toggleTrusted is DistributorTest {
     function test_RevertWhen_NotGovernor() public {
         vm.expectRevert(NotGovernor.selector);
         distributor.toggleTrusted(address(bob));
@@ -74,7 +75,7 @@ contract Test_Distributor_toggleTrusted is DistributorCreatorTest {
     }
 }
 
-contract Test_Distributor_toggleOperator is DistributorCreatorTest {
+contract Test_Distributor_toggleOperator is DistributorTest {
     function test_RevertWhen_NotTrusted() public {
         vm.expectRevert(NotTrusted.selector);
         distributor.toggleOperator(bob, alice);
@@ -92,7 +93,7 @@ contract Test_Distributor_toggleOperator is DistributorCreatorTest {
     }
 }
 
-contract Test_Distributor_toggleOnlyOperatorCanClaim is DistributorCreatorTest {
+contract Test_Distributor_toggleOnlyOperatorCanClaim is DistributorTest {
     function test_RevertWhen_NotTrusted() public {
         vm.expectRevert(NotTrusted.selector);
         distributor.toggleOnlyOperatorCanClaim(bob);
@@ -109,7 +110,7 @@ contract Test_Distributor_toggleOnlyOperatorCanClaim is DistributorCreatorTest {
     }
 }
 
-contract Test_Distributor_recoverERC20 is DistributorCreatorTest {
+contract Test_Distributor_recoverERC20 is DistributorTest {
     function test_RevertWhen_NotGovernor() public {
         vm.expectRevert(NotGovernor.selector);
         distributor.recoverERC20(address(0), address(0), 0);
@@ -126,7 +127,7 @@ contract Test_Distributor_recoverERC20 is DistributorCreatorTest {
     }
 }
 
-contract Test_Distributor_setDisputePeriod is DistributorCreatorTest {
+contract Test_Distributor_setDisputePeriod is DistributorTest {
     function test_RevertWhen_NotGovernor() public {
         vm.expectRevert(NotGovernor.selector);
         distributor.setDisputePeriod(0);
@@ -139,7 +140,7 @@ contract Test_Distributor_setDisputePeriod is DistributorCreatorTest {
     }
 }
 
-contract Test_Distributor_setDisputeToken is DistributorCreatorTest {
+contract Test_Distributor_setDisputeToken is DistributorTest {
     function test_RevertWhen_NotGovernor() public {
         vm.expectRevert(NotGovernor.selector);
         distributor.setDisputeToken(angle);
@@ -152,7 +153,7 @@ contract Test_Distributor_setDisputeToken is DistributorCreatorTest {
     }
 }
 
-contract Test_Distributor_setDisputeAmount is DistributorCreatorTest {
+contract Test_Distributor_setDisputeAmount is DistributorTest {
     function test_RevertWhen_NotGovernor() public {
         vm.expectRevert(NotGovernor.selector);
         distributor.setDisputeAmount(0);
@@ -165,7 +166,7 @@ contract Test_Distributor_setDisputeAmount is DistributorCreatorTest {
     }
 }
 
-contract Test_Distributor_updateTree is DistributorCreatorTest {
+contract Test_Distributor_updateTree is DistributorTest {
     function test_RevertWhen_NotTrusted() public {
         vm.expectRevert(NotTrusted.selector);
         distributor.updateTree(MerkleTree({ merkleRoot: getRoot(), ipfsHash: keccak256("IPFS_HASH") }));
@@ -232,12 +233,12 @@ contract Test_Distributor_updateTree is DistributorCreatorTest {
     }
 }
 
-contract Test_Distributor_revokeTree is DistributorCreatorTest {
+contract Test_Distributor_revokeTree is DistributorTest {
     function test_RevertWhen_NotGovernorOrGuardian() public {
         vm.prank(governor);
         distributor.updateTree(MerkleTree({ merkleRoot: getRoot(), ipfsHash: keccak256("IPFS_HASH") }));
 
-        vm.expectRevert(NotGovernorOrGuardian.selector);
+        vm.expectRevert(NotGovernor.selector);
         distributor.revokeTree();
     }
 
@@ -272,7 +273,7 @@ contract Test_Distributor_revokeTree is DistributorCreatorTest {
     }
 }
 
-contract Test_Distributor_disputeTree is DistributorCreatorTest {
+contract Test_Distributor_disputeTree is DistributorTest {
     function test_RevertWhen_UnresolvedDispute() public {
         vm.prank(governor);
         distributor.updateTree(MerkleTree({ merkleRoot: getRoot(), ipfsHash: keccak256("IPFS_HASH") }));
@@ -308,9 +309,9 @@ contract Test_Distributor_disputeTree is DistributorCreatorTest {
     }
 }
 
-contract Test_Distributor_resolveDispute is DistributorCreatorTest {
+contract Test_Distributor_resolveDispute is DistributorTest {
     function test_RevertWhen_NotGovernorOrGuardian() public {
-        vm.expectRevert(NotGovernorOrGuardian.selector);
+        vm.expectRevert(NotGovernor.selector);
         distributor.resolveDispute(true);
     }
 
@@ -371,7 +372,7 @@ contract Test_Distributor_resolveDispute is DistributorCreatorTest {
     }
 }
 
-contract Test_Distributor_claim is DistributorCreatorTest {
+contract Test_Distributor_claim is DistributorTest {
     function test_RevertWhen_NotWhitelisted() public {
         vm.prank(governor);
         distributor.updateTree(MerkleTree({ merkleRoot: getRoot(), ipfsHash: keccak256("IPFS_HASH") }));
@@ -445,6 +446,7 @@ contract Test_Distributor_claim is DistributorCreatorTest {
         amounts[0] = 1e18;
 
         vm.expectRevert(InvalidProof.selector);
+        vm.prank(bob);
         distributor.claim(users, tokens, amounts, proofs);
     }
 
@@ -482,10 +484,11 @@ contract Test_Distributor_claim is DistributorCreatorTest {
         uint256 bobBalance = agEUR.balanceOf(address(bob));
 
         vm.prank(governor);
+        vm.expectRevert(NotWhitelisted.selector); // governor not able to claim anymore
         distributor.claim(users, tokens, amounts, proofs);
 
-        assertEq(angle.balanceOf(address(alice)), aliceBalance + 1e18);
-        assertEq(agEUR.balanceOf(address(bob)), bobBalance + 5e17);
+        // assertEq(angle.balanceOf(address(alice)), aliceBalance + 1e18);
+        // assertEq(agEUR.balanceOf(address(bob)), bobBalance + 5e17);
     }
 
     function test_SuccessOperator() public {
