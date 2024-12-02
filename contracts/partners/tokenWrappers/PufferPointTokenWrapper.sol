@@ -48,7 +48,7 @@ contract PufferPointTokenWrapper is BaseMerklTokenWrapper {
     }
 
     function _beforeTokenTransfer(address from, address to, uint256 amount) internal override {
-        // Needs an RDNT approval beforehand, this is how mints of coupons are done
+        // Needs an underlying approval beforehand, this is how mints of wrappers are done
         if (to == DISTRIBUTOR) {
             IERC20(underlying).safeTransferFrom(from, address(this), amount);
             _mint(from, amount); // These are then transferred to the distributor
