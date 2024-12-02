@@ -571,7 +571,7 @@ const config: HardhatUserConfig = {
     rootstock: {
       live: true,
       url: nodeUrl('rootstock'),
-      accounts: accounts("rootstock"),
+      accounts: accounts('rootstock'),
       gas: 'auto',
       chainId: 30,
       verify: {
@@ -657,13 +657,13 @@ const config: HardhatUserConfig = {
     apiKey: {
       worldchain: etherscanKey('worldchain'),
     },
-    customChains:[
+    customChains: [
       {
         network: 'taiko',
         chainId: 167000,
         urls: {
-          apiURL: "https://api.taikoscan.io/api",
-          browserURL: "https://taikoscan.io/"
+          apiURL: 'https://api.taikoscan.io/api',
+          browserURL: 'https://taikoscan.io/',
         },
       },
       {
@@ -694,7 +694,7 @@ const config: HardhatUserConfig = {
         network: 'worldchain',
         chainId: 480,
         urls: {
-          apiURL: "https://worldchain-mainnet.explorer.alchemy.com/api",
+          apiURL: 'https://worldchain-mainnet.explorer.alchemy.com/api',
           browserURL: 'https://worldchain-mainnet.explorer.alchemy.com/',
         },
       },
