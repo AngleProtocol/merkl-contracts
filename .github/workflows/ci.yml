@@ -16,7 +16,7 @@ jobs:
       - name: Setup repo
         uses: ./.github/actions/setup-repo
         with:
-          registry-token: ${{ secrets.GH_REGISTRY_ACCESS_TOKEN }}
+          registry-token: ${{ secrets.SDK_READ_ACCESS_TOKEN }}
 
       - name: Run solhint
         run: bun lint
@@ -36,7 +36,7 @@ jobs:
       - name: Setup repo
         uses: ./.github/actions/setup-repo
         with:
-          registry-token: ${{ secrets.GH_REGISTRY_ACCESS_TOKEN }}
+          registry-token: ${{ secrets.SDK_READ_ACCESS_TOKEN }}
 
       - name: Compile foundry
         run: forge build --sizes --skip scripts/utils/CreateXConstants.sol
@@ -66,7 +66,7 @@ jobs:
       - name: Setup repo
         uses: ./.github/actions/setup-repo
         with:
-          registry-token: ${{ secrets.GH_REGISTRY_ACCESS_TOKEN }}
+          registry-token: ${{ secrets.SDK_READ_ACCESS_TOKEN }}
 
       - name: Run Foundry tests
         run: bun foundry:test

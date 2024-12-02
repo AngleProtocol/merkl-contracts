@@ -23,7 +23,7 @@ runs:
       shell: bash
       run: bun install
       env:
-        GH_REGISTRY_ACCESS_TOKEN: ${{ inputs.registry-token }}
+        SDK_READ_ACCESS_TOKEN: ${{ inputs.registry-token }}
 
     - name: Install Foundry
       uses: foundry-rs/foundry-toolchain@v1
