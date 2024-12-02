@@ -37,7 +37,7 @@ pragma solidity ^0.8.17;
 
 import { UUPSUpgradeable } from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
-import { ICore } from "../interfaces/ICore.sol";
+import { IAccessControlManager } from "../interfaces/IAccessControlManager.sol";
 import "../utils/Errors.sol";
 
 /// @title UUPSHelper
@@ -45,12 +45,12 @@ import "../utils/Errors.sol";
 /// @author Angle Labs., Inc
 /// @dev The 0 address check in the modifier allows the use of these modifiers during initialization
 abstract contract UUPSHelper is UUPSUpgradeable {
-    modifier onlyGuardianUpgrader(ICore _core) {
+    modifier onlyGuardianUpgrader(IAccessControlManager _core) {
         if (address(_core) != address(0) && !_core.isGovernorOrGuardian(msg.sender)) revert NotGovernorOrGuardian();
         _;
     }
 
-    modifier onlyGovernorUpgrader(ICore _core) {
+    modifier onlyGovernorUpgrader(IAccessControlManager _core) {
         if (address(_core) != address(0) && !_core.isGovernor(msg.sender)) revert NotGovernor();
         _;
     }

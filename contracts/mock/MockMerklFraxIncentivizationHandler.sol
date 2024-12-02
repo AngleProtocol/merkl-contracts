@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.17;
 
-import "../middleman/MerklFraxIncentivizationHandler.sol";
+import "../partners/middleman/MerklFraxIncentivizationHandler.sol";
 
 contract MockMerklFraxIncentivizationHandler is MerklFraxIncentivizationHandler {
     DistributionCreator public manager;

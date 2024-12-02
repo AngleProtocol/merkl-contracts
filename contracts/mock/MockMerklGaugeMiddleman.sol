@@ -2,14 +2,14 @@
 
 pragma solidity ^0.8.17;
 
-import "../middleman/MerklGaugeMiddleman.sol";
+import "../partners/middleman/MerklGaugeMiddleman.sol";
 
 contract MockMerklGaugeMiddleman is MerklGaugeMiddleman {
     address public angleDistributorAddress;
     IERC20 public angleAddress;
     DistributionCreator public manager;
 
-    constructor(ICore _coreBorrow) MerklGaugeMiddleman(_coreBorrow) {}
+    constructor(IAccessControlManager _coreBorrow) MerklGaugeMiddleman(_coreBorrow) {}
 
     function angle() public view override returns (IERC20) {
         return angleAddress;
