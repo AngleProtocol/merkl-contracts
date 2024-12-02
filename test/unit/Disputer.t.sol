@@ -2,11 +2,13 @@
 pragma solidity ^0.8.17;
 
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import { console } from "forge-std/console.sol";
+
 import { Distributor } from "../../contracts/Distributor.sol";
 import { Disputer } from "../../contracts/Disputer.sol";
 import { DistributorTest } from "./Distributor.t.sol";
-import { ICore } from "../../contracts/interfaces/ICore.sol";
-import { console } from "forge-std/console.sol";
+import { IAccessControlManager } from "../../contracts/interfaces/IAccessControlManager.sol";
+import { Errors } from "../../contracts/utils/Errors.sol";
 contract DisputerTest is DistributorTest {
     Disputer public disputer;
 
@@ -46,7 +48,7 @@ contract DisputerTest is DistributorTest {
 
     function test_disputeFromNonWhitelisted_shouldRevert() public {
         vm.startPrank(charlie);
-        vm.expectRevert(Disputer.NotWhitelisted.selector);
+        vm.expectRevert(Errors.NotWhitelisted.selector);
         disputer.toggleDispute("reason");
         vm.stopPrank();
     }
@@ -73,7 +75,7 @@ contract DisputerTest is DistributorTest {
         // set up new distributor
         distributorImpl = new Distributor();
         distributor = Distributor(deployUUPS(address(distributorImpl), hex""));
-        distributor.initialize(ICore(address(coreBorrow)));
+        distributor.initialize(IAccessControlManager(address(AccessControlManager)));
 
         distributor.setDisputeAmount(1e18);
         distributor.setDisputePeriod(1 days);
@@ -131,7 +133,7 @@ contract DisputerTest is DistributorTest {
         // Don't fund the contract
 
         vm.startPrank(governor);
-        vm.expectRevert(Disputer.WithdrawalFailed.selector);
+        vm.expectRevert(Errors.WithdrawalFailed.selector);
         disputer.withdrawFunds(payable(governor), amount);
         vm.stopPrank();
     }

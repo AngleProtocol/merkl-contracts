@@ -35,23 +35,20 @@
 
 pragma solidity ^0.8.17;
 
-import "../DistributionCreator.sol";
-
+import { DistributionCreator } from "../DistributionCreator.sol";
+import { IAccessControlManager } from "../interfaces/IAccessControlManager.sol";
 /// @title DistributionCreatorUpdatable
 /// @author Angle Labs, Inc.
 //solhint-disable
 contract DistributionCreatorUpdatable is DistributionCreator {
-    
-    uint8 public coreUpdated;
+    uint8 public accessControlManagerUpdated;
 
     uint256[49] private __gapUpdatable;
 
-
-    function updateCore(address _newCore) external {
-        if(coreUpdated == 0) {
-            core = ICore(_newCore);
-            coreUpdated = 1;
+    function updateAccessControlManager(address _newAccessControlManager) external {
+        if (accessControlManagerUpdated == 0) {
+            accessControlManager = IAccessControlManager(_newAccessControlManager);
+            accessControlManagerUpdated = 1;
         }
     }
-
 }

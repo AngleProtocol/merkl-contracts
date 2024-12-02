@@ -38,11 +38,9 @@ pragma solidity ^0.8.17;
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
-import { DistributionCreator, DistributionParameters } from "../DistributionCreator.sol";
-import { IUniswapV3Pool } from "../interfaces/external/uniswap/IUniswapV3Pool.sol";
-import { InvalidParams } from "../utils/Errors.sol";
-import { ICore } from "../interfaces/ICore.sol";
-import { ZeroAddress, NotGovernorOrGuardian } from "../utils/Errors.sol";
+import { DistributionCreator, DistributionParameters } from "../../DistributionCreator.sol";
+import { IAccessControlManager } from "../../interfaces/IAccessControlManager.sol";
+import { Errors } from "../../utils/Errors.sol";
 
 /// @title MerklGaugeMiddleman
 /// @author Angle Labs, Inc.
@@ -56,7 +54,7 @@ contract MerklGaugeMiddleman {
     // ================================= PARAMETERS ================================
 
     /// @notice Contract handling access control
-    ICore public accessControlManager;
+    IAccessControlManager public accessControlManager;
 
     /// @notice Maps a gauge to its reward parameters
     mapping(address => DistributionParameters) public gaugeParams;
@@ -65,8 +63,8 @@ contract MerklGaugeMiddleman {
 
     event GaugeSet(address indexed gauge);
 
-    constructor(ICore _accessControlManager) {
-        if (address(_accessControlManager) == address(0)) revert ZeroAddress();
+    constructor(IAccessControlManager _accessControlManager) {
+        if (address(_accessControlManager) == address(0)) revert Errors.ZeroAddress();
         accessControlManager = _accessControlManager;
         IERC20 _angle = angle();
         // Condition left here for testing purposes
@@ -100,14 +98,7 @@ contract MerklGaugeMiddleman {
 
     /// @notice Specifies the reward distribution parameters for `gauge`
     function setGauge(address gauge, DistributionParameters memory params) external {
-        if (!accessControlManager.isGovernorOrGuardian(msg.sender)) revert NotGovernorOrGuardian();
-        DistributionCreator manager = merklDistributionCreator();
-        if (
-            gauge == address(0) ||
-            params.rewardToken != address(angle()) ||
-            (manager.isWhitelistedToken(IUniswapV3Pool(params.uniV3Pool).token0()) == 0 &&
-                manager.isWhitelistedToken(IUniswapV3Pool(params.uniV3Pool).token1()) == 0)
-        ) revert InvalidParams();
+        if (!accessControlManager.isGovernorOrGuardian(msg.sender)) revert Errors.NotGovernorOrGuardian();
         gaugeParams[gauge] = params;
         emit GaugeSet(gauge);
     }
@@ -118,7 +109,7 @@ contract MerklGaugeMiddleman {
     /// @dev This method can be used to recover leftover ANGLE tokens in the contract
     function notifyReward(address gauge, uint256 amount) public {
         DistributionParameters memory params = gaugeParams[gauge];
-        if (params.uniV3Pool == address(0)) revert InvalidParams();
+        if (params.uniV3Pool == address(0)) revert Errors.InvalidParams();
         if (amount == 0) amount = angle().balanceOf(address(this));
         params.epochStart = uint32(block.timestamp);
         params.amount = amount;

@@ -40,8 +40,8 @@ import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.s
 import { SafeCast } from "@openzeppelin/contracts/utils/math/SafeCast.sol";
 
 import { UUPSHelper } from "./utils/UUPSHelper.sol";
-import { ICore } from "./interfaces/ICore.sol";
-import { NotWhitelisted, NotGovernor, NotGovernorOrGuardian, NotTrusted, InvalidLengths, InvalidProof, InvalidUninitializedRoot, NoDispute, UnresolvedDispute, ZeroAddress, InvalidDispute } from "./utils/Errors.sol";
+import { IAccessControlManager } from "./interfaces/IAccessControlManager.sol";
+import { Errors } from "./utils/Errors.sol";
 
 struct MerkleTree {
     // Root of a Merkle tree which leaves are `(address user, address token, uint amount)`
@@ -79,8 +79,8 @@ contract Distributor is UUPSHelper {
     /// @notice Token to deposit to freeze the roots update
     IERC20 public disputeToken;
 
-    /// @notice `Core` contract handling access control
-    ICore public core;
+    /// @notice `AccessControlManager` contract handling access control
+    IAccessControlManager public accessControlManager;
 
     /// @notice Address which created the dispute
     /// @dev Used to store if there is an ongoing dispute
@@ -128,20 +128,23 @@ contract Distributor is UUPSHelper {
 
     /// @notice Checks whether the `msg.sender` has the governor role or the guardian role
     modifier onlyGovernorOrGuardian() {
-        if (!core.isGovernorOrGuardian(msg.sender)) revert NotGovernorOrGuardian();
+        if (!accessControlManager.isGovernorOrGuardian(msg.sender)) revert Errors.NotGovernorOrGuardian();
         _;
     }
 
     /// @notice Checks whether the `msg.sender` has the governor role or the guardian role
     modifier onlyGovernor() {
-        if (!core.isGovernor(msg.sender)) revert NotGovernor();
+        if (!accessControlManager.isGovernor(msg.sender)) revert Errors.NotGovernor();
         _;
     }
 
     /// @notice Checks whether the `msg.sender` is the `user` address or is a trusted address
     modifier onlyTrustedOrUser(address user) {
-        if (user != msg.sender && canUpdateMerkleRoot[msg.sender] != 1 && !core.isGovernorOrGuardian(msg.sender))
-            revert NotTrusted();
+        if (
+            user != msg.sender &&
+            canUpdateMerkleRoot[msg.sender] != 1 &&
+            !accessControlManager.isGovernorOrGuardian(msg.sender)
+        ) revert Errors.NotTrusted();
         _;
     }
 
@@ -149,13 +152,13 @@ contract Distributor is UUPSHelper {
 
     constructor() initializer {}
 
-    function initialize(ICore _core) external initializer {
-        if (address(_core) == address(0)) revert ZeroAddress();
-        core = _core;
+    function initialize(IAccessControlManager _accessControlManager) external initializer {
+        if (address(_accessControlManager) == address(0)) revert Errors.ZeroAddress();
+        accessControlManager = _accessControlManager;
     }
 
     /// @inheritdoc UUPSHelper
-    function _authorizeUpgrade(address) internal view override onlyGovernorUpgrader(core) {}
+    function _authorizeUpgrade(address) internal view override onlyGovernorUpgrader(accessControlManager) {}
 
     // =============================== MAIN FUNCTION ===============================
 
@@ -178,7 +181,7 @@ contract Distributor is UUPSHelper {
             usersLength != tokens.length ||
             usersLength != amounts.length ||
             usersLength != proofs.length
-        ) revert InvalidLengths();
+        ) revert Errors.InvalidLengths();
 
         for (uint256 i; i < usersLength; ) {
             address user = users[i];
@@ -186,11 +189,12 @@ contract Distributor is UUPSHelper {
             uint256 amount = amounts[i];
 
             // Only approved operator can claim for `user`
-            if (msg.sender != user && tx.origin != user && operators[user][msg.sender] == 0) revert NotWhitelisted();
+            if (msg.sender != user && tx.origin != user && operators[user][msg.sender] == 0)
+                revert Errors.NotWhitelisted();
 
             // Verifying proof
             bytes32 leaf = keccak256(abi.encode(user, token, amount));
-            if (!_verifyProof(leaf, proofs[i])) revert InvalidProof();
+            if (!_verifyProof(leaf, proofs[i])) revert Errors.InvalidProof();
 
             // Closing reentrancy gate here
             uint256 toSend = amount - claimed[user][token].amount;
@@ -226,8 +230,8 @@ contract Distributor is UUPSHelper {
             // A trusted address cannot update a tree right after a precedent tree update otherwise it can de facto
             // validate a tree which has not passed the dispute period
             ((canUpdateMerkleRoot[msg.sender] != 1 || block.timestamp < endOfDisputePeriod) &&
-                !core.isGovernor(msg.sender))
-        ) revert NotTrusted();
+                !accessControlManager.isGovernor(msg.sender))
+        ) revert Errors.NotTrusted();
         MerkleTree memory _lastTree = tree;
         tree = _tree;
         lastTree = _lastTree;
@@ -241,8 +245,8 @@ contract Distributor is UUPSHelper {
     /// @dev Requires a deposit of `disputeToken` that'll be slashed if the dispute is not accepted
     /// @dev It is only possible to create a dispute within `disputePeriod` after each tree update
     function disputeTree(string memory reason) external {
-        if (disputer != address(0)) revert UnresolvedDispute();
-        if (block.timestamp >= endOfDisputePeriod) revert InvalidDispute();
+        if (disputer != address(0)) revert Errors.UnresolvedDispute();
+        if (block.timestamp >= endOfDisputePeriod) revert Errors.InvalidDispute();
         IERC20(disputeToken).safeTransferFrom(msg.sender, address(this), disputeAmount);
         disputer = msg.sender;
         emit Disputed(reason);
@@ -251,7 +255,7 @@ contract Distributor is UUPSHelper {
     /// @notice Resolve the ongoing dispute, if any
     /// @param valid Whether the dispute was valid
     function resolveDispute(bool valid) external onlyGovernor {
-        if (disputer == address(0)) revert NoDispute();
+        if (disputer == address(0)) revert Errors.NoDispute();
         if (valid) {
             IERC20(disputeToken).safeTransfer(disputer, disputeAmount);
             // If a dispute is valid, the contract falls back to the last tree that was updated
@@ -267,7 +271,7 @@ contract Distributor is UUPSHelper {
     /// @notice Allows the governor of this contract to fallback to the last version of the tree
     /// immediately
     function revokeTree() external onlyGovernor {
-        if (disputer != address(0)) revert UnresolvedDispute();
+        if (disputer != address(0)) revert Errors.UnresolvedDispute();
         _revokeTree();
     }
 
@@ -300,14 +304,14 @@ contract Distributor is UUPSHelper {
 
     /// @notice Sets the token used as a caution during disputes
     function setDisputeToken(IERC20 _disputeToken) external onlyGovernor {
-        if (disputer != address(0)) revert UnresolvedDispute();
+        if (disputer != address(0)) revert Errors.UnresolvedDispute();
         disputeToken = _disputeToken;
         emit DisputeTokenUpdated(address(_disputeToken));
     }
 
     /// @notice Sets the amount of `disputeToken` used as a caution during disputes
     function setDisputeAmount(uint256 _disputeAmount) external onlyGovernor {
-        if (disputer != address(0)) revert UnresolvedDispute();
+        if (disputer != address(0)) revert Errors.UnresolvedDispute();
         disputeAmount = _disputeAmount;
         emit DisputeAmountUpdated(_disputeAmount);
     }
@@ -351,7 +355,7 @@ contract Distributor is UUPSHelper {
             }
         }
         bytes32 root = getMerkleRoot();
-        if (root == bytes32(0)) revert InvalidUninitializedRoot();
+        if (root == bytes32(0)) revert Errors.InvalidUninitializedRoot();
         return currentHash == root;
     }
 }

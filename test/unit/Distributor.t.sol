@@ -6,8 +6,8 @@ import { console } from "forge-std/console.sol";
 
 import { Distributor, MerkleTree } from "../../contracts/Distributor.sol";
 import { Fixture } from "../Fixture.t.sol";
-import { ICore } from "../../contracts/interfaces/ICore.sol";
-import { ZeroAddress, NotGovernor, NotTrusted, InvalidLengths, InvalidProof, UnresolvedDispute, InvalidDispute, NoDispute, NotGovernorOrGuardian, NotWhitelisted } from "../../contracts/utils/Errors.sol";
+import { IAccessControlManager } from "../../contracts/interfaces/IAccessControlManager.sol";
+import { Errors } from "../../contracts/utils/Errors.sol";
 
 contract DistributorTest is Fixture {
     Distributor public distributor;
@@ -18,7 +18,7 @@ contract DistributorTest is Fixture {
 
         distributorImpl = new Distributor();
         distributor = Distributor(deployUUPS(address(distributorImpl), hex""));
-        distributor.initialize(ICore(address(coreBorrow)));
+        distributor.initialize(IAccessControlManager(address(AccessControlManager)));
 
         vm.startPrank(governor);
         distributor.setDisputeAmount(1e18);
@@ -44,24 +44,24 @@ contract Test_Distributor_Initialize is DistributorTest {
 
     function test_RevertWhen_CalledOnImplem() public {
         vm.expectRevert("Initializable: contract is already initialized");
-        distributorImpl.initialize(ICore(address(0)));
+        distributorImpl.initialize(IAccessControlManager(address(0)));
     }
 
     function test_RevertWhen_ZeroAddress() public {
-        vm.expectRevert(ZeroAddress.selector);
-        d.initialize(ICore(address(0)));
+        vm.expectRevert(Errors.ZeroAddress.selector);
+        d.initialize(IAccessControlManager(address(0)));
     }
 
     function test_Success() public {
-        d.initialize(ICore(address(coreBorrow)));
+        d.initialize(IAccessControlManager(address(AccessControlManager)));
 
-        assertEq(address(coreBorrow), address(d.core()));
+        assertEq(address(AccessControlManager), address(d.accessControlManager()));
     }
 }
 
 contract Test_Distributor_toggleTrusted is DistributorTest {
     function test_RevertWhen_NotGovernor() public {
-        vm.expectRevert(NotGovernor.selector);
+        vm.expectRevert(Errors.NotGovernor.selector);
         distributor.toggleTrusted(address(bob));
     }
 
@@ -77,7 +77,7 @@ contract Test_Distributor_toggleTrusted is DistributorTest {
 
 contract Test_Distributor_toggleOperator is DistributorTest {
     function test_RevertWhen_NotTrusted() public {
-        vm.expectRevert(NotTrusted.selector);
+        vm.expectRevert(Errors.NotTrusted.selector);
         distributor.toggleOperator(bob, alice);
     }
 
@@ -95,7 +95,7 @@ contract Test_Distributor_toggleOperator is DistributorTest {
 
 contract Test_Distributor_toggleOnlyOperatorCanClaim is DistributorTest {
     function test_RevertWhen_NotTrusted() public {
-        vm.expectRevert(NotTrusted.selector);
+        vm.expectRevert(Errors.NotTrusted.selector);
         distributor.toggleOnlyOperatorCanClaim(bob);
     }
 
@@ -112,7 +112,7 @@ contract Test_Distributor_toggleOnlyOperatorCanClaim is DistributorTest {
 
 contract Test_Distributor_recoverERC20 is DistributorTest {
     function test_RevertWhen_NotGovernor() public {
-        vm.expectRevert(NotGovernor.selector);
+        vm.expectRevert(Errors.NotGovernor.selector);
         distributor.recoverERC20(address(0), address(0), 0);
     }
 
@@ -129,7 +129,7 @@ contract Test_Distributor_recoverERC20 is DistributorTest {
 
 contract Test_Distributor_setDisputePeriod is DistributorTest {
     function test_RevertWhen_NotGovernor() public {
-        vm.expectRevert(NotGovernor.selector);
+        vm.expectRevert(Errors.NotGovernor.selector);
         distributor.setDisputePeriod(0);
     }
 
@@ -142,7 +142,7 @@ contract Test_Distributor_setDisputePeriod is DistributorTest {
 
 contract Test_Distributor_setDisputeToken is DistributorTest {
     function test_RevertWhen_NotGovernor() public {
-        vm.expectRevert(NotGovernor.selector);
+        vm.expectRevert(Errors.NotGovernor.selector);
         distributor.setDisputeToken(angle);
     }
 
@@ -155,7 +155,7 @@ contract Test_Distributor_setDisputeToken is DistributorTest {
 
 contract Test_Distributor_setDisputeAmount is DistributorTest {
     function test_RevertWhen_NotGovernor() public {
-        vm.expectRevert(NotGovernor.selector);
+        vm.expectRevert(Errors.NotGovernor.selector);
         distributor.setDisputeAmount(0);
     }
 
@@ -168,7 +168,7 @@ contract Test_Distributor_setDisputeAmount is DistributorTest {
 
 contract Test_Distributor_updateTree is DistributorTest {
     function test_RevertWhen_NotTrusted() public {
-        vm.expectRevert(NotTrusted.selector);
+        vm.expectRevert(Errors.NotTrusted.selector);
         distributor.updateTree(MerkleTree({ merkleRoot: getRoot(), ipfsHash: keccak256("IPFS_HASH") }));
     }
 
@@ -182,7 +182,7 @@ contract Test_Distributor_updateTree is DistributorTest {
         distributor.disputeTree("wrong");
         vm.stopPrank();
 
-        vm.expectRevert(NotTrusted.selector);
+        vm.expectRevert(Errors.NotTrusted.selector);
         vm.prank(governor);
         distributor.updateTree(MerkleTree({ merkleRoot: getRoot(), ipfsHash: keccak256("IPFS_HASH") }));
     }
@@ -199,7 +199,7 @@ contract Test_Distributor_updateTree is DistributorTest {
 
         vm.warp(distributor.endOfDisputePeriod() + 1);
 
-        vm.expectRevert(NotTrusted.selector);
+        vm.expectRevert(Errors.NotTrusted.selector);
         vm.prank(governor);
         distributor.updateTree(MerkleTree({ merkleRoot: getRoot(), ipfsHash: keccak256("IPFS_HASH") }));
     }
@@ -238,7 +238,7 @@ contract Test_Distributor_revokeTree is DistributorTest {
         vm.prank(governor);
         distributor.updateTree(MerkleTree({ merkleRoot: getRoot(), ipfsHash: keccak256("IPFS_HASH") }));
 
-        vm.expectRevert(NotGovernor.selector);
+        vm.expectRevert(Errors.NotGovernor.selector);
         distributor.revokeTree();
     }
 
@@ -252,7 +252,7 @@ contract Test_Distributor_revokeTree is DistributorTest {
         distributor.disputeTree("wrong");
         vm.stopPrank();
 
-        vm.expectRevert(UnresolvedDispute.selector);
+        vm.expectRevert(Errors.UnresolvedDispute.selector);
         vm.prank(governor);
         distributor.revokeTree();
     }
@@ -284,13 +284,13 @@ contract Test_Distributor_disputeTree is DistributorTest {
         distributor.disputeTree("wrong");
         vm.stopPrank();
 
-        vm.expectRevert(UnresolvedDispute.selector);
+        vm.expectRevert(Errors.UnresolvedDispute.selector);
         vm.prank(governor);
         distributor.disputeTree("wrong");
     }
 
     function test_RevertWhen_InvalidDispute() public {
-        vm.expectRevert(InvalidDispute.selector);
+        vm.expectRevert(Errors.InvalidDispute.selector);
         vm.prank(governor);
         distributor.disputeTree("wrong");
     }
@@ -311,12 +311,12 @@ contract Test_Distributor_disputeTree is DistributorTest {
 
 contract Test_Distributor_resolveDispute is DistributorTest {
     function test_RevertWhen_NotGovernorOrGuardian() public {
-        vm.expectRevert(NotGovernor.selector);
+        vm.expectRevert(Errors.NotGovernor.selector);
         distributor.resolveDispute(true);
     }
 
     function test_RevertWhen_NoDispute() public {
-        vm.expectRevert(NoDispute.selector);
+        vm.expectRevert(Errors.NoDispute.selector);
         vm.prank(governor);
         distributor.resolveDispute(true);
     }
@@ -391,7 +391,7 @@ contract Test_Distributor_claim is DistributorTest {
         tokens[0] = address(angle);
         amounts[0] = 1e18;
 
-        vm.expectRevert(NotWhitelisted.selector);
+        vm.expectRevert(Errors.NotWhitelisted.selector);
         vm.prank(alice);
         distributor.claim(users, tokens, amounts, proofs);
     }
@@ -407,26 +407,26 @@ contract Test_Distributor_claim is DistributorTest {
         address[] memory tokens = new address[](1);
         uint256[] memory amounts = new uint256[](1);
 
-        vm.expectRevert(InvalidLengths.selector);
+        vm.expectRevert(Errors.InvalidLengths.selector);
         distributor.claim(users, tokens, amounts, proofs);
 
         users = new address[](2);
-        vm.expectRevert(InvalidLengths.selector);
+        vm.expectRevert(Errors.InvalidLengths.selector);
         distributor.claim(users, tokens, amounts, proofs);
 
         users = new address[](1);
         proofs = new bytes32[][](0);
-        vm.expectRevert(InvalidLengths.selector);
+        vm.expectRevert(Errors.InvalidLengths.selector);
         distributor.claim(users, tokens, amounts, proofs);
 
         proofs = new bytes32[][](1);
         tokens = new address[](0);
-        vm.expectRevert(InvalidLengths.selector);
+        vm.expectRevert(Errors.InvalidLengths.selector);
         distributor.claim(users, tokens, amounts, proofs);
 
         tokens = new address[](1);
         amounts = new uint256[](0);
-        vm.expectRevert(InvalidLengths.selector);
+        vm.expectRevert(Errors.InvalidLengths.selector);
         distributor.claim(users, tokens, amounts, proofs);
     }
 
@@ -445,7 +445,7 @@ contract Test_Distributor_claim is DistributorTest {
         tokens[0] = address(angle);
         amounts[0] = 1e18;
 
-        vm.expectRevert(InvalidProof.selector);
+        vm.expectRevert(Errors.InvalidProof.selector);
         vm.prank(bob);
         distributor.claim(users, tokens, amounts, proofs);
     }
@@ -484,7 +484,7 @@ contract Test_Distributor_claim is DistributorTest {
         // uint256 bobBalance = agEUR.balanceOf(address(bob));
 
         vm.prank(governor);
-        vm.expectRevert(NotWhitelisted.selector); // governor not able to claim anymore
+        vm.expectRevert(Errors.NotWhitelisted.selector); // governor not able to claim anymore
         distributor.claim(users, tokens, amounts, proofs);
 
         // assertEq(angle.balanceOf(address(alice)), aliceBalance + 1e18);

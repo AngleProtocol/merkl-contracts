@@ -5,9 +5,9 @@ import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.s
 import { Test } from "forge-std/Test.sol";
 
 import { DistributionCreator, DistributionParameters, CampaignParameters, RewardTokenAmounts } from "../../contracts/DistributionCreator.sol";
-import { ZeroAddress, InvalidParam, InvalidSignature, NotGovernor, NotGovernorOrGuardian, CampaignRewardTooLow, CampaignSouldStartInFuture, CampaignDurationBelowHour, CampaignAlreadyExists, CampaignRewardTokenNotWhitelisted } from "../../contracts/utils/Errors.sol";
+import { Errors } from "../../contracts/utils/Errors.sol";
 import { Fixture, IERC20 } from "../Fixture.t.sol";
-import { ICore } from "../../contracts/interfaces/ICore.sol";
+import { IAccessControlManager } from "../../contracts/interfaces/IAccessControlManager.sol";
 
 contract DistributionCreatorTest is Fixture {
     using SafeERC20 for IERC20;
@@ -100,27 +100,27 @@ contract Test_DistributionCreator_Initialize is DistributionCreatorTest {
 
     function test_RevertWhen_CalledOnImplem() public {
         vm.expectRevert("Initializable: contract is already initialized");
-        creatorImpl.initialize(ICore(address(0)), address(bob), 1e8);
+        creatorImpl.initialize(IAccessControlManager(address(0)), address(bob), 1e8);
     }
 
     function test_RevertWhen_ZeroAddress() public {
-        vm.expectRevert(ZeroAddress.selector);
-        d.initialize(ICore(address(0)), address(bob), 1e8);
+        vm.expectRevert(Errors.ZeroAddress.selector);
+        d.initialize(IAccessControlManager(address(0)), address(bob), 1e8);
 
-        vm.expectRevert(ZeroAddress.selector);
-        d.initialize(ICore(address(coreBorrow)), address(0), 1e8);
+        vm.expectRevert(Errors.ZeroAddress.selector);
+        d.initialize(IAccessControlManager(address(AccessControlManager)), address(0), 1e8);
     }
 
     function test_RevertWhen_InvalidParam() public {
-        vm.expectRevert(InvalidParam.selector);
-        d.initialize(ICore(address(coreBorrow)), address(bob), 1e9);
+        vm.expectRevert(Errors.InvalidParam.selector);
+        d.initialize(IAccessControlManager(address(AccessControlManager)), address(bob), 1e9);
     }
 
     function test_Success() public {
-        d.initialize(ICore(address(coreBorrow)), address(bob), 1e8);
+        d.initialize(IAccessControlManager(address(AccessControlManager)), address(bob), 1e8);
 
         assertEq(address(d.distributor()), address(bob));
-        assertEq(address(d.core()), address(coreBorrow));
+        assertEq(address(d.accessControlManager()), address(AccessControlManager));
         assertEq(d.defaultFees(), 1e8);
     }
 }
@@ -144,7 +144,7 @@ contract Test_DistributionCreator_CreateDistribution is DistributionCreatorTest 
             rewardId: keccak256("TEST"),
             additionalData: hex""
         });
-        vm.expectRevert(CampaignSouldStartInFuture.selector);
+        vm.expectRevert(Errors.CampaignSouldStartInFuture.selector);
         creator.createDistribution(distribution);
     }
 
@@ -166,7 +166,7 @@ contract Test_DistributionCreator_CreateDistribution is DistributionCreatorTest 
             rewardId: keccak256("TEST"),
             additionalData: hex""
         });
-        vm.expectRevert(CampaignDurationBelowHour.selector);
+        vm.expectRevert(Errors.CampaignDurationBelowHour.selector);
 
         vm.prank(alice);
         creator.createDistribution(distribution);
@@ -190,7 +190,7 @@ contract Test_DistributionCreator_CreateDistribution is DistributionCreatorTest 
             rewardId: keccak256("TEST"),
             additionalData: hex""
         });
-        vm.expectRevert(CampaignRewardTokenNotWhitelisted.selector);
+        vm.expectRevert(Errors.CampaignRewardTokenNotWhitelisted.selector);
 
         vm.prank(alice);
         creator.createDistribution(distribution);
@@ -214,7 +214,7 @@ contract Test_DistributionCreator_CreateDistribution is DistributionCreatorTest 
             rewardId: keccak256("TEST"),
             additionalData: hex""
         });
-        vm.expectRevert(CampaignRewardTooLow.selector);
+        vm.expectRevert(Errors.CampaignRewardTooLow.selector);
 
         vm.prank(alice);
         creator.createDistribution(distribution);
@@ -304,7 +304,7 @@ contract Test_DistributionCreator_CreateDistributions is DistributionCreatorTest
             rewardId: keccak256("TEST"),
             additionalData: hex""
         });
-        vm.expectRevert(CampaignAlreadyExists.selector);
+        vm.expectRevert(Errors.CampaignAlreadyExists.selector);
 
         DistributionParameters[] memory distributions = new DistributionParameters[](2);
         distributions[0] = distribution;
@@ -366,7 +366,7 @@ contract Test_DistributionCreator_CreateCampaign is DistributionCreatorTest {
             startTimestamp: uint32(block.timestamp - 1),
             duration: 3600
         });
-        vm.expectRevert(CampaignSouldStartInFuture.selector);
+        vm.expectRevert(Errors.CampaignSouldStartInFuture.selector);
         creator.createCampaign(campaign);
     }
 
@@ -381,7 +381,7 @@ contract Test_DistributionCreator_CreateCampaign is DistributionCreatorTest {
             startTimestamp: uint32(block.timestamp + 1),
             duration: 0
         });
-        vm.expectRevert(CampaignDurationBelowHour.selector);
+        vm.expectRevert(Errors.CampaignDurationBelowHour.selector);
 
         vm.prank(alice);
         creator.createCampaign(campaign);
@@ -399,7 +399,7 @@ contract Test_DistributionCreator_CreateCampaign is DistributionCreatorTest {
             startTimestamp: uint32(block.timestamp + 1),
             duration: 3600
         });
-        vm.expectRevert(CampaignRewardTokenNotWhitelisted.selector);
+        vm.expectRevert(Errors.CampaignRewardTokenNotWhitelisted.selector);
 
         vm.prank(alice);
         creator.createCampaign(campaign);
@@ -416,7 +416,7 @@ contract Test_DistributionCreator_CreateCampaign is DistributionCreatorTest {
             startTimestamp: uint32(block.timestamp + 1),
             duration: 3600
         });
-        vm.expectRevert(CampaignRewardTooLow.selector);
+        vm.expectRevert(Errors.CampaignRewardTooLow.selector);
 
         vm.prank(alice);
         creator.createCampaign(campaign);
@@ -493,7 +493,7 @@ contract Test_DistributionCreator_CreateCampaigns is DistributionCreatorTest {
             duration: 3600
         });
 
-        vm.expectRevert(CampaignAlreadyExists.selector);
+        vm.expectRevert(Errors.CampaignAlreadyExists.selector);
 
         CampaignParameters[] memory campaigns = new CampaignParameters[](2);
         campaigns[0] = campaign;
@@ -597,13 +597,13 @@ contract Test_DistributionCreator_setCampaignFees is DistributionCreatorTest {
     event CampaignSpecificFeesSet(uint32 campaignType, uint256 _fees);
 
     function test_RevertWhen_NotGovernorOrGuardian() public {
-        vm.expectRevert(NotGovernorOrGuardian.selector);
+        vm.expectRevert(Errors.NotGovernorOrGuardian.selector);
         vm.prank(alice);
         creator.setCampaignFees(0, 1e8);
     }
 
     function test_RevertWhen_InvalidParam() public {
-        vm.expectRevert(InvalidParam.selector);
+        vm.expectRevert(Errors.InvalidParam.selector);
         vm.prank(guardian);
         creator.setCampaignFees(0, 1e10);
     }
@@ -704,7 +704,7 @@ contract Test_DistributionCreator_sign is DistributionCreatorTest {
 
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(2, creator.messageHash());
         vm.prank(alice);
-        vm.expectRevert(InvalidSignature.selector);
+        vm.expectRevert(Errors.InvalidSignature.selector);
         creator.sign(abi.encodePacked(r, s, v));
     }
 }
@@ -722,13 +722,13 @@ contract Test_DistributionCreator_acceptConditions is DistributionCreatorTest {
 
 contract Test_DistributionCreator_setFees is DistributionCreatorTest {
     function test_RevertWhen_NotGovernor() public {
-        vm.expectRevert(NotGovernor.selector);
+        vm.expectRevert(Errors.NotGovernor.selector);
         vm.prank(alice);
         creator.setFees(1e8);
     }
 
     function test_RevertWhen_InvalidParam() public {
-        vm.expectRevert(InvalidParam.selector);
+        vm.expectRevert(Errors.InvalidParam.selector);
         vm.prank(governor);
         creator.setFees(1e9);
     }
@@ -743,13 +743,13 @@ contract Test_DistributionCreator_setFees is DistributionCreatorTest {
 
 contract Test_DistributionCreator_setNewDistributor is DistributionCreatorTest {
     function test_RevertWhen_NotGovernor() public {
-        vm.expectRevert(NotGovernor.selector);
+        vm.expectRevert(Errors.NotGovernor.selector);
         vm.prank(alice);
         creator.setNewDistributor(address(bob));
     }
 
     function test_RevertWhen_InvalidParam() public {
-        vm.expectRevert(InvalidParam.selector);
+        vm.expectRevert(Errors.InvalidParam.selector);
         vm.prank(governor);
         creator.setNewDistributor(address(0));
     }
@@ -764,7 +764,7 @@ contract Test_DistributionCreator_setNewDistributor is DistributionCreatorTest {
 
 contract Test_DistributionCreator_setUserFeeRebate is DistributionCreatorTest {
     function test_RevertWhen_NotGovernorOrGuardian() public {
-        vm.expectRevert(NotGovernorOrGuardian.selector);
+        vm.expectRevert(Errors.NotGovernorOrGuardian.selector);
         vm.prank(alice);
         creator.setUserFeeRebate(alice, 1e8);
     }
@@ -781,7 +781,7 @@ contract Test_DistributionCreator_setUserFeeRebate is DistributionCreatorTest {
 
 contract Test_DistributionCreator_setFeeRecipient is DistributionCreatorTest {
     function test_RevertWhen_NotGovernor() public {
-        vm.expectRevert(NotGovernor.selector);
+        vm.expectRevert(Errors.NotGovernor.selector);
         vm.prank(alice);
         creator.setFeeRecipient(address(bob));
     }
@@ -799,7 +799,7 @@ contract Test_DistributionCreator_recoverFees is DistributionCreatorTest {
         IERC20[] memory tokens = new IERC20[](1);
         tokens[0] = angle;
 
-        vm.expectRevert(NotGovernor.selector);
+        vm.expectRevert(Errors.NotGovernor.selector);
         vm.prank(alice);
         creator.recoverFees(tokens, address(bob));
     }
@@ -917,7 +917,7 @@ contract Test_DistributionCreator_signAndCreateCampaign is DistributionCreatorTe
             vm.startPrank(bob);
 
             angle.approve(address(creator), 1e8);
-            vm.expectRevert(InvalidSignature.selector);
+            vm.expectRevert(Errors.InvalidSignature.selector);
             creator.signAndCreateCampaign(campaign, abi.encodePacked(r, s, v));
 
             vm.stopPrank();

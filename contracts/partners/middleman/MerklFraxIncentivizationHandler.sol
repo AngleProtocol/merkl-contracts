@@ -6,8 +6,8 @@ import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 
-import { DistributionCreator, DistributionParameters } from "../DistributionCreator.sol";
-import { InvalidParams } from "../utils/Errors.sol";
+import { DistributionCreator, DistributionParameters } from "../../DistributionCreator.sol";
+import { Errors } from "../../utils/Errors.sol";
 
 /// @title MerklFraxIncentivizationHandler
 /// @author Angle Labs, Inc.
@@ -67,7 +67,7 @@ contract MerklFraxIncentivizationHandler is Ownable {
         address incentiveTokenAddress,
         DistributionParameters memory params
     ) external onlyByOwnerOperator {
-        if (poolAddress == address(0) || incentiveTokenAddress == address(0)) revert InvalidParams();
+        if (poolAddress == address(0) || incentiveTokenAddress == address(0)) revert Errors.InvalidParams();
         gaugeParams[poolAddress][incentiveTokenAddress] = params;
         emit GaugeSet(poolAddress, incentiveTokenAddress);
     }
@@ -90,7 +90,7 @@ contract MerklFraxIncentivizationHandler is Ownable {
     ) external {
         IERC20(incentiveTokenAddress).safeTransferFrom(msg.sender, address(this), amount);
         DistributionParameters memory params = gaugeParams[poolAddress][incentiveTokenAddress];
-        if (params.uniV3Pool == address(0)) revert InvalidParams();
+        if (params.uniV3Pool == address(0)) revert Errors.InvalidParams();
         DistributionCreator creator = merklDistributionCreator();
         // Minimum amount of incentive tokens to be distributed per hour
         uint256 minAmount = creator.rewardTokenMinAmounts(incentiveTokenAddress) * params.numEpoch;

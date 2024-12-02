@@ -1,16 +1,14 @@
-# <img src="logo.svg" alt="Merkl Contracts" height="40px"> Merkl Contracts
-
 [![CI](https://github.com/AngleProtocol/merkl-contracts/actions/workflows/ci.yml/badge.svg)](https://github.com/AngleProtocol/merkl-contracts/actions)
 [![Coverage](https://codecov.io/gh/AngleProtocol/merkl-contracts/branch/main/graph/badge.svg)](https://codecov.io/gh/AngleProtocol/merkl-contracts)
 
-This repository contains the smart contracts of the Merkl product developed by Angle.
+This repository contains the smart contracts of Merkl.
 
 It basically contains two contracts:
 
-- `DistributionCreator`: to which DAOs and individuals can deposit their rewards to incentivize a pool
+- `DistributionCreator`: to which DAOs and individuals can deposit their rewards to incentivize onchain actions
 - `Distributor`: the contract where users can claim their rewards
 
-You can learn more about the Merkl system in the [documentation](https://docs.merkl.xyz/).
+You can learn more about the Merkl system in the [documentation](https://docs.merkl.xyz).
 
 ## Setup
 
@@ -19,8 +17,7 @@ You can learn more about the Merkl system in the [documentation](https://docs.me
 You can install all dependencies by running
 
 ```bash
-yarn
-forge i
+bun i
 ```
 
 ### Create `.env` file
@@ -81,4 +78,4 @@ The Merkl smart contracts have been audited by Code4rena, find the audit report 
 
 ## Media
 
-Don't hesitate to reach out on [Twitter](https://twitter.com/AngleProtocol) 🐦
+Don't hesitate to reach out on [Twitter](https://x.com/merkl_xyz)

@@ -28,7 +28,7 @@ mainnet = "${MAINNET_NODE_URI}"
 polygon = "${POLYGON_NODE_URI}"
 fantom = "${FANTOM_NODE_URI}"
 optimism = "${OPTIMISM_NODE_URI}"
-arbitrum = "${ARBITRUM_NODE_URI}"
+arbitrum = "${ETH_NODE_URI_ARBITRUM}"
 avalanche = "${AVALANCHE_NODE_URI}"
 aurora = "${AURORA_NODE_URI}"
 bsc = "${BSC_NODE_URI}"
@@ -61,6 +61,7 @@ skale = "${SKALE_NODE_URI}"
 worldchain = "${WORLDCHAIN_NODE_URI}"
 lisk = "${LISK_NODE_URI}"
 etherlink = "${ETHERLINK_NODE_URI}"
+arthera = "${ARTHERA_NODE_URI}"
 
 [etherscan]
 localhost = { url = "http://localhost:4000", key = "${LOCALHOST_ETHERSCAN_API_KEY}" }
@@ -101,3 +102,4 @@ skale = { chainId = 2046399126, key = "${SKALE_ETHERSCAN_API_KEY}", url = "https
 worldchain = { chainId = 480, key = "${WORLDCHAIN_ETHERSCAN_API_KEY}", url = "https://worldchain-mainnet.explorer.alchemy.com/api" }
 lisk = { chainId = 1135, key = "${LISK_ETHERSCAN_API_KEY}", url = "https://blockscout.lisk.com/api/" }
 etherlink = { chainId = 42793, key = "${ETHERLINK_ETHERSCAN_API_KEY}", url= "https://explorer.etherlink.com/api" }
+arthera = { chainId = 10242, key = "${ARTHERA_ETHERSCAN_API_KEY}", url = "https://rpc.arthura.io" }

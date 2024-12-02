@@ -42,8 +42,8 @@ import { ECDSA } from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import { SignatureChecker } from "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
 
 import { UUPSHelper } from "./utils/UUPSHelper.sol";
-import { ICore } from "./interfaces/ICore.sol";
-import { InvalidLengths, NotSigned, NotGovernor, NotGovernorOrGuardian, ZeroAddress, InvalidParam, CampaignDoesNotExist, CampaignRewardTooLow, CampaignSouldStartInFuture, CampaignDurationBelowHour, CampaignAlreadyExists, CampaignRewardTokenNotWhitelisted, InvalidSignature } from "./utils/Errors.sol";
+import { IAccessControlManager } from "./interfaces/IAccessControlManager.sol";
+import { Errors } from "./utils/Errors.sol";
 import { CampaignParameters } from "./struct/CampaignParameters.sol";
 import { DistributionParameters } from "./struct/DistributionParameters.sol";
 import { RewardTokenAmounts } from "./struct/RewardTokenAmounts.sol";
@@ -71,8 +71,8 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
 
     uint256 public immutable CHAIN_ID = block.chainid;
 
-    /// @notice `Core` contract handling access control
-    ICore public core;
+    /// @notice `AccessControlManager` contract handling access control
+    IAccessControlManager public accessControlManager;
 
     /// @notice Contract distributing rewards to users
     address public distributor;
@@ -150,13 +150,13 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
 
     /// @notice Checks whether the `msg.sender` has the governor role or the guardian role
     modifier onlyGovernorOrGuardian() {
-        if (!core.isGovernorOrGuardian(msg.sender)) revert NotGovernorOrGuardian();
+        if (!accessControlManager.isGovernorOrGuardian(msg.sender)) revert Errors.NotGovernorOrGuardian();
         _;
     }
 
     /// @notice Checks whether the `msg.sender` has the governor role or the guardian role
     modifier onlyGovernor() {
-        if (!core.isGovernor(msg.sender)) revert NotGovernor();
+        if (!accessControlManager.isGovernor(msg.sender)) revert Errors.NotGovernor();
         _;
     }
 
@@ -167,7 +167,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
             userSignatures[msg.sender] != messageHash &&
             userSignatureWhitelist[tx.origin] == 0 &&
             userSignatures[tx.origin] != messageHash
-        ) revert NotSigned();
+        ) revert Errors.NotSigned();
         _;
     }
 
@@ -175,18 +175,22 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
                                                       CONSTRUCTOR                                                   
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
-    function initialize(ICore _core, address _distributor, uint256 _fees) external initializer {
-        if (address(_core) == address(0) || _distributor == address(0)) revert ZeroAddress();
-        if (_fees >= BASE_9) revert InvalidParam();
+    function initialize(
+        IAccessControlManager _accessControlManager,
+        address _distributor,
+        uint256 _fees
+    ) external initializer {
+        if (address(_accessControlManager) == address(0) || _distributor == address(0)) revert Errors.ZeroAddress();
+        if (_fees >= BASE_9) revert Errors.InvalidParam();
         distributor = _distributor;
-        core = _core;
+        accessControlManager = _accessControlManager;
         defaultFees = _fees;
     }
 
     constructor() initializer {}
 
     /// @inheritdoc UUPSHelper
-    function _authorizeUpgrade(address) internal view override onlyGovernorUpgrader(core) {}
+    function _authorizeUpgrade(address) internal view override onlyGovernorUpgrader(accessControlManager) {}
 
     /*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                                                  USER FACING FUNCTIONS                                              
@@ -275,7 +279,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @notice Returns the index of a campaign in the campaign list
     function campaignLookup(bytes32 _campaignId) public view returns (uint256) {
         uint256 index = _campaignLookup[_campaignId];
-        if (index == 0) revert CampaignDoesNotExist();
+        if (index == 0) revert Errors.CampaignDoesNotExist();
         return index - 1;
     }
 
@@ -364,14 +368,14 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
 
     /// @notice Sets a new `distributor` to which rewards should be distributed
     function setNewDistributor(address _distributor) external onlyGovernor {
-        if (_distributor == address(0)) revert InvalidParam();
+        if (_distributor == address(0)) revert Errors.InvalidParam();
         distributor = _distributor;
         emit DistributorUpdated(_distributor);
     }
 
     /// @notice Sets the defaultFees on deposit
     function setFees(uint256 _defaultFees) external onlyGovernor {
-        if (_defaultFees >= BASE_9) revert InvalidParam();
+        if (_defaultFees >= BASE_9) revert Errors.InvalidParam();
         defaultFees = _defaultFees;
         emit FeesSet(_defaultFees);
     }
@@ -379,7 +383,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @notice Sets the fees specific for a campaign
     /// @dev To waive the fees for a campaign, set its fees to 1
     function setCampaignFees(uint32 campaignType, uint256 _fees) external onlyGovernorOrGuardian {
-        if (_fees >= BASE_9) revert InvalidParam();
+        if (_fees >= BASE_9) revert Errors.InvalidParam();
         campaignSpecificFees[campaignType] = _fees;
         emit CampaignSpecificFeesSet(campaignType, _fees);
     }
@@ -414,7 +418,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         uint256[] calldata amounts
     ) external onlyGovernorOrGuardian {
         uint256 tokensLength = tokens.length;
-        if (tokensLength != amounts.length) revert InvalidLengths();
+        if (tokensLength != amounts.length) revert Errors.InvalidLengths();
         for (uint256 i; i < tokensLength; ++i) {
             uint256 amount = amounts[i];
             // Basic logic check to make sure there are no duplicates in the `rewardTokens` table. If a token is
@@ -454,13 +458,14 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     function _createCampaign(CampaignParameters memory newCampaign) internal returns (bytes32) {
         uint256 rewardTokenMinAmount = rewardTokenMinAmounts[newCampaign.rewardToken];
         // if epoch parameters lead to a past campaign
-        if (newCampaign.startTimestamp < block.timestamp) revert CampaignSouldStartInFuture();
+        if (newCampaign.startTimestamp < block.timestamp) revert Errors.CampaignSouldStartInFuture();
         // if the campaign doesn't last at least one hour
-        if (newCampaign.duration < HOUR) revert CampaignDurationBelowHour();
+        if (newCampaign.duration < HOUR) revert Errors.CampaignDurationBelowHour();
         // if the reward token is not whitelisted as an incentive token
-        if (rewardTokenMinAmount == 0) revert CampaignRewardTokenNotWhitelisted();
+        if (rewardTokenMinAmount == 0) revert Errors.CampaignRewardTokenNotWhitelisted();
         // if the amount distributed is too small with respect to what is allowed
-        if ((newCampaign.amount * HOUR) / newCampaign.duration < rewardTokenMinAmount) revert CampaignRewardTooLow();
+        if ((newCampaign.amount * HOUR) / newCampaign.duration < rewardTokenMinAmount)
+            revert Errors.CampaignRewardTooLow();
 
         if (newCampaign.creator == address(0)) newCampaign.creator = msg.sender;
 
@@ -473,7 +478,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
 
         newCampaign.campaignId = campaignId(newCampaign);
 
-        if (_campaignLookup[newCampaign.campaignId] != 0) revert CampaignAlreadyExists();
+        if (_campaignLookup[newCampaign.campaignId] != 0) revert Errors.CampaignAlreadyExists();
         _campaignLookup[newCampaign.campaignId] = campaignList.length + 1;
         campaignList.push(newCampaign);
         emit NewCampaign(newCampaign);
@@ -561,7 +566,8 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @notice Internal version of the `sign` function
     function _sign(bytes calldata signature) internal {
         bytes32 _messageHash = messageHash;
-        if (!SignatureChecker.isValidSignatureNow(msg.sender, _messageHash, signature)) revert InvalidSignature();
+        if (!SignatureChecker.isValidSignatureNow(msg.sender, _messageHash, signature))
+            revert Errors.InvalidSignature();
         userSignatures[msg.sender] = _messageHash;
         emit UserSigned(_messageHash, msg.sender);
     }

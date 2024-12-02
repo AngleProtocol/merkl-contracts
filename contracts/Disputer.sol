@@ -1,23 +1,49 @@
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: BUSL-1.1
+
+/*
+                  *                                                  █                              
+                *****                                               ▓▓▓                             
+                  *                                               ▓▓▓▓▓▓▓                         
+                                   *            ///.           ▓▓▓▓▓▓▓▓▓▓▓▓▓                       
+                                 *****        ////////            ▓▓▓▓▓▓▓                          
+                                   *       /////////////            ▓▓▓                             
+                     ▓▓                  //////////////////          █         ▓▓                   
+                   ▓▓  ▓▓             ///////////////////////                ▓▓   ▓▓                
+                ▓▓       ▓▓        ////////////////////////////           ▓▓        ▓▓              
+              ▓▓            ▓▓    /////////▓▓▓///////▓▓▓/////////       ▓▓             ▓▓            
+           ▓▓                 ,////////////////////////////////////// ▓▓                 ▓▓         
+        ▓▓                  //////////////////////////////////////////                     ▓▓      
+      ▓▓                  //////////////////////▓▓▓▓/////////////////////                          
+                       ,////////////////////////////////////////////////////                        
+                    .//////////////////////////////////////////////////////////                     
+                     .//////////////////////////██.,//////////////////////////█                     
+                       .//////////////////////████..,./////////////////////██                       
+                        ...////////////////███████.....,.////////////////███                        
+                          ,.,////////////████████ ........,///////////████                          
+                            .,.,//////█████████      ,.......///////████                            
+                               ,..//████████           ........./████                               
+                                 ..,██████                .....,███                                 
+                                    .██                     ,.,█                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+               ▓▓            ▓▓▓▓▓▓▓▓▓▓       ▓▓▓▓▓▓▓▓▓▓        ▓▓               ▓▓▓▓▓▓▓▓▓▓          
+             ▓▓▓▓▓▓          ▓▓▓    ▓▓▓       ▓▓▓               ▓▓               ▓▓   ▓▓▓▓         
+           ▓▓▓    ▓▓▓        ▓▓▓    ▓▓▓       ▓▓▓    ▓▓▓        ▓▓               ▓▓▓▓▓             
+          ▓▓▓        ▓▓      ▓▓▓    ▓▓▓       ▓▓▓▓▓▓▓▓▓▓        ▓▓▓▓▓▓▓▓▓▓       ▓▓▓▓▓▓▓▓▓▓          
+*/
+
 pragma solidity 0.8.24;
 
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
+
 import { Distributor } from "./Distributor.sol";
+import { Errors } from "./utils/Errors.sol";
 
 contract Disputer is Ownable {
     Distributor public distributor;
     mapping(address => bool) public whitelist;
-
-    /*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                                                        ERRORS                                                      
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
-
-    error NotWhitelisted();
-    error DisputeFundsTransferFailed();
-    error EthNotAccepted();
-    error UnresolvedDispute();
-    error WithdrawalFailed();
 
     /*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                                                        MODIFIERS                                                    
@@ -25,7 +51,7 @@ contract Disputer is Ownable {
 
     /// @notice Checks whether the `msg.sender` is a whitelisted address
     modifier onlyWhitelisted() {
-        if (!whitelist[msg.sender]) revert NotWhitelisted();
+        if (!whitelist[msg.sender]) revert Errors.NotWhitelisted();
         _;
     }
 
@@ -59,7 +85,7 @@ contract Disputer is Ownable {
         if (contractBalance < disputeAmount) {
             // Transfer funds from msg.sender if needed
             if (!IERC20(disputeToken).transferFrom(msg.sender, address(this), disputeAmount - contractBalance)) {
-                revert DisputeFundsTransferFailed();
+                revert Errors.DisputeFundsTransferFailed();
             }
         }
 
@@ -82,7 +108,7 @@ contract Disputer is Ownable {
     /// @param amount Amount to withdraw
     function withdrawFunds(address payable to, uint256 amount) external onlyOwner {
         (bool success, ) = to.call{ value: amount }("");
-        if (!success) revert WithdrawalFailed();
+        if (!success) revert Errors.WithdrawalFailed();
     }
 
     /*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////

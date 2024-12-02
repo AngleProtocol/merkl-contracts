@@ -3,7 +3,6 @@
 pragma solidity ^0.8.17;
 
 import { Test, stdError } from "forge-std/Test.sol";
-
 import { IERC20, IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import { console } from "forge-std/console.sol";
@@ -11,9 +10,13 @@ import { console } from "forge-std/console.sol";
 import { DistributionCreator } from "../contracts/DistributionCreator.sol";
 import { MockTokenPermit } from "../contracts/mock/MockTokenPermit.sol";
 import { MockUniswapV3Pool } from "../contracts/mock/MockUniswapV3Pool.sol";
-import { MockCoreBorrow } from "../contracts/mock/MockCoreBorrow.sol";
-import { ICore } from "../contracts/interfaces/ICore.sol";
-import "../contracts/utils/UUPSHelper.sol";
+import { MockAccessControl } from "../contracts/mock/MockAccessControl.sol";
+import { IAccessControlManager } from "../contracts/interfaces/IAccessControlManager.sol";
+import { UUPSHelper } from "../contracts/utils/UUPSHelper.sol";
+import { DistributionCreator } from "../contracts/DistributionCreator.sol";
+import { MockTokenPermit } from "../contracts/mock/MockTokenPermit.sol";
+import { MockUniswapV3Pool } from "../contracts/mock/MockUniswapV3Pool.sol";
+import { MockAccessControl } from "../contracts/mock/MockAccessControl.sol";
 
 contract Fixture is Test {
     uint32 public constant EPOCH_DURATION = 3600;
@@ -23,7 +26,7 @@ contract Fixture is Test {
     MockTokenPermit public token0;
     MockTokenPermit public token1;
 
-    MockCoreBorrow public coreBorrow;
+    MockAccessControl public AccessControlManager;
     MockUniswapV3Pool public pool;
     DistributionCreator public creatorImpl;
     DistributionCreator public creator;
@@ -61,7 +64,7 @@ contract Fixture is Test {
         token1 = MockTokenPermit(address(new MockTokenPermit("token1", "TOKEN1", 18)));
 
         // side
-        coreBorrow = new MockCoreBorrow();
+        AccessControlManager = new MockAccessControl();
         pool = new MockUniswapV3Pool();
 
         // DistributionCreator
@@ -71,9 +74,9 @@ contract Fixture is Test {
         // Set
         pool.setToken(address(token0), 0);
         pool.setToken(address(token1), 1);
-        coreBorrow.toggleGuardian(address(guardian));
-        coreBorrow.toggleGovernor(address(governor));
-        creator.initialize(ICore(address(coreBorrow)), address(bob), 1e8);
+        AccessControlManager.toggleGuardian(address(guardian));
+        AccessControlManager.toggleGovernor(address(governor));
+        creator.initialize(IAccessControlManager(address(AccessControlManager)), address(bob), 1e8);
     }
 
     /*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////

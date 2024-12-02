@@ -8,7 +8,7 @@ import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { BaseScript } from "./utils/Base.s.sol";
 import { JsonReader } from "./utils/JsonReader.sol";
 import { DistributionCreator } from "../contracts/DistributionCreator.sol";
-import { ICore } from "../contracts/interfaces/ICore.sol";
+import { IAccessControlManager } from "../contracts/interfaces/IAccessControlManager.sol";
 import { CampaignParameters } from "../contracts/struct/CampaignParameters.sol";
 
 // Base contract with shared utilities
@@ -31,7 +31,7 @@ contract Deploy is DistributionCreatorScript {
         console.log("DEPLOYER_ADDRESS:", broadcaster);
 
         // Read configuration from JSON
-        address core = readAddress(chainId, "Merkl.CoreMerkl");
+        address accessControlManager = readAddress(chainId, "Merkl.CoreMerkl");
         address distributor = readAddress(chainId, "Merkl.Distributor");
         uint256 defaultFees = 0.03 gwei; // 0.03 gwei
 
@@ -44,7 +44,11 @@ contract Deploy is DistributionCreatorScript {
         console.log("DistributionCreator Proxy:", address(proxy));
 
         // Initialize
-        DistributionCreator(address(proxy)).initialize(ICore(core), distributor, defaultFees);
+        DistributionCreator(address(proxy)).initialize(
+            IAccessControlManager(accessControlManager),
+            distributor,
+            defaultFees
+        );
     }
 }
 

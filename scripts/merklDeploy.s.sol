@@ -12,11 +12,11 @@ import { CreateXConstants } from "./utils/CreateXConstants.sol";
 import { JsonReader } from "./utils/JsonReader.sol";
 import { TokensUtils } from "./utils/TokensUtils.sol";
 
-import { CoreBorrow } from "../contracts/core/CoreBorrow.sol";
+import { AccessControlManager } from "../contracts/AccessControlManager.sol";
 import { Disputer } from "../contracts/Disputer.sol";
 import { Distributor } from "../contracts/Distributor.sol";
 import { DistributionCreator } from "../contracts/DistributionCreator.sol";
-import { ICore } from "../contracts/interfaces/ICore.sol";
+import { IAccessControlManager } from "../contracts/interfaces/IAccessControlManager.sol";
 import { MockToken } from "../contracts/mock/MockToken.sol";
 
 // NOTE: Before running this script on a new chain, make sure to create the AngleLabs multisig and update the sdk with the new address
@@ -134,8 +134,8 @@ contract MainDeployScript is Script, JsonReader, TokensUtils, CreateXConstants {
 
         // Deploy ProxyAdmin
         address proxyAdmin = deployProxyAdmin();
-        // Deploy CoreBorrow
-        DeploymentAddresses memory coreBorrow = deployCoreBorrow(proxyAdmin);
+        // Deploy AccessControlManager
+        DeploymentAddresses memory accessControlManager = deployAccessControl(proxyAdmin);
         // Deploy AglaMerkl
         address aglaMerkl = deployAglaMerkl();
 
@@ -147,9 +147,9 @@ contract MainDeployScript is Script, JsonReader, TokensUtils, CreateXConstants {
         verifyMerklNonces();
 
         // Deploy Distributor
-        DeploymentAddresses memory distributor = deployDistributor(coreBorrow.proxy);
+        DeploymentAddresses memory distributor = deployDistributor(accessControlManager.proxy);
         // Deploy DistributionCreator
-        DeploymentAddresses memory creator = deployDistributionCreator(coreBorrow.proxy, distributor.proxy);
+        DeploymentAddresses memory creator = deployDistributionCreator(accessControlManager.proxy, distributor.proxy);
 
         vm.stopBroadcast();
 
@@ -165,9 +165,12 @@ contract MainDeployScript is Script, JsonReader, TokensUtils, CreateXConstants {
 
         // Revoke GOVENOR from DEPLOYER_ADDRESS if deployer is GUARDIAN_ADDRESS (keeping GUARDIAN role), else revoke both roles by calling removeGovernor
         if (DEPLOYER_ADDRESS == GUARDIAN_ADDRESS) {
-            CoreBorrow(coreBorrow.proxy).revokeRole(CoreBorrow(coreBorrow.proxy).GOVERNOR_ROLE(), DEPLOYER_ADDRESS);
+            AccessControlManager(accessControlManager.proxy).revokeRole(
+                AccessControlManager(accessControlManager.proxy).GOVERNOR_ROLE(),
+                DEPLOYER_ADDRESS
+            );
         } else {
-            CoreBorrow(coreBorrow.proxy).removeGovernor(DEPLOYER_ADDRESS);
+            AccessControlManager(accessControlManager.proxy).removeGovernor(DEPLOYER_ADDRESS);
         }
 
         vm.stopBroadcast();
@@ -176,9 +179,9 @@ contract MainDeployScript is Script, JsonReader, TokensUtils, CreateXConstants {
         console.log("\n=== Deployment Summary ===");
         console.log("ProxyAdmin:");
         console.log("  - Address:", proxyAdmin);
-        console.log("CoreBorrow:");
-        console.log("  - Proxy:", coreBorrow.proxy);
-        console.log("  - Implementation:", coreBorrow.implementation);
+        console.log("AccessControlManager:");
+        console.log("  - Proxy:", accessControlManager.proxy);
+        console.log("  - Implementation:", accessControlManager.implementation);
         console.log("Distributor:");
         console.log("  - Proxy:", distributor.proxy);
         console.log("  - Implementation:", distributor.implementation);
@@ -210,15 +213,15 @@ contract MainDeployScript is Script, JsonReader, TokensUtils, CreateXConstants {
         return address(proxyAdmin);
     }
 
-    function deployCoreBorrow(address proxyAdmin) public returns (DeploymentAddresses memory) {
-        console.log("\n=== Deploying CoreBorrow ===");
+    function deployAccessControl(address proxyAdmin) public returns (DeploymentAddresses memory) {
+        console.log("\n=== Deploying AccessControlManager ===");
 
         // Deploy implementation
-        CoreBorrow implementation = new CoreBorrow();
-        console.log("CoreBorrow Implementation:", address(implementation));
+        AccessControlManager implementation = new AccessControlManager();
+        console.log("AccessControlManager Implementation:", address(implementation));
 
         // Prepare initialization data
-        bytes memory initData = abi.encodeCall(CoreBorrow.initialize, (DEPLOYER_ADDRESS, ANGLE_LABS));
+        bytes memory initData = abi.encodeCall(AccessControlManager.initialize, (DEPLOYER_ADDRESS, ANGLE_LABS));
 
         // Deploy proxy
         TransparentUpgradeableProxy proxy = new TransparentUpgradeableProxy(
@@ -226,13 +229,13 @@ contract MainDeployScript is Script, JsonReader, TokensUtils, CreateXConstants {
             address(proxyAdmin),
             initData
         );
-        console.log("CoreBorrow Proxy:", address(proxy));
+        console.log("AccessControlManager Proxy:", address(proxy));
 
-        CoreBorrow(address(proxy)).addGovernor(ANGLE_LABS);
+        AccessControlManager(address(proxy)).addGovernor(ANGLE_LABS);
         return DeploymentAddresses(address(proxy), address(implementation));
     }
 
-    function deployDistributor(address core) public returns (DeploymentAddresses memory) {
+    function deployDistributor(address accessControlManager) public returns (DeploymentAddresses memory) {
         console.log("\n=== Deploying Distributor ===");
 
         // Deploy implementation
@@ -244,12 +247,15 @@ contract MainDeployScript is Script, JsonReader, TokensUtils, CreateXConstants {
         console.log("Distributor Proxy:", address(proxy));
 
         // Initialize
-        Distributor(address(proxy)).initialize(ICore(core));
+        Distributor(address(proxy)).initialize(IAccessControlManager(accessControlManager));
 
         return DeploymentAddresses(address(proxy), address(implementation));
     }
 
-    function deployDistributionCreator(address core, address distributor) public returns (DeploymentAddresses memory) {
+    function deployDistributionCreator(
+        address accessControlManager,
+        address distributor
+    ) public returns (DeploymentAddresses memory) {
         console.log("\n=== Deploying DistributionCreator ===");
 
         // Deploy implementation
@@ -262,7 +268,7 @@ contract MainDeployScript is Script, JsonReader, TokensUtils, CreateXConstants {
 
         // Initialize
         DistributionCreator(address(proxy)).initialize(
-            ICore(core),
+            IAccessControlManager(accessControlManager),
             distributor,
             0.03 gwei // 0.03 gwei
         );

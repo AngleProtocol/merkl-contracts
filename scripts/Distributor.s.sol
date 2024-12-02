@@ -8,7 +8,7 @@ import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { BaseScript } from "./utils/Base.s.sol";
 import { JsonReader } from "./utils/JsonReader.sol";
 import { Distributor, MerkleTree } from "../contracts/Distributor.sol";
-import { ICore } from "../contracts/interfaces/ICore.sol";
+import { IAccessControlManager } from "../contracts/interfaces/IAccessControlManager.sol";
 
 // Base contract with shared utilities
 contract DistributorScript is BaseScript, JsonReader {}
@@ -19,7 +19,7 @@ contract Deploy is DistributorScript {
         uint256 chainId = block.chainid;
         console.log("DEPLOYER_ADDRESS:", broadcaster);
 
-        address core = readAddress(chainId, "Merkl.CoreMerkl");
+        address accessControlManager = readAddress(chainId, "Merkl.CoreMerkl");
 
         // Deploy implementation
         Distributor implementation = new Distributor();
@@ -30,7 +30,7 @@ contract Deploy is DistributorScript {
         console.log("Distributor Proxy:", address(proxy));
 
         // Initialize
-        Distributor(address(proxy)).initialize(ICore(core));
+        Distributor(address(proxy)).initialize(IAccessControlManager(accessControlManager));
     }
 }
 

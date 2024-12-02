@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.17;
 
-contract MockCoreBorrow {
+contract MockAccessControl {
     mapping(address => bool) public governors;
     mapping(address => bool) public guardians;
 

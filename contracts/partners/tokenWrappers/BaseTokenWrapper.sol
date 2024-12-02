@@ -6,9 +6,9 @@ import { ERC20Upgradeable } from "@openzeppelin/contracts-upgradeable/token/ERC2
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import { IERC20, IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 
-import { UUPSHelper } from "../utils/UUPSHelper.sol";
-import { ICore } from "../interfaces/ICore.sol";
-import { NotGovernor, ZeroAddress } from "../utils/Errors.sol";
+import { UUPSHelper } from "../../utils/UUPSHelper.sol";
+import { IAccessControlManager } from "../../interfaces/IAccessControlManager.sol";
+import { Errors } from "../../utils/Errors.sol";
 
 interface IDistributionCreator {
     function distributor() external view returns (address);
@@ -28,8 +28,8 @@ abstract contract BaseMerklTokenWrapper is UUPSHelper, ERC20Upgradeable {
 
     // ================================= VARIABLES =================================
 
-    /// @notice `Core` contract handling access control
-    ICore public core;
+    /// @notice `AccessControlManager` contract handling access control
+    IAccessControlManager public accessControlManager;
 
     // =================================== EVENTS ==================================
 
@@ -39,7 +39,7 @@ abstract contract BaseMerklTokenWrapper is UUPSHelper, ERC20Upgradeable {
 
     /// @notice Checks whether the `msg.sender` has the governor role or the guardian role
     modifier onlyGovernor() {
-        if (!core.isGovernor(msg.sender)) revert NotGovernor();
+        if (!accessControlManager.isGovernor(msg.sender)) revert Errors.NotGovernor();
         _;
     }
 
@@ -51,14 +51,14 @@ abstract contract BaseMerklTokenWrapper is UUPSHelper, ERC20Upgradeable {
         return true;
     }
 
-    function initialize(ICore _core) public initializer onlyProxy {
+    function initialize(IAccessControlManager _accessControlManager) public initializer onlyProxy {
         __ERC20_init(
             string.concat("Merkl Token Wrapper - ", IERC20Metadata(token()).name()),
             string.concat("mtw", IERC20Metadata(token()).symbol())
         );
         __UUPSUpgradeable_init();
-        if (address(_core) == address(0)) revert ZeroAddress();
-        core = _core;
+        if (address(_accessControlManager) == address(0)) revert Errors.ZeroAddress();
+        accessControlManager = _accessControlManager;
     }
 
     /// @notice Recovers any ERC20 token
@@ -69,5 +69,5 @@ abstract contract BaseMerklTokenWrapper is UUPSHelper, ERC20Upgradeable {
     }
 
     /// @inheritdoc UUPSHelper
-    function _authorizeUpgrade(address) internal view override onlyGovernorUpgrader(core) {}
+    function _authorizeUpgrade(address) internal view override onlyGovernorUpgrader(accessControlManager) {}
 }
