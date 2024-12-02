@@ -240,7 +240,7 @@ contract Test_DistributionCreator_CreateDistribution is DistributionCreatorTest 
         });
 
         vm.prank(alice);
-        uint256 distributionAmount = creator.createDistribution(distribution);
+        creator.createDistribution(distribution);
 
         address[] memory whitelist = new address[](1);
         whitelist[0] = alice;
@@ -423,12 +423,13 @@ contract Test_DistributionCreator_CreateCampaign is DistributionCreatorTest {
     }
 
     function test_Success() public {
+        uint256 amount = 1e8;
         CampaignParameters memory campaign = CampaignParameters({
             campaignId: keccak256("TEST"),
             creator: address(0),
             campaignData: hex"ab",
             rewardToken: address(angle),
-            amount: 1e8,
+            amount: amount,
             campaignType: 0,
             startTimestamp: uint32(block.timestamp + 1),
             duration: 3600
@@ -469,6 +470,7 @@ contract Test_DistributionCreator_CreateCampaign is DistributionCreatorTest {
             bytes memory fetchedCampaignData
         ) = creator.campaignList(creator.campaignLookup(campaignId));
         assertEq(alice, fetchedCreator);
+        assertEq((amount * 9) / 10, fetchedAmount); // amount minus 10% fees
         assertEq(address(angle), fetchedRewardToken);
         assertEq(campaign.campaignType, fetchedCampaignType);
         assertEq(campaign.startTimestamp, fetchedStartTimestamp);
@@ -816,7 +818,7 @@ contract Test_DistributionCreator_recoverFees is DistributionCreatorTest {
 }
 
 contract Test_DistributionCreator_getValidRewardTokens is DistributionCreatorTest {
-    function test_Success() public {
+    function test_Success() public view {
         RewardTokenAmounts[] memory tokens = creator.getValidRewardTokens();
 
         assertEq(tokens.length, 1);
@@ -824,7 +826,7 @@ contract Test_DistributionCreator_getValidRewardTokens is DistributionCreatorTes
         assertEq(tokens[0].minimumAmountPerEpoch, 1e8);
     }
 
-    function test_SuccessSkip() public {
+    function test_SuccessSkip() public view {
         (RewardTokenAmounts[] memory tokens, uint256 i) = creator.getValidRewardTokens(1, 0);
 
         assertEq(tokens.length, 0);
@@ -934,7 +936,7 @@ contract DistributionCreatorForkTest is Test {
 }
 
 contract Test_DistributionCreator_distribution is DistributionCreatorForkTest {
-    function test_Success() public {
+    function test_Success() public view {
         CampaignParameters memory distribution = creator.distribution(0);
 
         assertEq(distribution.campaignId, bytes32(0x7570c9deb1660ed82ff01f760b2883edb9bdb881933b0e4085854d0d717ea268));
@@ -952,7 +954,7 @@ contract Test_DistributionCreator_distribution is DistributionCreatorForkTest {
 }
 
 contract Test_DistributionCreator_getDistributionsBetweenEpochs is DistributionCreatorForkTest {
-    function test_Success() public {
+    function test_Success() public view {
         (DistributionParameters[] memory distributions, ) = creator.getDistributionsBetweenEpochs(
             1681380000,
             1681380000 + 3600,

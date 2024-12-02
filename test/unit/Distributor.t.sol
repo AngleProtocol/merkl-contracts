@@ -29,7 +29,7 @@ contract DistributorTest is Fixture {
         angle.mint(address(alice), 100e18);
     }
 
-    function getRoot() public view returns (bytes32) {
+    function getRoot() public pure returns (bytes32) {
         return keccak256(abi.encodePacked("MERKLE_ROOT"));
     }
 }
@@ -480,8 +480,8 @@ contract Test_Distributor_claim is DistributorTest {
         tokens[1] = address(agEUR);
         amounts[1] = 5e17;
 
-        uint256 aliceBalance = angle.balanceOf(address(alice));
-        uint256 bobBalance = agEUR.balanceOf(address(bob));
+        // uint256 aliceBalance = angle.balanceOf(address(alice));
+        // uint256 bobBalance = agEUR.balanceOf(address(bob));
 
         vm.prank(governor);
         vm.expectRevert(NotWhitelisted.selector); // governor not able to claim anymore
