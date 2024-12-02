@@ -89,8 +89,10 @@ jobs:
         with:
           submodules: 'recursive'
 
-      - name: 'Install Foundry'
-        uses: 'foundry-rs/foundry-toolchain@v1'
+      - name: Setup repo
+        uses: ./.github/actions/setup-repo
+        with:
+          registry-token: ${{ secrets.SDK_READ_ACCESS_TOKEN }}
 
       - name: 'Install lcov'
         run: 'sudo apt-get install lcov'

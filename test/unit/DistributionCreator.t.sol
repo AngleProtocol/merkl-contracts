@@ -929,7 +929,7 @@ contract DistributionCreatorForkTest is Test {
     DistributionCreator public creator;
 
     function setUp() public {
-        vm.createSelectFork(vm.envString("ARBITRUM_NODE_URI"));
+        vm.createSelectFork(vm.envString("ETH_NODE_URI_ARBITRUM"));
 
         creator = DistributionCreator(0x8BB4C975Ff3c250e0ceEA271728547f3802B36Fd);
     }
