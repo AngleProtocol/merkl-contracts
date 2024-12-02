@@ -290,10 +290,16 @@ contract MainDeployScript is Script, JsonReader, TokensUtils, CreateXConstants {
         // Check if CREATEX contract is deployed
         address disputer;
         if (CREATEX.code.length == 0) {
-            // Deploy using the standard Deterministic CREATE2 deployer and a deterministic salt
-            disputer = address(
-                new Disputer{ salt: salt }(DEPLOYER_ADDRESS, DISPUTER_WHITELIST, Distributor(distributor))
-            );
+            address CREATE2_DEPLOYER = 0x4e59b44847b379578588920cA78FbF26c0B4956C;
+            if (CREATE2_DEPLOYER.code.length != 0) {
+                // Deploy using the standard Deterministic CREATE2 deployer and a deterministic salt
+                disputer = address(
+                    new Disputer{ salt: salt }(DEPLOYER_ADDRESS, DISPUTER_WHITELIST, Distributor(distributor))
+                );
+            } else {
+                // Classic deployment if CREATE2 deployer is not deployed
+                disputer = address(new Disputer(DEPLOYER_ADDRESS, DISPUTER_WHITELIST, Distributor(distributor)));
+            }
         } else {
             // Deploy using CreateX
             // Create initialization bytecode
