@@ -62,7 +62,7 @@ worldchain = "${WORLDCHAIN_NODE_URI}"
 lisk = "${LISK_NODE_URI}"
 etherlink = "${ETHERLINK_NODE_URI}"
 arthera = "${ARTHERA_NODE_URI}"
-
+swell = "${SWELL_NODE_URI}"
 [etherscan]
 localhost = { url = "http://localhost:4000", key = "${LOCALHOST_ETHERSCAN_API_KEY}" }
 mainnet = { chainId = 1, key = "${MAINNET_ETHERSCAN_API_KEY}", url = "https://api.etherscan.io/api" }

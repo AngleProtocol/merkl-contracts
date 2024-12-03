@@ -401,9 +401,19 @@ contract MainDeployScript is Script, JsonReader, TokensUtils, CreateXConstants {
         // Set dispute amount to 100 tokens (18 decimals)
         string memory symbol = MockToken(disputeToken).symbol();
         uint8 decimals = MockToken(disputeToken).decimals();
-        console.log("Setting dispute amount to 100", symbol);
         console.log("Token decimals:", decimals);
-        distributor.setDisputeAmount(100 * 10 ** decimals);
+        if (
+            keccak256(abi.encodePacked(symbol)) == keccak256(abi.encodePacked("EURA")) ||
+            keccak256(abi.encodePacked(symbol)) == keccak256(abi.encodePacked("USDC")) ||
+            keccak256(abi.encodePacked(symbol)) == keccak256(abi.encodePacked("USDT"))
+        ) {
+            console.log("Setting dispute amount to 100", symbol);
+            distributor.setDisputeAmount(100 * 10 ** decimals);
+        }
+        if (keccak256(abi.encodePacked(symbol)) == keccak256(abi.encodePacked("WETH"))) {
+            console.log("Setting dispute amount to 0.03", symbol);
+            distributor.setDisputeAmount(3 * 10 ** (decimals - 2));
+        }
     }
 
     /*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
