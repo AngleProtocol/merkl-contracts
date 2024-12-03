@@ -36,7 +36,18 @@ contract Deploy is DistributorScript {
 
 // UpdateTree script
 contract UpdateTree is DistributorScript {
+    function run() external broadcast {
+        // MODIFY THESE VALUES TO SET YOUR DESIRED TREE PARAMETERS
+        bytes32 merkleRoot = bytes32(0);
+        bytes32 ipfsHash = bytes32(0);
+        _run(merkleRoot, ipfsHash);
+    }
+
     function run(bytes32 merkleRoot, bytes32 ipfsHash) external broadcast {
+        _run(merkleRoot, ipfsHash);
+    }
+
+    function _run(bytes32 merkleRoot, bytes32 ipfsHash) internal {
         uint256 chainId = block.chainid;
         address distributorAddress = readAddress(chainId, "Merkl.Distributor");
 
@@ -51,7 +62,17 @@ contract UpdateTree is DistributorScript {
 
 // DisputeTree script
 contract DisputeTree is DistributorScript {
+    function run() external broadcast {
+        // MODIFY THIS VALUE TO SET YOUR DESIRED REASON
+        string memory reason = "reason";
+        _run(reason);
+    }
+
     function run(string calldata reason) external broadcast {
+        _run(reason);
+    }
+
+    function _run(string memory reason) internal {
         uint256 chainId = block.chainid;
         address distributorAddress = readAddress(chainId, "Merkl.Distributor");
 
@@ -73,7 +94,17 @@ contract DisputeTree is DistributorScript {
 
 // ResolveDispute script
 contract ResolveDispute is DistributorScript {
+    function run() external broadcast {
+        // MODIFY THIS VALUE TO SET YOUR DESIRED VALIDITY
+        bool valid = false;
+        _run(valid);
+    }
+
     function run(bool valid) external broadcast {
+        _run(valid);
+    }
+
+    function _run(bool valid) internal {
         uint256 chainId = block.chainid;
         address distributorAddress = readAddress(chainId, "Merkl.Distributor");
 
@@ -97,7 +128,18 @@ contract RevokeTree is DistributorScript {
 
 // ToggleOperator script
 contract ToggleOperator is DistributorScript {
+    function run() external broadcast {
+        // MODIFY THESE VALUES TO SET YOUR DESIRED USER AND OPERATOR
+        address user = address(0);
+        address operator = address(0);
+        _run(user, operator);
+    }
+
     function run(address user, address operator) external broadcast {
+        _run(user, operator);
+    }
+
+    function _run(address user, address operator) internal {
         uint256 chainId = block.chainid;
         address distributorAddress = readAddress(chainId, "Merkl.Distributor");
 
@@ -109,7 +151,19 @@ contract ToggleOperator is DistributorScript {
 
 // RecoverERC20 script
 contract RecoverERC20 is DistributorScript {
+    function run() external broadcast {
+        // MODIFY THESE VALUES TO SET YOUR DESIRED TOKEN, RECIPIENT AND AMOUNT
+        address token = address(0);
+        address to = address(0);
+        uint256 amount = 0;
+        _run(token, to, amount);
+    }
+
     function run(address token, address to, uint256 amount) external broadcast {
+        _run(token, to, amount);
+    }
+
+    function _run(address token, address to, uint256 amount) internal {
         uint256 chainId = block.chainid;
         address distributorAddress = readAddress(chainId, "Merkl.Distributor");
 
@@ -121,7 +175,17 @@ contract RecoverERC20 is DistributorScript {
 
 // SetDisputeToken script
 contract SetDisputeToken is DistributorScript {
+    function run() external broadcast {
+        // MODIFY THIS VALUE TO SET YOUR DESIRED TOKEN
+        IERC20 token = IERC20(address(0));
+        _run(token);
+    }
+
     function run(IERC20 token) external broadcast {
+        _run(token);
+    }
+
+    function _run(IERC20 token) internal {
         uint256 chainId = block.chainid;
         address distributorAddress = readAddress(chainId, "Merkl.Distributor");
 
@@ -133,7 +197,17 @@ contract SetDisputeToken is DistributorScript {
 
 // SetDisputeAmount script
 contract SetDisputeAmount is DistributorScript {
+    function run() external broadcast {
+        // MODIFY THIS VALUE TO SET YOUR DESIRED AMOUNT
+        uint256 amount = 0;
+        _run(amount);
+    }
+
     function run(uint256 amount) external broadcast {
+        _run(amount);
+    }
+
+    function _run(uint256 amount) internal {
         uint256 chainId = block.chainid;
         address distributorAddress = readAddress(chainId, "Merkl.Distributor");
 
@@ -145,7 +219,17 @@ contract SetDisputeAmount is DistributorScript {
 
 // SetDisputePeriod script
 contract SetDisputePeriod is DistributorScript {
+    function run() external broadcast {
+        // MODIFY THIS VALUE TO SET YOUR DESIRED PERIOD
+        uint48 period = 0;
+        _run(period);
+    }
+
     function run(uint48 period) external broadcast {
+        _run(period);
+    }
+
+    function _run(uint48 period) internal {
         uint256 chainId = block.chainid;
         address distributorAddress = readAddress(chainId, "Merkl.Distributor");
 
@@ -157,7 +241,17 @@ contract SetDisputePeriod is DistributorScript {
 
 // ToggleTrusted script
 contract ToggleTrusted is DistributorScript {
+    function run() external broadcast {
+        // MODIFY THIS VALUE TO SET YOUR DESIRED EOA
+        address eoa = address(0);
+        _run(eoa);
+    }
+
     function run(address eoa) external broadcast {
+        _run(eoa);
+    }
+
+    function _run(address eoa) internal {
         uint256 chainId = block.chainid;
         address distributorAddress = readAddress(chainId, "Merkl.Distributor");
 
@@ -169,12 +263,30 @@ contract ToggleTrusted is DistributorScript {
 
 // Claim script
 contract Claim is DistributorScript {
+    function run() external broadcast {
+        // MODIFY THESE VALUES TO SET YOUR DESIRED CLAIM PARAMETERS
+        address[] memory users = new address[](0);
+        address[] memory tokens = new address[](0);
+        uint256[] memory amounts = new uint256[](0);
+        bytes32[][] memory proofs = new bytes32[][](0);
+        _run(users, tokens, amounts, proofs);
+    }
+
     function run(
         address[] calldata users,
         address[] calldata tokens,
         uint256[] calldata amounts,
         bytes32[][] calldata proofs
     ) external broadcast {
+        _run(users, tokens, amounts, proofs);
+    }
+
+    function _run(
+        address[] memory users,
+        address[] memory tokens,
+        uint256[] memory amounts,
+        bytes32[][] memory proofs
+    ) internal {
         uint256 chainId = block.chainid;
         address distributorAddress = readAddress(chainId, "Merkl.Distributor");
 
@@ -184,9 +296,19 @@ contract Claim is DistributorScript {
     }
 }
 
-// ToggleOnlyOperatorCanClaim script (deprecated but included for completeness)
+// ToggleOnlyOperatorCanClaim script
 contract ToggleOnlyOperatorCanClaim is DistributorScript {
+    function run() external broadcast {
+        // MODIFY THIS VALUE TO SET YOUR DESIRED USER
+        address user = address(0);
+        _run(user);
+    }
+
     function run(address user) external broadcast {
+        _run(user);
+    }
+
+    function _run(address user) internal {
         uint256 chainId = block.chainid;
         address distributorAddress = readAddress(chainId, "Merkl.Distributor");
 

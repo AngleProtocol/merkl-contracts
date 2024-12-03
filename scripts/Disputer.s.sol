@@ -42,43 +42,82 @@ contract Deploy is DisputerScript {
 
 // SetDistributor scrip
 contract SetDistributor is DisputerScript {
-    function run(Distributor newDistributor) external broadcast {
+    function run(Distributor newDistributor) external {
+        _run(newDistributor);
+    }
+
+    function run() external {
+        // MODIFY THIS VALUE TO SET YOUR DESIRED DISTRIBUTOR ADDRESS
+        address distributorAddress = address(0);
+        _run(Distributor(distributorAddress));
+    }
+
+    function _run(Distributor _newDistributor) internal broadcast {
         uint256 chainId = block.chainid;
         address disputerAddress = readAddress(chainId, "Merkl.Disputer");
 
-        Disputer(disputerAddress).setDistributor(newDistributor);
+        Disputer(disputerAddress).setDistributor(_newDistributor);
 
-        console.log("Distributor updated to:", address(newDistributor));
+        console.log("Distributor updated to:", address(_newDistributor));
     }
 }
 
 // AddToWhitelist scrip
 contract AddToWhitelist is DisputerScript {
-    function run(address account) external broadcast {
+    function run(address account) external {
+        _run(account);
+    }
+
+    function run() external {
+        // MODIFY THIS VALUE TO SET THE ACCOUNT TO WHITELIST
+        address account = address(0);
+        _run(account);
+    }
+
+    function _run(address _account) internal broadcast {
         uint256 chainId = block.chainid;
         address disputerAddress = readAddress(chainId, "Merkl.Disputer");
 
-        Disputer(disputerAddress).addToWhitelist(account);
+        Disputer(disputerAddress).addToWhitelist(_account);
 
-        console.log("Address added to whitelist:", account);
+        console.log("Address added to whitelist:", _account);
     }
 }
 
 // RemoveFromWhitelist scrip
 contract RemoveFromWhitelist is DisputerScript {
-    function run(address account) external broadcast {
+    function run(address account) external {
+        _run(account);
+    }
+
+    function run() external {
+        // MODIFY THIS VALUE TO SET THE ACCOUNT TO REMOVE FROM WHITELIST
+        address accountToRemove = address(0);
+        _run(accountToRemove);
+    }
+
+    function _run(address _account) internal broadcast {
         uint256 chainId = block.chainid;
         address disputerAddress = readAddress(chainId, "Merkl.Disputer");
 
-        Disputer(disputerAddress).removeFromWhitelist(account);
-
-        console.log("Address removed from whitelist:", account);
+        Disputer(disputerAddress).removeFromWhitelist(_account);
+        console.log("Address removed from whitelist:", _account);
     }
 }
 
 // FundDisputerWhitelist script
 contract FundDisputerWhitelist is DisputerScript {
-    function run(uint256 fundAmount) external broadcast {
+    function run(uint256 amountToFund) external {
+        _run(amountToFund);
+    }
+
+    function run() external {
+        // MODIFY THIS VALUE TO SET THE FUNDING AMOUNT (in ether)
+        uint256 amountToFund = 0.001 ether;
+        _run(amountToFund);
+    }
+
+    function _run(uint256 _amountToFund) internal broadcast {
         console.log("Chain ID:", block.chainid);
 
         // Fund each whitelisted address
@@ -87,15 +126,15 @@ contract FundDisputerWhitelist is DisputerScript {
             console.log("Funding whitelist address:", recipient);
 
             // Transfer native token
-            (bool success, ) = recipient.call{ value: fundAmount }("");
+            (bool success, ) = recipient.call{ value: _amountToFund }("");
             require(success, "Transfer failed");
 
-            console.log("Funded with amount:", fundAmount);
+            console.log("Funded with amount:", _amountToFund);
         }
 
         // Print summary
         console.log("\n=== Funding Summary ===");
-        console.log("Amount per address:", fundAmount);
+        console.log("Amount per address:", _amountToFund);
         console.log("Number of addresses funded:", DISPUTER_WHITELIST.length);
     }
 }
