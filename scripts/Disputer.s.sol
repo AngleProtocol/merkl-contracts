@@ -160,3 +160,33 @@ contract FundDisputer is DisputerScript {
         disputeToken.transfer(disputerAddress, _amountToFund);
     }
 }
+
+contract WithdrawFunds is DisputerScript {
+    function run() external {
+        // MODIFY THESE VALUES TO SET THE WITHDRAWAL PARAMETERS
+        address asset = address(0); // Use address(0) for ETH, or token address for ERC20
+        uint256 amountToWithdraw = 100 * 10 ** 6; // Adjust decimals according to asset
+        address recipient = address(0); // Set the recipient address
+        _run(asset, recipient, amountToWithdraw);
+    }
+
+    function run(address asset, address recipient, uint256 amountToWithdraw) external {
+        _run(asset, recipient, amountToWithdraw);
+    }
+
+    function _run(address asset, address to, uint256 _amountToWithdraw) internal broadcast {
+        uint256 chainId = block.chainid;
+        address disputerAddress = readAddress(chainId, "Merkl.Disputer");
+        Disputer disputer = Disputer(disputerAddress);
+
+        if (asset == address(0)) {
+            // Withdraw ETH
+            disputer.withdrawFunds(payable(to), _amountToWithdraw);
+            console.log("Withdrew %s ETH to %s", _amountToWithdraw, to);
+        } else {
+            // Withdraw ERC20 token
+            disputer.withdrawFunds(asset, to, _amountToWithdraw);
+            console.log("Withdrew %s %s to %s", _amountToWithdraw, asset, to);
+        }
+    }
+}
