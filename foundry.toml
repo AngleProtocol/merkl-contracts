@@ -102,5 +102,5 @@ skale = { chainId = 2046399126, key = "${SKALE_ETHERSCAN_API_KEY}", url = "https
 worldchain = { chainId = 480, key = "${WORLDCHAIN_ETHERSCAN_API_KEY}", url = "https://worldchain-mainnet.explorer.alchemy.com/api" }
 lisk = { chainId = 1135, key = "${LISK_ETHERSCAN_API_KEY}", url = "https://blockscout.lisk.com/api/" }
 etherlink = { chainId = 42793, key = "${ETHERLINK_ETHERSCAN_API_KEY}", url= "https://explorer.etherlink.com/api" }
-arthera = { chainId = 10242, key = "${ARTHERA_ETHERSCAN_API_KEY}", url = "https://explorer.arthera.net/api/ }
+arthera = { chainId = 10242, key = "${ARTHERA_ETHERSCAN_API_KEY}", url = "https://explorer.arthera.net/api/" }
 swell = { chainId = 1923, key = "${SWELL_ETHERSCAN_API_KEY}", url = "https://explorer.swellnetwork.io:443/api/" }
