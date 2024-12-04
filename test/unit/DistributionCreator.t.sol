@@ -126,7 +126,7 @@ contract Test_DistributionCreator_Initialize is DistributionCreatorTest {
 }
 
 contract Test_DistributionCreator_CreateDistribution is DistributionCreatorTest {
-    function test_RevertWhen_CampaignSouldStartInFuture() public {
+    function test_RevertWhen_CampaignShouldStartInFuture() public {
         DistributionParameters memory distribution = DistributionParameters({
             uniV3Pool: address(pool),
             rewardToken: address(angle),
@@ -144,7 +144,7 @@ contract Test_DistributionCreator_CreateDistribution is DistributionCreatorTest 
             rewardId: keccak256("TEST"),
             additionalData: hex""
         });
-        vm.expectRevert(Errors.CampaignSouldStartInFuture.selector);
+        vm.expectRevert(Errors.CampaignShouldStartInFuture.selector);
         creator.createDistribution(distribution);
     }
 
@@ -355,7 +355,7 @@ contract Test_DistributionCreator_CreateDistributions is DistributionCreatorTest
 }
 
 contract Test_DistributionCreator_CreateCampaign is DistributionCreatorTest {
-    function test_RevertWhen_CampaignSouldStartInFuture() public {
+    function test_RevertWhen_CampaignShouldStartInFuture() public {
         CampaignParameters memory campaign = CampaignParameters({
             campaignId: keccak256("TEST"),
             creator: address(0),
@@ -366,7 +366,7 @@ contract Test_DistributionCreator_CreateCampaign is DistributionCreatorTest {
             startTimestamp: uint32(block.timestamp - 1),
             duration: 3600
         });
-        vm.expectRevert(Errors.CampaignSouldStartInFuture.selector);
+        vm.expectRevert(Errors.CampaignShouldStartInFuture.selector);
         creator.createCampaign(campaign);
     }
 

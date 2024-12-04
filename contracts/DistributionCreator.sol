@@ -458,7 +458,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     function _createCampaign(CampaignParameters memory newCampaign) internal returns (bytes32) {
         uint256 rewardTokenMinAmount = rewardTokenMinAmounts[newCampaign.rewardToken];
         // if epoch parameters lead to a past campaign
-        if (newCampaign.startTimestamp < block.timestamp) revert Errors.CampaignSouldStartInFuture();
+        if (newCampaign.startTimestamp < block.timestamp) revert Errors.CampaignShouldStartInFuture();
         // if the campaign doesn't last at least one hour
         if (newCampaign.duration < HOUR) revert Errors.CampaignDurationBelowHour();
         // if the reward token is not whitelisted as an incentive token

@@ -8,7 +8,7 @@ library Errors {
     error CampaignDurationBelowHour();
     error CampaignRewardTokenNotWhitelisted();
     error CampaignRewardTooLow();
-    error CampaignSouldStartInFuture();
+    error CampaignShouldStartInFuture();
     error InvalidDispute();
     error InvalidLengths();
     error InvalidParam();
