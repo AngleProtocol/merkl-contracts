@@ -10,6 +10,7 @@ import { Fixture, IERC20 } from "./Fixture.t.sol";
 import { Errors } from "../contracts/utils/Errors.sol";
 import { IAccessControlManager } from "../contracts/interfaces/IAccessControlManager.sol";
 import { JsonReader } from "../scripts/utils/JsonReader.sol";
+import { MockToken } from "../contracts/mock/MockToken.sol";
 
 contract DistributionCreatorCreateCampaignTest is Fixture {
     using SafeERC20 for IERC20;
@@ -1149,10 +1150,12 @@ contract UpgradeDistributionCreatorTest is Test, JsonReader {
     DistributionCreator public distributionCreator;
     address public deployer;
     address public governor;
+    Distributor public distributor;
+    IERC20 public rewardToken;
     uint256 public chainId;
-
     bytes32 public campaignId0;
     bytes32 public campaignId73;
+
     function setUp() public {
         // Setup environment variables
         deployer = makeAddr("deployer");
@@ -1160,11 +1163,11 @@ contract UpgradeDistributionCreatorTest is Test, JsonReader {
         chainId = block.chainid;
 
         // Load existing contracts
+        distributor = Distributor(this.readAddress(chainId, "Merkl.Distributor"));
         distributionCreator = DistributionCreator(this.readAddress(chainId, "Merkl.DistributionCreator"));
         governor = this.readAddress(chainId, "AngleLabs");
-    }
+        rewardToken = IERC20(0xC011882d0f7672D8942e7fE2248C174eeD640c8f); // aglaMerkl
 
-    function test_UpgradeDistributionCreator() public {
         // Deploy new implementation
         vm.startBroadcast(deployer);
         address creatorImpl = address(new DistributionCreator());
@@ -1174,7 +1177,9 @@ contract UpgradeDistributionCreatorTest is Test, JsonReader {
         vm.startBroadcast(governor);
         distributionCreator.upgradeTo(address(creatorImpl));
         vm.stopBroadcast();
+    }
 
+    function test_UpgradeDistributionCreator() public {
         // Verify storage slots remain unchanged
         assertEq(address(distributionCreator.accessControlManager()), this.readAddress(chainId, "Merkl.CoreMerkl"));
         assertEq(address(distributionCreator.distributor()), this.readAddress(chainId, "Merkl.Distributor"));
@@ -1247,6 +1252,169 @@ contract UpgradeDistributionCreatorTest is Test, JsonReader {
         vm.expectRevert();
         distributionCreator.upgradeTo(address(creatorImpl));
         vm.stopBroadcast();
+    }
+
+    function test_ClaimRewards() public {
+        address updater = 0x435046800Fb9149eE65159721A92cB7d50a7534b;
+
+        MerkleTree memory newTree = MerkleTree({
+            merkleRoot: 0xb402de8ed2f573c780a39e6d41aa5276706c439849d1e4925d379f2aa8913577,
+            ipfsHash: bytes32(0)
+        });
+
+        bool canUpdate = distributor.disputer() != address(0) ||
+            ((distributor.canUpdateMerkleRoot(updater) != 1 || block.timestamp < distributor.endOfDisputePeriod()) &&
+                true);
+        console.log("canUpdate", canUpdate);
+        console.log("disputer", distributor.disputer());
+
+        // Perform tree update
+        vm.prank(updater);
+        distributor.updateTree(newTree);
+
+        // Verify tree update
+        (bytes32 currentRoot, bytes32 currentHash) = distributor.tree();
+        assertEq(currentRoot, newTree.merkleRoot);
+        assertEq(currentHash, newTree.ipfsHash);
+
+        address claimer = 0x15775b23340C0f50E0428D674478B0e9D3D0a759;
+        uint256 balanceToClaim = 1918683165360;
+
+        // Setup claim parameters
+        bytes32[][] memory proofs = new bytes32[][](1);
+        address[] memory users = new address[](1);
+        address[] memory tokens = new address[](1);
+        uint256[] memory amounts = new uint256[](1);
+
+        proofs[0] = new bytes32[](17);
+        proofs[0][0] = 0xb4273243bd0ec5add5e6d803f13bf6866ed1904d24626766ab2836454ba1ec0a;
+        proofs[0][1] = 0x3ee0ead23e2fe3f664ccb5e13683f27e27a4d7fefa8405545fb6421244630375;
+        proofs[0][2] = 0x69f54e33351af15236b33bb4695470f1af96cd1a9f154aa511ff16faa6886791;
+        proofs[0][3] = 0xa9d77ad46850fbfb8c196c693acdbb0c6241a2e561a8b0073ec71297a565673d;
+        proofs[0][4] = 0xe1b57f280e556c7f217e8d375f0cef7977a9467d5496d32bb8ec461f0d4c4f19;
+        proofs[0][5] = 0x0fc7ddc7cc9ecc7f7b0be5692f671394f6245ffdabe5c0fd2062eb71b7c11826;
+        proofs[0][6] = 0x94445a98fe6679760e5ac2edeacfe0bfa397f805c7adeaf3558a82accb78f201;
+        proofs[0][7] = 0x14a6fec66cdfece5c73ec44196f1414326236131ff9a60350cca603e54985c4e;
+        proofs[0][8] = 0x84679751230af3e3242ea1cecfc8daee3d2187ab647281cbf8c52e649a43e84c;
+        proofs[0][9] = 0xc0fc15960178fe4d542c93e64ec58648e5ff17bd02b27f841bd6ab838fc5ee67;
+        proofs[0][10] = 0x9b84efe5d11bc4de32ecd204c3962dd9270694d93a50e2840d763eaeac6c194b;
+        proofs[0][11] = 0x5c8025dbe663cf4b4e19fbc7b1e54259af5822fd774fd60a98e7c7a60112efe0;
+        proofs[0][12] = 0x301b573f9a6503ebe00ff7031a33cd41170d8b4c09a31fcafb9feb7529400a79;
+        proofs[0][13] = 0xc89942ad2dcb0ac96d2620ef9475945bdbe6d40a9f6c4e9f6d9437a953bf881c;
+        proofs[0][14] = 0xce6ca90077dc547f9a52a24d2636d659642fbae1d16c81c9e47c5747a472c63f;
+        proofs[0][15] = 0xe34667d2e10b515dd1f7b29dcd7990d25ea9caa7a7de571c4fb221c0a8fc82a1;
+        proofs[0][16] = 0x8316d6488fd22b823cc35ee673297ea2a753f0a89e5384ef20b38d053c881628;
+
+        users[0] = claimer;
+        tokens[0] = address(rewardToken);
+        amounts[0] = balanceToClaim;
+
+        // Record initial balance
+        uint256 initialBalance = rewardToken.balanceOf(claimer);
+
+        // Perform claim
+        vm.prank(claimer);
+        bytes32 root = verifyProof(keccak256(abi.encode(claimer, address(rewardToken), balanceToClaim)), proofs[0]);
+        console.logBytes32(root);
+        distributor.claim(users, tokens, amounts, proofs);
+
+        // Verify claim result
+        assertEq(rewardToken.balanceOf(claimer), initialBalance + balanceToClaim);
+    }
+
+    function test_ReallocateCampaignRewards() public {
+        bytes32 campaignId = 0x1d1231a7a6958431a5760b929c56f0e44a20f06e92a52324c19a2e4d2ec529bc;
+        address to = 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701;
+
+        address[] memory froms = new address[](2);
+        froms[0] = 0x15775b23340C0f50E0428D674478B0e9D3D0a759;
+        froms[1] = 0xe4BB74804edf5280c9203f034036f7CB15196078;
+
+        // Perform reallocation
+        vm.prank(deployer);
+        distributionCreator.reallocateCampaignRewards(campaignId, froms, to);
+
+        // Verify reallocation results
+        assertEq(distributionCreator.campaignReallocation(campaignId, froms[0]), to);
+        assertEq(distributionCreator.campaignListReallocation(campaignId, 0), froms[0]);
+        assertEq(distributionCreator.campaignListReallocation(campaignId, 1), froms[1]);
+    }
+
+    function test_UpdateCampaign() public {
+        uint256 amount = 97 ether;
+        bytes32 campaignId = 0x6628165d9b509afe46d9009fecc7012c68cc0ce24aafdc4ce11f23a01ccc1a22;
+        uint32 startTimestamp = 1733155692;
+        uint32 duration = 3600 * 6;
+
+        // Setup campaign data
+        uint32 campaignType = 1;
+        bytes memory campaignData = abi.encode(
+            0x70F796946eD919E4Bc6cD506F8dACC45E4539771,
+            new address[](0),
+            new address[](0),
+            "",
+            new bytes[](0),
+            new bytes[](0),
+            hex""
+        );
+
+        // Mint tokens for test
+        vm.startPrank(deployer);
+        MockToken(address(rewardToken)).mint(deployer, amount);
+        rewardToken.approve(address(distributionCreator), amount);
+
+        // Perform campaign update
+        distributionCreator.overrideCampaign(
+            campaignId,
+            CampaignParameters({
+                campaignId: campaignId,
+                creator: deployer,
+                rewardToken: address(rewardToken),
+                amount: amount,
+                campaignType: campaignType,
+                startTimestamp: startTimestamp,
+                duration: duration,
+                campaignData: campaignData
+            })
+        );
+
+        // Verify campaign update
+        (
+            ,
+            address campaignCreator,
+            address campaignRewardToken,
+            uint256 campaignAmount,
+            uint256 campaignType_,
+            uint32 campaignStartTimestamp,
+            uint32 campaignDuration,
+            bytes memory campaignData_
+        ) = distributionCreator.campaignOverrides(campaignId);
+
+        assertEq(campaignCreator, deployer);
+        assertEq(campaignRewardToken, address(rewardToken));
+        assertEq(campaignAmount, amount);
+        assertEq(campaignType_, campaignType);
+        assertEq(campaignStartTimestamp, startTimestamp);
+        assertEq(campaignDuration, duration);
+        assertEq(campaignData_, campaignData);
+
+        vm.stopPrank();
+    }
+
+    function verifyProof(bytes32 leaf, bytes32[] memory proof) public returns (bytes32) {
+        bytes32 currentHash = leaf;
+        uint256 proofLength = proof.length;
+        for (uint256 i; i < proofLength; ) {
+            if (currentHash < proof[i]) {
+                currentHash = keccak256(abi.encode(currentHash, proof[i]));
+            } else {
+                currentHash = keccak256(abi.encode(proof[i], currentHash));
+            }
+            unchecked {
+                ++i;
+            }
+        }
+        return currentHash;
     }
 }
 

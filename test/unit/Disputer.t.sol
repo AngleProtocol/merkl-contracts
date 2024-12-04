@@ -9,6 +9,7 @@ import { Disputer } from "../../contracts/Disputer.sol";
 import { DistributorTest } from "./Distributor.t.sol";
 import { IAccessControlManager } from "../../contracts/interfaces/IAccessControlManager.sol";
 import { Errors } from "../../contracts/utils/Errors.sol";
+
 contract DisputerTest is DistributorTest {
     Disputer public disputer;
 
