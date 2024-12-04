@@ -30,8 +30,17 @@ function main {
         exit 1
     fi
 
-    echo "Forking $uri"
-    anvil --fork-url $uri
+    echo "What block do you want to fork ? (Can leave empty for instant)"
+
+    read block
+
+    if [ -z "$block" ]; then
+        echo "Forking $uri"
+        anvil --fork-url $uri
+    else 
+        echo "Forking $uri at block $block"
+        anvil --fork-url $uri --fork-block-number $block
+    fi
 }
 
 main

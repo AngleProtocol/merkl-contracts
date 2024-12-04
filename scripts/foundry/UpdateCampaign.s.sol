@@ -18,9 +18,9 @@ contract UpdateCampaign is CommonUtils, StdAssertions {
         uint256 chainId = CHAIN_BASE;
         IERC20 rewardToken = IERC20(0xC011882d0f7672D8942e7fE2248C174eeD640c8f);
         uint256 amount = 97 ether; // after fees
-        bytes32 campaignId = 0xba2af37b09cc7627766d25a587bb481cede79c7e7db30ce68ca01f0555cdd828;
-        uint32 startTimestamp = uint32(1732191162);
-        uint32 duration = 3600 * 10;
+        bytes32 campaignId = 0x6628165d9b509afe46d9009fecc7012c68cc0ce24aafdc4ce11f23a01ccc1a22;
+        uint32 startTimestamp = uint32(1733155692);
+        uint32 duration = 3600 * 6;
         /// END
 
         DistributionCreator distributionCreator = DistributionCreator(
@@ -34,6 +34,10 @@ contract UpdateCampaign is CommonUtils, StdAssertions {
         // vm.stopBroadcast();
 
         vm.startBroadcast(deployer);
+
+        // It will be less than that but we don't care
+        MockToken(address(rewardToken)).mint(deployer, amount);
+        rewardToken.approve(address(distributionCreator), amount);
 
         // IERC20(0x0000206329b97DB379d5E1Bf586BbDB969C63274).approve(
         //     address(0xbEEfa1aBfEbE621DF50ceaEF9f54FdB73648c92C),
@@ -53,17 +57,17 @@ contract UpdateCampaign is CommonUtils, StdAssertions {
         //     hex""
         // );
 
-        // // ERC20 distrib
-        // uint32 campaignType = 1;
-        // bytes memory campaignData = abi.encode(
-        //     0x70F796946eD919E4Bc6cD506F8dACC45E4539771,
-        //     new address[](0),
-        //     new address[](0),
-        //     "",
-        //     new bytes[](0),
-        //     new bytes[](0),
-        //     hex""
-        // );
+        // ERC20 distrib
+        uint32 campaignType = 1;
+        bytes memory campaignData = abi.encode(
+            0x70F796946eD919E4Bc6cD506F8dACC45E4539771,
+            new address[](0),
+            new address[](0),
+            "",
+            new bytes[](0),
+            new bytes[](0),
+            hex""
+        );
 
         // // Silo distrib
         // address[] memory whitelist = new address[](1);
@@ -78,22 +82,22 @@ contract UpdateCampaign is CommonUtils, StdAssertions {
         //     hex""
         // );
 
-        // CLAMM distrib
-        uint32 campaignType = 2;
-        bytes memory campaignData = abi.encode(
-            0x5280d5E63b416277d0F81FAe54Bb1e0444cAbDAA,
-            5100,
-            1700,
-            3200,
-            false,
-            address(0),
-            1,
-            new address[](0),
-            new address[](0),
-            "",
-            new bytes[](0),
-            hex""
-        );
+        // // CLAMM distrib
+        // uint32 campaignType = 2;
+        // bytes memory campaignData = abi.encode(
+        //     0x5280d5E63b416277d0F81FAe54Bb1e0444cAbDAA,
+        //     5100,
+        //     1700,
+        //     3200,
+        //     false,
+        //     address(0),
+        //     1,
+        //     new address[](0),
+        //     new address[](0),
+        //     "",
+        //     new bytes[](0),
+        //     hex""
+        // );
 
         distributionCreator.overrideCampaign(
             campaignId,
@@ -126,12 +130,12 @@ contract UpdateCampaign is CommonUtils, StdAssertions {
         assertEq(campaignStartTimestamp, startTimestamp);
         assertEq(campaignDuration, duration);
         assertEq(campaignCampaignData, campaignData);
-        // assertLt(distributionCreator.campaignOverridesTimestamp(campaignId, 0), timestamp);
-        // assertLt(distributionCreator.campaignOverridesTimestamp(campaignId, 1), timestamp);
+        assertLt(distributionCreator.campaignOverridesTimestamp(campaignId, 0), timestamp);
+        assertLt(distributionCreator.campaignOverridesTimestamp(campaignId, 1), timestamp);
         // assertLt(distributionCreator.campaignOverridesTimestamp(campaignId, 2), timestamp);
-        assertGe(distributionCreator.campaignOverridesTimestamp(campaignId, 0), timestamp);
+        assertGe(distributionCreator.campaignOverridesTimestamp(campaignId, 2), timestamp);
         vm.expectRevert();
-        distributionCreator.campaignOverridesTimestamp(campaignId, 1);
+        distributionCreator.campaignOverridesTimestamp(campaignId, 3);
 
         vm.stopBroadcast();
     }
