@@ -105,10 +105,15 @@ contract PufferPointTokenWrapper is UUPSHelper, ERC20Upgradeable {
         if (from == distributor) {
             _burn(to, amount);
 
-            // Creates a vesting for the `to` address
-            VestingData storage userVestingData = vestingData[to];
-            VestingID[] storage userAllVestings = userVestingData.allVestings;
-            userAllVestings.push(VestingID(uint128(amount), uint128(block.timestamp + cliffDuration)));
+            uint128 endTimestamp = uint128(block.timestamp + cliffDuration);
+            if (endTimestamp > block.timestamp) {
+                // Creates a vesting for the `to` address
+                VestingData storage userVestingData = vestingData[to];
+                VestingID[] storage userAllVestings = userVestingData.allVestings;
+                userAllVestings.push(VestingID(uint128(amount), uint128(block.timestamp + cliffDuration)));
+            } else {
+                IERC20(token()).safeTransfer(to, amount);
+            }
         }
     }
 
@@ -157,6 +162,12 @@ contract PufferPointTokenWrapper is UUPSHelper, ERC20Upgradeable {
         _;
     }
 
+    /// @notice Checks whether the `msg.sender` has the governor role or the guardian role
+    modifier onlyGuardian() {
+        if (!core.isGovernorOrGuardian(msg.sender)) revert NotGovernorOrGuardian();
+        _;
+    }
+
     /// @inheritdoc UUPSUpgradeable
     function _authorizeUpgrade(address) internal view override onlyGovernorUpgrader(core) {}
 
@@ -170,6 +181,10 @@ contract PufferPointTokenWrapper is UUPSHelper, ERC20Upgradeable {
     function setDistributor(address _distributionCreator) external onlyGovernor {
         distributor = IDistributionCreator(_distributionCreator).distributor();
         distributionCreator = _distributionCreator;
+    }
+
+    function setCliffDuration(uint32 _newCliffDuration) external onlyGuardian {
+        cliffDuration = _newCliffDuration;
     }
 
     function setFeeRecipient() external {
