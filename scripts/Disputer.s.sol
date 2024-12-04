@@ -2,6 +2,7 @@
 pragma solidity ^0.8.17;
 
 import { console } from "forge-std/console.sol";
+import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 import { BaseScript } from "./utils/Base.s.sol";
 import { JsonReader } from "./utils/JsonReader.sol";
@@ -136,5 +137,26 @@ contract FundDisputerWhitelist is DisputerScript {
         console.log("\n=== Funding Summary ===");
         console.log("Amount per address:", _amountToFund);
         console.log("Number of addresses funded:", DISPUTER_WHITELIST.length);
+    }
+}
+
+contract FundDisputer is DisputerScript {
+    function run(uint256 amountToFund) external {
+        _run(amountToFund);
+    }
+
+    function run() external {
+        // MODIFY THIS VALUE TO SET THE FUNDING AMOUNT (in dispute tokens decimals)
+        uint256 amountToFund = 100 * 10 ** 6; // i.e. 100 USDC -> 100 * 10 ** 6
+        _run(amountToFund);
+    }
+
+    function _run(uint256 _amountToFund) internal broadcast {
+        uint256 chainId = block.chainid;
+        address disputerAddress = readAddress(chainId, "Merkl.Disputer");
+
+        IERC20 disputeToken = Disputer(disputerAddress).distributor().disputeToken();
+        console.log("Transferring %s %s to %s", _amountToFund, disputerAddress);
+        disputeToken.transfer(disputerAddress, _amountToFund);
     }
 }
