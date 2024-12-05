@@ -25,7 +25,7 @@
     "url": "https://github.com/AngleProtocol/merkl-contracts/issues"
   },
   "devDependencies": {
-    "@angleprotocol/sdk": "2.34.1",
+    "@angleprotocol/sdk": "2.34.5",
     "@openzeppelin/contracts": "^4.8.1",
     "@openzeppelin/contracts-upgradeable": "4.8.1",
     "prettier": "^2.0.0",

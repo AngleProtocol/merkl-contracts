@@ -156,7 +156,7 @@ contract FundDisputer is DisputerScript {
         address disputerAddress = readAddress(chainId, "Merkl.Disputer");
 
         IERC20 disputeToken = Disputer(disputerAddress).distributor().disputeToken();
-        console.log("Transferring %s %s to %s", _amountToFund, disputerAddress);
+        console.log("Transferring %s to %s", _amountToFund, disputerAddress);
         disputeToken.transfer(disputerAddress, _amountToFund);
     }
 }
