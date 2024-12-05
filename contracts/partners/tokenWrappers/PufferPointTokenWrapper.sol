@@ -184,6 +184,7 @@ contract PufferPointTokenWrapper is UUPSHelper, ERC20Upgradeable {
     }
 
     function setCliffDuration(uint32 _newCliffDuration) external onlyGuardian {
+        if (_newCliffDuration < cliffDuration && _newCliffDuration != 0) revert InvalidParam();
         cliffDuration = _newCliffDuration;
     }
 
