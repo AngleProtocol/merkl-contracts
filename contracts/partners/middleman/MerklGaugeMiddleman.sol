@@ -38,7 +38,7 @@ pragma solidity ^0.8.17;
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
-import "../DistributionCreator.sol";
+import "../../DistributionCreator.sol";
 
 /// @title MerklGaugeMiddleman
 /// @author Angle Labs, Inc.
@@ -52,7 +52,7 @@ contract MerklGaugeMiddleman {
     // ================================= PARAMETERS ================================
 
     /// @notice Contract handling access control
-    ICore public accessControlManager;
+    IAccessControlManager public accessControlManager;
 
     /// @notice Maps a gauge to its reward parameters
     mapping(address => DistributionParameters) public gaugeParams;
@@ -61,7 +61,7 @@ contract MerklGaugeMiddleman {
 
     event GaugeSet(address indexed gauge);
 
-    constructor(ICore _accessControlManager) {
+    constructor(IAccessControlManager _accessControlManager) {
         if (address(_accessControlManager) == address(0)) revert ZeroAddress();
         accessControlManager = _accessControlManager;
         IERC20 _angle = angle();
@@ -97,13 +97,6 @@ contract MerklGaugeMiddleman {
     /// @notice Specifies the reward distribution parameters for `gauge`
     function setGauge(address gauge, DistributionParameters memory params) external {
         if (!accessControlManager.isGovernorOrGuardian(msg.sender)) revert NotGovernorOrGuardian();
-        DistributionCreator manager = merklDistributionCreator();
-        if (
-            gauge == address(0) ||
-            params.rewardToken != address(angle()) ||
-            (manager.isWhitelistedToken(IUniswapV3Pool(params.uniV3Pool).token0()) == 0 &&
-                manager.isWhitelistedToken(IUniswapV3Pool(params.uniV3Pool).token1()) == 0)
-        ) revert InvalidParams();
         gaugeParams[gauge] = params;
         emit GaugeSet(gauge);
     }

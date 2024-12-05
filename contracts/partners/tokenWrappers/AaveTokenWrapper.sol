@@ -5,9 +5,9 @@ pragma solidity ^0.8.17;
 import { ERC20Upgradeable } from "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
-import "../DistributionCreator.sol";
+import "../../DistributionCreator.sol";
 
-import "../utils/UUPSHelper.sol";
+import "../../utils/UUPSHelper.sol";
 
 contract AaveTokenWrapper is UUPSHelper, ERC20Upgradeable {
     using SafeERC20 for IERC20;
@@ -15,7 +15,7 @@ contract AaveTokenWrapper is UUPSHelper, ERC20Upgradeable {
     // ================================= VARIABLES =================================
 
     /// @notice `Core` contract handling access control
-    ICore public core;
+    IAccessControlManager public core;
 
     // could be put as immutable in non upgradeable contract
     address public token;
@@ -53,11 +53,11 @@ contract AaveTokenWrapper is UUPSHelper, ERC20Upgradeable {
         __UUPSUpgradeable_init();
         if (underlyingToken == address(0) || _distributor == address(0) || _distributionCreator == address(0))
             revert ZeroAddress();
-        ICore(_core).isGovernor(msg.sender);
+        IAccessControlManager(_core).isGovernor(msg.sender);
         token = underlyingToken;
         distributor = _distributor;
         distributionCreator = _distributionCreator;
-        core = ICore(_core);
+        core = IAccessControlManager(_core);
     }
 
     function _beforeTokenTransfer(address from, address to, uint256 amount) internal override {

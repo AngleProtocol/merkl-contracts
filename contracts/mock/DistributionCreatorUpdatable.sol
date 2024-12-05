@@ -41,17 +41,14 @@ import "../DistributionCreator.sol";
 /// @author Angle Labs, Inc.
 //solhint-disable
 contract DistributionCreatorUpdatable is DistributionCreator {
-    
     uint8 public coreUpdated;
 
     uint256[49] private __gapUpdatable;
 
-
     function updateCore(address _newCore) external {
-        if(coreUpdated == 0) {
-            core = ICore(_newCore);
+        if (coreUpdated == 0) {
+            core = IAccessControlManager(_newCore);
             coreUpdated = 1;
         }
     }
-
 }

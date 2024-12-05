@@ -10,7 +10,7 @@ import { DistributionCreator } from "../../contracts/DistributionCreator.sol";
 import { MockTokenPermit } from "../../contracts/mock/MockTokenPermit.sol";
 import { MockUniswapV3Pool } from "../../contracts/mock/MockUniswapV3Pool.sol";
 import { MockCoreBorrow } from "../../contracts/mock/MockCoreBorrow.sol";
-import { ICore } from "../../contracts/interfaces/ICore.sol";
+import { IAccessControlManager } from "../../contracts/interfaces/IAccessControlManager.sol";
 import "../../contracts/utils/UUPSHelper.sol";
 import { console } from "forge-std/console.sol";
 
@@ -72,7 +72,7 @@ contract Fixture is Test {
         pool.setToken(address(token1), 1);
         coreBorrow.toggleGuardian(address(guardian));
         coreBorrow.toggleGovernor(address(governor));
-        creator.initialize(ICore(address(coreBorrow)), address(bob), 1e8);
+        creator.initialize(IAccessControlManager(address(coreBorrow)), address(bob), 1e8);
     }
 
     /*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////

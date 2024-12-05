@@ -6,7 +6,7 @@ import { ERC20Upgradeable } from "@openzeppelin/contracts-upgradeable/token/ERC2
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import { IERC20, IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 
-import "../utils/UUPSHelper.sol";
+import "../../utils/UUPSHelper.sol";
 
 interface IDistributionCreator {
     function distributor() external view returns (address);
@@ -27,7 +27,7 @@ abstract contract BaseMerklTokenWrapper is UUPSHelper, ERC20Upgradeable {
     // ================================= VARIABLES =================================
 
     /// @notice `Core` contract handling access control
-    ICore public core;
+    IAccessControlManager public core;
 
     // =================================== EVENTS ==================================
 
@@ -49,7 +49,7 @@ abstract contract BaseMerklTokenWrapper is UUPSHelper, ERC20Upgradeable {
         return true;
     }
 
-    function initialize(ICore _core) public initializer onlyProxy {
+    function initialize(IAccessControlManager _core) public initializer onlyProxy {
         __ERC20_init(
             string.concat("Merkl Token Wrapper - ", IERC20Metadata(token()).name()),
             string.concat("mtw", IERC20Metadata(token()).symbol())
