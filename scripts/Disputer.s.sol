@@ -190,3 +190,23 @@ contract WithdrawFunds is DisputerScript {
         }
     }
 }
+
+// ToggleDispute script
+contract ToggleDispute is DisputerScript {
+    function run(string memory reason) external {
+        _run(reason);
+    }
+
+    function run() external {
+        // MODIFY THIS VALUE TO SET THE DISPUTE REASON TO TOGGLE
+        string memory reason = "test";
+        _run(reason);
+    }
+
+    function _run(string memory _reason) internal broadcast {
+        uint256 chainId = block.chainid;
+        address disputerAddress = readAddress(chainId, "Merkl.Disputer");
+        Disputer(disputerAddress).toggleDispute(_reason);
+        console.log("Toggled dispute for:", _reason);
+    }
+}
