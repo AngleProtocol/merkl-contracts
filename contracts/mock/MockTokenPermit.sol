@@ -2,9 +2,10 @@
 
 pragma solidity ^0.8.7;
 
-import "@openzeppelin/contracts/token/ERC20/extensions/draft-ERC20Permit.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import { ERC20Permit } from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";
+import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 contract MockTokenPermit is ERC20Permit {
     using SafeERC20 for IERC20;
@@ -19,11 +20,7 @@ contract MockTokenPermit is ERC20Permit {
 
     bool public reverts;
 
-    constructor(
-        string memory name_,
-        string memory symbol_,
-        uint8 decimal_
-    ) ERC20Permit(name_) ERC20(name_, symbol_) {
+    constructor(string memory name_, string memory symbol_, uint8 decimal_) ERC20Permit(name_) ERC20(name_, symbol_) {
         _decimal = decimal_;
     }
 
@@ -66,37 +63,25 @@ contract MockTokenPermit is ERC20Permit {
         fees = _fees;
     }
 
-    function recoverERC20(
-        IERC20 token,
-        address to,
-        uint256 amount
-    ) external {
+    function recoverERC20(IERC20 token, address to, uint256 amount) external {
         token.safeTransfer(to, amount);
     }
 
-    function swapIn(
-        address bridgeToken,
-        uint256 amount,
-        address to
-    ) external returns (uint256) {
+    function swapIn(address bridgeToken, uint256 amount, address to) external returns (uint256) {
         require(!reverts);
 
         IERC20(bridgeToken).safeTransferFrom(msg.sender, address(this), amount);
         uint256 canonicalOut = amount;
-        canonicalOut -= (canonicalOut * fees) / 10**9;
+        canonicalOut -= (canonicalOut * fees) / 10 ** 9;
         _mint(to, canonicalOut);
         return canonicalOut;
     }
 
-    function swapOut(
-        address bridgeToken,
-        uint256 amount,
-        address to
-    ) external returns (uint256) {
+    function swapOut(address bridgeToken, uint256 amount, address to) external returns (uint256) {
         require(!reverts);
         _burn(msg.sender, amount);
         uint256 bridgeOut = amount;
-        bridgeOut -= (bridgeOut * fees) / 10**9;
+        bridgeOut -= (bridgeOut * fees) / 10 ** 9;
         IERC20(bridgeToken).safeTransfer(to, bridgeOut);
         return bridgeOut;
     }

@@ -16,21 +16,13 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18
-          cache: 'yarn'
-
       - name: Setup repo
         uses: ./.github/actions/setup-repo
         with:
-          registry-token: ${{ secrets.GH_REGISTRY_ACCESS_TOKEN }}
-
-      - name: Install dependencies
-        run: yarn install
+          registry-token: ${{ secrets.SDK_READ_ACCESS_TOKEN }}
 
       - name: Run solhint
-        run: yarn lint:check
+        run: bun lint
 
       - name: 'Add lint summary'
         run: |
@@ -47,26 +39,14 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
-          cache: 'yarn'
 
       - name: Setup repo
         uses: ./.github/actions/setup-repo
         with:
-          registry-token: ${{ secrets.GH_REGISTRY_ACCESS_TOKEN }}
-
-      - name: Install dependencies
-        run: yarn install --frozen-lockfile
-
-      - name: Compile hardhat
-        run: yarn hardhat:compile
-
-      - name: Install Foundry
-        uses: foundry-rs/foundry-toolchain@v1
-        with:
-          version: nightly
+          registry-token: ${{ secrets.SDK_READ_ACCESS_TOKEN }}
 
       - name: Compile foundry
-        run: yarn foundry:compile --sizes
+        run: bun foundry:compile --sizes --skip scripts/utils/CreateXConstants.sol
 
       - name: 'Cache the build so that it can be re-used by the other jobs'
         uses: 'actions/cache/save@v3'
@@ -85,44 +65,6 @@ jobs:
           echo "## Build result" >> $GITHUB_STEP_SUMMARY
           echo "✅ Passed" >> $GITHUB_STEP_SUMMARY
 
-  hardhat-tests:
-    needs: ['build', 'lint']
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18
-          cache: 'yarn'
-
-      - name: 'Restore the cached build'
-        uses: 'actions/cache/restore@v3'
-        with:
-          fail-on-cache-miss: true
-          key: 'build-${{ github.sha }}'
-          path: |
-            cache-forge
-            out
-            cache-hh
-            artifacts
-            typechain
-            node_modules
-
-      - run: export NODE_OPTIONS=--max_old_space_size=11264
-
-      - name: Run unit tests
-        run: yarn hardhat:test
-        env:
-          ENABLE_GAS_REPORT: true
-          CI: true
-          ETH_NODE_URI_ARBITRUM: ${{ secrets.ETH_NODE_URI_ARBITRUM }}
-
-      - name: 'Add test summary'
-        run: |
-          echo "## Hardhat Unit tests result" >> $GITHUB_STEP_SUMMARY
-          echo "✅ Passed" >> $GITHUB_STEP_SUMMARY
-
   foundry-tests:
     needs: ['build', 'lint']
     runs-on: ubuntu-latest
@@ -130,11 +72,6 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: 'recursive'
-
-      - name: Install Foundry
-        uses: foundry-rs/foundry-toolchain@v1
-        with:
-          version: nightly
 
       - name: 'Restore the cached build'
         uses: 'actions/cache/restore@v3'
@@ -150,7 +87,7 @@ jobs:
             node_modules
 
       - name: Run Foundry tests
-        run: yarn foundry:test
+        run: bun foundry:test
         env:
           ETH_NODE_URI_OPTIMISM: ${{ secrets.ETH_NODE_URI_OPTIMISM }}
           ETH_NODE_URI_ARBITRUM: ${{ secrets.ETH_NODE_URI_ARBITRUM }}

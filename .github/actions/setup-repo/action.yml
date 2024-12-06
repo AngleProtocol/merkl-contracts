@@ -6,30 +6,26 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - name: Get yarn cache directory path
-      id: yarn-cache-dir-path
-      shell: bash
-      run: |
-        echo "::set-output name=dir::$(yarn cache dir)"
-        echo "::set-output name=version::$(yarn -v)"
-
-    - uses: actions/setup-node@v3
+    - uses: oven-sh/setup-bun@v1
       with:
-        node-version: '20'
+        bun-version: latest
 
-    - uses: actions/cache@v2
-      id: yarn-cache
+    - uses: actions/cache@v3
+      id: bun-cache
       with:
         path: |
           **/node_modules
-          ${{ steps.yarn-cache-dir-path.outputs.dir }}
-
-        key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+        key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lockb') }}
         restore-keys: |
-          ${{ runner.os }}-yarn-
+          ${{ runner.os }}-bun-
 
     - name: Install dependencies
       shell: bash
-      run: echo "//npm.pkg.github.com/:_authToken=$GH_REGISTRY_ACCESS_TOKEN" >> .npmrc && yarn install --frozen-lockfile --verbose  && rm -f .npmrc
+      run: bun install
       env:
-        GH_REGISTRY_ACCESS_TOKEN: ${{ inputs.registry-token }}
+        SDK_READ_ACCESS_TOKEN: ${{ inputs.registry-token }}
+
+    - name: Install Foundry
+      uses: foundry-rs/foundry-toolchain@v1
+      with:
+        version: nightly
