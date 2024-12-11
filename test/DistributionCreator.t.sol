@@ -426,726 +426,714 @@ contract DistributionCreatorCreateReallocationTest is Fixture {
     }
 }
 
-// contract DistributionCreatorOverrideTest is Fixture {
-//     using SafeERC20 for IERC20;
-
-//     uint256 constant maxDistribForOOG = 1e4;
-//     uint256 constant nbrDistrib = 10;
-//     uint32 initStartTime;
-//     uint32 initEndTime;
-//     uint32 startTime;
-//     uint32 endTime;
-//     uint32 numEpoch;
-
-//     function setUp() public override {
-//         super.setUp();
-
-//         initStartTime = uint32(block.timestamp);
-//         numEpoch = 25;
-//         initEndTime = startTime + numEpoch * EPOCH_DURATION;
-
-//         vm.startPrank(guardian);
-//         creator.toggleSigningWhitelist(alice);
-//         creator.toggleTokenWhitelist(address(agEUR));
-//         address[] memory tokens = new address[](1);
-//         uint256[] memory amounts = new uint256[](1);
-//         tokens[0] = address(angle);
-//         amounts[0] = 1e8;
-//         creator.setRewardTokenMinAmounts(tokens, amounts);
-//         vm.stopPrank();
-
-//         angle.mint(address(alice), 1e22);
-//         vm.prank(alice);
-//         angle.approve(address(creator), type(uint256).max);
-
-//         vm.stopPrank();
-//     }
-
-//     function testUnit_OverrideCampaignData_RevertWhen_IncorrectCampaignId() public {
-//         IERC20 rewardToken = IERC20(address(angle));
-//         uint256 amount = 100 ether;
-//         uint256 amountAfterFees = 90 ether;
-//         uint32 startTimestamp = uint32(block.timestamp + 600);
-
-//         vm.prank(alice);
-//         bytes32 campaignId = creator.createCampaign(
-//             CampaignParameters({
-//                 campaignId: bytes32(0),
-//                 creator: alice,
-//                 rewardToken: address(rewardToken),
-//                 amount: amount,
-//                 campaignType: 1,
-//                 startTimestamp: startTimestamp,
-//                 duration: 3600 * 24,
-//                 campaignData: abi.encode(
-//                     0xbEEfa1aBfEbE621DF50ceaEF9f54FdB73648c92C,
-//                     new address[](0),
-//                     new address[](0),
-//                     "",
-//                     new bytes[](0),
-//                     new bytes[](0),
-//                     hex""
-//                 )
-//             })
-//         );
-
-//         vm.warp(block.timestamp + 1000);
-//         vm.roll(4);
-//         // override
-
-//         // Silo distrib
-//         address[] memory whitelist = new address[](1);
-//         whitelist[0] = 0x8095806d8753C0443C118D1C5e5eEC472e30BFeC;
-//         bytes memory campaignData = abi.encode(
-//             0x04C0599Ae5A44757c0af6F9eC3b93da8976c150A,
-//             2,
-//             0xa42001D6d2237d2c74108FE360403C4b796B7170,
-//             whitelist,
-//             new address[](0),
-//             hex""
-//         );
-
-//         vm.expectRevert(Errors.CampaignDoesNotExist.selector);
-//         vm.prank(alice);
-//         creator.overrideCampaign(
-//             keccak256("test"),
-//             CampaignParameters({
-//                 campaignId: campaignId,
-//                 creator: alice,
-//                 rewardToken: address(rewardToken),
-//                 amount: amountAfterFees,
-//                 campaignType: 5,
-//                 startTimestamp: startTimestamp,
-//                 duration: 3600 * 24,
-//                 campaignData: campaignData
-//             })
-//         );
-//     }
-
-//     function testUnit_OverrideCampaignData_RevertWhen_IncorrectCreator() public {
-//         IERC20 rewardToken = IERC20(address(angle));
-//         uint256 amount = 100 ether;
-//         uint256 amountAfterFees = 90 ether;
-//         uint32 startTimestamp = uint32(block.timestamp + 600);
-
-//         vm.prank(alice);
-//         bytes32 campaignId = creator.createCampaign(
-//             CampaignParameters({
-//                 campaignId: bytes32(0),
-//                 creator: alice,
-//                 rewardToken: address(rewardToken),
-//                 amount: amount,
-//                 campaignType: 1,
-//                 startTimestamp: startTimestamp,
-//                 duration: 3600 * 24,
-//                 campaignData: abi.encode(
-//                     0xbEEfa1aBfEbE621DF50ceaEF9f54FdB73648c92C,
-//                     new address[](0),
-//                     new address[](0),
-//                     "",
-//                     new bytes[](0),
-//                     new bytes[](0),
-//                     hex""
-//                 )
-//             })
-//         );
-
-//         vm.warp(block.timestamp + 1000);
-//         vm.roll(4);
-//         // override
-
-//         // Silo distrib
-//         address[] memory whitelist = new address[](1);
-//         whitelist[0] = 0x8095806d8753C0443C118D1C5e5eEC472e30BFeC;
-//         bytes memory campaignData = abi.encode(
-//             0x04C0599Ae5A44757c0af6F9eC3b93da8976c150A,
-//             2,
-//             0xa42001D6d2237d2c74108FE360403C4b796B7170,
-//             whitelist,
-//             new address[](0),
-//             hex""
-//         );
-
-//         vm.expectRevert(Errors.InvalidOverride.selector);
-//         vm.prank(bob);
-//         creator.overrideCampaign(
-//             campaignId,
-//             CampaignParameters({
-//                 campaignId: campaignId,
-//                 creator: bob,
-//                 rewardToken: address(rewardToken),
-//                 amount: amountAfterFees,
-//                 campaignType: 5,
-//                 startTimestamp: startTimestamp,
-//                 duration: 3600 * 24,
-//                 campaignData: campaignData
-//             })
-//         );
-
-//         vm.expectRevert(Errors.InvalidOverride.selector);
-//         vm.prank(bob);
-//         creator.overrideCampaign(
-//             campaignId,
-//             CampaignParameters({
-//                 campaignId: campaignId,
-//                 creator: alice,
-//                 rewardToken: address(rewardToken),
-//                 amount: amountAfterFees,
-//                 campaignType: 5,
-//                 startTimestamp: startTimestamp,
-//                 duration: 3600 * 24,
-//                 campaignData: campaignData
-//             })
-//         );
-//     }
-
-//     function testUnit_OverrideCampaignData_RevertWhen_IncorrectRewardToken() public {
-//         IERC20 rewardToken = IERC20(address(angle));
-//         uint256 amount = 100 ether;
-//         uint256 amountAfterFees = 90 ether;
-//         uint32 startTimestamp = uint32(block.timestamp + 600);
-
-//         vm.prank(alice);
-//         bytes32 campaignId = creator.createCampaign(
-//             CampaignParameters({
-//                 campaignId: bytes32(0),
-//                 creator: alice,
-//                 rewardToken: address(rewardToken),
-//                 amount: amount,
-//                 campaignType: 1,
-//                 startTimestamp: startTimestamp,
-//                 duration: 3600 * 24,
-//                 campaignData: abi.encode(
-//                     0xbEEfa1aBfEbE621DF50ceaEF9f54FdB73648c92C,
-//                     new address[](0),
-//                     new address[](0),
-//                     "",
-//                     new bytes[](0),
-//                     new bytes[](0),
-//                     hex""
-//                 )
-//             })
-//         );
-
-//         vm.warp(block.timestamp + 1000);
-//         vm.roll(4);
-//         // override
-
-//         // Silo distrib
-//         address[] memory whitelist = new address[](1);
-//         whitelist[0] = 0x8095806d8753C0443C118D1C5e5eEC472e30BFeC;
-//         bytes memory campaignData = abi.encode(
-//             0x04C0599Ae5A44757c0af6F9eC3b93da8976c150A,
-//             2,
-//             0xa42001D6d2237d2c74108FE360403C4b796B7170,
-//             whitelist,
-//             new address[](0),
-//             hex""
-//         );
-
-//         vm.expectRevert(Errors.InvalidOverride.selector);
-//         vm.prank(alice);
-//         creator.overrideCampaign(
-//             campaignId,
-//             CampaignParameters({
-//                 campaignId: campaignId,
-//                 creator: alice,
-//                 rewardToken: address(alice),
-//                 amount: amountAfterFees,
-//                 campaignType: 5,
-//                 startTimestamp: startTimestamp,
-//                 duration: 3600 * 24,
-//                 campaignData: campaignData
-//             })
-//         );
-//     }
-
-//     function testUnit_OverrideCampaignData_RevertWhen_IncorrectRewardAmount() public {
-//         IERC20 rewardToken = IERC20(address(angle));
-//         uint256 amount = 100 ether;
-//         uint256 amountAfterFees = 90 ether;
-//         uint32 startTimestamp = uint32(block.timestamp + 600);
-
-//         vm.prank(alice);
-//         bytes32 campaignId = creator.createCampaign(
-//             CampaignParameters({
-//                 campaignId: bytes32(0),
-//                 creator: alice,
-//                 rewardToken: address(rewardToken),
-//                 amount: amount,
-//                 campaignType: 1,
-//                 startTimestamp: startTimestamp,
-//                 duration: 3600 * 24,
-//                 campaignData: abi.encode(
-//                     0xbEEfa1aBfEbE621DF50ceaEF9f54FdB73648c92C,
-//                     new address[](0),
-//                     new address[](0),
-//                     "",
-//                     new bytes[](0),
-//                     new bytes[](0),
-//                     hex""
-//                 )
-//             })
-//         );
-
-//         vm.warp(block.timestamp + 1000);
-//         vm.roll(4);
-//         // override
-
-//         // Silo distrib
-//         address[] memory whitelist = new address[](1);
-//         whitelist[0] = 0x8095806d8753C0443C118D1C5e5eEC472e30BFeC;
-//         bytes memory campaignData = abi.encode(
-//             0x04C0599Ae5A44757c0af6F9eC3b93da8976c150A,
-//             2,
-//             0xa42001D6d2237d2c74108FE360403C4b796B7170,
-//             whitelist,
-//             new address[](0),
-//             hex""
-//         );
-
-//         vm.expectRevert(Errors.InvalidOverride.selector);
-//         vm.prank(alice);
-//         creator.overrideCampaign(
-//             campaignId,
-//             CampaignParameters({
-//                 campaignId: campaignId,
-//                 creator: alice,
-//                 rewardToken: address(alice),
-//                 amount: amount,
-//                 campaignType: 5,
-//                 startTimestamp: startTimestamp,
-//                 duration: 3600 * 24,
-//                 campaignData: campaignData
-//             })
-//         );
-//     }
-
-//     function testUnit_OverrideCampaignData_RevertWhen_IncorrectStartTimestamp() public {
-//         IERC20 rewardToken = IERC20(address(angle));
-//         uint256 amount = 100 ether;
-//         uint256 amountAfterFees = 90 ether;
-//         uint32 startTimestamp = uint32(block.timestamp + 600);
-
-//         vm.prank(alice);
-//         bytes32 campaignId = creator.createCampaign(
-//             CampaignParameters({
-//                 campaignId: bytes32(0),
-//                 creator: alice,
-//                 rewardToken: address(rewardToken),
-//                 amount: amount,
-//                 campaignType: 1,
-//                 startTimestamp: startTimestamp,
-//                 duration: 3600 * 24,
-//                 campaignData: abi.encode(
-//                     0xbEEfa1aBfEbE621DF50ceaEF9f54FdB73648c92C,
-//                     new address[](0),
-//                     new address[](0),
-//                     "",
-//                     new bytes[](0),
-//                     new bytes[](0),
-//                     hex""
-//                 )
-//             })
-//         );
-
-//         vm.warp(block.timestamp + 1000);
-//         vm.roll(4);
-//         // override
-
-//         // Silo distrib
-//         address[] memory whitelist = new address[](1);
-//         whitelist[0] = 0x8095806d8753C0443C118D1C5e5eEC472e30BFeC;
-//         bytes memory campaignData = abi.encode(
-//             0x04C0599Ae5A44757c0af6F9eC3b93da8976c150A,
-//             2,
-//             0xa42001D6d2237d2c74108FE360403C4b796B7170,
-//             whitelist,
-//             new address[](0),
-//             hex""
-//         );
-
-//         vm.expectRevert(Errors.InvalidOverride.selector);
-//         vm.prank(alice);
-//         creator.overrideCampaign(
-//             campaignId,
-//             CampaignParameters({
-//                 campaignId: campaignId,
-//                 creator: alice,
-//                 rewardToken: address(rewardToken),
-//                 amount: amount,
-//                 campaignType: 5,
-//                 startTimestamp: startTimestamp + 1,
-//                 duration: 3600 * 24,
-//                 campaignData: campaignData
-//             })
-//         );
-//     }
-
-//     function testUnit_OverrideCampaignData_RevertWhen_IncorrectDuration() public {
-//         IERC20 rewardToken = IERC20(address(angle));
-//         uint256 amount = 100 ether;
-//         uint256 amountAfterFees = 90 ether;
-//         uint32 startTimestamp = uint32(block.timestamp + 600);
-
-//         vm.prank(alice);
-//         bytes32 campaignId = creator.createCampaign(
-//             CampaignParameters({
-//                 campaignId: bytes32(0),
-//                 creator: alice,
-//                 rewardToken: address(rewardToken),
-//                 amount: amount,
-//                 campaignType: 1,
-//                 startTimestamp: startTimestamp,
-//                 duration: 3600 * 24,
-//                 campaignData: abi.encode(
-//                     0xbEEfa1aBfEbE621DF50ceaEF9f54FdB73648c92C,
-//                     new address[](0),
-//                     new address[](0),
-//                     "",
-//                     new bytes[](0),
-//                     new bytes[](0),
-//                     hex""
-//                 )
-//             })
-//         );
-
-//         vm.warp(block.timestamp + 1000);
-//         vm.roll(4);
-//         // override
-
-//         // Silo distrib
-//         address[] memory whitelist = new address[](1);
-//         whitelist[0] = 0x8095806d8753C0443C118D1C5e5eEC472e30BFeC;
-//         bytes memory campaignData = abi.encode(
-//             0x04C0599Ae5A44757c0af6F9eC3b93da8976c150A,
-//             2,
-//             0xa42001D6d2237d2c74108FE360403C4b796B7170,
-//             whitelist,
-//             new address[](0),
-//             hex""
-//         );
-
-//         vm.expectRevert(Errors.InvalidOverride.selector);
-//         vm.prank(alice);
-//         creator.overrideCampaign(
-//             campaignId,
-//             CampaignParameters({
-//                 campaignId: campaignId,
-//                 creator: alice,
-//                 rewardToken: address(rewardToken),
-//                 amount: amount,
-//                 campaignType: 5,
-//                 startTimestamp: startTimestamp,
-//                 duration: 399,
-//                 campaignData: campaignData
-//             })
-//         );
-//     }
-
-//     function testUnit_OverrideCampaignData() public {
-//         IERC20 rewardToken = IERC20(address(angle));
-//         uint256 amount = 100 ether;
-//         uint256 amountAfterFees = 90 ether;
-//         uint32 startTimestamp = uint32(block.timestamp + 600);
-
-//         vm.prank(alice);
-//         bytes32 campaignId = creator.createCampaign(
-//             CampaignParameters({
-//                 campaignId: bytes32(0),
-//                 creator: alice,
-//                 rewardToken: address(rewardToken),
-//                 amount: amount,
-//                 campaignType: 1,
-//                 startTimestamp: startTimestamp,
-//                 duration: 3600 * 24,
-//                 campaignData: abi.encode(
-//                     0xbEEfa1aBfEbE621DF50ceaEF9f54FdB73648c92C,
-//                     new address[](0),
-//                     new address[](0),
-//                     "",
-//                     new bytes[](0),
-//                     new bytes[](0),
-//                     hex""
-//                 )
-//             })
-//         );
-
-//         CampaignParameters memory campaign = creator.campaign(campaignId);
-//         assertEq(campaign.creator, alice);
-//         assertEq(campaign.rewardToken, address(rewardToken));
-//         assertEq(campaign.amount, (amount * (1e9 - creator.defaultFees())) / 1e9);
-//         assertEq(campaign.campaignType, 1);
-//         assertEq(campaign.startTimestamp, startTimestamp);
-//         assertEq(campaign.duration, 3600 * 24);
-
-//         vm.warp(block.timestamp + 1000);
-//         vm.roll(4);
-//         // override
-
-//         // Silo distrib
-//         address[] memory whitelist = new address[](1);
-//         whitelist[0] = 0x8095806d8753C0443C118D1C5e5eEC472e30BFeC;
-//         bytes memory campaignData = abi.encode(
-//             0x04C0599Ae5A44757c0af6F9eC3b93da8976c150A,
-//             2,
-//             0xa42001D6d2237d2c74108FE360403C4b796B7170,
-//             whitelist,
-//             new address[](0),
-//             hex""
-//         );
-
-//         vm.prank(alice);
-//         creator.overrideCampaign(
-//             campaignId,
-//             CampaignParameters({
-//                 campaignId: campaignId,
-//                 creator: alice,
-//                 rewardToken: address(rewardToken),
-//                 amount: amountAfterFees,
-//                 campaignType: 5,
-//                 startTimestamp: startTimestamp,
-//                 duration: 3600 * 24,
-//                 campaignData: campaignData
-//             })
-//         );
-
-//         (
-//             ,
-//             address campaignCreator,
-//             address campaignRewardToken,
-//             uint256 campaignAmount,
-//             uint256 campaignType,
-//             uint32 campaignStartTimestamp,
-//             uint32 campaignDuration,
-//             bytes memory campaignCampaignData
-//         ) = creator.campaignOverrides(campaignId);
-//         assertEq(campaignCreator, alice);
-//         assertEq(campaignRewardToken, address(rewardToken));
-//         assertEq(campaignAmount, amountAfterFees);
-//         assertEq(campaignType, 5);
-//         assertEq(campaignStartTimestamp, startTimestamp);
-//         assertEq(campaignDuration, 3600 * 24);
-//         assertEq(campaignCampaignData, campaignData);
-//         assertGe(creator.campaignOverridesTimestamp(campaignId, 0), startTimestamp);
-//         vm.expectRevert();
-//         creator.campaignOverridesTimestamp(campaignId, 1);
-//     }
-
-//     function testUnit_OverrideCampaignDuration() public {
-//         IERC20 rewardToken = IERC20(address(angle));
-//         uint256 amount = 100 ether;
-//         uint256 amountAfterFees = 90 ether;
-//         uint32 startTimestamp = uint32(block.timestamp + 600);
-//         uint32 duration = 3600 * 24;
-//         uint32 durationAfterOverride = 3600 * 12;
-
-//         bytes memory campaignData = abi.encode(
-//             0xbEEfa1aBfEbE621DF50ceaEF9f54FdB73648c92C,
-//             new address[](0),
-//             new address[](0),
-//             "",
-//             new bytes[](0),
-//             new bytes[](0),
-//             hex""
-//         );
-//         vm.prank(alice);
-//         bytes32 campaignId = creator.createCampaign(
-//             CampaignParameters({
-//                 campaignId: bytes32(0),
-//                 creator: alice,
-//                 rewardToken: address(rewardToken),
-//                 amount: amount,
-//                 campaignType: 1,
-//                 startTimestamp: startTimestamp,
-//                 duration: duration,
-//                 campaignData: campaignData
-//             })
-//         );
-
-//         CampaignParameters memory campaign = creator.campaign(campaignId);
-//         assertEq(campaign.creator, alice);
-//         assertEq(campaign.rewardToken, address(rewardToken));
-//         assertEq(campaign.amount, (amount * (1e9 - creator.defaultFees())) / 1e9);
-//         assertEq(campaign.campaignType, 1);
-//         assertEq(campaign.startTimestamp, startTimestamp);
-//         assertEq(campaign.duration, duration);
-
-//         vm.warp(block.timestamp + 1000);
-//         vm.roll(4);
-//         // override
-
-//         vm.prank(alice);
-//         creator.overrideCampaign(
-//             campaignId,
-//             CampaignParameters({
-//                 campaignId: campaignId,
-//                 creator: alice,
-//                 rewardToken: address(rewardToken),
-//                 amount: amountAfterFees,
-//                 campaignType: 1,
-//                 startTimestamp: startTimestamp,
-//                 duration: durationAfterOverride,
-//                 campaignData: campaignData
-//             })
-//         );
-
-//         (
-//             ,
-//             address campaignCreator,
-//             address campaignRewardToken,
-//             uint256 campaignAmount,
-//             uint256 campaignType,
-//             uint32 campaignStartTimestamp,
-//             uint32 campaignDuration,
-//             bytes memory campaignCampaignData
-//         ) = creator.campaignOverrides(campaignId);
-//         assertEq(campaignCreator, alice);
-//         assertEq(campaignRewardToken, address(rewardToken));
-//         assertEq(campaignAmount, amountAfterFees);
-//         assertEq(campaignType, 1);
-//         assertEq(campaignStartTimestamp, startTimestamp);
-//         assertEq(campaignDuration, durationAfterOverride);
-//         assertEq(campaignCampaignData, campaignData);
-//         assertGe(creator.campaignOverridesTimestamp(campaignId, 0), startTimestamp);
-//         vm.expectRevert();
-//         creator.campaignOverridesTimestamp(campaignId, 1);
-//     }
-
-//     function testUnit_GetCampaignOverridesTimestamp() public {
-//         IERC20 rewardToken = IERC20(address(angle));
-//         uint256 amount = 100 ether;
-//         uint256 amountAfterFees = 90 ether;
-//         uint32 startTimestamp = uint32(block.timestamp + 600);
-//         uint32 duration = 3600 * 24;
-//         uint32 durationAfterOverride = 3600 * 12;
-
-//         bytes memory campaignData = abi.encode(
-//             0xbEEfa1aBfEbE621DF50ceaEF9f54FdB73648c92C,
-//             new address[](0),
-//             new address[](0),
-//             "",
-//             new bytes[](0),
-//             new bytes[](0),
-//             hex""
-//         );
-//         vm.prank(alice);
-//         bytes32 campaignId = creator.createCampaign(
-//             CampaignParameters({
-//                 campaignId: bytes32(0),
-//                 creator: alice,
-//                 rewardToken: address(rewardToken),
-//                 amount: amount,
-//                 campaignType: 1,
-//                 startTimestamp: startTimestamp,
-//                 duration: duration,
-//                 campaignData: campaignData
-//             })
-//         );
-
-//         vm.warp(block.timestamp + 1000);
-//         vm.roll(4);
-//         // override
-
-//         vm.prank(alice);
-//         creator.overrideCampaign(
-//             campaignId,
-//             CampaignParameters({
-//                 campaignId: campaignId,
-//                 creator: alice,
-//                 rewardToken: address(rewardToken),
-//                 amount: amountAfterFees,
-//                 campaignType: 1,
-//                 startTimestamp: startTimestamp,
-//                 duration: durationAfterOverride,
-//                 campaignData: campaignData
-//             })
-//         );
-
-//         vm.warp(block.timestamp + 1000);
-//         vm.roll(4);
-//         // override
-
-//         vm.prank(alice);
-//         creator.overrideCampaign(
-//             campaignId,
-//             CampaignParameters({
-//                 campaignId: campaignId,
-//                 creator: alice,
-//                 rewardToken: address(rewardToken),
-//                 amount: amountAfterFees,
-//                 campaignType: 10,
-//                 startTimestamp: startTimestamp,
-//                 duration: durationAfterOverride * 10,
-//                 campaignData: campaignData
-//             })
-//         );
-
-//         uint256[] memory timestamps = creator.getCampaignOverridesTimestamp(campaignId);
-//         assertEq(timestamps.length, 2);
-//         assertEq(timestamps[0], 1001);
-//         assertEq(timestamps[1], 2001);
-//     }
-
-//     function testUnit_OverrideCampaignAdditionalFee() public {
-//         vm.prank(governor);
-//         creator.setCampaignFees(3, 1e7);
-
-//         IERC20 rewardToken = IERC20(address(angle));
-//         uint256 amount = 100 ether;
-//         uint256 amountAfterFees = 90 ether;
-//         uint32 startTimestamp = uint32(block.timestamp + 600);
-//         uint32 duration = 3600 * 24;
-//         uint32 durationAfterOverride = 3600 * 12;
-
-//         uint256 prevBalance = rewardToken.balanceOf(alice);
-
-//         bytes memory campaignData = abi.encode(
-//             0xbEEfa1aBfEbE621DF50ceaEF9f54FdB73648c92C,
-//             new address[](0),
-//             new address[](0),
-//             "",
-//             new bytes[](0),
-//             new bytes[](0),
-//             hex""
-//         );
-//         vm.prank(alice);
-//         bytes32 campaignId = creator.createCampaign(
-//             CampaignParameters({
-//                 campaignId: bytes32(0),
-//                 creator: alice,
-//                 rewardToken: address(rewardToken),
-//                 amount: amount,
-//                 campaignType: 1,
-//                 startTimestamp: startTimestamp,
-//                 duration: duration,
-//                 campaignData: campaignData
-//             })
-//         );
-
-//         assertEq(rewardToken.balanceOf(alice), prevBalance - amount);
-
-//         vm.warp(block.timestamp + 1000);
-//         vm.roll(4);
-//         // override
-//         vm.prank(alice);
-//         creator.overrideCampaign(
-//             campaignId,
-//             CampaignParameters({
-//                 campaignId: campaignId,
-//                 creator: alice,
-//                 rewardToken: address(rewardToken),
-//                 amount: amountAfterFees,
-//                 campaignType: 3,
-//                 startTimestamp: startTimestamp,
-//                 duration: durationAfterOverride,
-//                 campaignData: campaignData
-//             })
-//         );
-
-//         assertEq(rewardToken.balanceOf(alice), prevBalance - amount - (amountAfterFees * 1e7) / 1e9);
-//     }
-// }
+contract DistributionCreatorOverrideTest is Fixture {
+    using SafeERC20 for IERC20;
+
+    uint256 constant maxDistribForOOG = 1e4;
+    uint256 constant nbrDistrib = 10;
+    uint32 initStartTime;
+    uint32 initEndTime;
+    uint32 startTime;
+    uint32 endTime;
+    uint32 numEpoch;
+
+    bytes32 campaignId;
+    address campaignCreator;
+    address campaignRewardToken;
+    uint256 campaignAmount;
+    uint256 campaignType;
+    uint32 campaignStartTimestamp;
+    uint32 campaignDuration;
+    bytes campaignCampaignData;
+    uint256[] timestamps;
+
+    uint256 amount;
+    uint256 amountAfterFees;
+    uint32 startTimestamp;
+    bytes campaignData;
+
+    function setUp() public override {
+        super.setUp();
+
+        initStartTime = uint32(block.timestamp);
+        numEpoch = 25;
+        initEndTime = startTime + numEpoch * EPOCH_DURATION;
+
+        vm.startPrank(guardian);
+        creator.toggleSigningWhitelist(alice);
+        creator.toggleTokenWhitelist(address(agEUR));
+        address[] memory tokens = new address[](1);
+        uint256[] memory amounts = new uint256[](1);
+        tokens[0] = address(angle);
+        amounts[0] = 1e8;
+        creator.setRewardTokenMinAmounts(tokens, amounts);
+        vm.stopPrank();
+
+        angle.mint(address(alice), 1e22);
+        vm.prank(alice);
+        angle.approve(address(creator), type(uint256).max);
+
+        vm.stopPrank();
+    }
+
+    function testUnit_OverrideCampaignData_RevertWhen_IncorrectCampaignId() public {
+        amount = 100 ether;
+        amountAfterFees = 90 ether;
+        startTimestamp = uint32(block.timestamp + 600);
+
+        campaignData = abi.encode(
+            0xbEEfa1aBfEbE621DF50ceaEF9f54FdB73648c92C,
+            new address[](0),
+            new address[](0),
+            "",
+            new bytes[](0),
+            new bytes[](0),
+            hex""
+        );
+
+        vm.prank(alice);
+        campaignId = creator.createCampaign(
+            CampaignParameters({
+                campaignId: bytes32(0),
+                creator: alice,
+                rewardToken: address(angle),
+                amount: amount,
+                campaignType: 1,
+                startTimestamp: startTimestamp,
+                duration: 3600 * 24,
+                campaignData: campaignData
+            })
+        );
+
+        vm.warp(block.timestamp + 1000);
+        vm.roll(4);
+
+        // Silo distrib data
+        address[] memory whitelist = new address[](1);
+        whitelist[0] = 0x8095806d8753C0443C118D1C5e5eEC472e30BFeC;
+        bytes memory overrideCampaignData = abi.encode(
+            0x04C0599Ae5A44757c0af6F9eC3b93da8976c150A,
+            2,
+            0xa42001D6d2237d2c74108FE360403C4b796B7170,
+            whitelist,
+            new address[](0),
+            hex""
+        );
+
+        vm.expectRevert(Errors.CampaignDoesNotExist.selector);
+        vm.prank(alice);
+        creator.overrideCampaign(
+            keccak256("test"),
+            CampaignParameters({
+                campaignId: campaignId,
+                creator: alice,
+                rewardToken: address(angle),
+                amount: amountAfterFees,
+                campaignType: 5,
+                startTimestamp: startTimestamp,
+                duration: 3600 * 24,
+                campaignData: overrideCampaignData
+            })
+        );
+    }
+
+    function testUnit_OverrideCampaignData() public {
+        amount = 100 ether;
+        amountAfterFees = 90 ether;
+        startTimestamp = uint32(block.timestamp + 600);
+
+        campaignData = abi.encode(
+            0xbEEfa1aBfEbE621DF50ceaEF9f54FdB73648c92C,
+            new address[](0),
+            new address[](0),
+            "",
+            new bytes[](0),
+            new bytes[](0),
+            hex""
+        );
+
+        vm.prank(alice);
+        campaignId = creator.createCampaign(
+            CampaignParameters({
+                campaignId: bytes32(0),
+                creator: alice,
+                rewardToken: address(angle),
+                amount: amount,
+                campaignType: 1,
+                startTimestamp: startTimestamp,
+                duration: 3600 * 24,
+                campaignData: campaignData
+            })
+        );
+
+        vm.warp(block.timestamp + 1000);
+        vm.roll(4);
+
+        // Silo distrib
+        address[] memory whitelist = new address[](1);
+        whitelist[0] = 0x8095806d8753C0443C118D1C5e5eEC472e30BFeC;
+        bytes memory overrideCampaignData = abi.encode(
+            0x04C0599Ae5A44757c0af6F9eC3b93da8976c150A,
+            2,
+            0xa42001D6d2237d2c74108FE360403C4b796B7170,
+            whitelist,
+            new address[](0),
+            hex""
+        );
+
+        vm.prank(alice);
+        creator.overrideCampaign(
+            campaignId,
+            CampaignParameters({
+                campaignId: campaignId,
+                creator: alice,
+                rewardToken: address(angle),
+                amount: amountAfterFees,
+                campaignType: 5,
+                startTimestamp: startTimestamp,
+                duration: 3600 * 24,
+                campaignData: overrideCampaignData
+            })
+        );
+
+        (
+            ,
+            campaignCreator,
+            campaignRewardToken,
+            campaignAmount,
+            campaignType,
+            campaignStartTimestamp,
+            campaignDuration,
+            campaignCampaignData
+        ) = creator.campaignOverrides(campaignId);
+
+        assertEq(campaignCreator, alice);
+        assertEq(campaignRewardToken, address(angle));
+        assertEq(campaignAmount, amountAfterFees);
+        assertEq(campaignType, 5);
+        assertEq(campaignStartTimestamp, startTimestamp);
+        assertEq(campaignDuration, 3600 * 24);
+        assertEq(campaignCampaignData, overrideCampaignData);
+        assertGe(creator.campaignOverridesTimestamp(campaignId, 0), startTimestamp);
+        vm.expectRevert();
+        creator.campaignOverridesTimestamp(campaignId, 1);
+    }
+
+    function testUnit_OverrideCampaignData_RevertWhen_IncorrectCreator() public {
+        IERC20 rewardToken = IERC20(address(angle));
+        amount = 100 ether;
+        amountAfterFees = 90 ether;
+        startTimestamp = uint32(block.timestamp + 600);
+
+        vm.prank(alice);
+        campaignId = creator.createCampaign(
+            CampaignParameters({
+                campaignId: bytes32(0),
+                creator: alice,
+                rewardToken: address(rewardToken),
+                amount: amount,
+                campaignType: 1,
+                startTimestamp: startTimestamp,
+                duration: 3600 * 24,
+                campaignData: abi.encode(
+                    0xbEEfa1aBfEbE621DF50ceaEF9f54FdB73648c92C,
+                    new address[](0),
+                    new address[](0),
+                    "",
+                    new bytes[](0),
+                    new bytes[](0),
+                    hex""
+                )
+            })
+        );
+
+        vm.warp(block.timestamp + 1000);
+        vm.roll(4);
+        // override
+
+        // Silo distrib
+        address[] memory whitelist = new address[](1);
+        whitelist[0] = 0x8095806d8753C0443C118D1C5e5eEC472e30BFeC;
+        campaignData = abi.encode(
+            0x04C0599Ae5A44757c0af6F9eC3b93da8976c150A,
+            2,
+            0xa42001D6d2237d2c74108FE360403C4b796B7170,
+            whitelist,
+            new address[](0),
+            hex""
+        );
+
+        vm.expectRevert(Errors.InvalidOverride.selector);
+        vm.prank(bob);
+        creator.overrideCampaign(
+            campaignId,
+            CampaignParameters({
+                campaignId: campaignId,
+                creator: bob,
+                rewardToken: address(rewardToken),
+                amount: amountAfterFees,
+                campaignType: 5,
+                startTimestamp: startTimestamp,
+                duration: 3600 * 24,
+                campaignData: campaignData
+            })
+        );
+
+        vm.expectRevert(Errors.InvalidOverride.selector);
+        vm.prank(bob);
+        creator.overrideCampaign(
+            campaignId,
+            CampaignParameters({
+                campaignId: campaignId,
+                creator: alice,
+                rewardToken: address(rewardToken),
+                amount: amountAfterFees,
+                campaignType: 5,
+                startTimestamp: startTimestamp,
+                duration: 3600 * 24,
+                campaignData: campaignData
+            })
+        );
+    }
+
+    function testUnit_OverrideCampaignData_RevertWhen_IncorrectRewardToken() public {
+        IERC20 rewardToken = IERC20(address(angle));
+        amount = 100 ether;
+        amountAfterFees = 90 ether;
+        startTimestamp = uint32(block.timestamp + 600);
+
+        vm.prank(alice);
+        campaignId = creator.createCampaign(
+            CampaignParameters({
+                campaignId: bytes32(0),
+                creator: alice,
+                rewardToken: address(rewardToken),
+                amount: amount,
+                campaignType: 1,
+                startTimestamp: startTimestamp,
+                duration: 3600 * 24,
+                campaignData: abi.encode(
+                    0xbEEfa1aBfEbE621DF50ceaEF9f54FdB73648c92C,
+                    new address[](0),
+                    new address[](0),
+                    "",
+                    new bytes[](0),
+                    new bytes[](0),
+                    hex""
+                )
+            })
+        );
+
+        vm.warp(block.timestamp + 1000);
+        vm.roll(4);
+        // override
+
+        // Silo distrib
+        address[] memory whitelist = new address[](1);
+        whitelist[0] = 0x8095806d8753C0443C118D1C5e5eEC472e30BFeC;
+        campaignData = abi.encode(
+            0x04C0599Ae5A44757c0af6F9eC3b93da8976c150A,
+            2,
+            0xa42001D6d2237d2c74108FE360403C4b796B7170,
+            whitelist,
+            new address[](0),
+            hex""
+        );
+
+        vm.expectRevert(Errors.InvalidOverride.selector);
+        vm.prank(alice);
+        creator.overrideCampaign(
+            campaignId,
+            CampaignParameters({
+                campaignId: campaignId,
+                creator: alice,
+                rewardToken: address(alice),
+                amount: amountAfterFees,
+                campaignType: 5,
+                startTimestamp: startTimestamp,
+                duration: 3600 * 24,
+                campaignData: campaignData
+            })
+        );
+    }
+
+    function testUnit_OverrideCampaignData_RevertWhen_IncorrectRewardAmount() public {
+        IERC20 rewardToken = IERC20(address(angle));
+        amount = 100 ether;
+        amountAfterFees = 90 ether;
+        startTimestamp = uint32(block.timestamp + 600);
+
+        vm.prank(alice);
+        campaignId = creator.createCampaign(
+            CampaignParameters({
+                campaignId: bytes32(0),
+                creator: alice,
+                rewardToken: address(rewardToken),
+                amount: amount,
+                campaignType: 1,
+                startTimestamp: startTimestamp,
+                duration: 3600 * 24,
+                campaignData: abi.encode(
+                    0xbEEfa1aBfEbE621DF50ceaEF9f54FdB73648c92C,
+                    new address[](0),
+                    new address[](0),
+                    "",
+                    new bytes[](0),
+                    new bytes[](0),
+                    hex""
+                )
+            })
+        );
+
+        vm.warp(block.timestamp + 1000);
+        vm.roll(4);
+        // override
+
+        // Silo distrib
+        address[] memory whitelist = new address[](1);
+        whitelist[0] = 0x8095806d8753C0443C118D1C5e5eEC472e30BFeC;
+        campaignData = abi.encode(
+            0x04C0599Ae5A44757c0af6F9eC3b93da8976c150A,
+            2,
+            0xa42001D6d2237d2c74108FE360403C4b796B7170,
+            whitelist,
+            new address[](0),
+            hex""
+        );
+
+        vm.expectRevert(Errors.InvalidOverride.selector);
+        vm.prank(alice);
+        creator.overrideCampaign(
+            campaignId,
+            CampaignParameters({
+                campaignId: campaignId,
+                creator: alice,
+                rewardToken: address(alice),
+                amount: amount,
+                campaignType: 5,
+                startTimestamp: startTimestamp,
+                duration: 3600 * 24,
+                campaignData: campaignData
+            })
+        );
+    }
+
+    function testUnit_OverrideCampaignData_RevertWhen_IncorrectStartTimestamp() public {
+        IERC20 rewardToken = IERC20(address(angle));
+        amount = 100 ether;
+        amountAfterFees = 90 ether;
+        startTimestamp = uint32(block.timestamp + 600);
+
+        vm.prank(alice);
+        campaignId = creator.createCampaign(
+            CampaignParameters({
+                campaignId: bytes32(0),
+                creator: alice,
+                rewardToken: address(rewardToken),
+                amount: amount,
+                campaignType: 1,
+                startTimestamp: startTimestamp,
+                duration: 3600 * 24,
+                campaignData: abi.encode(
+                    0xbEEfa1aBfEbE621DF50ceaEF9f54FdB73648c92C,
+                    new address[](0),
+                    new address[](0),
+                    "",
+                    new bytes[](0),
+                    new bytes[](0),
+                    hex""
+                )
+            })
+        );
+
+        vm.warp(block.timestamp + 1000);
+        vm.roll(4);
+        // override
+
+        // Silo distrib
+        address[] memory whitelist = new address[](1);
+        whitelist[0] = 0x8095806d8753C0443C118D1C5e5eEC472e30BFeC;
+        bytes memory campaignData = abi.encode(
+            0x04C0599Ae5A44757c0af6F9eC3b93da8976c150A,
+            2,
+            0xa42001D6d2237d2c74108FE360403C4b796B7170,
+            whitelist,
+            new address[](0),
+            hex""
+        );
+
+        vm.expectRevert(Errors.InvalidOverride.selector);
+        vm.prank(alice);
+        creator.overrideCampaign(
+            campaignId,
+            CampaignParameters({
+                campaignId: campaignId,
+                creator: alice,
+                rewardToken: address(rewardToken),
+                amount: amount,
+                campaignType: 5,
+                startTimestamp: startTimestamp + 1,
+                duration: 3600 * 24,
+                campaignData: campaignData
+            })
+        );
+    }
+
+    function testUnit_OverrideCampaignData_RevertWhen_IncorrectDuration() public {
+        IERC20 rewardToken = IERC20(address(angle));
+        amount = 100 ether;
+        amountAfterFees = 90 ether;
+        startTimestamp = uint32(block.timestamp + 600);
+
+        vm.prank(alice);
+        campaignId = creator.createCampaign(
+            CampaignParameters({
+                campaignId: bytes32(0),
+                creator: alice,
+                rewardToken: address(rewardToken),
+                amount: amount,
+                campaignType: 1,
+                startTimestamp: startTimestamp,
+                duration: 3600 * 24,
+                campaignData: abi.encode(
+                    0xbEEfa1aBfEbE621DF50ceaEF9f54FdB73648c92C,
+                    new address[](0),
+                    new address[](0),
+                    "",
+                    new bytes[](0),
+                    new bytes[](0),
+                    hex""
+                )
+            })
+        );
+
+        vm.warp(block.timestamp + 1000);
+        vm.roll(4);
+        // override
+
+        // Silo distrib
+        address[] memory whitelist = new address[](1);
+        whitelist[0] = 0x8095806d8753C0443C118D1C5e5eEC472e30BFeC;
+        campaignData = abi.encode(
+            0x04C0599Ae5A44757c0af6F9eC3b93da8976c150A,
+            2,
+            0xa42001D6d2237d2c74108FE360403C4b796B7170,
+            whitelist,
+            new address[](0),
+            hex""
+        );
+
+        vm.expectRevert(Errors.InvalidOverride.selector);
+        vm.prank(alice);
+        creator.overrideCampaign(
+            campaignId,
+            CampaignParameters({
+                campaignId: campaignId,
+                creator: alice,
+                rewardToken: address(rewardToken),
+                amount: amount,
+                campaignType: 5,
+                startTimestamp: startTimestamp,
+                duration: 399,
+                campaignData: campaignData
+            })
+        );
+    }
+
+    function testUnit_OverrideCampaignDuration() public {
+        IERC20 rewardToken = IERC20(address(angle));
+        amount = 100 ether;
+        amountAfterFees = 90 ether;
+        startTimestamp = uint32(block.timestamp + 600);
+        uint32 duration = 3600 * 24;
+        uint32 durationAfterOverride = 3600 * 12;
+
+        campaignData = abi.encode(
+            0xbEEfa1aBfEbE621DF50ceaEF9f54FdB73648c92C,
+            new address[](0),
+            new address[](0),
+            "",
+            new bytes[](0),
+            new bytes[](0),
+            hex""
+        );
+        vm.prank(alice);
+        campaignId = creator.createCampaign(
+            CampaignParameters({
+                campaignId: bytes32(0),
+                creator: alice,
+                rewardToken: address(rewardToken),
+                amount: amount,
+                campaignType: 1,
+                startTimestamp: startTimestamp,
+                duration: duration,
+                campaignData: campaignData
+            })
+        );
+
+        CampaignParameters memory campaign = creator.campaign(campaignId);
+        assertEq(campaign.creator, alice);
+        assertEq(campaign.rewardToken, address(rewardToken));
+        assertEq(campaign.amount, (amount * (1e9 - creator.defaultFees())) / 1e9);
+        assertEq(campaign.campaignType, 1);
+        assertEq(campaign.startTimestamp, startTimestamp);
+        assertEq(campaign.duration, duration);
+
+        vm.warp(block.timestamp + 1000);
+        vm.roll(4);
+        // override
+
+        vm.prank(alice);
+        creator.overrideCampaign(
+            campaignId,
+            CampaignParameters({
+                campaignId: campaignId,
+                creator: alice,
+                rewardToken: address(rewardToken),
+                amount: amountAfterFees,
+                campaignType: 1,
+                startTimestamp: startTimestamp,
+                duration: durationAfterOverride,
+                campaignData: campaignData
+            })
+        );
+
+        (
+            ,
+            campaignCreator,
+            campaignRewardToken,
+            campaignAmount,
+            campaignType,
+            campaignStartTimestamp,
+            campaignDuration,
+            campaignCampaignData
+        ) = creator.campaignOverrides(campaignId);
+        assertEq(campaignCreator, alice);
+        assertEq(campaignRewardToken, address(rewardToken));
+        assertEq(campaignAmount, amountAfterFees);
+        assertEq(campaignType, 1);
+        assertEq(campaignStartTimestamp, startTimestamp);
+        assertEq(campaignDuration, durationAfterOverride);
+        assertEq(campaignCampaignData, campaignData);
+        assertGe(creator.campaignOverridesTimestamp(campaignId, 0), startTimestamp);
+        vm.expectRevert();
+        creator.campaignOverridesTimestamp(campaignId, 1);
+    }
+
+    function testUnit_GetCampaignOverridesTimestamp() public {
+        IERC20 rewardToken = IERC20(address(angle));
+        amount = 100 ether;
+        amountAfterFees = 90 ether;
+        startTimestamp = uint32(block.timestamp + 600);
+        uint32 duration = 3600 * 24;
+        uint32 durationAfterOverride = 3600 * 12;
+
+        campaignData = abi.encode(
+            0xbEEfa1aBfEbE621DF50ceaEF9f54FdB73648c92C,
+            new address[](0),
+            new address[](0),
+            "",
+            new bytes[](0),
+            new bytes[](0),
+            hex""
+        );
+        vm.prank(alice);
+        campaignId = creator.createCampaign(
+            CampaignParameters({
+                campaignId: bytes32(0),
+                creator: alice,
+                rewardToken: address(rewardToken),
+                amount: amount,
+                campaignType: 1,
+                startTimestamp: startTimestamp,
+                duration: duration,
+                campaignData: campaignData
+            })
+        );
+
+        vm.warp(block.timestamp + 1000);
+        vm.roll(4);
+        // override
+
+        vm.prank(alice);
+        creator.overrideCampaign(
+            campaignId,
+            CampaignParameters({
+                campaignId: campaignId,
+                creator: alice,
+                rewardToken: address(rewardToken),
+                amount: amountAfterFees,
+                campaignType: 10,
+                startTimestamp: startTimestamp,
+                duration: durationAfterOverride * 10,
+                campaignData: campaignData
+            })
+        );
+
+        timestamps = creator.getCampaignOverridesTimestamp(campaignId);
+        assertEq(timestamps.length, 1);
+        assertEq(timestamps[0], 1001);
+    }
+
+    function testUnit_OverrideCampaignAdditionalFee() public {
+        vm.prank(governor);
+        creator.setCampaignFees(3, 1e7);
+
+        IERC20 rewardToken = IERC20(address(angle));
+        amount = 100 ether;
+        amountAfterFees = 90 ether;
+        startTimestamp = uint32(block.timestamp + 600);
+        uint32 duration = 3600 * 24;
+        uint32 durationAfterOverride = 3600 * 12;
+
+        uint256 prevBalance = rewardToken.balanceOf(alice);
+
+        campaignData = abi.encode(
+            0xbEEfa1aBfEbE621DF50ceaEF9f54FdB73648c92C,
+            new address[](0),
+            new address[](0),
+            "",
+            new bytes[](0),
+            new bytes[](0),
+            hex""
+        );
+        vm.prank(alice);
+        campaignId = creator.createCampaign(
+            CampaignParameters({
+                campaignId: bytes32(0),
+                creator: alice,
+                rewardToken: address(rewardToken),
+                amount: amount,
+                campaignType: 1,
+                startTimestamp: startTimestamp,
+                duration: duration,
+                campaignData: campaignData
+            })
+        );
+
+        assertEq(rewardToken.balanceOf(alice), prevBalance - amount);
+
+        vm.warp(block.timestamp + 1000);
+        vm.roll(4);
+        // override
+        vm.prank(alice);
+        creator.overrideCampaign(
+            campaignId,
+            CampaignParameters({
+                campaignId: campaignId,
+                creator: alice,
+                rewardToken: address(rewardToken),
+                amount: amountAfterFees,
+                campaignType: 3,
+                startTimestamp: startTimestamp,
+                duration: durationAfterOverride,
+                campaignData: campaignData
+            })
+        );
+
+        assertEq(rewardToken.balanceOf(alice), prevBalance - amount - (amountAfterFees * 1e7) / 1e9);
+    }
+}
 
 contract UpgradeDistributionCreatorTest is Test, JsonReader {
     DistributionCreator public distributionCreator;
