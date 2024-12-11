@@ -293,9 +293,9 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
             _campaign.creator != msg.sender ||
             newCampaign.rewardToken != _campaign.rewardToken ||
             newCampaign.amount != _campaign.amount ||
-            newCampaign.startTimestamp != _campaign.startTimestamp ||
+            (newCampaign.startTimestamp != _campaign.startTimestamp && block.timestamp > _campaign.startTimestamp) || // Allow to update startTimestamp before campaign start
             // End timestamp should be in the future
-            newCampaign.duration <= block.timestamp - _campaign.startTimestamp
+            newCampaign.duration + _campaign.startTimestamp <= block.timestamp
         ) revert Errors.InvalidOverride();
 
         // Take a new fee to not trick the system by creating a campaign with the smallest fee
