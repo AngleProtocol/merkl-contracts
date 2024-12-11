@@ -73,6 +73,24 @@ contract Test_Distributor_toggleTrusted is DistributorTest {
         assertEq(distributor.canUpdateMerkleRoot(bob), 0);
         vm.stopPrank();
     }
+
+    function test_Success_ShouldUpdateTree() public {
+        vm.startPrank(governor);
+        distributor.toggleTrusted(bob);
+        assertEq(distributor.canUpdateMerkleRoot(bob), 1);
+        vm.stopPrank();
+
+        assertEq(distributor.getMerkleRoot(), bytes32(0));
+
+        bytes32 root = getRoot();
+        vm.startPrank(bob);
+        distributor.updateTree(MerkleTree({ merkleRoot: root, ipfsHash: keccak256("IPFS_HASH") }));
+        vm.stopPrank();
+
+        vm.warp(distributor.endOfDisputePeriod() + 1);
+
+        assertEq(distributor.getMerkleRoot(), root);
+    }
 }
 
 contract Test_Distributor_toggleOperator is DistributorTest {

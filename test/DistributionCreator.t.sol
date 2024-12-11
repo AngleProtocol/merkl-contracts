@@ -3,6 +3,7 @@ pragma solidity ^0.8.17;
 
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import { Test } from "forge-std/Test.sol";
+import { console } from "forge-std/console.sol";
 
 import { DistributionCreator, DistributionParameters, CampaignParameters } from "../contracts/DistributionCreator.sol";
 import { Distributor, MerkleTree } from "../contracts/Distributor.sol";
@@ -1148,17 +1149,19 @@ contract DistributionCreatorCreateReallocationTest is Fixture {
 
 contract UpgradeDistributionCreatorTest is Test, JsonReader {
     DistributionCreator public distributionCreator;
+    Distributor public distributor;
+    IAccessControlManager public accessControlManager;
     address public deployer;
     address public governor;
-    Distributor public distributor;
     IERC20 public rewardToken;
     uint256 public chainId;
     bytes32 public campaignId0;
     bytes32 public campaignId73;
+    bytes32 public testCampaignId;
 
     function setUp() public {
         // Setup environment variables
-        deployer = makeAddr("deployer");
+        deployer = vm.envAddress("DEPLOYER_ADDRESS");
         vm.createSelectFork(vm.envString("BASE_NODE_URI"));
         chainId = block.chainid;
 
@@ -1166,20 +1169,56 @@ contract UpgradeDistributionCreatorTest is Test, JsonReader {
         distributor = Distributor(this.readAddress(chainId, "Merkl.Distributor"));
         distributionCreator = DistributionCreator(this.readAddress(chainId, "Merkl.DistributionCreator"));
         governor = this.readAddress(chainId, "AngleLabs");
+        accessControlManager = IAccessControlManager(this.readAddress(chainId, "Merkl.CoreMerkl"));
         rewardToken = IERC20(0xC011882d0f7672D8942e7fE2248C174eeD640c8f); // aglaMerkl
 
+        // Setup test campaign parameters
+        uint256 amount = 10 ether;
+        uint32 startTimestamp = uint32(block.timestamp + 3600); // 1 hour from now
+        uint32 duration = 3600 * 6;
+        uint32 campaignType = 1;
+        bytes memory campaignData = abi.encode(
+            0x70F796946eD919E4Bc6cD506F8dACC45E4539771,
+            new address[](0),
+            new address[](0),
+            "",
+            new bytes[](0),
+            new bytes[](0),
+            hex""
+        );
+
+        // Mint tokens and approve for test campaign
+        vm.startPrank(deployer);
+        MockToken(address(rewardToken)).mint(deployer, amount);
+        rewardToken.approve(address(distributionCreator), amount);
+
+        // Create test campaign
+        testCampaignId = distributionCreator.createCampaign(
+            CampaignParameters({
+                campaignId: bytes32(0),
+                creator: deployer,
+                rewardToken: address(rewardToken),
+                amount: amount,
+                campaignType: campaignType,
+                startTimestamp: startTimestamp,
+                duration: duration,
+                campaignData: campaignData
+            })
+        );
+        vm.stopPrank();
+
         // Deploy new implementation
-        vm.startBroadcast(deployer);
+        vm.startPrank(deployer);
         address creatorImpl = address(new DistributionCreator());
-        vm.stopBroadcast();
+        vm.stopPrank();
 
         // Upgrade
-        vm.startBroadcast(governor);
+        vm.startPrank(governor);
         distributionCreator.upgradeTo(address(creatorImpl));
-        vm.stopBroadcast();
+        vm.stopPrank();
     }
 
-    function test_UpgradeDistributionCreator() public {
+    function test_VerifyStorageSlots_Success() public {
         // Verify storage slots remain unchanged
         assertEq(address(distributionCreator.accessControlManager()), this.readAddress(chainId, "Merkl.CoreMerkl"));
         assertEq(address(distributionCreator.distributor()), this.readAddress(chainId, "Merkl.Distributor"));
@@ -1241,20 +1280,20 @@ contract UpgradeDistributionCreatorTest is Test, JsonReader {
         );
     }
 
-    function test_UpgradeRevertOnNonGovernor() public {
-        vm.startBroadcast(deployer);
+    function test_UpgradeTo_Revert_WhenNonGovernor() public {
+        vm.startPrank(deployer);
         address creatorImpl = address(new DistributionCreator());
-        vm.stopBroadcast();
+        vm.stopPrank();
 
         // Should revert when non-governor tries to upgrade
         address nonGovernor = makeAddr("nonGovernor");
-        vm.startBroadcast(nonGovernor);
+        vm.startPrank(nonGovernor);
         vm.expectRevert();
         distributionCreator.upgradeTo(address(creatorImpl));
-        vm.stopBroadcast();
+        vm.stopPrank();
     }
 
-    function test_ClaimRewards() public {
+    function test_Claim_Success() public {
         address updater = 0x435046800Fb9149eE65159721A92cB7d50a7534b;
 
         MerkleTree memory newTree = MerkleTree({
@@ -1262,15 +1301,14 @@ contract UpgradeDistributionCreatorTest is Test, JsonReader {
             ipfsHash: bytes32(0)
         });
 
-        bool canUpdate = distributor.disputer() != address(0) ||
-            ((distributor.canUpdateMerkleRoot(updater) != 1 || block.timestamp < distributor.endOfDisputePeriod()) &&
-                true);
-        console.log("canUpdate", canUpdate);
-        console.log("disputer", distributor.disputer());
-
         // Perform tree update
-        vm.prank(updater);
+        vm.startPrank(updater);
+        vm.warp(distributor.endOfDisputePeriod() + 1); // can't update tree before dispute period is over
+        assertEq(distributor.canUpdateMerkleRoot(updater), 1);
         distributor.updateTree(newTree);
+        vm.stopPrank();
+
+        vm.warp(distributor.endOfDisputePeriod() + 1);
 
         // Verify tree update
         (bytes32 currentRoot, bytes32 currentHash) = distributor.tree();
@@ -1314,37 +1352,39 @@ contract UpgradeDistributionCreatorTest is Test, JsonReader {
 
         // Perform claim
         vm.prank(claimer);
-        bytes32 root = verifyProof(keccak256(abi.encode(claimer, address(rewardToken), balanceToClaim)), proofs[0]);
-        console.logBytes32(root);
         distributor.claim(users, tokens, amounts, proofs);
 
         // Verify claim result
         assertEq(rewardToken.balanceOf(claimer), initialBalance + balanceToClaim);
     }
 
-    function test_ReallocateCampaignRewards() public {
-        bytes32 campaignId = 0x1d1231a7a6958431a5760b929c56f0e44a20f06e92a52324c19a2e4d2ec529bc;
+    function test_ReallocateCampaignRewards_Success_ReallocateCampaignRewards() public {
         address to = 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701;
 
         address[] memory froms = new address[](2);
         froms[0] = 0x15775b23340C0f50E0428D674478B0e9D3D0a759;
         froms[1] = 0xe4BB74804edf5280c9203f034036f7CB15196078;
 
+        vm.warp(
+            distributionCreator.campaign(testCampaignId).startTimestamp +
+                distributionCreator.campaign(testCampaignId).duration +
+                1
+        );
+
         // Perform reallocation
         vm.prank(deployer);
-        distributionCreator.reallocateCampaignRewards(campaignId, froms, to);
+        distributionCreator.reallocateCampaignRewards(testCampaignId, froms, to);
 
         // Verify reallocation results
-        assertEq(distributionCreator.campaignReallocation(campaignId, froms[0]), to);
-        assertEq(distributionCreator.campaignListReallocation(campaignId, 0), froms[0]);
-        assertEq(distributionCreator.campaignListReallocation(campaignId, 1), froms[1]);
+        assertEq(distributionCreator.campaignReallocation(testCampaignId, froms[0]), to);
+        assertEq(distributionCreator.campaignListReallocation(testCampaignId, 0), froms[0]);
+        assertEq(distributionCreator.campaignListReallocation(testCampaignId, 1), froms[1]);
     }
 
-    function test_UpdateCampaign() public {
-        uint256 amount = 97 ether;
-        bytes32 campaignId = 0x6628165d9b509afe46d9009fecc7012c68cc0ce24aafdc4ce11f23a01ccc1a22;
-        uint32 startTimestamp = 1733155692;
-        uint32 duration = 3600 * 6;
+    function test_OverrideCampaign_Success_UpdateCampaign() public {
+        uint256 amount = distributionCreator.campaign(testCampaignId).amount;
+        uint32 startTimestamp = distributionCreator.campaign(testCampaignId).startTimestamp;
+        uint32 duration = distributionCreator.campaign(testCampaignId).duration + 3600;
 
         // Setup campaign data
         uint32 campaignType = 1;
@@ -1365,9 +1405,9 @@ contract UpgradeDistributionCreatorTest is Test, JsonReader {
 
         // Perform campaign update
         distributionCreator.overrideCampaign(
-            campaignId,
+            testCampaignId,
             CampaignParameters({
-                campaignId: campaignId,
+                campaignId: testCampaignId,
                 creator: deployer,
                 rewardToken: address(rewardToken),
                 amount: amount,
@@ -1388,7 +1428,7 @@ contract UpgradeDistributionCreatorTest is Test, JsonReader {
             uint32 campaignStartTimestamp,
             uint32 campaignDuration,
             bytes memory campaignData_
-        ) = distributionCreator.campaignOverrides(campaignId);
+        ) = distributionCreator.campaignOverrides(testCampaignId);
 
         assertEq(campaignCreator, deployer);
         assertEq(campaignRewardToken, address(rewardToken));
@@ -1401,20 +1441,92 @@ contract UpgradeDistributionCreatorTest is Test, JsonReader {
         vm.stopPrank();
     }
 
-    function verifyProof(bytes32 leaf, bytes32[] memory proof) public returns (bytes32) {
-        bytes32 currentHash = leaf;
-        uint256 proofLength = proof.length;
-        for (uint256 i; i < proofLength; ) {
-            if (currentHash < proof[i]) {
-                currentHash = keccak256(abi.encode(currentHash, proof[i]));
-            } else {
-                currentHash = keccak256(abi.encode(proof[i], currentHash));
-            }
-            unchecked {
-                ++i;
-            }
-        }
-        return currentHash;
+    function test_OverrideCampaign_Success_WhenCreator() public {
+        vm.startPrank(distributionCreator.campaign(testCampaignId).creator);
+
+        IERC20(address(rewardToken)).approve(
+            address(distributionCreator),
+            distributionCreator.campaign(testCampaignId).amount
+        );
+        CampaignParameters memory newCampaign = CampaignParameters({
+            campaignId: testCampaignId,
+            creator: distributionCreator.campaign(testCampaignId).creator,
+            rewardToken: distributionCreator.campaign(testCampaignId).rewardToken,
+            amount: distributionCreator.campaign(testCampaignId).amount,
+            campaignType: distributionCreator.campaign(testCampaignId).campaignType,
+            startTimestamp: distributionCreator.campaign(testCampaignId).startTimestamp,
+            duration: distributionCreator.campaign(testCampaignId).duration,
+            campaignData: distributionCreator.campaign(testCampaignId).campaignData
+        });
+
+        distributionCreator.overrideCampaign(testCampaignId, newCampaign);
+        vm.stopPrank();
+    }
+
+    function test_OverrideCampaign_Success_WhenCreator_UpdateStartTimestampBeforeCampaignStart() public {
+        vm.startPrank(distributionCreator.campaign(testCampaignId).creator);
+
+        vm.warp(distributionCreator.campaign(testCampaignId).startTimestamp - 2);
+        IERC20(address(rewardToken)).approve(
+            address(distributionCreator),
+            distributionCreator.campaign(testCampaignId).amount
+        );
+        CampaignParameters memory newCampaign = CampaignParameters({
+            campaignId: testCampaignId,
+            creator: distributionCreator.campaign(testCampaignId).creator,
+            rewardToken: distributionCreator.campaign(testCampaignId).rewardToken,
+            amount: distributionCreator.campaign(testCampaignId).amount,
+            campaignType: distributionCreator.campaign(testCampaignId).campaignType,
+            startTimestamp: distributionCreator.campaign(testCampaignId).startTimestamp + 3600,
+            duration: distributionCreator.campaign(testCampaignId).duration,
+            campaignData: distributionCreator.campaign(testCampaignId).campaignData
+        });
+
+        distributionCreator.overrideCampaign(testCampaignId, newCampaign);
+        vm.stopPrank();
+    }
+
+    function test_OverrideCampaign_Revert_WhenCreator_UpdateStartTimestampAfterCampaignStart() public {
+        vm.startPrank(distributionCreator.campaign(testCampaignId).creator);
+
+        vm.warp(distributionCreator.campaign(testCampaignId).startTimestamp + 1);
+        IERC20(address(rewardToken)).approve(
+            address(distributionCreator),
+            distributionCreator.campaign(testCampaignId).amount
+        );
+        CampaignParameters memory newCampaign = CampaignParameters({
+            campaignId: testCampaignId,
+            creator: distributionCreator.campaign(testCampaignId).creator,
+            rewardToken: distributionCreator.campaign(testCampaignId).rewardToken,
+            amount: distributionCreator.campaign(testCampaignId).amount,
+            campaignType: distributionCreator.campaign(testCampaignId).campaignType,
+            startTimestamp: distributionCreator.campaign(testCampaignId).startTimestamp + 3600,
+            duration: distributionCreator.campaign(testCampaignId).duration + 3600,
+            campaignData: distributionCreator.campaign(testCampaignId).campaignData
+        });
+
+        vm.expectRevert(Errors.InvalidOverride.selector);
+        distributionCreator.overrideCampaign(testCampaignId, newCampaign);
+        vm.stopPrank();
+    }
+
+    function test_OverrideCampaign_Revert_WhenNonCreator() public {
+        address bob = makeAddr("bob");
+        vm.startPrank(bob);
+
+        CampaignParameters memory newCampaign = CampaignParameters({
+            campaignId: testCampaignId,
+            creator: distributionCreator.campaign(testCampaignId).creator,
+            rewardToken: distributionCreator.campaign(testCampaignId).rewardToken,
+            amount: distributionCreator.campaign(testCampaignId).amount,
+            campaignType: distributionCreator.campaign(testCampaignId).campaignType,
+            startTimestamp: distributionCreator.campaign(testCampaignId).startTimestamp,
+            duration: distributionCreator.campaign(testCampaignId).duration,
+            campaignData: distributionCreator.campaign(testCampaignId).campaignData
+        });
+        vm.expectRevert(Errors.InvalidOverride.selector);
+        distributionCreator.overrideCampaign(testCampaignId, newCampaign);
+        vm.stopPrank();
     }
 }
 
