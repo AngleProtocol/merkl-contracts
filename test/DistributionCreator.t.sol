@@ -1149,7 +1149,7 @@ contract UpgradeDistributionCreatorTest is Test, JsonReader {
 
     function setUp() public {
         // Setup environment variables
-        deployer = vm.envAddress("DEPLOYER_ADDRESS");
+        deployer = 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701; // deploy
         vm.createSelectFork(vm.envString("BASE_NODE_URI"));
         chainId = block.chainid;
 
