@@ -295,25 +295,3 @@ contract Claim is DistributorScript {
         console.log("Claimed rewards for", users.length, "users");
     }
 }
-
-// ToggleOnlyOperatorCanClaim script
-contract ToggleOnlyOperatorCanClaim is DistributorScript {
-    function run() external broadcast {
-        // MODIFY THIS VALUE TO SET YOUR DESIRED USER
-        address user = address(0);
-        _run(user);
-    }
-
-    function run(address user) external broadcast {
-        _run(user);
-    }
-
-    function _run(address user) internal {
-        uint256 chainId = block.chainid;
-        address distributorAddress = readAddress(chainId, "Merkl.Distributor");
-
-        Distributor(distributorAddress).toggleOnlyOperatorCanClaim(user);
-
-        console.log("Toggled operator-only claiming for user:", user);
-    }
-}

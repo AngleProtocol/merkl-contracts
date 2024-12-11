@@ -12,6 +12,7 @@ import { Errors } from "../../utils/Errors.sol";
 
 interface IDistributionCreator {
     function distributor() external view returns (address);
+
     function feeRecipient() external view returns (address);
 }
 

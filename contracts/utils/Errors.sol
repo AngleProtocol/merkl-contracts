@@ -11,23 +11,28 @@ library Errors {
     error CampaignShouldStartInFuture();
     error InvalidDispute();
     error InvalidLengths();
+    error InvalidOverride();
     error InvalidParam();
     error InvalidParams();
     error InvalidProof();
     error InvalidUninitializedRoot();
+    error InvalidReturnMessage();
     error InvalidReward();
     error InvalidSignature();
     error NoDispute();
+    error NoOverrideForCampaign();
     error NotAllowed();
     error NotGovernor();
     error NotGovernorOrGuardian();
     error NotSigned();
     error NotTrusted();
+    error NotUpgradeable();
     error NotWhitelisted();
     error UnresolvedDispute();
     error ZeroAddress();
     error DisputeFundsTransferFailed();
     error EthNotAccepted();
+    error ReentrantCall();
     error WithdrawalFailed();
     error InvalidClaim();
 }

@@ -10,6 +10,7 @@ import { JsonReader } from "./utils/JsonReader.sol";
 import { DistributionCreator } from "../contracts/DistributionCreator.sol";
 import { IAccessControlManager } from "../contracts/interfaces/IAccessControlManager.sol";
 import { CampaignParameters } from "../contracts/struct/CampaignParameters.sol";
+import { MockToken } from "../contracts/mock/MockToken.sol";
 
 // Base contract with shared utilities
 contract DistributionCreatorScript is BaseScript, JsonReader {
@@ -416,6 +417,61 @@ contract CreateCampaigns is DistributionCreatorScript {
         for (uint256 i = 0; i < campaignIds.length; i++) {
             console.log("Campaign %s ID: %s", i, vm.toString(campaignIds[i]));
         }
+    }
+}
+
+// CreateCampaign script
+contract CreateCampaignTest is DistributionCreatorScript {
+    function run() external {
+        vm.createSelectFork(vm.envString("BASE_NODE_URI"));
+        uint256 chainId = block.chainid;
+
+        /// TODO: COMPLETE
+        IERC20 rewardToken = IERC20(0xC011882d0f7672D8942e7fE2248C174eeD640c8f);
+        uint256 amount = 100 ether;
+        /// END
+
+        address creatorAddress = readAddress(chainId, "Merkl.DistributionCreator");
+        DistributionCreator distributionCreator = DistributionCreator(creatorAddress);
+
+        vm.startBroadcast(broadcaster);
+
+        MockToken(address(rewardToken)).mint(broadcaster, amount);
+        rewardToken.approve(address(distributionCreator), amount);
+
+        uint32 startTimestamp = uint32(block.timestamp + 600);
+
+        bytes32 campaignId = distributionCreator.createCampaign(
+            CampaignParameters({
+                campaignId: bytes32(0),
+                creator: broadcaster,
+                rewardToken: address(rewardToken),
+                amount: amount,
+                campaignType: 1,
+                startTimestamp: startTimestamp,
+                duration: 3600 * 24,
+                campaignData: abi.encode(
+                    0xbEEfa1aBfEbE621DF50ceaEF9f54FdB73648c92C,
+                    new address[](0),
+                    new address[](0),
+                    "",
+                    new bytes[](0),
+                    new bytes[](0),
+                    hex""
+                )
+            })
+        );
+        vm.stopBroadcast();
+
+        CampaignParameters memory campaign = distributionCreator.campaign(campaignId);
+        require(campaign.creator == broadcaster, "Invalid creator");
+        require(campaign.rewardToken == address(rewardToken), "Invalid reward token");
+        require(campaign.amount == (amount * (1e9 - distributionCreator.defaultFees())) / 1e9, "Invalid amount");
+        require(campaign.campaignType == 1, "Invalid campaign type");
+        require(campaign.startTimestamp == startTimestamp, "Invalid start timestamp");
+        require(campaign.duration == 3600 * 24, "Invalid duration");
+
+        console.log("Campaign created with ID:", vm.toString(campaignId));
     }
 }
 

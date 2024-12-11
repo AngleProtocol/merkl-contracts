@@ -4,7 +4,7 @@ pragma solidity ^0.8.17;
 
 /// @title IAccessControlManager
 /// @author Angle Labs, Inc.
-/// @notice Interface for the `IAccessControlManager` contracts used in Merkl contracts
+/// @notice Interface for the `AccessControlManager` contracts of Merkl contracts
 interface IAccessControlManager {
     /// @notice Checks whether an address is governor
     /// @param admin Address to check

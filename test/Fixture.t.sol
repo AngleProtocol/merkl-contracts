@@ -26,7 +26,7 @@ contract Fixture is Test {
     MockTokenPermit public token0;
     MockTokenPermit public token1;
 
-    MockAccessControl public AccessControlManager;
+    MockAccessControl public accessControlManager;
     MockUniswapV3Pool public pool;
     DistributionCreator public creatorImpl;
     DistributionCreator public creator;
@@ -64,7 +64,7 @@ contract Fixture is Test {
         token1 = MockTokenPermit(address(new MockTokenPermit("token1", "TOKEN1", 18)));
 
         // side
-        AccessControlManager = new MockAccessControl();
+        accessControlManager = new MockAccessControl();
         pool = new MockUniswapV3Pool();
 
         // DistributionCreator
@@ -74,9 +74,9 @@ contract Fixture is Test {
         // Set
         pool.setToken(address(token0), 0);
         pool.setToken(address(token1), 1);
-        AccessControlManager.toggleGuardian(address(guardian));
-        AccessControlManager.toggleGovernor(address(governor));
-        creator.initialize(IAccessControlManager(address(AccessControlManager)), address(bob), 1e8);
+        accessControlManager.toggleGuardian(address(guardian));
+        accessControlManager.toggleGovernor(address(governor));
+        creator.initialize(IAccessControlManager(address(accessControlManager)), address(bob), 1e8);
     }
 
     /*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////

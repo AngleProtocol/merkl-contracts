@@ -9,6 +9,7 @@ import { Disputer } from "../../contracts/Disputer.sol";
 import { DistributorTest } from "./Distributor.t.sol";
 import { IAccessControlManager } from "../../contracts/interfaces/IAccessControlManager.sol";
 import { Errors } from "../../contracts/utils/Errors.sol";
+
 contract DisputerTest is DistributorTest {
     Disputer public disputer;
 
@@ -75,7 +76,7 @@ contract DisputerTest is DistributorTest {
         // set up new distributor
         distributorImpl = new Distributor();
         distributor = Distributor(deployUUPS(address(distributorImpl), hex""));
-        distributor.initialize(IAccessControlManager(address(AccessControlManager)));
+        distributor.initialize(IAccessControlManager(address(accessControlManager)));
 
         distributor.setDisputeAmount(1e18);
         distributor.setDisputePeriod(1 days);

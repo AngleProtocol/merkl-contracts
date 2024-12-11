@@ -8,6 +8,7 @@ import { DistributionCreator, DistributionParameters, CampaignParameters, Reward
 import { Errors } from "../../contracts/utils/Errors.sol";
 import { Fixture, IERC20 } from "../Fixture.t.sol";
 import { IAccessControlManager } from "../../contracts/interfaces/IAccessControlManager.sol";
+import { JsonReader } from "../../scripts/utils/JsonReader.sol";
 
 contract DistributionCreatorTest is Fixture {
     using SafeERC20 for IERC20;
@@ -108,19 +109,19 @@ contract Test_DistributionCreator_Initialize is DistributionCreatorTest {
         d.initialize(IAccessControlManager(address(0)), address(bob), 1e8);
 
         vm.expectRevert(Errors.ZeroAddress.selector);
-        d.initialize(IAccessControlManager(address(AccessControlManager)), address(0), 1e8);
+        d.initialize(IAccessControlManager(address(accessControlManager)), address(0), 1e8);
     }
 
     function test_RevertWhen_InvalidParam() public {
         vm.expectRevert(Errors.InvalidParam.selector);
-        d.initialize(IAccessControlManager(address(AccessControlManager)), address(bob), 1e9);
+        d.initialize(IAccessControlManager(address(accessControlManager)), address(bob), 1e9);
     }
 
     function test_Success() public {
-        d.initialize(IAccessControlManager(address(AccessControlManager)), address(bob), 1e8);
+        d.initialize(IAccessControlManager(address(accessControlManager)), address(bob), 1e8);
 
         assertEq(address(d.distributor()), address(bob));
-        assertEq(address(d.accessControlManager()), address(AccessControlManager));
+        assertEq(address(d.accessControlManager()), address(accessControlManager));
         assertEq(d.defaultFees(), 1e8);
     }
 }
@@ -949,40 +950,6 @@ contract Test_DistributionCreator_distribution is DistributionCreatorForkTest {
         assertEq(
             distribution.campaignData,
             hex"000000000000000000000000149e36e72726e0bcea5c59d40df2c43f60f5a22d0000000000000000000000000000000000000000000000000000000000000bb800000000000000000000000000000000000000000000000000000000000007d000000000000000000000000000000000000000000000000000000000000013880000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000140000000000000000000000000000000000000000000000000000000000000016000000000000000000000000000000000000000000000000000000000000001800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000023078000000000000000000000000000000000000000000000000000000000000"
-        );
-    }
-}
-
-contract Test_DistributionCreator_getDistributionsBetweenEpochs is DistributionCreatorForkTest {
-    function test_Success() public view {
-        (DistributionParameters[] memory distributions, ) = creator.getDistributionsBetweenEpochs(
-            1681380000,
-            1681380000 + 3600,
-            0,
-            1 // get only the first distribution (instead of type(uint32).max), as there are too many which makes the test fail because of rpc archive limit
-        );
-
-        assertEq(distributions.length, 1);
-        assertEq(distributions[0].uniV3Pool, address(0x149e36E72726e0BceA5c59d40df2c43F60f5A22D));
-        assertEq(distributions[0].rewardToken, address(0xE0688A2FE90d0f93F17f273235031062a210d691));
-        assertEq(distributions[0].amount, 9700000000000000000000);
-        assertEq(distributions[0].positionWrappers.length, 0);
-        assertEq(distributions[0].wrapperTypes.length, 0);
-        assertEq(distributions[0].propToken0, 2000);
-        assertEq(distributions[0].propToken1, 5000);
-        assertEq(distributions[0].propFees, 3000);
-        assertEq(distributions[0].isOutOfRangeIncentivized, 0);
-        assertEq(distributions[0].epochStart, 1681380000);
-        assertEq(distributions[0].numEpoch, 24);
-        assertEq(distributions[0].boostedReward, 0);
-        assertEq(distributions[0].boostingAddress, address(0));
-        assertEq(
-            distributions[0].rewardId,
-            bytes32(0x7570c9deb1660ed82ff01f760b2883edb9bdb881933b0e4085854d0d717ea268)
-        );
-        assertEq(
-            distributions[0].additionalData,
-            hex"290decd9548b62a8d60345a988386fc84ba6bc95484008f6362f93160ef3e563"
         );
     }
 }
