@@ -532,3 +532,107 @@ contract Test_Distributor_claim is DistributorTest {
         assertEq(agEUR.balanceOf(address(bob)), bobBalance + 5e17);
     }
 }
+
+contract Test_Distributor_claimWithRecipient is DistributorTest {
+    function test_RevertWhen_NotWhitelisted() public {
+        vm.prank(governor);
+        distributor.updateTree(MerkleTree({ merkleRoot: getRoot(), ipfsHash: keccak256("IPFS_HASH") }));
+
+        vm.warp(distributor.endOfDisputePeriod() + 1);
+
+        bytes32[][] memory proofs = new bytes32[][](1);
+        address[] memory users = new address[](1);
+        address[] memory tokens = new address[](1);
+        uint256[] memory amounts = new uint256[](1);
+        address[] memory recipients = new address[](1);
+        bytes[] memory datas = new bytes[](1);
+        proofs[0] = new bytes32[](1);
+        users[0] = bob;
+        tokens[0] = address(angle);
+        amounts[0] = 1e18;
+        recipients[0] = alice;
+
+        vm.expectRevert(Errors.NotWhitelisted.selector);
+        vm.prank(alice);
+        distributor.claimWithRecipient(users, tokens, amounts, proofs, recipients, datas);
+    }
+
+    function test_Success_WithCustomRecipient() public {
+        vm.prank(governor);
+        distributor.updateTree(
+            MerkleTree({
+                merkleRoot: bytes32(0x0b70a97c062cb747158b89e27df5bbda859ba072232efcbe92e383e9d74b8555),
+                ipfsHash: keccak256("IPFS_HASH")
+            })
+        );
+
+        angle.mint(address(distributor), 1e18);
+
+        vm.warp(distributor.endOfDisputePeriod() + 1);
+
+        bytes32[][] memory proofs = new bytes32[][](1);
+        address[] memory users = new address[](1);
+        address[] memory tokens = new address[](1);
+        uint256[] memory amounts = new uint256[](1);
+        address[] memory recipients = new address[](1);
+        bytes[] memory datas = new bytes[](1);
+        proofs[0] = new bytes32[](1);
+        proofs[0][0] = bytes32(0x6f46ee2909b99367a0d9932a11f1bdb85c9354480c9de277d21086f9a8925c0a);
+        users[0] = alice;
+        tokens[0] = address(angle);
+        amounts[0] = 1e18;
+        recipients[0] = bob;
+
+        uint256 bobBalance = angle.balanceOf(address(bob));
+
+        vm.prank(alice);
+        distributor.claimWithRecipient(users, tokens, amounts, proofs, recipients, datas);
+
+        assertEq(angle.balanceOf(address(bob)), bobBalance + 1e18);
+    }
+}
+
+contract Test_Distributor_revokeUpgradeability is DistributorTest {
+    function test_RevertWhen_NotGovernor() public {
+        vm.expectRevert(Errors.NotGovernor.selector);
+        distributor.revokeUpgradeability();
+    }
+
+    function test_Success() public {
+        vm.prank(governor);
+        distributor.revokeUpgradeability();
+        assertEq(distributor.upgradeabilityDeactivated(), 1);
+
+        // Verify that upgrades are no longer possible
+        vm.startPrank(governor);
+        Distributor impl = new Distributor();
+        vm.expectRevert(Errors.NotUpgradeable.selector);
+        distributor.upgradeTo(address(impl));
+        vm.stopPrank();
+    }
+}
+
+contract Test_Distributor_setEpochDuration is DistributorTest {
+    function test_RevertWhen_NotGovernor() public {
+        vm.expectRevert(Errors.NotGovernor.selector);
+        distributor.setEpochDuration(7200);
+    }
+
+    function test_Success() public {
+        // Default epoch duration should be 3600
+        assertEq(distributor.getEpochDuration(), 3600);
+
+        vm.prank(governor);
+        distributor.setEpochDuration(7200);
+
+        assertEq(distributor.getEpochDuration(), 7200);
+
+        // Verify that the new epoch duration affects dispute period calculations
+        vm.prank(governor);
+        distributor.updateTree(MerkleTree({ merkleRoot: getRoot(), ipfsHash: keccak256("IPFS_HASH") }));
+
+        // End of dispute period should be rounded up to next 2-hour mark (7200 seconds) plus dispute period
+        uint256 expectedEnd = ((block.timestamp - 1) / 7200 + 1 + distributor.disputePeriod()) * 7200;
+        assertEq(distributor.endOfDisputePeriod(), expectedEnd);
+    }
+}
