@@ -6,6 +6,7 @@
     "ci:coverage": "forge coverage --ir-minimum --report lcov && yarn lcov:clean",
     "lcov:clean": "lcov --remove lcov.info -o lcov.info 'test/**' 'scripts/**' 'contracts/mock/**' 'contracts/deprecated/**' 'contracts/external/**'",
     "lcov:generate-html": "genhtml lcov.info --output=coverage",
+    "fork": "bash helpers/fork.sh",
     "foundry:compile": "forge build --optimize --optimizer-runs 1000",
     "foundry:coverage": "forge coverage --ir-minimum --report lcov && yarn lcov:clean && yarn lcov:generate-html",
     "foundry:script": "forge script -vvvv",
@@ -15,6 +16,10 @@
     "foundry:setup": "curl -L https://foundry.paradigm.xyz | bash && foundryup && git submodule update --init --recursive",
     "foundry:size": "forge build --skip test --sizes",
     "foundry:test": "FOUNDRY_PROFILE=dev forge test -vvv",
+    "impersonate": "cast rpc anvil_impersonateAccount",
+    "impersonate:script": "FOUNDRY_PROFILE=dev forge script --skip test --fork-url fork --broadcast -vvvv --gas-price 0 --priority-gas-price 0 --unlocked --sender",
+    "impersonate:setBalance": "cast rpc anvil_setBalance 0x0022228a2cc5E7eF0274A7Baa600d44da5aB5776 1000000000000000000 && cast rpc anvil_setBalance 0x15775b23340C0f50E0428D674478B0e9D3D0a759 1000000000000000000 && cast rpc anvil_setBalance 0x19c41f6607b2c0e80e84baadaf886b17565f278e 1000000000000000000 && cast rpc anvil_setBalance 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701 1000000000000000000",
+    "fork:advanceTime": "cast rpc evm_increaseTime 704800 && cast rpc anvil_mine",
     "lint": "solhint --max-warnings 20 \"contracts/**/*.sol\"",
     "prettier": "prettier --ignore-path .gitignore --write '*.{js,ts,sol}'"
   },

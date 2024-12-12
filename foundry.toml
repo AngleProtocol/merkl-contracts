@@ -3,7 +3,7 @@ auto_detect_solc = false
 src = 'contracts'
 out = 'out'
 test = 'test'
-libs = ['node_modules']
+libs = ["node_modules", "lib"]
 script = 'scripts'
 cache_path = 'cache-forge'
 gas_reports = ["*"]
@@ -20,7 +20,7 @@ runs = 500
 runs = 500
 
 [profile.dev]
-via_ir = false
+via_ir = true
 
 [rpc_endpoints]
 localhost = "${LOCALHOST_NODE_URI}"
@@ -63,6 +63,8 @@ lisk = "${LISK_NODE_URI}"
 etherlink = "${ETHERLINK_NODE_URI}"
 arthera = "${ARTHERA_NODE_URI}"
 swell = "${SWELL_NODE_URI}"
+fork = "${ETH_NODE_URI_FORK}"
+
 [etherscan]
 localhost = { url = "http://localhost:4000", key = "${LOCALHOST_ETHERSCAN_API_KEY}" }
 mainnet = { chainId = 1, key = "${MAINNET_ETHERSCAN_API_KEY}", url = "https://api.etherscan.io/api" }
