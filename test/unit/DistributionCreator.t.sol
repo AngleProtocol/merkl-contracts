@@ -127,28 +127,6 @@ contract Test_DistributionCreator_Initialize is DistributionCreatorTest {
 }
 
 contract Test_DistributionCreator_CreateDistribution is DistributionCreatorTest {
-    function test_RevertWhen_CampaignShouldStartInFuture() public {
-        DistributionParameters memory distribution = DistributionParameters({
-            uniV3Pool: address(pool),
-            rewardToken: address(angle),
-            positionWrappers: positionWrappers,
-            wrapperTypes: wrapperTypes,
-            amount: 1e10,
-            propToken0: 4000,
-            propToken1: 2000,
-            propFees: 4000,
-            isOutOfRangeIncentivized: 0,
-            epochStart: uint32(block.timestamp - 1),
-            numEpoch: 25,
-            boostedReward: 0,
-            boostingAddress: address(0),
-            rewardId: keccak256("TEST"),
-            additionalData: hex""
-        });
-        vm.expectRevert(Errors.CampaignShouldStartInFuture.selector);
-        creator.createDistribution(distribution);
-    }
-
     function test_RevertWhen_CampaignDurationIsZero() public {
         DistributionParameters memory distribution = DistributionParameters({
             uniV3Pool: address(pool),
@@ -356,21 +334,6 @@ contract Test_DistributionCreator_CreateDistributions is DistributionCreatorTest
 }
 
 contract Test_DistributionCreator_CreateCampaign is DistributionCreatorTest {
-    function test_RevertWhen_CampaignShouldStartInFuture() public {
-        CampaignParameters memory campaign = CampaignParameters({
-            campaignId: keccak256("TEST"),
-            creator: address(0),
-            campaignData: hex"ab",
-            rewardToken: address(angle),
-            amount: 1e10,
-            campaignType: 0,
-            startTimestamp: uint32(block.timestamp - 1),
-            duration: 3600
-        });
-        vm.expectRevert(Errors.CampaignShouldStartInFuture.selector);
-        creator.createCampaign(campaign);
-    }
-
     function test_RevertWhen_CampaignDurationIsZero() public {
         CampaignParameters memory campaign = CampaignParameters({
             campaignId: keccak256("TEST"),
@@ -433,6 +396,63 @@ contract Test_DistributionCreator_CreateCampaign is DistributionCreatorTest {
             amount: amount,
             campaignType: 0,
             startTimestamp: uint32(block.timestamp + 1),
+            duration: 3600
+        });
+
+        vm.prank(alice);
+        creator.createCampaign(campaign);
+
+        address[] memory whitelist = new address[](1);
+        whitelist[0] = alice;
+        address[] memory blacklist = new address[](1);
+        blacklist[0] = charlie;
+
+        bytes memory extraData = hex"ab";
+
+        // Additional asserts to check for correct behavior
+        bytes32 campaignId = bytes32(
+            keccak256(
+                abi.encodePacked(
+                    block.chainid,
+                    alice,
+                    address(campaign.rewardToken),
+                    uint32(campaign.campaignType),
+                    uint32(campaign.startTimestamp),
+                    uint32(campaign.duration),
+                    campaign.campaignData
+                )
+            )
+        );
+        (
+            bytes32 fetchedCampaignId,
+            address fetchedCreator,
+            address fetchedRewardToken,
+            uint256 fetchedAmount,
+            uint32 fetchedCampaignType,
+            uint32 fetchedStartTimestamp,
+            uint32 fetchedDuration,
+            bytes memory fetchedCampaignData
+        ) = creator.campaignList(creator.campaignLookup(campaignId));
+        assertEq(alice, fetchedCreator);
+        assertEq((amount * 9) / 10, fetchedAmount); // amount minus 10% fees
+        assertEq(address(angle), fetchedRewardToken);
+        assertEq(campaign.campaignType, fetchedCampaignType);
+        assertEq(campaign.startTimestamp, fetchedStartTimestamp);
+        assertEq(campaign.duration, fetchedDuration);
+        assertEq(extraData, fetchedCampaignData);
+        assertEq(campaignId, fetchedCampaignId);
+    }
+
+    function test_Succeed_CampaignStartInThePast() public {
+        uint256 amount = 1e8;
+        CampaignParameters memory campaign = CampaignParameters({
+            campaignId: keccak256("TEST"),
+            creator: address(0),
+            campaignData: hex"ab",
+            rewardToken: address(angle),
+            amount: amount,
+            campaignType: 0,
+            startTimestamp: uint32(block.timestamp - 1),
             duration: 3600
         });
 
