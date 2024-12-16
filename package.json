@@ -20,7 +20,7 @@
     "deploy:worldchain": "hardhat deploy --tags distributionCreator --network worldchain",
     "deploy:fork": "FORK=true hardhat node --tags distributionCreator",
     "deploy:agla": "hardhat deploy --tags aglaMerkl --network",
-    "deploy": "hardhat deploy --tags distributionCreator --network",
+    "deploy": "hardhat deploy --tags puffer --network",
     "etherscan": "hardhat etherscan-verify --network",
     "foundry:compile": "forge build --optimize --optimizer-runs 1000",
     "foundry:coverage": "forge coverage --ir-minimum --report lcov && yarn lcov:clean && yarn lcov:generate-html",

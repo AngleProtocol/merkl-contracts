@@ -7,11 +7,11 @@ import { MockToken__factory } from '../typechain';
 async function main() {
   const { deployer } = await ethers.getNamedSigners();
 
-  const MockToken = MockToken__factory.connect('0xA7c167f58833c5e25848837f45A1372491A535eD', deployer);
+  const MockToken = MockToken__factory.connect('0xC011882d0f7672D8942e7fE2248C174eeD640c8f', deployer);
 
   console.log(`Minting MockToken to ${deployer.address}...`);
   await (
-    await MockToken.mint(deployer.address, parseUnits('100000', 6), {
+    await MockToken.mint('0xFee2D4498085581DDE097b9924E4E3544682D767', parseUnits('100000', 18), {
       // gasLimit: 300_000,
       // maxPriorityFeePerGas: 100e9,
       // maxFeePerGas: 700e9,
