@@ -3,9 +3,9 @@ pragma solidity ^0.8.17;
 
 import { console } from "forge-std/console.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import { JsonReader } from "@utils/JsonReader.sol";
 
 import { BaseScript } from "./utils/Base.s.sol";
-import { JsonReader } from "./utils/JsonReader.sol";
 import { MockToken } from "../contracts/mock/MockToken.sol";
 
 // Base contract with shared utilities
@@ -45,9 +45,9 @@ contract Deploy is MockTokenScript {
 contract Mint is MockTokenScript {
     function run() external broadcast {
         // MODIFY THESE VALUES TO SET YOUR DESIRED MINT PARAMETERS
-        address token = address(0);
-        address recipient = address(0);
-        uint256 amount = 0;
+        address token = 0xb5eCAa1a867FeCCD6d87604bc16a2b6B53D706BF;
+        address recipient = 0x103eC7cF86CC6f1DAada07830C84f43B42Bf1eB3;
+        uint256 amount = 1e18;
         _run(token, recipient, amount);
     }
 

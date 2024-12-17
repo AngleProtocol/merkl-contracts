@@ -47,4 +47,5 @@ bin
 
 # foundry
 /out
+/zkout
 /cache-forge

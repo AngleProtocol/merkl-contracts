@@ -4,13 +4,13 @@ pragma solidity ^0.8.17;
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import { Test } from "forge-std/Test.sol";
 import { console } from "forge-std/console.sol";
+import { JsonReader } from "@utils/JsonReader.sol";
 
 import { DistributionCreator, DistributionParameters, CampaignParameters } from "../contracts/DistributionCreator.sol";
 import { Distributor, MerkleTree } from "../contracts/Distributor.sol";
 import { Fixture, IERC20 } from "./Fixture.t.sol";
 import { Errors } from "../contracts/utils/Errors.sol";
 import { IAccessControlManager } from "../contracts/interfaces/IAccessControlManager.sol";
-import { JsonReader } from "../scripts/utils/JsonReader.sol";
 import { MockToken } from "../contracts/mock/MockToken.sol";
 
 contract DistributionCreatorCreateCampaignTest is Fixture {
