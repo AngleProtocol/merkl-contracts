@@ -3,8 +3,10 @@ pragma solidity ^0.8.17;
 
 import { console } from "forge-std/console.sol";
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
+import { ITransparentUpgradeableProxy } from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import { JsonReader } from "@utils/JsonReader.sol";
+import { CommonUtils } from "@utils/CommonUtils.sol";
+import { ContractType } from "@utils/Constants.sol";
 
 import { BaseScript } from "./utils/Base.s.sol";
 import { DistributionCreator } from "../contracts/DistributionCreator.sol";
@@ -13,7 +15,7 @@ import { CampaignParameters } from "../contracts/struct/CampaignParameters.sol";
 import { MockToken } from "../contracts/mock/MockToken.sol";
 
 // Base contract with shared utilities
-contract DistributionCreatorScript is BaseScript, JsonReader {
+contract DistributionCreatorScript is BaseScript, CommonUtils {
     struct CampaignInput {
         address creator;
         address rewardToken;
@@ -252,6 +254,19 @@ contract SetMessage is DistributionCreatorScript {
         DistributionCreator(creatorAddress).setMessage(_message);
 
         console.log("Message updated to:", _message);
+    }
+}
+
+// GetMessage script
+contract GetMessage is DistributionCreatorScript {
+    function run() external broadcast {
+        uint256 chainId = block.chainid;
+        address creatorAddress = readAddress(chainId, "Merkl.DistributionCreator");
+
+        console.log("Creator address:", creatorAddress);
+        string memory message = DistributionCreator(creatorAddress).message();
+
+        console.log("Message is:", message);
     }
 }
 
@@ -504,5 +519,31 @@ contract SignAndCreateCampaign is DistributionCreatorScript {
         bytes32 campaignId = DistributionCreator(creatorAddress).signAndCreateCampaign(campaign, signature);
 
         console.log("Message signed and campaign created with ID:", vm.toString(campaignId));
+    }
+}
+
+contract UpgradeAndBuildUpgradeToPayload is DistributionCreatorScript {
+    function run() external {
+        uint256 chainId = block.chainid;
+        address distributionCreator = this.chainToContract(chainId, ContractType.DistributionCreator);
+
+        address distributionCreatorImpl = address(new DistributionCreator());
+
+        bytes memory payload = abi.encodeWithSelector(
+            ITransparentUpgradeableProxy.upgradeTo.selector,
+            distributionCreatorImpl
+        );
+
+        try this.chainToContract(chainId, ContractType.AngleLabsMultisig) returns (address safe) {
+            _serializeJson(
+                chainId,
+                distributionCreator, // target address (the proxy)
+                0, // value
+                payload, // direct upgrade call
+                Operation.Call, // standard call (not delegate)
+                hex"", // signature
+                safe // safe address
+            );
+        } catch {}
     }
 }
