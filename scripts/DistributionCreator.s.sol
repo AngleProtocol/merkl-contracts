@@ -5,7 +5,7 @@ import { console } from "forge-std/console.sol";
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import { ITransparentUpgradeableProxy } from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import { CommonUtils } from "@utils/CommonUtils.sol";
+import { JsonReader } from "@utils/JsonReader.sol";
 import { ContractType } from "@utils/Constants.sol";
 
 import { BaseScript } from "./utils/Base.s.sol";
@@ -15,7 +15,7 @@ import { CampaignParameters } from "../contracts/struct/CampaignParameters.sol";
 import { MockToken } from "../contracts/mock/MockToken.sol";
 
 // Base contract with shared utilities
-contract DistributionCreatorScript is BaseScript, CommonUtils {
+contract DistributionCreatorScript is BaseScript, JsonReader {
     struct CampaignInput {
         address creator;
         address rewardToken;
@@ -525,7 +525,7 @@ contract SignAndCreateCampaign is DistributionCreatorScript {
 contract UpgradeAndBuildUpgradeToPayload is DistributionCreatorScript {
     function run() external {
         uint256 chainId = block.chainid;
-        address distributionCreator = this.chainToContract(chainId, ContractType.DistributionCreator);
+        address distributionCreator = readAddress(chainId, "Merkl.DistributionCreator");
 
         address distributionCreatorImpl = address(new DistributionCreator());
 
@@ -534,7 +534,7 @@ contract UpgradeAndBuildUpgradeToPayload is DistributionCreatorScript {
             distributionCreatorImpl
         );
 
-        try this.chainToContract(chainId, ContractType.AngleLabsMultisig) returns (address safe) {
+        try this.externalReadAddress(chainId, "Merkl.AngleLabs") returns (address safe) {
             _serializeJson(
                 chainId,
                 distributionCreator, // target address (the proxy)
@@ -545,5 +545,9 @@ contract UpgradeAndBuildUpgradeToPayload is DistributionCreatorScript {
                 safe // safe address
             );
         } catch {}
+    }
+
+    function externalReadAddress(uint256 chainId, string memory key) external view returns (address) {
+        return readAddress(chainId, key);
     }
 }

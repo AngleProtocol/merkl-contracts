@@ -853,7 +853,7 @@ contract DistributionCreatorOverrideTest is Fixture {
         // Silo distrib
         address[] memory whitelist = new address[](1);
         whitelist[0] = 0x8095806d8753C0443C118D1C5e5eEC472e30BFeC;
-        bytes memory campaignData = abi.encode(
+        campaignData = abi.encode(
             0x04C0599Ae5A44757c0af6F9eC3b93da8976c150A,
             2,
             0xa42001D6d2237d2c74108FE360403C4b796B7170,
