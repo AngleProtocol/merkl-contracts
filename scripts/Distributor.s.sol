@@ -5,6 +5,7 @@ import { console } from "forge-std/console.sol";
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { JsonReader } from "@utils/JsonReader.sol";
+import { ITransparentUpgradeableProxy } from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
 
 import { BaseScript } from "./utils/Base.s.sol";
 import { Distributor, MerkleTree } from "../contracts/Distributor.sol";
@@ -293,5 +294,32 @@ contract Claim is DistributorScript {
         Distributor(distributorAddress).claim(users, tokens, amounts, proofs);
 
         console.log("Claimed rewards for", users.length, "users");
+    }
+}
+
+contract BuildUpgradeToPayload is DistributorScript {
+    function run() external broadcast {
+        uint256 chainId = block.chainid;
+        address distributor = readAddress(chainId, "Merkl.Distributor");
+
+        address distributorImpl = address(new Distributor());
+
+        bytes memory payload = abi.encodeWithSelector(ITransparentUpgradeableProxy.upgradeTo.selector, distributorImpl);
+
+        try this.externalReadAddress(chainId, "AngleLabs") returns (address safe) {
+            _serializeJson(
+                chainId,
+                distributor, // target address (the proxy)
+                0, // value
+                payload, // direct upgrade call
+                Operation.Call, // standard call (not delegate)
+                hex"", // signature
+                safe // safe address
+            );
+        } catch {}
+    }
+
+    function externalReadAddress(uint256 chainId, string memory key) external view returns (address) {
+        return readAddress(chainId, key);
     }
 }
