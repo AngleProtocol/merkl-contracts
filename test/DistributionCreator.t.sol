@@ -4,13 +4,13 @@ pragma solidity ^0.8.17;
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import { Test } from "forge-std/Test.sol";
 import { console } from "forge-std/console.sol";
+import { JsonReader } from "@utils/JsonReader.sol";
 
 import { DistributionCreator, DistributionParameters, CampaignParameters } from "../contracts/DistributionCreator.sol";
 import { Distributor, MerkleTree } from "../contracts/Distributor.sol";
 import { Fixture, IERC20 } from "./Fixture.t.sol";
 import { Errors } from "../contracts/utils/Errors.sol";
 import { IAccessControlManager } from "../contracts/interfaces/IAccessControlManager.sol";
-import { JsonReader } from "../scripts/utils/JsonReader.sol";
 import { MockToken } from "../contracts/mock/MockToken.sol";
 
 contract DistributionCreatorCreateCampaignTest is Fixture {
@@ -853,7 +853,7 @@ contract DistributionCreatorOverrideTest is Fixture {
         // Silo distrib
         address[] memory whitelist = new address[](1);
         whitelist[0] = 0x8095806d8753C0443C118D1C5e5eEC472e30BFeC;
-        bytes memory campaignData = abi.encode(
+        campaignData = abi.encode(
             0x04C0599Ae5A44757c0af6F9eC3b93da8976c150A,
             2,
             0xa42001D6d2237d2c74108FE360403C4b796B7170,

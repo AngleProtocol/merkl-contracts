@@ -7,9 +7,9 @@ import { ProxyAdmin } from "@openzeppelin/contracts/proxy/transparent/ProxyAdmin
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { console } from "forge-std/console.sol";
+import { JsonReader } from "@utils/JsonReader.sol";
 
 import { CreateXConstants } from "./utils/CreateXConstants.sol";
-import { JsonReader } from "./utils/JsonReader.sol";
 import { TokensUtils } from "./utils/TokensUtils.sol";
 
 import { AccessControlManager } from "../contracts/AccessControlManager.sol";
@@ -157,7 +157,7 @@ contract MainDeployScript is Script, JsonReader, TokensUtils, CreateXConstants {
         vm.startBroadcast(DEPLOYER_PRIVATE_KEY);
 
         // Set params and transfer ownership
-        setDistributionCreatorParams(address(creator.proxy), aglaMerkl, KEEPER);
+        setDistributionCreatorParams(address(creator.proxy), aglaMerkl, DUMPER);
         setDistributorParams(address(distributor.proxy), DISPUTE_TOKEN, KEEPER);
 
         // Deploy Disputer
@@ -354,7 +354,7 @@ contract MainDeployScript is Script, JsonReader, TokensUtils, CreateXConstants {
                                                         SETTERS                                                     
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
-    function setDistributionCreatorParams(address _distributionCreator, address aglaMerkl, address keeper) public {
+    function setDistributionCreatorParams(address _distributionCreator, address aglaMerkl, address dumper) public {
         console.log("\n=== Setting DistributionCreator params ===");
 
         DistributionCreator distributionCreator = DistributionCreator(_distributionCreator);
@@ -368,8 +368,8 @@ contract MainDeployScript is Script, JsonReader, TokensUtils, CreateXConstants {
         distributionCreator.setRewardTokenMinAmounts(tokens, minAmounts);
 
         // Set keeper as fee recipient
-        console.log("Setting keeper as fee recipient:", keeper);
-        distributionCreator.setFeeRecipient(keeper);
+        console.log("Setting dumper as fee recipient:", dumper);
+        distributionCreator.setFeeRecipient(dumper);
 
         // Set campaign fees to 5% for airdrop campaigns
         console.log("Setting campaign fees to 5% for airdrop campaigns");

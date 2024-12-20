@@ -16,6 +16,11 @@ abstract contract BaseScript is Script {
     /// @dev Used to derive the broadcaster's address if $DEPLOYER_ADDRESS is not defined.
     string internal mnemonic;
 
+    enum Operation {
+        Call,
+        DelegateCall
+    }
+
     /// @dev Initializes the transaction broadcaster like this:
     ///
     /// - If $DEPLOYER_ADDRESS is defined, use it.
@@ -37,5 +42,39 @@ abstract contract BaseScript is Script {
         vm.startBroadcast(broadcaster);
         _;
         vm.stopBroadcast();
+    }
+
+    function _serializeJson(
+        uint256 chainId,
+        address to,
+        uint256 value,
+        bytes memory data,
+        Operation operation,
+        bytes memory additionalData
+    ) internal {
+        _serializeJson(chainId, to, value, data, operation, additionalData, address(0));
+    }
+
+    function _serializeJson(
+        uint256 chainId,
+        address to,
+        uint256 value,
+        bytes memory data,
+        Operation operation,
+        bytes memory additionalData,
+        address safe
+    ) internal {
+        string memory json = "";
+        vm.serializeUint(json, "chainId", chainId);
+        vm.serializeAddress(json, "to", to);
+        vm.serializeUint(json, "value", value);
+        vm.serializeUint(json, "operation", uint256(operation));
+        vm.serializeBytes(json, "additionalData", additionalData);
+        if (safe != address(0)) {
+            vm.serializeAddress(json, "safe", safe);
+        }
+        string memory finalJson = vm.serializeBytes(json, "data", data);
+
+        vm.writeJson(finalJson, "./transaction.json");
     }
 }

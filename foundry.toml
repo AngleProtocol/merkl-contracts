@@ -3,13 +3,17 @@ auto_detect_solc = false
 src = 'contracts'
 out = 'out'
 test = 'test'
-libs = ["node_modules", "lib"]
+libs = ["node_modules"]
 script = 'scripts'
 cache_path = 'cache-forge'
 gas_reports = ["*"]
 optimizer_runs = 100
-fs_permissions = [{ access = "read", path = "./node_modules/@angleprotocol/sdk/dist/src/registry/registry.json" }]
-solc = "0.8.24"
+fs_permissions = [
+  { access = "read", path = "./node_modules/@angleprotocol/sdk/dist/src/registry/registry.json" }, 
+  { access = "write", path = "./transaction.json" }, 
+  { access = "write", path = "./transactions.json" }
+]
+solc = "0.8.25"
 
 ffi = true
 
@@ -39,7 +43,6 @@ bob = "${BOB_NODE_URI}"
 linea = "${LINEA_NODE_URI}"
 zksync = "${ZKSYNC_NODE_URI}"
 mantle = "${MANTLE_NODE_URI}"
-filecoin = "${FILECOIN_NODE_URI}"
 blast = "${BLAST_NODE_URI}"
 mode = "${MODE_NODE_URI}"
 thundercore = "${THUNDERCORE_NODE_URI}"
@@ -66,13 +69,13 @@ swell = "${SWELL_NODE_URI}"
 fork = "${ETH_NODE_URI_FORK}"
 
 [etherscan]
-localhost = { url = "http://localhost:4000", key = "${LOCALHOST_ETHERSCAN_API_KEY}" }
+localhost = { url = "http://localhost:4000", key = "none" }
 mainnet = { chainId = 1, key = "${MAINNET_ETHERSCAN_API_KEY}", url = "https://api.etherscan.io/api" }
 polygon = { chainId = 137, key = "${POLYGON_ETHERSCAN_API_KEY}", url = "https://api.polygonscan.com/api" }
 fantom = { chainId = 250, key = "${FANTOM_ETHERSCAN_API_KEY}", url = "https://api.ftmscan.com/api" }
 optimism = { chainId = 10, key = "${OPTIMISM_ETHERSCAN_API_KEY}", url = "https://api-optimistic.etherscan.io/api" }
 arbitrum = { chainId = 42161, key = "${ARBITRUM_ETHERSCAN_API_KEY}", url = "https://api.arbiscan.io/api" }
-avalanche = { chainId = 43114, key = "${AVALANCHE_ETHERSCAN_API_KEY}", url = "api.avascan.info/v2/network/mainnet/evm/43114/etherscan" }
+avalanche = { chainId = 43114, key = "${AVALANCHE_ETHERSCAN_API_KEY}", url = "https://api.avascan.info/v2/network/mainnet/evm/43114/etherscan" }
 aurora = { chainId = 1313161554, key = "${AURORA_ETHERSCAN_API_KEY}", url = "http://localhost:4000" }
 bsc = { chainId = 56, key = "${BSC_ETHERSCAN_API_KEY}", url = "https://api.bscscan.com/api" }
 gnosis = { chainId = 100, key = "${GNOSIS_ETHERSCAN_API_KEY}", url = "https://api.gnosisscan.io/api" }
@@ -82,7 +85,6 @@ bob = { chainId = 60808, key = "${BOB_ETHERSCAN_API_KEY}", url = "https://explor
 linea = { chainId = 59144, key = "${LINEA_ETHERSCAN_API_KEY}", url = "https://api.lineascan.build/api" }
 zksync = { chainId = 324, key = "${ZKSYNC_ETHERSCAN_API_KEY}", url = "https://explorer.sepolia.era.zksync.dev/contract_verification" }
 mantle = { chainId = 5000, key = "${MANTLE_ETHERSCAN_API_KEY}", url = "https://api.routescan.io/v2/network/mainnet/evm/43114/etherscan" }
-filecoin = { chainId = 314, key = "${FILECOIN_ETHERSCAN_API_KEY}", url = "" }
 blast = { chainId = 81457, key = "${BLAST_ETHERSCAN_API_KEY}", url = "https://api.blastscan.io/api" }
 mode = { chainId = 34443, key = "${MODE_ETHERSCAN_API_KEY}", url = "https://api.routescan.io/v2/network/mainnet/evm/34443/etherscan/api" }
 thundercore = { chainId = 108, key = "${THUNDERCORE_ETHERSCAN_API_KEY}", url = "" }
@@ -92,14 +94,14 @@ taiko = { chainId = 167000, key = "${TAIKO_ETHERSCAN_API_KEY}", url = "https://a
 fuse = { chainId = 122, key = "${FUSE_ETHERSCAN_API_KEY}", url = "https://explorer.fuse.io/api" }
 immutable = { chainId = 13371, key = "${IMMUTABLE_ETHERSCAN_API_KEY}", url = "https://immutable-mainnet.blockscout.com/api" }
 scroll = { chainId = 534352, key = "${SCROLL_ETHERSCAN_API_KEY}", url = "https://api.scrollscan.com/api" }
-manta = { chainId = 169, key = "${MANTA_ETHERSCAN_API_KEY}", url = "" }
-sei = { chainId = 1329, key = "${SEI_ETHERSCAN_API_KEY}", url = "" }
+manta = { chainId = 169, key = "${MANTA_ETHERSCAN_API_KEY}", url = "https://pacific-explorer.manta.network/api" }
+sei = { chainId = 1329, key = "${SEI_ETHERSCAN_API_KEY}", url = "https://seitrace.com/pacific-1/api" }
 celo = { chainId = 42220, key = "${CELO_ETHERSCAN_API_KEY}", url = "https://api.celoscan.io/api" }
 fraxtal = { chainId = 252, key = "${FRAXTAL_ETHERSCAN_API_KEY}", url = "https://api.fraxscan.io/api" }
-astar = { chainId = 592, key = "${ASTAR_ETHERSCAN_API_KEY}", url = "" }
-astarzkevm = { chainId = 3776, key = "${ASTARZKEVM_ETHERSCAN_API_KEY}", url = "" }
-rootstock = { chainId = 30, key = "${ROOTSTOCK_ETHERSCAN_API_KEY}", url = "" }
-moonbeam = { chainId = 1284, key = "${MOONBEAM_ETHERSCAN_API_KEY}", url = "" }
+astar = { chainId = 592, key = "${ASTAR_ETHERSCAN_API_KEY}", url = "https://astar.blockscout.com/api/" }
+astarzkevm = { chainId = 3776, key = "${ASTARZKEVM_ETHERSCAN_API_KEY}", url = "https://astar-zkevm.explorer.startale.com/api" }
+rootstock = { chainId = 30, key = "${ROOTSTOCK_ETHERSCAN_API_KEY}", url = "https://rootstock.blockscout.com/api/" }
+moonbeam = { chainId = 1284, key = "${MOONBEAM_ETHERSCAN_API_KEY}", url = "https://api-moonbase.moonscan.io/api" }
 skale = { chainId = 2046399126, key = "${SKALE_ETHERSCAN_API_KEY}", url = "https://internal-hubs.explorer.mainnet.skalenodes.com:10001/api" }
 worldchain = { chainId = 480, key = "${WORLDCHAIN_ETHERSCAN_API_KEY}", url = "https://worldchain-mainnet.explorer.alchemy.com/api" }
 lisk = { chainId = 1135, key = "${LISK_ETHERSCAN_API_KEY}", url = "https://blockscout.lisk.com/api/" }

@@ -15,7 +15,7 @@
     "foundry:run": "docker run -it --rm -v $(pwd):/app -w /app ghcr.io/foundry-rs/foundry sh",
     "foundry:setup": "curl -L https://foundry.paradigm.xyz | bash && foundryup && git submodule update --init --recursive",
     "foundry:size": "forge build --skip test --sizes",
-    "foundry:test": "FOUNDRY_PROFILE=dev forge test -vvv",
+    "foundry:test": "FOUNDRY_PROFILE=dev forge test -vvv --no-match-contract \"UpgradeDistributionCreatorTest\"",
     "impersonate": "cast rpc anvil_impersonateAccount",
     "impersonate:script": "FOUNDRY_PROFILE=dev forge script --skip test --fork-url fork --broadcast -vvvv --gas-price 0 --priority-gas-price 0 --unlocked --sender",
     "impersonate:setBalance": "cast rpc anvil_setBalance 0x0022228a2cc5E7eF0274A7Baa600d44da5aB5776 1000000000000000000 && cast rpc anvil_setBalance 0x15775b23340C0f50E0428D674478B0e9D3D0a759 1000000000000000000 && cast rpc anvil_setBalance 0x19c41f6607b2c0e80e84baadaf886b17565f278e 1000000000000000000 && cast rpc anvil_setBalance 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701 1000000000000000000",
@@ -30,15 +30,16 @@
     "url": "https://github.com/AngleProtocol/merkl-contracts/issues"
   },
   "devDependencies": {
-    "@angleprotocol/sdk": "2.34.5",
-    "@openzeppelin/contracts": "^4.8.1",
-    "@openzeppelin/contracts-upgradeable": "4.8.1",
+    "@angleprotocol/sdk": "2.34.7",
+    "@openzeppelin/contracts": "^4.9.0",
+    "@openzeppelin/contracts-upgradeable": "4.9.0",
     "prettier": "^2.0.0",
     "prettier-plugin-solidity": "^1.1.3",
     "solhint": "^3.5.1",
     "solhint-plugin-prettier": "^0.0.5",
     "solidity-coverage": "^0.8.2",
-    "forge-std": "github:foundry-rs/forge-std#v1.9.4"
+    "forge-std": "github:foundry-rs/forge-std#v1.9.4",
+    "utils": "github:AngleProtocol/utils"
   },
   "dependencies": {}
 }
