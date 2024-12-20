@@ -39,7 +39,7 @@
     "solhint-plugin-prettier": "^0.0.5",
     "solidity-coverage": "^0.8.2",
     "forge-std": "github:foundry-rs/forge-std#v1.9.4",
-    "utils": "github:AngleProtocol/utils#refactor/utils"
+    "utils": "github:AngleProtocol/utils"
   },
   "dependencies": {}
 }
