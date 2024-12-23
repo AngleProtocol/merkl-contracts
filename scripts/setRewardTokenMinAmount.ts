@@ -24,9 +24,9 @@ async function main() {
   console.log('Setting reward token min amount');
   
   const token = {
-    address: '0xda1F8EA667dc5600F5f654DF44b47F1639a83DD1',
-    decimals: 18,
-    minAmount: '20',
+    address: '0x625E7708f30cA75bfd92586e17077590C60eb4cD',
+    decimals: 6,
+    minAmount: '1',
   }
 
   const res = await (
