@@ -55,6 +55,24 @@ contract Deploy is DistributionCreatorScript {
     }
 }
 
+// Upgrade implementation
+contract SetNewImplementation is DistributionCreatorScript {
+    function run() external {
+        // MODIFY THIS VALUE TO SET YOUR DESIRED DISTRIBUTOR ADDRESS
+        address newImplementation = address(0x4b19d0db3de20f038417474C5CA4D222c50872b7);
+        _run(newImplementation);
+    }
+
+    function _run(address newImplementation) internal broadcast {
+        uint256 chainId = block.chainid;
+        address creatorAddress = readAddress(chainId, "Merkl.DistributionCreator");
+
+        DistributionCreator(creatorAddress).upgradeTo(newImplementation);
+
+        console.log("New implementation set to:", newImplementation);
+    }
+}
+
 // SetNewDistributor script
 contract SetNewDistributor is DistributionCreatorScript {
     function run() external {
@@ -259,14 +277,32 @@ contract SetMessage is DistributionCreatorScript {
 
 // GetMessage script
 contract GetMessage is DistributionCreatorScript {
-    function run() external broadcast {
+    function run() public broadcast {
         uint256 chainId = block.chainid;
         address creatorAddress = readAddress(chainId, "Merkl.DistributionCreator");
 
-        console.log("Creator address:", creatorAddress);
         string memory message = DistributionCreator(creatorAddress).message();
 
-        console.log("Message is:", message);
+        console.log("Message updated to:", message);
+    }
+}
+
+// CampaignList script
+contract GetCampaign is DistributionCreatorScript {
+    function run() public {
+        uint256 chainId = block.chainid;
+        address creatorAddress = readAddress(chainId, "Merkl.DistributionCreator");
+
+        // DistributionCreator(creatorAddress).campaign(
+        //     0x49df7e2ba1acc490050523d98e7e960084d873865698aa2e4ccd52fe5a4b4548
+        // );
+
+        (bytes32 campaignId, , , , , , , ) = DistributionCreator(creatorAddress).campaignList(836);
+
+        bytes
+            memory data = hex"82ad56cb0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000200000000000000000000000008bb4c975ff3c250e0ceea271728547f3802b36fd0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000244912c658000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
+        payable(address(0xcA11bde05977b3631167028862bE2a173976CA11)).call(data);
+        console.logBytes32(campaignId);
     }
 }
 
@@ -347,13 +383,21 @@ contract CreateCampaign is DistributionCreatorScript {
         CampaignParameters memory campaign = CampaignParameters({
             campaignId: bytes32(0),
             creator: address(0),
-            rewardToken: address(0),
-            amount: 0,
-            campaignType: 0,
-            startTimestamp: uint32(block.timestamp),
-            duration: 7 days,
-            campaignData: ""
+            rewardToken: address(0xCe59e272946458dA50C36Ca1E731ED6C5752669F),
+            amount: 50000 ether,
+            startTimestamp: uint32(block.timestamp + 2 * 3600),
+            duration: 2 days,
+            campaignType: 10,
+            campaignData: abi.encode(
+                0x1Fa916C27c7C2c4602124A14C77Dbb40a5FF1BE8,
+                1,
+                4,
+                new address[](0),
+                new address[](0),
+                hex""
+            )
         });
+        console.logBytes(campaign.campaignData);
         _run(campaign);
     }
 
@@ -365,6 +409,7 @@ contract CreateCampaign is DistributionCreatorScript {
         uint256 chainId = block.chainid;
         address creatorAddress = readAddress(chainId, "Merkl.DistributionCreator");
 
+        IERC20(campaign.rewardToken).approve(creatorAddress, campaign.amount);
         bytes32 campaignId = DistributionCreator(creatorAddress).createCampaign(campaign);
 
         console.log("Campaign created with ID:", vm.toString(campaignId));
@@ -450,8 +495,9 @@ contract CreateCampaignTest is DistributionCreatorScript {
         DistributionCreator distributionCreator = DistributionCreator(creatorAddress);
 
         vm.startBroadcast(broadcaster);
+        address broadcasterAddress = vm.addr(broadcaster);
 
-        MockToken(address(rewardToken)).mint(broadcaster, amount);
+        MockToken(address(rewardToken)).mint(broadcasterAddress, amount);
         rewardToken.approve(address(distributionCreator), amount);
 
         uint32 startTimestamp = uint32(block.timestamp + 600);
@@ -459,7 +505,7 @@ contract CreateCampaignTest is DistributionCreatorScript {
         bytes32 campaignId = distributionCreator.createCampaign(
             CampaignParameters({
                 campaignId: bytes32(0),
-                creator: broadcaster,
+                creator: broadcasterAddress,
                 rewardToken: address(rewardToken),
                 amount: amount,
                 campaignType: 1,
@@ -479,7 +525,7 @@ contract CreateCampaignTest is DistributionCreatorScript {
         vm.stopBroadcast();
 
         CampaignParameters memory campaign = distributionCreator.campaign(campaignId);
-        require(campaign.creator == broadcaster, "Invalid creator");
+        require(campaign.creator == broadcasterAddress, "Invalid creator");
         require(campaign.rewardToken == address(rewardToken), "Invalid reward token");
         require(campaign.amount == (amount * (1e9 - distributionCreator.defaultFees())) / 1e9, "Invalid amount");
         require(campaign.campaignType == 1, "Invalid campaign type");

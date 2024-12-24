@@ -2,6 +2,7 @@
 pragma solidity >=0.8.19 <=0.9.0;
 
 import { Script } from "forge-std/Script.sol";
+import { console } from "forge-std/console.sol";
 
 abstract contract BaseScript is Script {
     /// @dev Included to enable compilation of the script without a $MNEMONIC environment variable.
@@ -11,7 +12,7 @@ abstract contract BaseScript is Script {
     bytes32 internal constant ZERO_SALT = bytes32(0);
 
     /// @dev The address of the transaction broadcaster.
-    address internal broadcaster;
+    uint256 internal broadcaster;
 
     /// @dev Used to derive the broadcaster's address if $DEPLOYER_ADDRESS is not defined.
     string internal mnemonic;
@@ -30,11 +31,12 @@ abstract contract BaseScript is Script {
     /// The use case for $DEPLOYER_ADDRESS is to specify the broadcaster key and its address via the command line.
     constructor() {
         address from = vm.envOr({ name: "DEPLOYER_ADDRESS", defaultValue: address(0) });
+        console.log("DEPLOYER_ADDRESS:", from);
         if (from != address(0)) {
-            broadcaster = from;
+            broadcaster = vm.envUint("DEPLOYER_PRIVATE_KEY");
         } else {
             mnemonic = vm.envOr({ name: "MNEMONIC", defaultValue: TEST_MNEMONIC });
-            (broadcaster, ) = deriveRememberKey({ mnemonic: mnemonic, index: 0 });
+            (, broadcaster) = deriveRememberKey({ mnemonic: mnemonic, index: 0 });
         }
     }
 

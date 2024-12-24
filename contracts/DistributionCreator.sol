@@ -321,19 +321,20 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
             revert Errors.InvalidOverride();
 
         uint256 fromsLength = froms.length;
-        address[] memory successfullFrom = new address[](fromsLength);
+        address[] memory tmpSuccessfullFrom = new address[](fromsLength);
         uint256 count = 0;
         for (uint256 i; i < fromsLength; i++) {
             (uint208 amount, uint48 timestamp, ) = Distributor(distributor).claimed(froms[i], _campaign.rewardToken);
             if (amount == 0 && timestamp == 0) {
-                successfullFrom[count] = froms[i];
+                tmpSuccessfullFrom[count] = froms[i];
                 campaignReallocation[_campaignId][froms[i]] = to;
                 campaignListReallocation[_campaignId].push(froms[i]);
                 count++;
             }
         }
-        assembly {
-            mstore(successfullFrom, count)
+        address[] memory successfullFrom = new address[](count);
+        for (uint256 i; i < count; i++) {
+            successfullFrom[i] = tmpSuccessfullFrom[i];
         }
 
         if (count == 0) revert Errors.InvalidOverride();
