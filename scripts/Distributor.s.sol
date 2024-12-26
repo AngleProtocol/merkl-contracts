@@ -11,7 +11,9 @@ import { Distributor, MerkleTree } from "../contracts/Distributor.sol";
 import { IAccessControlManager } from "../contracts/interfaces/IAccessControlManager.sol";
 
 // Base contract with shared utilities
-contract DistributorScript is BaseScript, JsonReader {}
+contract DistributorScript is BaseScript, JsonReader {
+    address broadcasterAddress = vm.addr(broadcaster);
+}
 
 // Deploy script
 contract Deploy is DistributorScript {
@@ -81,7 +83,7 @@ contract DisputeTree is DistributorScript {
         uint256 disputeAmount = Distributor(distributorAddress).disputeAmount();
 
         // Check current allowance
-        uint256 currentAllowance = disputeToken.allowance(broadcaster, distributorAddress);
+        uint256 currentAllowance = disputeToken.allowance(broadcasterAddress, distributorAddress);
         if (currentAllowance < disputeAmount) {
             disputeToken.approve(distributorAddress, disputeAmount);
         }

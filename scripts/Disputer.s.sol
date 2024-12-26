@@ -11,6 +11,7 @@ import { Distributor } from "../contracts/Distributor.sol";
 
 // Base contract with shared constants and utilities
 contract DisputerScript is BaseScript, JsonReader {
+    address broadcasterAddress = vm.addr(broadcaster);
     address[] public DISPUTER_WHITELIST = [
         0xeA05F9001FbDeA6d4280879f283Ff9D0b282060e,
         0x0dd2Ea40A3561C309C03B96108e78d06E8A1a99B,
@@ -22,7 +23,7 @@ contract DisputerScript is BaseScript, JsonReader {
 contract Deploy is DisputerScript {
     function run() external broadcast {
         uint256 chainId = block.chainid;
-        console.log("DEPLOYER_ADDRESS:", broadcaster);
+        console.log("DEPLOYER_ADDRESS:", broadcasterAddress);
 
         // Read configuration from JSON
         address angleLabs = readAddress(chainId, "AngleLabs");
@@ -30,7 +31,7 @@ contract Deploy is DisputerScript {
 
         address disputer = address(
             new Disputer{ salt: vm.envBytes32("DEPLOY_SALT") }(
-                broadcaster,
+                broadcasterAddress,
                 DISPUTER_WHITELIST,
                 Distributor(distributor)
             )

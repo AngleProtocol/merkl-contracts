@@ -9,7 +9,9 @@ import { BaseScript } from "./utils/Base.s.sol";
 import { MockToken } from "../contracts/mock/MockToken.sol";
 
 // Base contract with shared utilities
-contract MockTokenScript is BaseScript, JsonReader {}
+contract MockTokenScript is BaseScript, JsonReader {
+    address broadcasterAddress = vm.addr(broadcaster);
+}
 
 // Deploy script
 contract Deploy is MockTokenScript {
@@ -36,7 +38,7 @@ contract Deploy is MockTokenScript {
         console.log("Decimals:", decimals);
 
         // Mint initial supply to deployer
-        token.mint(broadcaster, 1_000_000_000_000_000_000_000_000_000);
+        token.mint(broadcasterAddress, 1_000_000_000_000_000_000_000_000_000);
         console.log("Initial supply minted to deployer");
     }
 }
