@@ -37,6 +37,7 @@ contract MainDeployScript is Script, JsonReader, TokensUtils, CreateXConstants {
     // Constants and storage
     address public KEEPER = 0x435046800Fb9149eE65159721A92cB7d50a7534b;
     address public DUMPER = 0xeaC6A75e19beB1283352d24c0311De865a867DAB;
+    address public TEMP_GOVERNOR = 0xb08AB4332AD871F89da24df4751968A61e58013c;
     address public GUARDIAN_ADDRESS = 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701; // also deployer v2
     address public EXPECTED_MERKL_DEPLOYER_ADDRESS = 0x9f76a95AA7535bb0893cf88A146396e00ed21A12;
 
@@ -70,7 +71,7 @@ contract MainDeployScript is Script, JsonReader, TokensUtils, CreateXConstants {
         try this.readAddress(block.chainid, "AngleLabs") returns (address _angleLabs) {
             ANGLE_LABS = _angleLabs;
         } catch {
-            ANGLE_LABS = GUARDIAN_ADDRESS;
+            ANGLE_LABS = TEMP_GOVERNOR;
         }
 
         _run(ANGLE_LABS, DISPUTE_TOKEN);
@@ -96,7 +97,7 @@ contract MainDeployScript is Script, JsonReader, TokensUtils, CreateXConstants {
             try this.readAddress(block.chainid, "AngleLabs") returns (address _angleLabs) {
                 ANGLE_LABS = _angleLabs;
             } catch {
-                ANGLE_LABS = GUARDIAN_ADDRESS;
+                ANGLE_LABS = TEMP_GOVERNOR;
             }
         }
 
