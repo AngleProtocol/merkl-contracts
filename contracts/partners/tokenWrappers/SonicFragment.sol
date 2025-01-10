@@ -15,20 +15,24 @@ contract SonicFragment is ERC2O {
     using SafeERC20 for IERC20;
 
     /// @notice `AccessControlManager` contract handling access control
-    IAccessControlManager public accessControlManager;
+    IAccessControlManager public immutable accessControlManager;
+    address public immutable sToken;
+
     uint256 public exchangeRate;
-    address public sToken;
     uint8 public contractSettled;
 
     constructor(
         address _accessControlManager,
         address recipient,
+        address _sToken,
         uint256 _totalSupply,
         string memory _name,
         string memory _symbol
     ) ERC20(_name, _symbol) {
         // Zero address check
+        if (_sToken == address(0)) revert ZeroAddress();
         IAccessControlManager(_accessControlManager).isGovernor(msg.sender);
+        sToken = _sToken;
         accessControlManager = IAccessControlManager(_accessControlManager);
         _mint(recipient, _totalSupply);
     }
@@ -48,12 +52,6 @@ contract SonicFragment is ERC2O {
         contractSettled = 1;
         uint256 _totalSupply = totalSupply();
         exchangeRate = (sTokenAmount * 1 ether) / _totalSupply;
-    }
-
-    /// @notice Sets the S address
-    /// @dev Cannot be set once redemption is activated
-    function setSTokenAddress(address sTokenAddress) external onlyGovernor {
-        if (contractSettled == 0) sToken = sTokenAddress;
     }
 
     /// @notice Recovers leftover tokens after sometime
