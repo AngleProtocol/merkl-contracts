@@ -36,13 +36,13 @@ contract SonicFragment is ERC2O {
     // ================================= MODIFIERS =================================
 
     /// @notice Checks whether the `msg.sender` has the governor role or the guardian role
-    modifier isGovernor() {
+    modifier onlyGovernor() {
         if (!accessControlManager.isGovernor(msg.sender)) revert Errors.NotAllowed();
         _;
     }
 
     /// @notice Activates the contract settlement and enables redemption of fragments into S
-    function settleContract(uint256 sTokenAmount) external isGovernor {
+    function settleContract(uint256 sTokenAmount) external onlyGovernor {
         if (contractSettled > 0) revert Errors.NotAllowed();
         IERC20(sToken).safeTransferFrom(msg.sender, address(this), sTokenAmount);
         contractSettled = 1;
@@ -52,8 +52,14 @@ contract SonicFragment is ERC2O {
 
     /// @notice Sets the S address
     /// @dev Cannot be set once redemption is activated
-    function setSTokenAddress(address sTokenAddress) external isGovernor {
+    function setSTokenAddress(address sTokenAddress) external onlyGovernor {
         if (contractSettled == 0) sToken = sTokenAddress;
+    }
+
+    /// @notice Recovers leftover tokens after sometime
+    function recover(uint256 amount, address recipient) external onlyGovernor {
+        IERC20(sToken).safeTransfer(recipient, amount);
+        exchangeRate = 0;
     }
 
     /// @notice Redeems fragments against S
@@ -61,11 +67,5 @@ contract SonicFragment is ERC2O {
         _burn(msg.sender, amount);
         uint256 amountToSend = (amount * exchangeRate) / 1 ether;
         IERC20(sToken).safeTransfer(recipient, amount);
-    }
-
-    /// @notice Recovers leftover tokens after sometime
-    function recover(uint256 amount, address recipient) external onlyGovernor {
-        IERC20(sToken).safeTransfer(recipient, amount);
-        exchangeRate = 0;
     }
 }
