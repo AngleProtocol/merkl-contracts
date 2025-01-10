@@ -30,7 +30,7 @@ contract SonicFragment is ERC2O {
         string memory _symbol
     ) ERC20(_name, _symbol) {
         // Zero address check
-        if (_sToken == address(0)) revert ZeroAddress();
+        if (_sToken == address(0)) revert Errors.ZeroAddress();
         IAccessControlManager(_accessControlManager).isGovernor(msg.sender);
         sToken = _sToken;
         accessControlManager = IAccessControlManager(_accessControlManager);
@@ -50,8 +50,7 @@ contract SonicFragment is ERC2O {
         if (contractSettled > 0) revert Errors.NotAllowed();
         IERC20(sToken).safeTransferFrom(msg.sender, address(this), sTokenAmount);
         contractSettled = 1;
-        uint256 _totalSupply = totalSupply();
-        exchangeRate = (sTokenAmount * 1 ether) / _totalSupply;
+        exchangeRate = (sTokenAmount * 1 ether) / totalSupply();
     }
 
     /// @notice Recovers leftover tokens after sometime
