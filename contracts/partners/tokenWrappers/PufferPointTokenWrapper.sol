@@ -6,7 +6,7 @@ import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.s
 import { ERC20Upgradeable } from "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 import { IERC20, IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 
-import { BaseMerklTokenWrapper, IAccessControlManager } from "./BaseTokenWrapper.sol";
+import { IAccessControlManager } from "./BaseTokenWrapper.sol";
 
 import "../../utils/UUPSHelper.sol";
 import "../../utils/Errors.sol";
@@ -53,6 +53,9 @@ contract PufferPointTokenWrapper is UUPSHelper, ERC20Upgradeable {
     mapping(address => VestingData) public vestingData;
 
     event Recovered(address indexed token, address indexed to, uint256 amount);
+    event MerklAddressesUpdated(address indexed _distributionCreator, address indexed _distributor);
+    event CliffDurationUpdated(uint32 _newCliffDuration);
+    event FeeRecipientUpdated(address indexed _feeRecipient);
 
     // ================================= FUNCTIONS =================================
 
@@ -71,6 +74,7 @@ contract PufferPointTokenWrapper is UUPSHelper, ERC20Upgradeable {
         underlying = _underlying;
         core = _core;
         cliffDuration = _cliffDuration;
+        distributionCreator = _distributionCreator;
         distributor = IDistributionCreator(_distributionCreator).distributor();
         feeRecipient = IDistributionCreator(_distributionCreator).feeRecipient();
     }
@@ -179,16 +183,26 @@ contract PufferPointTokenWrapper is UUPSHelper, ERC20Upgradeable {
     }
 
     function setDistributor(address _distributionCreator) external onlyGovernor {
-        distributor = IDistributionCreator(_distributionCreator).distributor();
+        address _distributor = IDistributionCreator(_distributionCreator).distributor();
+        distributor = _distributor;
         distributionCreator = _distributionCreator;
+        emit MerklAddressesUpdated(_distributionCreator, _distributor);
+        _setFeeRecipient();
     }
 
     function setCliffDuration(uint32 _newCliffDuration) external onlyGuardian {
         if (_newCliffDuration < cliffDuration && _newCliffDuration != 0) revert InvalidParam();
         cliffDuration = _newCliffDuration;
+        emit CliffDurationUpdated(_newCliffDuration);
     }
 
     function setFeeRecipient() external {
-        feeRecipient = IDistributionCreator(distributionCreator).feeRecipient();
+        _setFeeRecipient();
+    }
+
+    function _setFeeRecipient() internal {
+        address _feeRecipient = IDistributionCreator(distributionCreator).feeRecipient();
+        feeRecipient = _feeRecipient;
+        emit FeeRecipientUpdated(_feeRecipient);
     }
 }
