@@ -10,15 +10,23 @@ import { IAccessControlManager } from "../../interfaces/IAccessControlManager.so
 import { Errors } from "../../utils/Errors.sol";
 
 /// @title SonicFragment
+/// @notice Contract for Sonic fragments which can be converted upon activation into S tokens
 /// @author Angle Labs, Inc.
-contract SonicFragment is ERC2O {
+contract SonicFragment is ERC20 {
     using SafeERC20 for IERC20;
 
-    /// @notice `AccessControlManager` contract handling access control
+    /// @notice Contract handling access control
     IAccessControlManager public immutable accessControlManager;
+    /// @notice Address for the S token
     address public immutable sToken;
 
-    uint256 public exchangeRate;
+    /// @notice Amount of S tokens sent on the contract at the activation of redemption
+    /// @dev Used to compute the exchange rate between fragments and S tokens
+    uint128 public sTokenAmount;
+    /// @notice Total supply of the contract
+    /// @dev Needs to be stored to compute the exchange rate between fragments and sTokens
+    uint120 public supply;
+    /// @notice Whether redemption for S tokens has been activated or not
     uint8 public contractSettled;
 
     constructor(
@@ -34,35 +42,39 @@ contract SonicFragment is ERC2O {
         IAccessControlManager(_accessControlManager).isGovernor(msg.sender);
         sToken = _sToken;
         accessControlManager = IAccessControlManager(_accessControlManager);
+        supply = uint120(_totalSupply);
         _mint(recipient, _totalSupply);
     }
 
     // ================================= MODIFIERS =================================
 
-    /// @notice Checks whether the `msg.sender` has the governor role or the guardian role
+    /// @notice Checks whether the `msg.sender` has the governor role
     modifier onlyGovernor() {
         if (!accessControlManager.isGovernor(msg.sender)) revert Errors.NotAllowed();
         _;
     }
 
     /// @notice Activates the contract settlement and enables redemption of fragments into S
-    function settleContract(uint256 sTokenAmount) external onlyGovernor {
+    /// @dev Can only be called once
+    function settleContract(uint256 _sTokenAmount) external onlyGovernor {
         if (contractSettled > 0) revert Errors.NotAllowed();
-        IERC20(sToken).safeTransferFrom(msg.sender, address(this), sTokenAmount);
         contractSettled = 1;
-        exchangeRate = (sTokenAmount * 1 ether) / totalSupply();
+        IERC20(sToken).safeTransferFrom(msg.sender, address(this), sTokenAmount);
+        sTokenAmount = uint128(_sTokenAmount);
     }
 
     /// @notice Recovers leftover tokens after sometime
     function recover(uint256 amount, address recipient) external onlyGovernor {
         IERC20(sToken).safeTransfer(recipient, amount);
-        exchangeRate = 0;
+        sTokenAmount = 0;
     }
 
-    /// @notice Redeems fragments against S
-    function redeem(uint256 amount, address recipient) external {
+    /// @notice Redeems fragments against S based on a predefined exchange rate
+    function redeem(uint256 amount, address recipient) external returns (uint256 amountToSend) {
+        uint128 _sTokenAmount = sTokenAmount;
+        if (_sTokenAmount == 0) revert Errors.NotAllowed();
         _burn(msg.sender, amount);
-        uint256 amountToSend = (amount * exchangeRate) / 1 ether;
-        IERC20(sToken).safeTransfer(recipient, amount);
+        amountToSend = (amount * _sTokenAmount) / supply;
+        IERC20(sToken).safeTransfer(recipient, amountToSend);
     }
 }
