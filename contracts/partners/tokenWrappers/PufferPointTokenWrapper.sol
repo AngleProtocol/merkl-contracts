@@ -122,7 +122,11 @@ contract PufferPointTokenWrapper is UUPSHelper, ERC20Upgradeable {
     }
 
     function claim(address user) external returns (uint256) {
-        (uint256 claimed, uint256 nextClaimIndex) = _claimable(user);
+        return claim(user, type(uint256).max);
+    }
+
+    function claim(address user, uint256 maxClaimIndex) public returns (uint256) {
+        (uint256 claimed, uint256 nextClaimIndex) = _claimable(user, maxClaimIndex);
         if (claimed > 0) {
             vestingData[user].nextClaimIndex = nextClaimIndex;
             IERC20(token()).safeTransfer(user, claimed);
@@ -131,7 +135,11 @@ contract PufferPointTokenWrapper is UUPSHelper, ERC20Upgradeable {
     }
 
     function claimable(address user) external view returns (uint256 amountClaimable) {
-        (amountClaimable, ) = _claimable(user);
+        return claimable(user, type(uint256).max);
+    }
+
+    function claimable(address user, uint256 maxClaimIndex) public view returns (uint256 amountClaimable) {
+        (amountClaimable, ) = _claimable(user, maxClaimIndex);
     }
 
     function getUserVestings(
@@ -142,12 +150,15 @@ contract PufferPointTokenWrapper is UUPSHelper, ERC20Upgradeable {
         nextClaimIndex = userVestingData.nextClaimIndex;
     }
 
-    function _claimable(address user) internal view returns (uint256 amountClaimable, uint256 nextClaimIndex) {
+    function _claimable(
+        address user,
+        uint256 maxClaimIndex
+    ) internal view returns (uint256 amountClaimable, uint256 nextClaimIndex) {
         VestingData storage userVestingData = vestingData[user];
         VestingID[] storage userAllVestings = userVestingData.allVestings;
         uint256 i = userVestingData.nextClaimIndex;
         uint256 length = userAllVestings.length;
-        while (i < length) {
+        while (i < length && i <= maxClaimIndex) {
             VestingID storage userCurrentVesting = userAllVestings[i];
             if (block.timestamp > userCurrentVesting.unlockTimestamp) {
                 amountClaimable += userCurrentVesting.amount;
