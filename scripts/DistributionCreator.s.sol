@@ -523,7 +523,7 @@ contract SignAndCreateCampaign is DistributionCreatorScript {
 }
 
 contract UpgradeAndBuildUpgradeToPayload is DistributionCreatorScript {
-    function run() external {
+    function run() external broadcast {
         uint256 chainId = block.chainid;
         address distributionCreator = readAddress(chainId, "Merkl.DistributionCreator");
 
@@ -534,7 +534,7 @@ contract UpgradeAndBuildUpgradeToPayload is DistributionCreatorScript {
             distributionCreatorImpl
         );
 
-        try this.externalReadAddress(chainId, "Merkl.AngleLabs") returns (address safe) {
+        try this.externalReadAddress(chainId, "AngleLabs") returns (address safe) {
             _serializeJson(
                 chainId,
                 distributionCreator, // target address (the proxy)
