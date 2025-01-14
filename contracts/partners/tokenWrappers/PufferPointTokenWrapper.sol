@@ -6,10 +6,10 @@ import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.s
 import { ERC20Upgradeable } from "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 import { IERC20, IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 
-import { IAccessControlManager } from "../../interfaces/IAccessControlManager.sol";
+import { IAccessControlManager } from "./BaseTokenWrapper.sol";
 
-import { UUPSHelper } from "../../utils/UUPSHelper.sol";
-import { Errors } from "../../utils/Errors.sol";
+import "../../utils/UUPSHelper.sol";
+import "../../utils/Errors.sol";
 
 struct VestingID {
     uint128 amount;
@@ -38,8 +38,8 @@ contract PufferPointTokenWrapper is UUPSHelper, ERC20Upgradeable {
     /*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                                                        VARIABLES                                                    
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
-    /// @notice `AccessControlManager` contract handling access control
-    IAccessControlManager public accessControlManager;
+    /// @notice `Core` contract handling access control
+    IAccessControlManager public core;
     /// @notice Merkl main functions
     address public distributor;
     address public feeRecipient;
@@ -53,13 +53,16 @@ contract PufferPointTokenWrapper is UUPSHelper, ERC20Upgradeable {
     mapping(address => VestingData) public vestingData;
 
     event Recovered(address indexed token, address indexed to, uint256 amount);
+    event MerklAddressesUpdated(address indexed _distributionCreator, address indexed _distributor);
+    event CliffDurationUpdated(uint32 _newCliffDuration);
+    event FeeRecipientUpdated(address indexed _feeRecipient);
 
     // ================================= FUNCTIONS =================================
 
     function initialize(
         address _underlying,
         uint32 _cliffDuration,
-        IAccessControlManager _accessControlManager,
+        IAccessControlManager _core,
         address _distributionCreator
     ) public initializer {
         __ERC20_init(
@@ -67,10 +70,11 @@ contract PufferPointTokenWrapper is UUPSHelper, ERC20Upgradeable {
             string.concat("mtw", IERC20Metadata(_underlying).symbol())
         );
         __UUPSUpgradeable_init();
-        if (address(_accessControlManager) == address(0)) revert Errors.ZeroAddress();
+        if (address(_core) == address(0)) revert Errors.ZeroAddress();
         underlying = _underlying;
-        accessControlManager = _accessControlManager;
+        core = _core;
         cliffDuration = _cliffDuration;
+        distributionCreator = _distributionCreator;
         distributor = IDistributionCreator(_distributionCreator).distributor();
         feeRecipient = IDistributionCreator(_distributionCreator).feeRecipient();
     }
@@ -105,15 +109,24 @@ contract PufferPointTokenWrapper is UUPSHelper, ERC20Upgradeable {
         if (from == distributor) {
             _burn(to, amount);
 
-            // Creates a vesting for the `to` address
-            VestingData storage userVestingData = vestingData[to];
-            VestingID[] storage userAllVestings = userVestingData.allVestings;
-            userAllVestings.push(VestingID(uint128(amount), uint128(block.timestamp + cliffDuration)));
+            uint128 endTimestamp = uint128(block.timestamp + cliffDuration);
+            if (endTimestamp > block.timestamp) {
+                // Creates a vesting for the `to` address
+                VestingData storage userVestingData = vestingData[to];
+                VestingID[] storage userAllVestings = userVestingData.allVestings;
+                userAllVestings.push(VestingID(uint128(amount), uint128(block.timestamp + cliffDuration)));
+            } else {
+                IERC20(token()).safeTransfer(to, amount);
+            }
         }
     }
 
     function claim(address user) external returns (uint256) {
-        (uint256 claimed, uint256 nextClaimIndex) = _claimable(user);
+        return claim(user, type(uint256).max);
+    }
+
+    function claim(address user, uint256 maxClaimIndex) public returns (uint256) {
+        (uint256 claimed, uint256 nextClaimIndex) = _claimable(user, maxClaimIndex);
         if (claimed > 0) {
             vestingData[user].nextClaimIndex = nextClaimIndex;
             IERC20(token()).safeTransfer(user, claimed);
@@ -122,7 +135,11 @@ contract PufferPointTokenWrapper is UUPSHelper, ERC20Upgradeable {
     }
 
     function claimable(address user) external view returns (uint256 amountClaimable) {
-        (amountClaimable, ) = _claimable(user);
+        return claimable(user, type(uint256).max);
+    }
+
+    function claimable(address user, uint256 maxClaimIndex) public view returns (uint256 amountClaimable) {
+        (amountClaimable, ) = _claimable(user, maxClaimIndex);
     }
 
     function getUserVestings(
@@ -133,12 +150,15 @@ contract PufferPointTokenWrapper is UUPSHelper, ERC20Upgradeable {
         nextClaimIndex = userVestingData.nextClaimIndex;
     }
 
-    function _claimable(address user) internal view returns (uint256 amountClaimable, uint256 nextClaimIndex) {
+    function _claimable(
+        address user,
+        uint256 maxClaimIndex
+    ) internal view returns (uint256 amountClaimable, uint256 nextClaimIndex) {
         VestingData storage userVestingData = vestingData[user];
         VestingID[] storage userAllVestings = userVestingData.allVestings;
         uint256 i = userVestingData.nextClaimIndex;
         uint256 length = userAllVestings.length;
-        while (i < length) {
+        while (i < length && i <= maxClaimIndex) {
             VestingID storage userCurrentVesting = userAllVestings[i];
             if (block.timestamp > userCurrentVesting.unlockTimestamp) {
                 amountClaimable += userCurrentVesting.amount;
@@ -153,12 +173,18 @@ contract PufferPointTokenWrapper is UUPSHelper, ERC20Upgradeable {
 
     /// @notice Checks whether the `msg.sender` has the governor role or the guardian role
     modifier onlyGovernor() {
-        if (!accessControlManager.isGovernor(msg.sender)) revert Errors.NotGovernor();
+        if (!core.isGovernor(msg.sender)) revert Errors.NotGovernor();
         _;
     }
 
-    /// @inheritdoc UUPSHelper
-    function _authorizeUpgrade(address) internal view override onlyGovernorUpgrader(accessControlManager) {}
+    /// @notice Checks whether the `msg.sender` has the governor role or the guardian role
+    modifier onlyGuardian() {
+        if (!core.isGovernorOrGuardian(msg.sender)) revert Errors.NotGovernorOrGuardian();
+        _;
+    }
+
+    /// @inheritdoc UUPSUpgradeable
+    function _authorizeUpgrade(address) internal view override onlyGovernorUpgrader(core) {}
 
     /// @notice Recovers any ERC20 token
     /// @dev Governance only, to trigger only if something went wrong
@@ -168,11 +194,26 @@ contract PufferPointTokenWrapper is UUPSHelper, ERC20Upgradeable {
     }
 
     function setDistributor(address _distributionCreator) external onlyGovernor {
-        distributor = IDistributionCreator(_distributionCreator).distributor();
+        address _distributor = IDistributionCreator(_distributionCreator).distributor();
+        distributor = _distributor;
         distributionCreator = _distributionCreator;
+        emit MerklAddressesUpdated(_distributionCreator, _distributor);
+        _setFeeRecipient();
+    }
+
+    function setCliffDuration(uint32 _newCliffDuration) external onlyGuardian {
+        if (_newCliffDuration < cliffDuration && _newCliffDuration != 0) revert Errors.InvalidParam();
+        cliffDuration = _newCliffDuration;
+        emit CliffDurationUpdated(_newCliffDuration);
     }
 
     function setFeeRecipient() external {
-        feeRecipient = IDistributionCreator(distributionCreator).feeRecipient();
+        _setFeeRecipient();
+    }
+
+    function _setFeeRecipient() internal {
+        address _feeRecipient = IDistributionCreator(distributionCreator).feeRecipient();
+        feeRecipient = _feeRecipient;
+        emit FeeRecipientUpdated(_feeRecipient);
     }
 }
