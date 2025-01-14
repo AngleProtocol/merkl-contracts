@@ -38,8 +38,8 @@ contract PufferPointTokenWrapper is UUPSHelper, ERC20Upgradeable {
     /*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                                                        VARIABLES                                                    
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
-    /// @notice `Core` contract handling access control
-    IAccessControlManager public core;
+    /// @notice `accessControlManager` contract handling access control
+    IAccessControlManager public accessControlManager;
     /// @notice Merkl main functions
     address public distributor;
     address public feeRecipient;
@@ -72,7 +72,7 @@ contract PufferPointTokenWrapper is UUPSHelper, ERC20Upgradeable {
         __UUPSUpgradeable_init();
         if (address(_accessControlManager) == address(0)) revert Errors.ZeroAddress();
         underlying = _underlying;
-        core = _accessControlManager;
+        accessControlManager = _accessControlManager;
         cliffDuration = _cliffDuration;
         distributionCreator = _distributionCreator;
         distributor = IDistributionCreator(_distributionCreator).distributor();
@@ -173,18 +173,18 @@ contract PufferPointTokenWrapper is UUPSHelper, ERC20Upgradeable {
 
     /// @notice Checks whether the `msg.sender` has the governor role or the guardian role
     modifier onlyGovernor() {
-        if (!core.isGovernor(msg.sender)) revert Errors.NotGovernor();
+        if (!accessControlManager.isGovernor(msg.sender)) revert Errors.NotGovernor();
         _;
     }
 
     /// @notice Checks whether the `msg.sender` has the governor role or the guardian role
     modifier onlyGuardian() {
-        if (!core.isGovernorOrGuardian(msg.sender)) revert Errors.NotGovernorOrGuardian();
+        if (!accessControlManager.isGovernorOrGuardian(msg.sender)) revert Errors.NotGovernorOrGuardian();
         _;
     }
 
     /// @inheritdoc UUPSUpgradeable
-    function _authorizeUpgrade(address) internal view override onlyGovernorUpgrader(core) {}
+    function _authorizeUpgrade(address) internal view override onlyGovernorUpgrader(accessControlManager) {}
 
     /// @notice Recovers any ERC20 token
     /// @dev Governance only, to trigger only if something went wrong

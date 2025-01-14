@@ -18,11 +18,23 @@ import { IAccessControlManager } from "../contracts/interfaces/IAccessControlMan
 import { MockToken } from "../contracts/mock/MockToken.sol";
 
 contract DeployPufferPointTokenWrapper is BaseScript {
-    function run() public broadcast {
-        console.log("DEPLOYER_ADDRESS:", broadcaster);
+    function run() public {
+        uint256 deployerPrivateKey = vm.envUint("DEPLOYER_PRIVATE_KEY");
+        vm.startBroadcast(deployerPrivateKey);
+        /*
         address underlying = 0x282A69142bac47855C3fbE1693FcC4bA3B4d5Ed6;
-        uint32 cliffDuration = 1 weeks;
+        uint32 cliffDuration = 500;
+        // uint32 cliffDuration = 1 weeks;
         IAccessControlManager manager = IAccessControlManager(0x0E632a15EbCBa463151B5367B4fCF91313e389a6);
+        address distributionCreator = 0x8BB4C975Ff3c250e0ceEA271728547f3802B36Fd;
+        */
+
+        // ARBITRUM TEST
+        // aglaMerkl
+        address underlying = 0xE0688A2FE90d0f93F17f273235031062a210d691;
+        uint32 cliffDuration = 500;
+        // uint32 cliffDuration = 1 weeks;
+        IAccessControlManager manager = IAccessControlManager(0xA86CC1ae2D94C6ED2aB3bF68fB128c2825673267);
         address distributionCreator = 0x8BB4C975Ff3c250e0ceEA271728547f3802B36Fd;
 
         // Deploy implementation
@@ -35,5 +47,6 @@ contract DeployPufferPointTokenWrapper is BaseScript {
 
         // Initialize
         PufferPointTokenWrapper(address(proxy)).initialize(underlying, cliffDuration, manager, distributionCreator);
+        vm.stopBroadcast();
     }
 }
