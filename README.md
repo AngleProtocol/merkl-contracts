@@ -122,6 +122,8 @@ function run() external broadcast {
 
 The Merkl smart contracts have been audited by Code4rena, find the audit report [here](https://code4rena.com/reports/2023-06-angle).
 
+## Access Control
+
 ## Media
 
 Don't hesitate to reach out on [Twitter](https://x.com/merkl_xyz) 🐦
