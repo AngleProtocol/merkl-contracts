@@ -124,6 +124,8 @@ The Merkl smart contracts have been audited by Code4rena, find the audit report 
 
 ## Access Control
 
+![Access Control Schema](docs/access_control.svg)
+
 ## Media
 
 Don't hesitate to reach out on [Twitter](https://x.com/merkl_xyz) 🐦
