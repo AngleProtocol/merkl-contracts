@@ -62,7 +62,7 @@ contract PufferPointTokenWrapper is UUPSHelper, ERC20Upgradeable {
     function initialize(
         address _underlying,
         uint32 _cliffDuration,
-        IAccessControlManager _core,
+        IAccessControlManager _accessControlManager,
         address _distributionCreator
     ) public initializer {
         __ERC20_init(
@@ -70,9 +70,9 @@ contract PufferPointTokenWrapper is UUPSHelper, ERC20Upgradeable {
             string.concat("mtw", IERC20Metadata(_underlying).symbol())
         );
         __UUPSUpgradeable_init();
-        if (address(_core) == address(0)) revert Errors.ZeroAddress();
+        if (address(_accessControlManager) == address(0)) revert Errors.ZeroAddress();
         underlying = _underlying;
-        core = _core;
+        core = _accessControlManager;
         cliffDuration = _cliffDuration;
         distributionCreator = _distributionCreator;
         distributor = IDistributionCreator(_distributionCreator).distributor();
