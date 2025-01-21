@@ -8,8 +8,8 @@ import { IERC20, IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/exte
 
 import { IAccessControlManager } from "./BaseTokenWrapper.sol";
 
-import "../../utils/UUPSHelper.sol";
-import "../../utils/Errors.sol";
+import { UUPSHelper } from "../../utils/UUPSHelper.sol";
+import { Errors } from "../../utils/Errors.sol";
 
 struct VestingID {
     uint128 amount;
@@ -183,7 +183,6 @@ contract PufferPointTokenWrapper is UUPSHelper, ERC20Upgradeable {
         _;
     }
 
-    /// @inheritdoc UUPSUpgradeable
     function _authorizeUpgrade(address) internal view override onlyGovernorUpgrader(accessControlManager) {}
 
     /// @notice Recovers any ERC20 token
