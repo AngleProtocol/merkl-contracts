@@ -17,6 +17,7 @@ import { DistributionCreator } from "../contracts/DistributionCreator.sol";
 import { IAccessControlManager } from "../contracts/interfaces/IAccessControlManager.sol";
 import { MockToken } from "../contracts/mock/MockToken.sol";
 
+// forge script scripts/deploySonicFragment.s.sol:DeploySonicFragment --rpc-url sonic --sender 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701 --verify -vvvv --broadcast -i 1
 contract DeploySonicFragment is BaseScript {
     function run() public broadcast {
         console.log("DEPLOYER_ADDRESS:", broadcaster);
