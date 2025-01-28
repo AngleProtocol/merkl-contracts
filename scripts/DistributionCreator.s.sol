@@ -55,6 +55,17 @@ contract Deploy is DistributionCreatorScript {
     }
 }
 
+contract DeployImplementation is DistributionCreatorScript {
+    function run() external broadcast {
+        uint256 chainId = block.chainid;
+        console.log("DEPLOYER_ADDRESS:", broadcaster);
+
+        // Deploy implementation
+        DistributionCreator implementation = new DistributionCreator();
+        console.log("DistributionCreator Implementation:", address(implementation));
+    }
+}
+
 // SetNewDistributor script
 contract SetNewDistributor is DistributionCreatorScript {
     function run() external {
