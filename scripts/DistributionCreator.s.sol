@@ -5,6 +5,7 @@ import { console } from "forge-std/console.sol";
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import { ITransparentUpgradeableProxy } from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import { IERC20Metadata } from "@openzeppelin/contracts/interfaces/IERC20Metadata.sol";
 import { JsonReader } from "@utils/JsonReader.sol";
 import { ContractType } from "@utils/Constants.sol";
 
@@ -359,15 +360,50 @@ contract Sign is DistributionCreatorScript {
 contract CreateCampaign is DistributionCreatorScript {
     function run() external broadcast {
         // MODIFY THESE VALUES TO SET YOUR DESIRED CAMPAIGN PARAMETERS
+        // address targetToken = address(0xEe9BFf933aDD313C4289E98dA80fEfbF9d5Cd9Ba);
+        // uint32 campaignType = 22;
+        // uint32 subCampaignType = 0;
+        // uint256 tokenId = 0;
+        // address[] memory whitelist = new address[](0);
+        // address[] memory blacklist = new address[](0);
+        // string memory url = "https://app.hyperdrive.box/market/100/0xEe9BFf933aDD313C4289E98dA80fEfbF9d5Cd9Ba";
+        // bytes[] memory hooks = new bytes[](0);
+        // string memory apr = "1";
+        // bool targetTokenPricing = true;
+        // bool rewardTokenPricing = false;
+        // bytes memory campaignData = abi.encode(
+        //     targetToken,
+        //     subCampaignType,
+        //     tokenId,
+        //     whitelist,
+        //     blacklist,
+        //     url,
+        //     hooks,
+        //     apr,
+        //     targetTokenPricing,
+        //     rewardTokenPricing
+        // );
+        // //
+
+        address targetToken = address(0x004626A008B1aCdC4c74ab51644093b155e59A23);
+        uint32 campaignType = 1;
+        address[] memory whitelist = new address[](0);
+        address[] memory blacklist = new address[](0);
+        string memory url = "";
+        bytes[] memory forwarders = new bytes[](0);
+        bytes[] memory hooks = new bytes[](0);
+        bytes memory campaignData = abi.encode(targetToken, whitelist, blacklist, url, forwarders, hooks, hex"");
+        // END
+
         CampaignParameters memory campaign = CampaignParameters({
             campaignId: bytes32(0),
             creator: address(0),
-            rewardToken: address(0x999BAcD74539e19e3371E51839707b59A682B258),
-            amount: 10000000000,
-            campaignType: 19,
-            startTimestamp: uint32(block.timestamp) - 2 days,
+            rewardToken: address(0x65A1DfB54CDec9011688b1818A27A8C687e6B1ed),
+            amount: 1e4 * 1e8,
+            campaignType: campaignType,
+            startTimestamp: uint32(block.timestamp - 5 hours),
             duration: 1 days,
-            campaignData: hex"000000000000000000000000e31C676d8235437597581b44c1c4f8A30e90b38a00000000000000000000000000000000000000000000000000000000000000e00000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000012000000000000000000000000000000000000000000000000000000000000001c000000000000000000000000000000000000000000000000000000000000001e0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000007968747470733a2f2f646170702e6b6f692e66696e616e63652f706f6f6c2f3078333335356466366434633963333033353732346664306533393134646539366135613833616166342f3078356165613537373539353966626332353537636338373839626331626639306132333964396139312f66616c736500000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+            campaignData: campaignData
         });
         _run(campaign);
     }
@@ -379,8 +415,7 @@ contract CreateCampaign is DistributionCreatorScript {
     function _run(CampaignParameters memory campaign) internal {
         uint256 chainId = block.chainid;
         address creatorAddress = readAddress(chainId, "Merkl.DistributionCreator");
-        IERC20(campaign.rewardToken).approve(address(creatorAddress), campaign.amount);
-
+        IERC20(campaign.rewardToken).approve(creatorAddress, campaign.amount);
         bytes32 campaignId = DistributionCreator(creatorAddress).createCampaign(campaign);
 
         console.log("Campaign created with ID:", vm.toString(campaignId));
@@ -401,18 +436,96 @@ contract CreateCampaign is DistributionCreatorScript {
 // 0x000000000000000000000000ec883424202a963af2a3e59bccaa0219e88ab9db00000000000000000000000000000000000000000000000000000000000007d00000000000000000000000000000000000000000000000000000000000000fa00000000000000000000000000000000000000000000000000000000000000fa0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000018000000000000000000000000000000000000000000000000000000000000001a000000000000000000000000000000000000000000000000000000000000001c000000000000000000000000000000000000000000000000000000000000001e00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\
 // )]"
 contract CreateCampaigns is DistributionCreatorScript {
+    // MODIFY THESE VALUES TO SET YOUR DESIRED CAMPAIGN INPUTS
+    mapping(uint256 => address[]) public targetTokens;
+    uint256 distributionChain = 100;
+    uint16[4] public chains = [1, 100, 8453, 59144];
+    uint32 public campaignType = 22;
+    uint32 public subCampaignType = 0;
+    uint256 public tokenId = 0;
+    address[] public whitelist = new address[](0);
+    address[] public blacklist = new address[](0);
+    bytes[] public hooks = new bytes[](0);
+    string public apr = "1";
+    bool public targetTokenPricing = true;
+    bool public rewardTokenPricing = false;
+    string public baseUrl = "https://app.hyperdrive.box/market/";
+    address public rewardToken = 0x79385D4B4c531bBbDa25C4cFB749781Bd9E23039;
+
     function run() external broadcast {
         // MODIFY THESE VALUES TO SET YOUR DESIRED CAMPAIGN INPUTS
-        CampaignInput[] memory inputs = new CampaignInput[](1);
-        inputs[0] = CampaignInput({
-            creator: address(0),
-            rewardToken: address(0),
-            amount: 0,
-            campaignType: 0,
-            startTimestamp: uint32(block.timestamp),
-            duration: 7 days,
-            campaignData: ""
-        });
+        uint256 amount = 1e6 * 10 ** (IERC20Metadata(rewardToken).decimals());
+        targetTokens[1] = [
+            0xd7e470043241C10970953Bd8374ee6238e77D735
+            // 0x324395D5d835F84a02A75Aa26814f6fD22F25698,
+            // 0xca5dB9Bb25D09A9bF3b22360Be3763b5f2d13589,
+            // 0xd41225855A5c5Ba1C672CcF4d72D1822a5686d30,
+            // 0xA29A771683b4857bBd16e1e4f27D5B6bfF53209B,
+            // 0x4c3054e51b46BE3191be9A05e73D73F1a2147854,
+            // 0x158Ed87D7E529CFE274f3036ade49975Fb10f030,
+            // 0xc8D47DE20F7053Cc02504600596A647A482Bbc46,
+            // 0x7548c4F665402BAb3a4298B88527824B7b18Fe27,
+            // 0xA4090183878d5B7b6Ad104863743dd7E58985321,
+            // 0x8f2AC104e07d94488a1821E5A393351FCA9239aa,
+            // 0x05b65FA90AD702e6Fd0C3Bd7c4c9C47BAB2BEa6b,
+            // 0xf1232Dc21eADAf503D82f1e1361CfF2BBf40394D
+        ];
+        targetTokens[100] = [
+            0x2f840f1575EE77adAa43415Ac5953F7Db9F8C6ba,
+            0xEe9BFf933aDD313C4289E98dA80fEfbF9d5Cd9Ba,
+            0x9248f874AaA2c53AD9324d7A2D033ea133443874
+        ];
+        // targetTokens[8453] = [
+        //     0x2a1ca35Ded36C531F77c614b5AAA0d4F86edbB06,
+        //     0xFcdaF9A4A731C24ed2E1BFd6FA918d9CF7F50137,
+        //     0x1243C06146ACa2D4Aaf8F9860F6D8d59d636d46C,
+        //     0xceD9F810098f8329472AEFbaa1112534E96A5c7b,
+        //     0x9bAdB6A21FbA04EE94fde3E85F7d170E90394c89,
+        //     0xD9b66D9a819B36ECEfC26B043eF3B422d5A6123a,
+        //     0xdd8E1B14A04cbdD98dfcAF3F0Db84A80Bfb8FC25
+        // ];
+        // targetTokens[59144] = [0xB56e0Bf37c4747AbbC3aA9B8084B0d9b9A336777, 0x1cB0E96C07910fee9a22607bb9228c73848903a3];
+
+        CampaignInput[] memory inputs;
+        uint256 countInputs = 0;
+        {
+            uint256 numberCampaigns = 0;
+            for (uint256 i = 0; i < chains.length; i++) {
+                numberCampaigns += targetTokens[chains[i]].length;
+            }
+            inputs = new CampaignInput[](numberCampaigns);
+        }
+        for (uint256 i = 0; i < chains.length; i++) {
+            uint256 chainId = chains[i];
+            string memory baseUrlChain = string.concat(baseUrl, vm.toString(chainId), "/");
+            address[] memory tokens = targetTokens[chainId];
+            for (uint256 j = 0; j < tokens.length; j++) {
+                bytes memory campaignData = abi.encode(
+                    tokens[j],
+                    subCampaignType,
+                    tokenId,
+                    whitelist,
+                    blacklist,
+                    string.concat(baseUrlChain, vm.toString(tokens[j])),
+                    hooks,
+                    apr,
+                    targetTokenPricing,
+                    rewardTokenPricing
+                );
+                campaignData = abi.encode(uint32(chainId), campaignData);
+                campaignData = abi.encodePacked(campaignData, hex"c0c0c0c0");
+                inputs[countInputs++] = CampaignInput({
+                    creator: address(0),
+                    rewardToken: rewardToken,
+                    amount: amount,
+                    campaignType: campaignType,
+                    startTimestamp: 1738195200,
+                    duration: 30 days,
+                    campaignData: campaignData
+                });
+            }
+        }
+
         _run(inputs);
     }
 
@@ -421,8 +534,7 @@ contract CreateCampaigns is DistributionCreatorScript {
     }
 
     function _run(CampaignInput[] memory inputs) internal {
-        uint256 chainId = block.chainid;
-        address creatorAddress = readAddress(chainId, "Merkl.DistributionCreator");
+        address creatorAddress = readAddress(block.chainid, "Merkl.DistributionCreator");
         DistributionCreator creator = DistributionCreator(creatorAddress);
 
         uint256 inputsLength = inputs.length;
@@ -442,12 +554,82 @@ contract CreateCampaigns is DistributionCreatorScript {
             });
         }
 
+        IERC20(rewardToken).approve(creatorAddress, inputs.length * inputs[0].amount);
         bytes32[] memory campaignIds = creator.createCampaigns(campaigns);
 
         console.log("Created %s campaigns:", inputsLength);
         for (uint256 i = 0; i < campaignIds.length; i++) {
             console.log("Campaign %s ID: %s", i, vm.toString(campaignIds[i]));
         }
+    }
+}
+
+contract OverrideCampaign is DistributionCreatorScript {
+    function run() external broadcast {
+        uint256 chainId = block.chainid;
+        address creatorAddress = readAddress(chainId, "Merkl.DistributionCreator");
+        // MODIFY THESE VALUES TO SET YOUR DESIRED CAMPAIGN PARAMETERS
+        bytes32 campaignId = 0xf93a5b762bd5a2a3e6cf6dcb83cb54f70ab2de457e0dc4cbb4da29ba8b54e4ad;
+        address targetToken = address(0x1337BedC9D22ecbe766dF105c9623922A27963EC);
+        address[] memory whitelist = new address[](0);
+        address[] memory blacklist = new address[](0);
+        string memory url = "https://curve.fi/dex/#/xdai/pools/3pool/deposit";
+        bytes[] memory forwarders = new bytes[](0);
+        bytes[] memory hooks = new bytes[](0);
+        // END
+
+        CampaignParameters memory campaign = DistributionCreator(creatorAddress).campaign(campaignId);
+
+        CampaignParameters memory overrideCampaign = CampaignParameters({
+            campaignId: bytes32(campaign.campaignId),
+            creator: address(0),
+            rewardToken: address(0x65A1DfB54CDec9011688b1818A27A8C687e6B1ed),
+            amount: campaign.amount,
+            campaignType: 1,
+            startTimestamp: uint32(campaign.startTimestamp),
+            duration: 1.5 days,
+            campaignData: abi.encode(targetToken, whitelist, blacklist, url, forwarders, hooks, hex"")
+        });
+        _run(overrideCampaign);
+    }
+
+    function run(CampaignParameters calldata campaign) external broadcast {
+        _run(campaign);
+    }
+
+    function _run(CampaignParameters memory campaign) internal {
+        uint256 chainId = block.chainid;
+        address creatorAddress = readAddress(chainId, "Merkl.DistributionCreator");
+        IERC20(campaign.rewardToken).approve(creatorAddress, campaign.amount);
+        DistributionCreator(creatorAddress).overrideCampaign(campaign.campaignId, campaign);
+
+        console.log("Campaign created with ID:", vm.toString(campaign.campaignId));
+    }
+}
+
+contract ReallocateCampaign is DistributionCreatorScript {
+    function run() external broadcast {
+        uint256 chainId = block.chainid;
+        address creatorAddress = readAddress(chainId, "Merkl.DistributionCreator");
+        // MODIFY THESE VALUES TO SET YOUR DESIRED CAMPAIGN PARAMETERS
+        bytes32 campaignId = 0x490af89ce201bb272809983117aa95ce4a6cfcbb178343076519fc80ec2ff408;
+        address[] memory froms = new address[](2);
+        froms[0] = 0xBA12222222228d8Ba445958a75a0704d566BF2C8;
+        froms[1] = 0x53C9ACaB7D5f3078141D1178EeA782c7129D92C9;
+        address to = 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701;
+        // END
+
+        _run(campaignId, froms, to);
+    }
+
+    function run(bytes32 campaignId, address[] memory froms, address to) external broadcast {
+        _run(campaignId, froms, to);
+    }
+
+    function _run(bytes32 campaignId, address[] memory froms, address to) internal {
+        uint256 chainId = block.chainid;
+        address creatorAddress = readAddress(chainId, "Merkl.DistributionCreator");
+        DistributionCreator(creatorAddress).reallocateCampaignRewards(campaignId, froms, to);
     }
 }
 
@@ -565,5 +747,28 @@ contract UpgradeAndBuildUpgradeToPayload is DistributionCreatorScript {
 
     function externalReadAddress(uint256 chainId, string memory key) external view returns (address) {
         return readAddress(chainId, key);
+    }
+}
+
+contract SetRewardTokenMinAmountsDistributor is DistributionCreatorScript {
+    function run() external broadcast {
+        // MODIFY THESE VALUES TO SET YOUR DESIRED CAMPAIGN PARAMETERS AND SIGNATURE
+        address[] memory tokens = new address[](1);
+        uint256[] memory minAmounts = new uint256[](1);
+        tokens[0] = 0x79385D4B4c531bBbDa25C4cFB749781Bd9E23039;
+        minAmounts[0] = 1e18;
+
+        _run(tokens, minAmounts);
+    }
+
+    function run(address[] memory tokens, uint256[] memory minAmounts) external broadcast {
+        _run(tokens, minAmounts);
+    }
+
+    function _run(address[] memory tokens, uint256[] memory minAmounts) internal {
+        uint256 chainId = block.chainid;
+        address creatorAddress = readAddress(chainId, "Merkl.DistributionCreator");
+
+        DistributionCreator(creatorAddress).setRewardTokenMinAmounts(tokens, minAmounts);
     }
 }
