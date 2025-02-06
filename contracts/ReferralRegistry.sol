@@ -74,14 +74,11 @@ contract ReferralRegistry is UUPSHelper {
     ) external payable {
         if (referralPrograms[key].owner != address(0)) revert Errors.KeyAlreadyUsed();
         if (msg.value != costReferralProgram) revert Errors.NotEnoughPayment();
-        if (costReferralProgram > 0) {
-            payable(feeRecipient).transfer(msg.value);
-        }
-        referralKeys.push(key);
         require(
             _cost == 0 || (_cost > 0 && _requiresRefererToBeSet),
             "Cost must be set if requiresRefererToBeSet is true"
         );
+        referralKeys.push(key);
         referralPrograms[key] = ReferralProgram({
             owner: _owner,
             requiresAuthorization: _requiresAuthorization,
@@ -89,6 +86,10 @@ contract ReferralRegistry is UUPSHelper {
             requiresRefererToBeSet: _requiresRefererToBeSet,
             paymentToken: _paymentToken
         });
+        if (costReferralProgram > 0) {
+            (bool sent, ) = feeRecipient.call{ value: msg.value }("");
+            require(sent, "Failed to send Ether");
+        }
         emit ReferralKeyAdded(key);
     }
 
@@ -126,22 +127,24 @@ contract ReferralRegistry is UUPSHelper {
     /// @param key The referral key for which the user wants to become a referrer
     /// @param referrerCode The code of the referrer
     function becomeReferrer(bytes calldata key, string calldata referrerCode) external payable {
+        if (referralPrograms[key].owner == address(0)) revert Errors.NotAllowed();
+        require(codeToReferrer[key][referrerCode] == address(0), "Referrer code already in use");
         ReferralProgram storage program = referralPrograms[key];
-        if (program.cost > 0) {
-            if (address(program.paymentToken) == address(0)) {
-                if (msg.value != program.cost) revert Errors.NotEnoughPayment();
-                payable(program.owner).transfer(msg.value);
-            } else {
-                IERC20(program.paymentToken).safeTransferFrom(msg.sender, program.owner, program.cost);
-            }
-        }
         if (program.requiresAuthorization) {
             if (refererStatus[key][msg.sender] != ReferralStatus.Allowed) revert Errors.NotAllowed();
         }
         refererStatus[key][msg.sender] = ReferralStatus.Set;
-        require(codeToReferrer[key][referrerCode] == address(0), "Referrer code already in use");
         referrerCodeMapping[key][msg.sender] = referrerCode;
         codeToReferrer[key][referrerCode] = msg.sender;
+        if (program.cost > 0) {
+            if (address(program.paymentToken) == address(0)) {
+                if (msg.value < program.cost) revert Errors.NotEnoughPayment();
+                (bool sent, ) = program.owner.call{ value: msg.value }("");
+                require(sent, "Failed to send Ether");
+            } else {
+                IERC20(program.paymentToken).safeTransferFrom(msg.sender, program.owner, program.cost);
+            }
+        }
         emit ReferrerAdded(key, msg.sender);
     }
 
