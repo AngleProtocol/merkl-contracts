@@ -160,7 +160,7 @@ contract PufferPointTokenWrapper is UUPSHelper, ERC20Upgradeable {
         uint256 length = userAllVestings.length;
         while (i < length && i <= maxClaimIndex) {
             VestingID storage userCurrentVesting = userAllVestings[i];
-            if (block.timestamp > userCurrentVesting.unlockTimestamp) {
+            if (block.timestamp > userCurrentVesting.unlockTimestamp && block.timestamp > 1740816009) {
                 amountClaimable += userCurrentVesting.amount;
                 nextClaimIndex = ++i;
             } else break;
