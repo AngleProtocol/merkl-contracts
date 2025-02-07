@@ -19,9 +19,11 @@ library Errors {
     error InvalidReturnMessage();
     error InvalidReward();
     error InvalidSignature();
+    error KeyAlreadyUsed();
     error NoDispute();
     error NoOverrideForCampaign();
     error NotAllowed();
+    error NotEnoughPayment();
     error NotGovernor();
     error NotGovernorOrGuardian();
     error NotSigned();
