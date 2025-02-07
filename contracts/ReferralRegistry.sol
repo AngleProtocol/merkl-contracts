@@ -123,6 +123,15 @@ contract ReferralRegistry is UUPSHelper {
         );
     }
 
+    /// @notice Marks an address as allowed to be a referrer for a specific referral key
+    /// @param key The referral key for which the address is allowed
+    /// @param user The address to be marked as allowed
+    function allowReferrer(string calldata key, address user) external {
+        if (referralPrograms[key].owner != msg.sender) revert Errors.NotAllowed();
+        refererStatus[key][user] = ReferralStatus.Allowed;
+        emit ReferrerAdded(key, user);
+    }
+
     /// @notice Allows a user to become a referrer for a specific referral key
     /// @param key The referral key for which the user wants to become a referrer
     /// @param referrerCode The code of the referrer
@@ -298,5 +307,13 @@ contract ReferralRegistry is UUPSHelper {
     /// @return True if the referral program requires a referrer to be set, false otherwise
     function requiresRefererToBeSet(string calldata key) external view returns (bool) {
         return referralPrograms[key].requiresRefererToBeSet;
+    }
+
+    /// @notice Gets the status of a referrer for a specific referral key
+    /// @param key The referral key to check
+    /// @param referrer The referrer to check the status for
+    /// @return The status of the referrer for the given key
+    function getReferrerStatusByKey(string calldata key, address referrer) external view returns (ReferralStatus) {
+        return refererStatus[key][referrer];
     }
 }
