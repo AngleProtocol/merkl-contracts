@@ -69,6 +69,7 @@ swell = "${SWELL_NODE_URI}"
 fork = "${ETH_NODE_URI_FORK}"
 sonic = "${SONIC_NODE_URI}"
 corn = "${CORN_NODE_URI}"
+ink = "${ETH_NODE_URI_INK}"
 
 [etherscan]
 localhost = { url = "http://localhost:4000", key = "none" }
@@ -111,4 +112,5 @@ etherlink = { chainId = 42793, key = "${ETHERLINK_ETHERSCAN_API_KEY}", url= "htt
 arthera = { chainId = 10242, key = "${ARTHERA_ETHERSCAN_API_KEY}", url = "https://explorer.arthera.net/api/" }
 swell = { chainId = 1923, key = "${SWELL_ETHERSCAN_API_KEY}", url = "https://explorer.swellnetwork.io:443/api/" }
 sonic = { chainId = 146, key = "${SONIC_ETHERSCAN_API_KEY}", url = "https://api.sonicscan.org/api/" }
-corn = { chainId = 21000000, key = "${CORN_ETHERSCAN_API_KEY}", url = "https://api.routescan.io/v2/network/mainnet/evm/21000000/etherscan" }
+corn = { chainId = 21000000, key = "${CORN_ETHERSCAN_API_KEY}", url = "https://api.routescan.io/v2/network/mainnet/evm/21000000/etherscan"}
+ink = { chainId = 57073, key = "${INK_ETHERSCAN_API_KEY}", url = "https://explorer.inkonchain.com/api" }
