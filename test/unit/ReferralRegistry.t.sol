@@ -21,7 +21,7 @@ contract ReferralRegistryTest is Test {
     address referrer = vm.addr(3);
     address feeRecipient = vm.addr(4);
 
-    bytes referralKey = "testKey";
+    string referralKey = "testKey";
     uint256 cost = 1000;
     uint256 feeSetup = 100;
     bool requiresRefererToBeSet = true;

@@ -39,23 +39,23 @@ contract ReferralRegistry is UUPSHelper {
     /// @notice Cost to create a referral program
     uint256 public costReferralProgram;
 
-    /// @notice List of bytes keys that are currently in a referral program
-    bytes[] public referralKeys;
+    /// @notice List of string keys that are currently in a referral program
+    string[] public referralKeys;
 
     /// @notice Mapping to store referral program details
-    mapping(bytes => ReferralProgram) public referralPrograms;
+    mapping(string => ReferralProgram) public referralPrograms;
 
     /// @notice Mapping to determine if a user is allowed to be a referrer
-    mapping(bytes => mapping(address => ReferralStatus)) public refererStatus;
+    mapping(string => mapping(address => ReferralStatus)) public refererStatus;
 
     /// @notice Mapping to store referrer codes
-    mapping(bytes => mapping(address => string)) public referrerCodeMapping;
+    mapping(string => mapping(address => string)) public referrerCodeMapping;
 
     /// @notice Mapping to store referrer addresses by code
-    mapping(bytes => mapping(string => address)) public codeToReferrer;
+    mapping(string => mapping(string => address)) public codeToReferrer;
 
     /// @notice Mapping to store user to referrer relationships
-    mapping(bytes => mapping(address => address)) public keyToUserToReferrer;
+    mapping(string => mapping(address => address)) public keyToUserToReferrer;
 
     /// @notice Adds a new referral key to the list
     /// @param key The referral key to add
@@ -65,7 +65,7 @@ contract ReferralRegistry is UUPSHelper {
     /// @param _requiresAuthorization Whether the referral program requires authorization
     /// @param _paymentToken The token used for payment in the referral program
     function addReferralKey(
-        bytes calldata key,
+        string calldata key,
         uint256 _cost,
         bool _requiresRefererToBeSet,
         address _owner,
@@ -100,7 +100,7 @@ contract ReferralRegistry is UUPSHelper {
     /// @param newRequiresRefererToBeSet Whether the referral program requires a referrer to be set
     /// @param newPaymentToken The new payment token of the referral program
     function editReferralProgram(
-        bytes calldata key,
+        string calldata key,
         uint256 newCost,
         bool newRequiresAuthorization,
         bool newRequiresRefererToBeSet,
@@ -126,7 +126,7 @@ contract ReferralRegistry is UUPSHelper {
     /// @notice Allows a user to become a referrer for a specific referral key
     /// @param key The referral key for which the user wants to become a referrer
     /// @param referrerCode The code of the referrer
-    function becomeReferrer(bytes calldata key, string calldata referrerCode) external payable {
+    function becomeReferrer(string calldata key, string calldata referrerCode) external payable {
         if (referralPrograms[key].owner == address(0)) revert Errors.NotAllowed();
         require(codeToReferrer[key][referrerCode] == address(0), "Referrer code already in use");
         ReferralProgram storage program = referralPrograms[key];
@@ -151,7 +151,7 @@ contract ReferralRegistry is UUPSHelper {
     /// @notice Allows a user to acknowledge that they are referred by a referrer
     /// @param key The referral key for which the user is acknowledging the referrer
     /// @param referrer The address of the referrer
-    function acknowledgeReferrer(bytes calldata key, address referrer) public {
+    function acknowledgeReferrer(string calldata key, address referrer) public {
         if (referralPrograms[key].requiresRefererToBeSet) {
             require(refererStatus[key][referrer] == ReferralStatus.Set, "Referrer has not created a referral link");
         }
@@ -162,7 +162,7 @@ contract ReferralRegistry is UUPSHelper {
     /// @notice Allows a user to acknowledge that they are referred by a referrer using a referrer code
     /// @param key The referral key for which the user is acknowledging the referrer
     /// @param referrerCode The code of the referrer
-    function acknowledgeReferrerByKey(bytes calldata key, string calldata referrerCode) external {
+    function acknowledgeReferrerByKey(string calldata key, string calldata referrerCode) external {
         address referrer = codeToReferrer[key][referrerCode];
         acknowledgeReferrer(key, referrer);
     }
@@ -183,16 +183,16 @@ contract ReferralRegistry is UUPSHelper {
                                                         EVENTS                                                      
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
     event CostReferralProgramSet(uint256 newCost);
-    event ReferrerAcknowledged(bytes indexed key, address indexed user, address indexed referrer);
-    event ReferrerAdded(bytes indexed key, address indexed referrer);
+    event ReferrerAcknowledged(string indexed key, address indexed user, address indexed referrer);
+    event ReferrerAdded(string indexed key, address indexed referrer);
     event ReferralProgramModified(
-        bytes indexed key,
+        string indexed key,
         uint256 newCost,
         bool newRequiresAuthorization,
         bool newRequiresRefererToBeSet,
         address newPaymentToken
     );
-    event ReferralKeyAdded(bytes indexed key);
+    event ReferralKeyAdded(string indexed key);
     event ReferralKeyRemoved(uint256 index);
     event UpgradeabilityRevoked();
 
@@ -246,13 +246,13 @@ contract ReferralRegistry is UUPSHelper {
 
     /// @notice Gets the list of referral keys
     /// @return The list of referral keys
-    function getReferralKeys() external view returns (bytes[] memory) {
+    function getReferralKeys() external view returns (string[] memory) {
         return referralKeys;
     }
     /// @notice Gets the details of a referral program
     /// @param key The referral key to get details for
     /// @return The details of the referral program
-    function getReferralProgram(bytes calldata key) external view returns (ReferralProgram memory) {
+    function getReferralProgram(string calldata key) external view returns (ReferralProgram memory) {
         return referralPrograms[key];
     }
 
@@ -260,7 +260,7 @@ contract ReferralRegistry is UUPSHelper {
     /// @param key The referral key to check
     /// @param user The user to check the referrer status for
     /// @return The referrer status of the user for the given key
-    function getReferrerStatus(bytes calldata key, address user) external view returns (ReferralStatus) {
+    function getReferrerStatus(string calldata key, address user) external view returns (ReferralStatus) {
         return refererStatus[key][user];
     }
 
@@ -268,35 +268,35 @@ contract ReferralRegistry is UUPSHelper {
     /// @param key The referral key to check
     /// @param user The user to check the referrer for
     /// @return The referrer of the user for the given key
-    function getReferrer(bytes calldata key, address user) external view returns (address) {
+    function getReferrer(string calldata key, address user) external view returns (address) {
         return keyToUserToReferrer[key][user];
     }
 
     /// @notice Gets the cost of a referral for a specific key
     /// @param key The referral key to check
     /// @return The cost of the referral for the given key
-    function getCostOfReferral(bytes calldata key) external view returns (uint256) {
+    function getCostOfReferral(string calldata key) external view returns (uint256) {
         return referralPrograms[key].cost;
     }
 
     /// @notice Gets the payment token of a referral program
     /// @param key The referral key to check
     /// @return The payment token of the referral program
-    function getPaymentToken(bytes calldata key) external view returns (address) {
+    function getPaymentToken(string calldata key) external view returns (address) {
         return referralPrograms[key].paymentToken;
     }
 
     /// @notice Checks if a referral program requires authorization
     /// @param key The referral key to check
     /// @return True if the referral program requires authorization, false otherwise
-    function requiresAuthorization(bytes calldata key) external view returns (bool) {
+    function requiresAuthorization(string calldata key) external view returns (bool) {
         return referralPrograms[key].requiresAuthorization;
     }
 
     /// @notice Checks if a referral program requires a referrer to be set
     /// @param key The referral key to check
     /// @return True if the referral program requires a referrer to be set, false otherwise
-    function requiresRefererToBeSet(bytes calldata key) external view returns (bool) {
+    function requiresRefererToBeSet(string calldata key) external view returns (bool) {
         return referralPrograms[key].requiresRefererToBeSet;
     }
 }
