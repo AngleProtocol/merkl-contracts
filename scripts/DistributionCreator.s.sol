@@ -183,8 +183,8 @@ contract RecoverFees is DistributionCreatorScript {
 contract SetUserFeeRebate is DistributionCreatorScript {
     function run() external {
         // MODIFY THESE VALUES TO SET YOUR DESIRED USER AND REBATE
-        address user = address(0);
-        uint256 rebate = 0;
+        address user = address(0x59A1A709c84C125F135C126ac46bE2A11b6f1bA4);
+        uint256 rebate = 250_000_000;
         _run(user, rebate);
     }
 
@@ -210,8 +210,8 @@ contract SetRewardTokenMinAmounts is DistributionCreatorScript {
         // MODIFY THESE VALUES TO SET YOUR DESIRED TOKENS AND AMOUNTS
         address[] memory tokens = new address[](1);
         uint256[] memory amounts = new uint256[](1);
-        tokens[0] = 0x56fA5F7BF457454Be33D8B978C86A5f5B9DD84C2;
-        amounts[0] = 3 * 10 ** 17;
+        tokens[0] = 0x657d9ABA1DBb59e53f9F3eCAA878447dCfC96dCb;
+        amounts[0] = 0.001 ether;
         _run(tokens, amounts);
     }
 
@@ -359,6 +359,7 @@ contract Sign is DistributionCreatorScript {
 // )"
 contract CreateCampaign is DistributionCreatorScript {
     function run() external broadcast {
+        bytes memory campaignData;
         // MODIFY THESE VALUES TO SET YOUR DESIRED CAMPAIGN PARAMETERS
         // address targetToken = address(0xEe9BFf933aDD313C4289E98dA80fEfbF9d5Cd9Ba);
         // uint32 campaignType = 22;
@@ -385,21 +386,53 @@ contract CreateCampaign is DistributionCreatorScript {
         // );
         // //
 
-        address targetToken = address(0x004626A008B1aCdC4c74ab51644093b155e59A23);
-        uint32 campaignType = 1;
-        address[] memory whitelist = new address[](0);
-        address[] memory blacklist = new address[](0);
-        string memory url = "";
-        bytes[] memory forwarders = new bytes[](0);
-        bytes[] memory hooks = new bytes[](0);
-        bytes memory campaignData = abi.encode(targetToken, whitelist, blacklist, url, forwarders, hooks, hex"");
+        // address targetToken = address(0x004626A008B1aCdC4c74ab51644093b155e59A23);
+        // uint32 campaignType = 1;
+        // address[] memory whitelist = new address[](0);
+        // address[] memory blacklist = new address[](0);
+        // string memory url = "";
+        // bytes[] memory forwarders = new bytes[](0);
+        // bytes[] memory hooks = new bytes[](0);
+        // bytes memory campaignData = abi.encode(targetToken, whitelist, blacklist, url, forwarders, hooks, hex"");
+
+        uint32 campaignType = 26;
+        {
+            address baseToken = address(0);
+            address quoteToken = 0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34;
+            uint256 poolIdx = 420;
+            bool isOutOfRangeIncentivized = false;
+            uint32 weightFees = 2000;
+            uint32 weightToken0 = 3000;
+            uint32 weightToken1 = 5000;
+            address[] memory whitelist = new address[](0);
+            address[] memory blacklist = new address[](0);
+            string
+                memory url = "https://ambient.finance/trade/market/chain=0x783&tokenA=0x0000000000000000000000000000000000000000&tokenB=0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34";
+            bytes[] memory hooks = new bytes[](0);
+            bytes[] memory forwarders = new bytes[](0);
+            campaignData = abi.encode(
+                baseToken,
+                quoteToken,
+                poolIdx,
+                isOutOfRangeIncentivized,
+                weightFees,
+                weightToken0,
+                weightToken1,
+                whitelist,
+                blacklist,
+                url,
+                forwarders,
+                hooks,
+                hex""
+            );
+        }
         // END
 
         CampaignParameters memory campaign = CampaignParameters({
             campaignId: bytes32(0),
             creator: address(0),
-            rewardToken: address(0x65A1DfB54CDec9011688b1818A27A8C687e6B1ed),
-            amount: 1e4 * 1e8,
+            rewardToken: address(0x05225a6416EDaeeC7227027E86F7A47D18A06b91),
+            amount: 1e4 * 1e6,
             campaignType: campaignType,
             startTimestamp: uint32(block.timestamp - 5 hours),
             duration: 1 days,
@@ -620,6 +653,65 @@ contract ReallocateCampaign is DistributionCreatorScript {
         // END
 
         _run(campaignId, froms, to);
+    }
+
+    function run(bytes32 campaignId, address[] memory froms, address to) external broadcast {
+        _run(campaignId, froms, to);
+    }
+
+    function _run(bytes32 campaignId, address[] memory froms, address to) internal {
+        uint256 chainId = block.chainid;
+        address creatorAddress = readAddress(chainId, "Merkl.DistributionCreator");
+        DistributionCreator(creatorAddress).reallocateCampaignRewards(campaignId, froms, to);
+    }
+}
+
+contract ReallocateCampaigns is DistributionCreatorScript {
+    function run() external broadcast {
+        uint256 chainId = block.chainid;
+        address creatorAddress = readAddress(chainId, "Merkl.DistributionCreator");
+        // MODIFY THESE VALUES TO SET YOUR DESIRED CAMPAIGN PARAMETERS
+
+        // MAINNET
+        // now
+        bytes32[] memory campaignIds = new bytes32[](2);
+        campaignIds[0] = 0x20cc77d4b6138837753a6f37a6b6c5a7675d1bbf26b3e1f759b437e3bafbc8a5;
+        campaignIds[1] = 0x552c13b139cb09bb00e486c9ff1b18bf31fa4af94efa92e953a5654922ef50ba;
+
+        // // future
+        // bytes32[] memory campaignIds = new bytes32[](4);
+        // campaignIds[0] = 0x31daf1460445bd688f895014ee21d58a41dc31ccb1e3592c7c5af953194625b4;
+        // campaignIds[1] = 0x989ba1dbf3430e313891984d176ffc79a9aa8410d14a2215156242d981b1dc48;
+        // campaignIds[2] = 0x5ff68f84ce65b84ef0da170a44716a899e34b79b7d86ef98f4c8495c2b9a715e;
+        // campaignIds[3] = 0x735de250ce1ca074972d15742fc9367f93f007c057c540d88bd42a6a77b7881c;
+
+        // // BASE
+        // // now
+        // bytes32[] memory campaignIds = new bytes32[](4);
+        // campaignIds[0] = 0x477d78ee82651afdca318485f877ff1923afac46e55a39705665e1da00aa4ab4;
+        // campaignIds[1] = 0x0de8aad778761479b33f21d81ecffd505c0b3011c66af40fa2ec464e5899b707;
+        // campaignIds[2] = 0x2340c7c2d3efe6ed0eb6e532f6707b692a58b2340ca31ac426544d5166f4a3d3;
+        // campaignIds[3] = 0x600d210d7390c8a78dcaeb820e70e16b38c69ef00ca458ccfefe5abd9c9d4d9b;
+        // campaignIds[4] = 0x18a6be06c3e3f870858ff229f7cb8fa02f9ec8a89586860ed2538bf1cc716a83;
+        // campaignIds[5] = 0x6fcea5032087c0d5acf11ce21c0a0f9ad1a6532f0323bd8aac390babe40b764e;
+        // campaignIds[6] = 0xe4c666e923ca13e830ed476f0cded9dd1dd6457c637fbc1ae4b2b473ebe9c211;
+
+        // // future
+        // bytes32[] memory campaignIds = new bytes32[](4);
+        // campaignIds[0] = 0xb63933be5065bce6c9b2719f7afa76f3c41a992eddef74b1a321351967313ce7;
+        // campaignIds[1] = 0x033ed946fb107cf928ffe5d1d4d57c649999769eeb38773443a50eb862caab19;
+        // campaignIds[2] = 0x5716e04285cf59798cfc1dcc554a07bb2b00031feb9dd7e0fe01ca712fa3ae09;
+        // campaignIds[3] = 0x0323d17f64608e1f402192ec920b4a9e0203ddfc262fdc4d0a233bc7c64c4f29;
+        // campaignIds[4] = 0xb32cae66a15634a6b3e65eeb874f1d437288c06ab0604d6e21737e117efdb9bb;
+
+        address[] memory froms = new address[](1);
+        froms[0] = 0x000000DCeb71f3107909b1b748424349bfde5493;
+        address to = 0x9a8FEe232DCF73060Af348a1B62Cdb0a19852d13;
+        // END
+
+        for (uint256 i = 0; i < campaignIds.length; i++) {
+            _run(campaignIds[i], froms, to);
+        }
     }
 
     function run(bytes32 campaignId, address[] memory froms, address to) external broadcast {
