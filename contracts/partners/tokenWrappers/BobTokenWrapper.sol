@@ -11,28 +11,15 @@ import { IAccessControlManager } from "./BaseTokenWrapper.sol";
 import { UUPSHelper } from "../../utils/UUPSHelper.sol";
 import { Errors } from "../../utils/Errors.sol";
 
-struct VestingID {
-    uint128 amount;
-    uint128 unlockTimestamp;
-}
-
-struct VestingData {
-    VestingID[] allVestings;
-    uint256 nextClaimIndex;
-}
-
 interface IDistributionCreator {
     function distributor() external view returns (address);
     function feeRecipient() external view returns (address);
 }
 
-/// @title PufferPointTokenWrapper
+/// @title BobTokenWrapper
 /// @dev This token can only be held by Merkl distributor
 /// @dev Transferring to the distributor will require transferring the underlying token to this contract
-/// @dev Transferring from the distributor will trigger a vesting action
-/// @dev Transferring token to the distributor is permissionless so anyone could mint this wrapper - the only
-/// impact would be to forfeit these tokens
-contract PufferPointTokenWrapper is UUPSHelper, ERC20Upgradeable {
+contract BobTokenWrapper is UUPSHelper, ERC20Upgradeable {
     using SafeERC20 for IERC20;
 
     /*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
