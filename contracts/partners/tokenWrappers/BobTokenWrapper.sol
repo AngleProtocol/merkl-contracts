@@ -88,14 +88,13 @@ contract BobTokenWrapper is UUPSHelper, ERC20Upgradeable {
         }
     }
 
-    function redeem(address to) external returns (uint256 amount) {
+    function unwrap(address to, uint8 option) external returns (uint256 amount) {
         amount = balanceOf(msg.sender);
         _burn(msg.sender, amount);
-        IERC20(underlying).safeTransfer(to, amount);
-    }
-
-    function stakeTo() external returns (uint256 amount) {
-        // TODO
+        if (option == 0) IERC20(underlying).safeTransfer(to, amount);
+        else {
+            // TODO
+        }
     }
 
     /*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
