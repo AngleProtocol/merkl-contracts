@@ -23,18 +23,24 @@ abstract contract BaseScript is Script {
 
     /// @dev Initializes the transaction broadcaster like this:
     ///
+    /// - If $PRIVATE_KEY is defined, use it to set the broadcaster.
     /// - If $DEPLOYER_ADDRESS is defined, use it.
     /// - Otherwise, derive the broadcaster address from $MNEMONIC.
     /// - If $MNEMONIC is not defined, default to a test mnemonic.
     ///
-    /// The use case for $DEPLOYER_ADDRESS is to specify the broadcaster key and its address via the command line.
+    /// The use case for $PRIVATE_KEY or $DEPLOYER_ADDRESS is to specify the broadcaster key via environment variable or the command line respectively.
     constructor() {
-        address from = vm.envOr({ name: "DEPLOYER_ADDRESS", defaultValue: address(0) });
-        if (from != address(0)) {
-            broadcaster = from;
+        uint256 privateKey = vm.envOr({ name: "DEPLOYER_PRIVATE_KEY", defaultValue: uint256(0) });
+        if (privateKey != 0) {
+            broadcaster = vm.addr(privateKey);
         } else {
-            mnemonic = vm.envOr({ name: "MNEMONIC", defaultValue: TEST_MNEMONIC });
-            (broadcaster, ) = deriveRememberKey({ mnemonic: mnemonic, index: 0 });
+            address from = vm.envOr({ name: "DEPLOYER_ADDRESS", defaultValue: address(0) });
+            if (from != address(0)) {
+                broadcaster = from;
+            } else {
+                mnemonic = vm.envOr({ name: "MNEMONIC", defaultValue: TEST_MNEMONIC });
+                (broadcaster, ) = deriveRememberKey({ mnemonic: mnemonic, index: 0 });
+            }
         }
     }
 
