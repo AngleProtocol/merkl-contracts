@@ -13,6 +13,9 @@ abstract contract BaseScript is Script {
     /// @dev The address of the transaction broadcaster.
     address internal broadcaster;
 
+    /// @dev The private key of the transaction broadcaster.
+    uint256 internal broadcasterPrivateKey;
+
     /// @dev Used to derive the broadcaster's address if $DEPLOYER_ADDRESS is not defined.
     string internal mnemonic;
 
@@ -33,6 +36,7 @@ abstract contract BaseScript is Script {
         uint256 privateKey = vm.envOr({ name: "DEPLOYER_PRIVATE_KEY", defaultValue: uint256(0) });
         if (privateKey != 0) {
             broadcaster = vm.addr(privateKey);
+            broadcasterPrivateKey = privateKey;
         } else {
             address from = vm.envOr({ name: "DEPLOYER_ADDRESS", defaultValue: address(0) });
             if (from != address(0)) {
@@ -45,7 +49,11 @@ abstract contract BaseScript is Script {
     }
 
     modifier broadcast() {
-        vm.startBroadcast(broadcaster);
+        if (broadcasterPrivateKey != 0) {
+            vm.startBroadcast(broadcasterPrivateKey);
+        } else {
+            vm.startBroadcast(broadcaster);
+        }
         _;
         vm.stopBroadcast();
     }
