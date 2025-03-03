@@ -266,10 +266,26 @@ contract ToggleTrusted is DistributorScript {
 contract Claim is DistributorScript {
     function run() external broadcast {
         // MODIFY THESE VALUES TO SET YOUR DESIRED CLAIM PARAMETERS
-        address[] memory users = new address[](0);
-        address[] memory tokens = new address[](0);
-        uint256[] memory amounts = new uint256[](0);
-        bytes32[][] memory proofs = new bytes32[][](0);
+        address[] memory users = new address[](1);
+        users[0] = 0xbDE3b37848dE5d26717fe27b4489E130E8d40e77;
+        address[] memory tokens = new address[](1);
+        tokens[0] = 0x471EcE3750Da237f93B8E339c536989b8978a438;
+        uint256[] memory amounts = new uint256[](1);
+        amounts[0] = 40611295222190597472529;
+        bytes32[][] memory proofs = new bytes32[][](1);
+        proofs[0] = new bytes32[](12);
+        proofs[0][0] = 0xb8bfde09393d772b6c81e62ed70010edc95e5140ab52b7947f1f39caba379082;
+        proofs[0][1] = 0xb1039b324c1e3616b94f8c0a1d3b41efbac06d59555e9ce5feab5429e4eb4c6e;
+        proofs[0][2] = 0x20c00ba3347290bca8773e88209097fac1013d8fb2cf848b25f9f9b2a4587983;
+        proofs[0][3] = 0x29b89499026c037c76d5070cb5adf8398ca2768ef3fb94c7cb666a8c200c91af;
+        proofs[0][4] = 0x444732d59f5a702718ee03f936a099564ed014f9e448a9dfede9a1cec651c788;
+        proofs[0][5] = 0xe5f133d0dd210e7f89adf739e87ef7fd5afbcdc230615c6a71c7d2c1a968d383;
+        proofs[0][6] = 0xca5dc3bfa82c6249507c32080d440c7d34d8ac55dc26c3f28de114548891b0c4;
+        proofs[0][7] = 0x45d4636913927f6fd6be6bdbfb536b7a37ec1f1efaac8552de1ea8f87da5d939;
+        proofs[0][8] = 0x166232c805160aea4a86e0f2b32b21781521e7765ab5d13b4ae0b1af2d7ef893;
+        proofs[0][9] = 0x7b12b41a38a9ad426fcdc06a405bb9fa2d01fbd93922adee141a3978ad28fa38;
+        proofs[0][10] = 0x55b66cadfa2481cbacc1dd3f4812a1831553efd78ee48eaee75636d78d1c8409;
+        proofs[0][11] = 0x00bade4967d60b3b661d932ae841a7b49b85f5088a4c7a9381510f2827716779;
         _run(users, tokens, amounts, proofs);
     }
 
