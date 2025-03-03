@@ -299,7 +299,7 @@ contract ReferralRegistry is UUPSHelper {
     /// @notice Gets the list of referred users
     /// @param key The referral key to check
     /// @param user The referrer
-    function getReferred(string calldata key, address user) external view returns (address[] memory) {
+    function getReferredUsers(string calldata key, address user) external view returns (address[] memory) {
         return keyToReferred[key][user];
     }
 
