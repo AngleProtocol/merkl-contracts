@@ -87,12 +87,9 @@ contract ReferralRegistry is UUPSHelper {
             paymentToken: _paymentToken
         });
         if (costReferralProgram > 0) {
-            // Why don't we just use `costReferralProgram` everywhere instead of `msg.value` ?
-            // We wouldn't need to check if the value l76 is correct
             (bool sent, ) = feeRecipient.call{ value: msg.value }("");
             if (!sent) revert Errors.NotEnoughPayment();
         }
-        // Worth emitting the full struct here
         emit ReferralKeyAdded(key, referralPrograms[key]);
     }
 
@@ -109,7 +106,6 @@ contract ReferralRegistry is UUPSHelper {
         bool newRequiresRefererToBeSet,
         address newPaymentToken
     ) external {
-        // Why don't we also check the ` _cost == 0 || (_cost > 0 && _requiresRefererToBeSet)`?
         if (referralPrograms[key].owner != msg.sender) revert Errors.NotAllowed();
         if (newCost != 0 && !newRequiresRefererToBeSet) revert Errors.InvalidParam();
 
