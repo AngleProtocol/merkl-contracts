@@ -181,7 +181,7 @@ contract ReferralRegistry is UUPSHelper {
             }
         }
         if (referralPrograms[key].requiresRefererToBeSet) {
-            if(refererStatus[key][referrer] != ReferralStatus.Set) revert Errors.RefererNotSet();
+            if (refererStatus[key][referrer] != ReferralStatus.Set) revert Errors.RefererNotSet();
         }
         keyToUserToReferrer[key][msg.sender] = referrer;
         keyToReferred[key][referrer].push(msg.sender);
