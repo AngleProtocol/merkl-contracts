@@ -57,6 +57,9 @@ contract ReferralRegistry is UUPSHelper {
     /// @notice Mapping to store user to referrer relationships
     mapping(string => mapping(address => address)) public keyToUserToReferrer;
 
+    /// @notice Mapping to list referred
+    mapping(string => mapping(address => address[])) public keyToReferred;
+
     /// @notice Adds a new referral key to the list
     /// @param key The referral key to add
     /// @param _cost The cost of the referral program
@@ -161,10 +164,22 @@ contract ReferralRegistry is UUPSHelper {
     /// @param key The referral key for which the user is acknowledging the referrer
     /// @param referrer The address of the referrer
     function acknowledgeReferrer(string calldata key, address referrer) public {
+        if (keyToUserToReferrer[key][msg.sender] != address(0)) {
+            address previousReferrer = keyToUserToReferrer[key][msg.sender];
+            address[] storage previousListOfReferred = keyToReferred[key][previousReferrer];
+            for (uint256 i = 0; i < previousListOfReferred.length; i++) {
+                if (previousListOfReferred[i] == msg.sender) {
+                    previousListOfReferred[i] = previousListOfReferred[previousListOfReferred.length - 1];
+                    previousListOfReferred.pop();
+                    break;
+                }
+            }
+        }
         if (referralPrograms[key].requiresRefererToBeSet) {
             require(refererStatus[key][referrer] == ReferralStatus.Set, "Referrer has not created a referral link");
         }
         keyToUserToReferrer[key][msg.sender] = referrer;
+        keyToReferred[key][referrer].push(msg.sender);
         emit ReferrerAcknowledged(key, msg.sender, referrer);
     }
 
@@ -279,6 +294,13 @@ contract ReferralRegistry is UUPSHelper {
     /// @return The referrer of the user for the given key
     function getReferrer(string calldata key, address user) external view returns (address) {
         return keyToUserToReferrer[key][user];
+    }
+
+    /// @notice Gets the list of referred users
+    /// @param key The referral key to check
+    /// @param user The referrer
+    function getReferredUsers(string calldata key, address user) external view returns (address[] memory) {
+        return keyToReferred[key][user];
     }
 
     /// @notice Gets the cost of a referral for a specific key
