@@ -37,4 +37,5 @@ library Errors {
     error ReentrantCall();
     error WithdrawalFailed();
     error InvalidClaim();
+    error RefererNotSet();
 }

@@ -30,7 +30,7 @@ contract DeployReferralRegistry is BaseScript {
         console.log("ReferralRegistry Implementation:", implementation);
 
         // Deploy proxy
-        ERC1967Proxy proxy = new ERC1967Proxy(implementation, "");
+        ERC1967Proxy proxy = new ERC1967Proxy{salt: vm.envBytes32("DEPLOY_SALT_2")}(implementation, "");
         console.log("ReferralRegistry Proxy:", address(proxy));
 
         // Initialize

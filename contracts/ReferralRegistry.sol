@@ -76,12 +76,8 @@ contract ReferralRegistry is UUPSHelper {
         address _paymentToken
     ) external payable {
         if (referralPrograms[key].owner != address(0)) revert Errors.KeyAlreadyUsed();
-        if (msg.value != costReferralProgram) revert Errors.NotEnoughPayment();
-        // Why require instead of revert wiht custom errors ?
-        require(
-            _cost == 0 || (_cost > 0 && _requiresRefererToBeSet),
-            "Cost must be set if requiresRefererToBeSet is true"
-        );
+        if (msg.value < costReferralProgram) revert Errors.NotEnoughPayment();
+        if (_cost != 0 && !_requiresRefererToBeSet) revert Errors.InvalidParam();
         referralKeys.push(key);
         referralPrograms[key] = ReferralProgram({
             owner: _owner,
@@ -94,10 +90,10 @@ contract ReferralRegistry is UUPSHelper {
             // Why don't we just use `costReferralProgram` everywhere instead of `msg.value` ?
             // We wouldn't need to check if the value l76 is correct
             (bool sent, ) = feeRecipient.call{ value: msg.value }("");
-            require(sent, "Failed to send Ether");
+            if (!sent) revert Errors.NotEnoughPayment();
         }
         // Worth emitting the full struct here
-        emit ReferralKeyAdded(key);
+        emit ReferralKeyAdded(key, referralPrograms[key]);
     }
 
     /// @notice Edits the parameters of a referral program
@@ -115,6 +111,8 @@ contract ReferralRegistry is UUPSHelper {
     ) external {
         // Why don't we also check the ` _cost == 0 || (_cost > 0 && _requiresRefererToBeSet)`?
         if (referralPrograms[key].owner != msg.sender) revert Errors.NotAllowed();
+        if (newCost != 0 && !newRequiresRefererToBeSet) revert Errors.InvalidParam();
+
         referralPrograms[key] = ReferralProgram({
             owner: referralPrograms[key].owner,
             requiresAuthorization: newRequiresAuthorization,
@@ -145,14 +143,8 @@ contract ReferralRegistry is UUPSHelper {
     /// @param referrerCode The code of the referrer
     function becomeReferrer(string calldata key, string calldata referrerCode) external payable {
         if (referralPrograms[key].owner == address(0)) revert Errors.NotAllowed();
-        require(codeToReferrer[key][referrerCode] == address(0), "Referrer code already in use");
+        if (codeToReferrer[key][referrerCode] != address(0)) revert Errors.KeyAlreadyUsed();
         ReferralProgram storage program = referralPrograms[key];
-        if (program.requiresAuthorization) {
-            if (refererStatus[key][msg.sender] != ReferralStatus.Allowed) revert Errors.NotAllowed();
-        }
-        refererStatus[key][msg.sender] = ReferralStatus.Set;
-        referrerCodeMapping[key][msg.sender] = referrerCode;
-        codeToReferrer[key][referrerCode] = msg.sender;
         if (program.cost > 0) {
             if (address(program.paymentToken) == address(0)) {
                 if (msg.value < program.cost) revert Errors.NotEnoughPayment();
@@ -164,6 +156,12 @@ contract ReferralRegistry is UUPSHelper {
                 IERC20(program.paymentToken).safeTransferFrom(msg.sender, program.owner, program.cost);
             }
         }
+        if (program.requiresAuthorization) {
+            if (refererStatus[key][msg.sender] != ReferralStatus.Allowed) revert Errors.NotAllowed();
+        }
+        refererStatus[key][msg.sender] = ReferralStatus.Set;
+        referrerCodeMapping[key][msg.sender] = referrerCode;
+        codeToReferrer[key][referrerCode] = msg.sender;
         emit ReferrerAdded(key, msg.sender);
     }
 
@@ -183,7 +181,7 @@ contract ReferralRegistry is UUPSHelper {
             }
         }
         if (referralPrograms[key].requiresRefererToBeSet) {
-            require(refererStatus[key][referrer] == ReferralStatus.Set, "Referrer has not created a referral link");
+            if(refererStatus[key][referrer] != ReferralStatus.Set) revert Errors.RefererNotSet();
         }
         keyToUserToReferrer[key][msg.sender] = referrer;
         keyToReferred[key][referrer].push(msg.sender);
@@ -197,6 +195,7 @@ contract ReferralRegistry is UUPSHelper {
     /// not set
     function acknowledgeReferrerByKey(string calldata key, string calldata referrerCode) external {
         address referrer = codeToReferrer[key][referrerCode];
+        if (referrer == address(0)) revert Errors.NotAllowed();
         acknowledgeReferrer(key, referrer);
     }
 
@@ -225,7 +224,7 @@ contract ReferralRegistry is UUPSHelper {
         bool newRequiresRefererToBeSet,
         address newPaymentToken
     );
-    event ReferralKeyAdded(string indexed key);
+    event ReferralKeyAdded(string indexed key, ReferralProgram program);
     event ReferralKeyRemoved(uint256 index);
     event UpgradeabilityRevoked();
 
