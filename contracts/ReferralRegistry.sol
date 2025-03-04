@@ -77,6 +77,7 @@ contract ReferralRegistry is UUPSHelper {
     ) external payable {
         if (referralPrograms[key].owner != address(0)) revert Errors.KeyAlreadyUsed();
         if (msg.value != costReferralProgram) revert Errors.NotEnoughPayment();
+        // Why require instead of revert wiht custom errors ?
         require(
             _cost == 0 || (_cost > 0 && _requiresRefererToBeSet),
             "Cost must be set if requiresRefererToBeSet is true"
@@ -90,9 +91,12 @@ contract ReferralRegistry is UUPSHelper {
             paymentToken: _paymentToken
         });
         if (costReferralProgram > 0) {
+            // Why don't we just use `costReferralProgram` everywhere instead of `msg.value` ?
+            // We wouldn't need to check if the value l76 is correct
             (bool sent, ) = feeRecipient.call{ value: msg.value }("");
             require(sent, "Failed to send Ether");
         }
+        // Worth emitting the full struct here
         emit ReferralKeyAdded(key);
     }
 
@@ -109,6 +113,7 @@ contract ReferralRegistry is UUPSHelper {
         bool newRequiresRefererToBeSet,
         address newPaymentToken
     ) external {
+        // Why don't we also check the ` _cost == 0 || (_cost > 0 && _requiresRefererToBeSet)`?
         if (referralPrograms[key].owner != msg.sender) revert Errors.NotAllowed();
         referralPrograms[key] = ReferralProgram({
             owner: referralPrograms[key].owner,
@@ -151,6 +156,8 @@ contract ReferralRegistry is UUPSHelper {
         if (program.cost > 0) {
             if (address(program.paymentToken) == address(0)) {
                 if (msg.value < program.cost) revert Errors.NotEnoughPayment();
+                // Are we sure this is safe? Like couldn't it loop by adding code to `program.owner` while only paying
+                // once `program.cost`
                 (bool sent, ) = program.owner.call{ value: msg.value }("");
                 require(sent, "Failed to send Ether");
             } else {
@@ -186,6 +193,8 @@ contract ReferralRegistry is UUPSHelper {
     /// @notice Allows a user to acknowledge that they are referred by a referrer using a referrer code
     /// @param key The referral key for which the user is acknowledging the referrer
     /// @param referrerCode The code of the referrer
+    /// TODO: This function doesn't work when `referralPrograms[key].requiresRefererToBeSet` is false and referrerCode is
+    /// not set
     function acknowledgeReferrerByKey(string calldata key, string calldata referrerCode) external {
         address referrer = codeToReferrer[key][referrerCode];
         acknowledgeReferrer(key, referrer);
@@ -273,6 +282,9 @@ contract ReferralRegistry is UUPSHelper {
     function getReferralKeys() external view returns (string[] memory) {
         return referralKeys;
     }
+
+    // Why did we add all the below getters?
+
     /// @notice Gets the details of a referral program
     /// @param key The referral key to get details for
     /// @return The details of the referral program
