@@ -72,7 +72,7 @@ contract ReferralRegistryTest is Test {
         referralRegistry.addReferralKey{value: fee}(referralKey, cost, requiresRefererToBeSet, owner, requiresAuthorization, paymentToken);
 
         uint256 newCost = 2000;
-        bool newRequiresRefererToBeSet = false;
+        bool newRequiresRefererToBeSet = true;
         bool newRequiresAuthorization = false;
         address newPaymentToken = address(new MockERC20());
 
