@@ -498,7 +498,7 @@ contract CreateCampaigns is DistributionCreatorScript {
     uint256 distributionChain = 100;
     uint16[4] public chains = [1, 100, 8453, 59144];
     uint32 public campaignType = 22;
-    uint32 public subCampaignType = 2;
+    uint32 public subCampaignType = 0;
     uint256 public tokenId = 0;
     address[] public whitelist = new address[](0);
     address[] public blacklist = new address[](0);
@@ -508,40 +508,42 @@ contract CreateCampaigns is DistributionCreatorScript {
     bool public rewardTokenPricing = false;
     string public baseUrl = "https://app.hyperdrive.box/market/";
     address public rewardToken = 0x79385D4B4c531bBbDa25C4cFB749781Bd9E23039;
+    uint32 startTimestamp = 1740787200;
+    uint32 duration = 61 days;
 
     function run() external broadcast {
         // MODIFY THESE VALUES TO SET YOUR DESIRED CAMPAIGN INPUTS
         uint256 amount = 1e5 * 10 ** (IERC20Metadata(rewardToken).decimals());
         targetTokens[1] = [
-            0xd7e470043241C10970953Bd8374ee6238e77D735
-            // 0x324395D5d835F84a02A75Aa26814f6fD22F25698
-            // 0xca5dB9Bb25D09A9bF3b22360Be3763b5f2d13589,
-            // 0xd41225855A5c5Ba1C672CcF4d72D1822a5686d30,
-            // 0xA29A771683b4857bBd16e1e4f27D5B6bfF53209B,
-            // 0x4c3054e51b46BE3191be9A05e73D73F1a2147854,
-            // 0x158Ed87D7E529CFE274f3036ade49975Fb10f030,
-            // 0xc8D47DE20F7053Cc02504600596A647A482Bbc46,
-            // 0x7548c4F665402BAb3a4298B88527824B7b18Fe27,
-            // 0xA4090183878d5B7b6Ad104863743dd7E58985321,
-            // 0x8f2AC104e07d94488a1821E5A393351FCA9239aa,
-            // 0x05b65FA90AD702e6Fd0C3Bd7c4c9C47BAB2BEa6b,
-            // 0xf1232Dc21eADAf503D82f1e1361CfF2BBf40394D
+            // 0xd7e470043241C10970953Bd8374ee6238e77D735
+            0x324395D5d835F84a02A75Aa26814f6fD22F25698,
+            0xca5dB9Bb25D09A9bF3b22360Be3763b5f2d13589,
+            0xd41225855A5c5Ba1C672CcF4d72D1822a5686d30,
+            0xA29A771683b4857bBd16e1e4f27D5B6bfF53209B,
+            0x4c3054e51b46BE3191be9A05e73D73F1a2147854,
+            0x158Ed87D7E529CFE274f3036ade49975Fb10f030,
+            0xc8D47DE20F7053Cc02504600596A647A482Bbc46,
+            0x7548c4F665402BAb3a4298B88527824B7b18Fe27,
+            0xA4090183878d5B7b6Ad104863743dd7E58985321,
+            0x8f2AC104e07d94488a1821E5A393351FCA9239aa,
+            0x05b65FA90AD702e6Fd0C3Bd7c4c9C47BAB2BEa6b,
+            0xf1232Dc21eADAf503D82f1e1361CfF2BBf40394D
         ];
-        targetTokens[100] = [
-            0x2f840f1575EE77adAa43415Ac5953F7Db9F8C6ba,
-            0xEe9BFf933aDD313C4289E98dA80fEfbF9d5Cd9Ba,
-            0x9248f874AaA2c53AD9324d7A2D033ea133443874
-        ];
-        // targetTokens[8453] = [
-        //     0x2a1ca35Ded36C531F77c614b5AAA0d4F86edbB06,
-        //     0xFcdaF9A4A731C24ed2E1BFd6FA918d9CF7F50137,
-        //     0x1243C06146ACa2D4Aaf8F9860F6D8d59d636d46C,
-        //     0xceD9F810098f8329472AEFbaa1112534E96A5c7b,
-        //     0x9bAdB6A21FbA04EE94fde3E85F7d170E90394c89,
-        //     0xD9b66D9a819B36ECEfC26B043eF3B422d5A6123a,
-        //     0xdd8E1B14A04cbdD98dfcAF3F0Db84A80Bfb8FC25
+        // targetTokens[100] = [
+        //     0x2f840f1575EE77adAa43415Ac5953F7Db9F8C6ba,
+        //     0xEe9BFf933aDD313C4289E98dA80fEfbF9d5Cd9Ba,
+        //     0x9248f874AaA2c53AD9324d7A2D033ea133443874
         // ];
-        // targetTokens[59144] = [0xB56e0Bf37c4747AbbC3aA9B8084B0d9b9A336777, 0x1cB0E96C07910fee9a22607bb9228c73848903a3];
+        targetTokens[8453] = [
+            0x2a1ca35Ded36C531F77c614b5AAA0d4F86edbB06,
+            0xFcdaF9A4A731C24ed2E1BFd6FA918d9CF7F50137,
+            0x1243C06146ACa2D4Aaf8F9860F6D8d59d636d46C,
+            0xceD9F810098f8329472AEFbaa1112534E96A5c7b,
+            0x9bAdB6A21FbA04EE94fde3E85F7d170E90394c89,
+            0xD9b66D9a819B36ECEfC26B043eF3B422d5A6123a,
+            0xdd8E1B14A04cbdD98dfcAF3F0Db84A80Bfb8FC25
+        ];
+        targetTokens[59144] = [0xB56e0Bf37c4747AbbC3aA9B8084B0d9b9A336777, 0x1cB0E96C07910fee9a22607bb9228c73848903a3];
 
         CampaignInput[] memory inputs;
         uint256 countInputs = 0;
@@ -576,8 +578,8 @@ contract CreateCampaigns is DistributionCreatorScript {
                     rewardToken: rewardToken,
                     amount: amount,
                     campaignType: campaignType,
-                    startTimestamp: 1738368000,
-                    duration: 90 days,
+                    startTimestamp: startTimestamp,
+                    duration: duration,
                     campaignData: campaignData
                 });
             }
@@ -611,7 +613,7 @@ contract CreateCampaigns is DistributionCreatorScript {
             });
         }
 
-        // IERC20(rewardToken).approve(creatorAddress, inputs.length * inputs[0].amount);
+        IERC20(rewardToken).approve(creatorAddress, inputs.length * inputs[0].amount);
         bytes32[] memory campaignIds = creator.createCampaigns(campaigns);
 
         console.log("Created %s campaigns:", inputsLength);
