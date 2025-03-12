@@ -20,6 +20,6 @@ contract DeployCreateX is BaseScript, CreateXConstants {
 
         // Broadcast the raw pre-signed transaction
         vm.broadcast(CREATEX_DEPLOYER);
-        vm.broadcastRawTransaction(CREATEX_RAW_TX_3000000);
+        vm.broadcastRawTransaction(CREATEX_RAW_TX_45000000);
     }
 }

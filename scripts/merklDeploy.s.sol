@@ -47,7 +47,7 @@ contract MainDeployScript is Script, JsonReader, TokensUtils, CreateXConstants {
         0xF4c94b2FdC2efA4ad4b831f312E7eF74890705DA
     ];
 
-    uint256 public FUND_AMOUNT = 0.001 ether;
+    uint256 public FUND_AMOUNT = 0.5 ether;
 
     address public ANGLE_LABS;
     address public DEPLOYER_ADDRESS;
@@ -131,7 +131,7 @@ contract MainDeployScript is Script, JsonReader, TokensUtils, CreateXConstants {
         vm.startBroadcast(DEPLOYER_PRIVATE_KEY);
 
         // Transfer initial funds to required addresses
-        transferInitialFunds();
+        // transferInitialFunds();
 
         // Deploy ProxyAdmin
         address proxyAdmin = deployProxyAdmin();

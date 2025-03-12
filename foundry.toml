@@ -13,7 +13,7 @@ fs_permissions = [
   { access = "write", path = "./transaction.json" }, 
   { access = "write", path = "./transactions.json" }
 ]
-solc = "0.8.25"
+solc = "0.8.19"
 
 ffi = true
 
@@ -70,6 +70,7 @@ fork = "${ETH_NODE_URI_FORK}"
 sonic = "${SONIC_NODE_URI}"
 corn = "${CORN_NODE_URI}"
 ink = "${ETH_NODE_URI_INK}"
+nibiru = "${NIBIRU_NODE_URI}"
 
 [etherscan]
 localhost = { url = "http://localhost:4000", key = "none" }
@@ -114,3 +115,5 @@ swell = { chainId = 1923, key = "${SWELL_ETHERSCAN_API_KEY}", url = "https://exp
 sonic = { chainId = 146, key = "${SONIC_ETHERSCAN_API_KEY}", url = "https://api.sonicscan.org/api/" }
 corn = { chainId = 21000000, key = "${CORN_ETHERSCAN_API_KEY}", url = "https://api.routescan.io/v2/network/mainnet/evm/21000000/etherscan"}
 ink = { chainId = 57073, key = "${INK_ETHERSCAN_API_KEY}", url = "https://explorer.inkonchain.com/api" }
+nibiru = { chainId = 6900, key = "${NIBIRU_ETHERSCAN_API_KEY}", url = "https://api.routescan.io/v2/network/mainnet/evm/6900/etherscan/api" }
+
