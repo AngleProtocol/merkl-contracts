@@ -16,6 +16,10 @@ interface IDistributionCreator {
     function feeRecipient() external view returns (address);
 }
 
+interface IStaker {
+    function stake(uint256 _amount, address receiver) external;
+}
+
 /// @title BobTokenWrapper
 /// @dev This token can only be held by Merkl distributor
 /// @dev Transferring to the distributor will require transferring the underlying token to this contract
@@ -31,6 +35,7 @@ contract BobTokenWrapper is UUPSHelper, ERC20Upgradeable {
     address public distributor;
     address public feeRecipient;
     address public distributionCreator;
+    address public staker;
 
     /// @notice Underlying token used
     address public underlying;
@@ -45,17 +50,19 @@ contract BobTokenWrapper is UUPSHelper, ERC20Upgradeable {
     function initialize(
         address _underlying,
         IAccessControlManager _accessControlManager,
-        address _distributionCreator
+        address _distributionCreator,
+        address _staker
     ) public initializer {
         __ERC20_init(
             string.concat("Merkl Token Wrapper - ", IERC20Metadata(_underlying).name()),
             string.concat("mtw", IERC20Metadata(_underlying).symbol())
         );
         __UUPSUpgradeable_init();
-        if (address(_accessControlManager) == address(0)) revert Errors.ZeroAddress();
+        if (address(_accessControlManager) == address(0) || _staker == address(0)) revert Errors.ZeroAddress();
         underlying = _underlying;
         accessControlManager = _accessControlManager;
         distributionCreator = _distributionCreator;
+        staker = _staker;
         distributor = IDistributionCreator(_distributionCreator).distributor();
         feeRecipient = IDistributionCreator(_distributionCreator).feeRecipient();
     }
@@ -84,7 +91,7 @@ contract BobTokenWrapper is UUPSHelper, ERC20Upgradeable {
 
     function _afterTokenTransfer(address, address to, uint256 amount) internal override {
         if (to == feeRecipient) {
-            _burn(to, amount); // To avoid having any token aside from on the distributor
+            _burn(to, amount);
         }
     }
 
@@ -93,7 +100,9 @@ contract BobTokenWrapper is UUPSHelper, ERC20Upgradeable {
         _burn(msg.sender, amount);
         if (option == 0) IERC20(underlying).safeTransfer(to, amount);
         else {
-            // TODO
+            address _staker = staker;
+            IERC20(underlying).safeApprove(_staker, amount);
+            IStaker(_staker).stake(amount, to);
         }
     }
 
