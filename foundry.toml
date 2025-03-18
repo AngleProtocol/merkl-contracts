@@ -69,7 +69,11 @@ swell = "${SWELL_NODE_URI}"
 fork = "${ETH_NODE_URI_FORK}"
 sonic = "${SONIC_NODE_URI}"
 corn = "${CORN_NODE_URI}"
-ink = "${ETH_NODE_URI_INK}"
+ink = "${INK_NODE_URI}"
+ronin = "${RONIN_NODE_URI}"
+flow = "${FLOW_NODE_URI}"
+berachain = "${BERACHAIN_NODE_URI}"
+nibiru = "${NIBIRU_NODE_URI}"
 
 [etherscan]
 localhost = { url = "http://localhost:4000", key = "none" }
@@ -114,3 +118,7 @@ swell = { chainId = 1923, key = "${SWELL_ETHERSCAN_API_KEY}", url = "https://exp
 sonic = { chainId = 146, key = "${SONIC_ETHERSCAN_API_KEY}", url = "https://api.sonicscan.org/api/" }
 corn = { chainId = 21000000, key = "${CORN_ETHERSCAN_API_KEY}", url = "https://api.routescan.io/v2/network/mainnet/evm/21000000/etherscan"}
 ink = { chainId = 57073, key = "${INK_ETHERSCAN_API_KEY}", url = "https://explorer.inkonchain.com/api" }
+ronin = { chainId = 2020, key = "${RONIN_ETHERSCAN_API_KEY}", url = "https://sourcify.roninchain.com/server/" }
+flow = { chainId = 747, key = "${FLOW_ETHERSCAN_API_KEY}", url = "https://api.flowscan.io/api" }
+berachain = { chainId = 80094, key = "${BERACHAIN_ETHERSCAN_API_KEY}", url = "https://api.berascan.com/api" }
+nibiru = { chainId = 6900, key = "${NIBIRU_ETHERSCAN_API_KEY}", url = "https://api.routescan.io/v2/network/mainnet/evm/6900/etherscan/api" }
