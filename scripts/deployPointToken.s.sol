@@ -20,11 +20,11 @@ contract DeployPointToken is BaseScript {
     function run() public {
         uint256 deployerPrivateKey = vm.envUint("DEPLOYER_PRIVATE_KEY");
         vm.startBroadcast(deployerPrivateKey);
-        address minter = 0x959680eded2c956A9Dd5184cD84D58497Cd41E0F;
+        address minter = 0x9BF9E7e728ed796F3D8F871087Ba0348C9E3adf9;
         address accessControlManager = 0x05225a6416EDaeeC7227027E86F7A47D18A06b91;
 
         // Deploy implementation
-        PointToken implementation = new PointToken("fake Apples","FA", minter,accessControlManager);
+        PointToken implementation = new PointToken("Apples","APPL", minter,accessControlManager);
         console.log("PointToken Implementation:", address(implementation));
 
         // Initialize
