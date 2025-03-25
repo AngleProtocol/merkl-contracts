@@ -40,13 +40,14 @@ contract DeployPufferPointTokenWrapper is BaseScript {
         // Deploy implementation
         PufferPointTokenWrapper implementation = new PufferPointTokenWrapper();
         console.log("PufferPointTokenWrapper Implementation:", address(implementation));
-
+        /*
         // Deploy proxy
         ERC1967Proxy proxy = new ERC1967Proxy(address(implementation), "");
         console.log("PufferPointTokenWrapper Proxy:", address(proxy));
 
         // Initialize
         PufferPointTokenWrapper(address(proxy)).initialize(underlying, cliffDuration, manager, distributionCreator);
+        */
         vm.stopBroadcast();
     }
 }
