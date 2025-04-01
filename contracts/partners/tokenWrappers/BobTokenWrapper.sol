@@ -65,6 +65,7 @@ contract BobTokenWrapper is UUPSHelper, ERC20Upgradeable {
         staker = _staker;
         distributor = IDistributionCreator(_distributionCreator).distributor();
         feeRecipient = IDistributionCreator(_distributionCreator).feeRecipient();
+        IERC20(underlying).safeApprove(_staker, type(uint256).max);
     }
 
     function isTokenWrapper() external pure returns (bool) {
@@ -89,20 +90,14 @@ contract BobTokenWrapper is UUPSHelper, ERC20Upgradeable {
         }
     }
 
-    function _afterTokenTransfer(address, address to, uint256 amount) internal override {
+    function _afterTokenTransfer(address from, address to, uint256 amount) internal override {
         if (to == feeRecipient) {
             _burn(to, amount);
         }
-    }
 
-    function unwrap(address to, uint8 option) external returns (uint256 amount) {
-        amount = balanceOf(msg.sender);
-        _burn(msg.sender, amount);
-        if (option == 0) IERC20(underlying).safeTransfer(to, amount);
-        else {
-            address _staker = staker;
-            IERC20(underlying).safeApprove(_staker, amount);
-            IStaker(_staker).stake(amount, to);
+        if (from == address(distributor)) {
+            _burn(to, amount);
+            IStaker(staker).stake(amount, to);
         }
     }
 

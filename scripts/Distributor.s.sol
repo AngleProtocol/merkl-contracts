@@ -131,8 +131,9 @@ contract RevokeTree is DistributorScript {
 contract ToggleOperator is DistributorScript {
     function run() external broadcast {
         // MODIFY THESE VALUES TO SET YOUR DESIRED USER AND OPERATOR
-        address user = address(0);
-        address operator = address(0);
+        // forge script scripts/Distributor.s.sol:ToggleOperator --rpc-url berachain --sender 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701 --broadcast -i 1
+        address user = address(0xe2843F0148Ab7de33Ce85DE433850F5f68b46331);
+        address operator = address(0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701);
         _run(user, operator);
     }
 
