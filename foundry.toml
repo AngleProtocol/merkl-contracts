@@ -77,6 +77,7 @@ nibiru = "${NIBIRU_NODE_URI}"
 zircuit = "${ZIRCUIT_NODE_URI}"
 apechain = "${APECHAIN_NODE_URI}"
 hyperevm = "${HYPEREVM_NODE_URI}"
+hemi="${HEMI_NODE_URI}"
 
 [etherscan]
 localhost = { url = "http://localhost:4000", key = "none" }
@@ -128,3 +129,4 @@ nibiru = { chainId = 6900, key = "${NIBIRU_ETHERSCAN_API_KEY}", url = "https://a
 zircuit = { chainId = 48900, key = "${ZIRCUIT_ETHERSCAN_API_KEY}", url = "https://sourcify.dev/server" }
 apechain = { chainId = 33139, key = "${APECHAIN_ETHERSCAN_API_KEY}", url = "https://api.apescan.io/api" }
 hyperevm = { chainId = 999, key = "${HYPEREVM_ETHERSCAN_API_KEY}", url = "https://hyperliquid.cloud.blockscout.com/api" }
+hemi = { chainId = 43111, key = "${HEMI_ETHERSCAN_API_KEY}", url = "https://explorer.hemi.xyz/api/" }
