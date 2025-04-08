@@ -97,6 +97,15 @@ contract Distributor is UUPSHelper {
     /// @dev If the mapping is empty, by default rewards will accrue on the user address
     mapping(address => mapping(address => address)) public claimRecipient;
 
+    bytes32 public constant SET_CLAIM_TYPEHASH =
+        keccak256("SetClaimRecipient(address user,address recipient,address token,uint256 deadline)");
+
+    bytes32 public constant TOGGLE_OPERATOR_TYPEHASH =
+        keccak256("ToggleOperator(address user,address operator,uint256 deadline)");
+
+    bytes32 internal constant EIP712_DOMAIN_TYPEHASH =
+        keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)");
+
     uint256[36] private __gap;
 
     /*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -242,6 +251,67 @@ contract Distributor is UUPSHelper {
     function setClaimRecipient(address recipient, address token) external {
         claimRecipient[msg.sender][token] = recipient;
         emit ClaimRecipientUpdated(msg.sender, recipient, token);
+    }
+
+    function getDomainSeparator() public view returns (bytes32 domainSeparator) {
+        domainSeparator = keccak256(
+            abi.encode(
+                EIP712_DOMAIN_TYPEHASH,
+                keccak256(bytes("MerklDistributor")),
+                keccak256(bytes("1")),
+                block.chainid,
+                address(this)
+            )
+        );
+    }
+
+    // New function with signature verification (added for upgrade)
+    function toggleOperatorWithSig(
+        address user,
+        address operator,
+        uint256 deadline,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) external {
+        // Create the hash to match the signature
+        bytes32 structHash = keccak256(abi.encode(TOGGLE_OPERATOR_TYPEHASH, user, operator, deadline));
+
+        bytes32 digest = keccak256(abi.encodePacked("\x19\x01", getDomainSeparator(), structHash));
+
+        // Recover the signer from the signature
+        address recovered = ecrecover(digest, v, r, s);
+        if (recovered == address(0) || recovered != user || block.timestamp > deadline)
+            revert Errors.InvalidSignature();
+
+        // Now toggle the operator as per original logic
+        uint256 oldValue = operators[user][operator];
+        operators[user][operator] = 1 - oldValue;
+        emit OperatorToggled(user, operator, oldValue == 0);
+    }
+
+    function setClaimRecipientWithSig(
+        address user,
+        address recipient,
+        address token,
+        uint256 deadline,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) external {
+        // Create the hash to match the signature
+        bytes32 structHash = keccak256(abi.encode(SET_CLAIM_TYPEHASH, user, recipient, token, deadline));
+
+        bytes32 digest = keccak256(abi.encodePacked("\x19\x01", getDomainSeparator(), structHash));
+
+        // Recover the signer from the signature
+        address recovered = ecrecover(digest, v, r, s);
+        if (recovered == address(0) || recovered != user || block.timestamp > deadline)
+            revert Errors.InvalidSignature();
+
+        // Set the claim recipient
+        claimRecipient[user][token] = recipient;
+        emit ClaimRecipientUpdated(user, recipient, token);
     }
 
     /// @notice Freezes the Merkle tree update until the dispute is resolved
