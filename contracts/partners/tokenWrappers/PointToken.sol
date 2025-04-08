@@ -31,6 +31,11 @@ contract PointToken is ERC20 {
         _;
     }
 
+    modifier onlyGovernor() {
+        if (!accessControlManager.isGovernor(msg.sender)) revert Errors.NotGovernor();
+        _;
+    }
+
     modifier onlyMinter() {
         if (!minters[msg.sender]) revert Errors.NotTrusted();
         _;
@@ -51,7 +56,7 @@ contract PointToken is ERC20 {
         }
     }
 
-    function toggleMinter(address minter) external onlyGovernorOrGuardian {
+    function toggleMinter(address minter) external onlyGovernor {
         minters[minter] = !minters[minter];
     }
 
