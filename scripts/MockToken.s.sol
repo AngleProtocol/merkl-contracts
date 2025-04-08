@@ -44,9 +44,9 @@ contract Deploy is MockTokenScript {
 // Mint script
 contract Mint is MockTokenScript {
     function run() external broadcast {
-        // MODIFY THESE VALUES TO SET YOUR DESIRED MINT PARAMETERS
-        address token = 0xb5eCAa1a867FeCCD6d87604bc16a2b6B53D706BF;
-        address recipient = 0x103eC7cF86CC6f1DAada07830C84f43B42Bf1eB3;
+        // forge script scripts/MockToken.s.sol:Mint --rpc-url ronin --sender 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701 --broadcast -i 1
+        address token = 0x152Ce4c126b91EdE48c5C13E3aF299465800E9E8;
+        address recipient = 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701;
         uint256 amount = 1e18;
         _run(token, recipient, amount);
     }
@@ -58,6 +58,9 @@ contract Mint is MockTokenScript {
     function _run(address token, address recipient, uint256 amount) internal {
         MockToken(token).mint(recipient, amount);
         console.log("Minted %s tokens to %s", amount, recipient);
+        console.log(MockToken(token).name());
+        console.log(MockToken(token).symbol());
+        console.log(MockToken(token).decimals());
     }
 }
 
