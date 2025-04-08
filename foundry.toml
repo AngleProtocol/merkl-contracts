@@ -76,6 +76,7 @@ berachain = "${BERACHAIN_NODE_URI}"
 nibiru = "${NIBIRU_NODE_URI}"
 apechain = "${APECHAIN_NODE_URI}"
 hyperevm = "${HYPEREVM_NODE_URI}"
+hemi="${HEMI_NODE_URI}"
 
 [etherscan]
 localhost = { url = "http://localhost:4000", key = "none" }
@@ -126,3 +127,4 @@ berachain = { chainId = 80094, key = "${BERACHAIN_ETHERSCAN_API_KEY}", url = "ht
 nibiru = { chainId = 6900, key = "${NIBIRU_ETHERSCAN_API_KEY}", url = "https://api.routescan.io/v2/network/mainnet/evm/6900/etherscan/api" }
 apechain = { chainId = 33139, key = "${APECHAIN_ETHERSCAN_API_KEY}", url = "https://api.apescan.io/api" }
 hyperevm = { chainId = 999, key = "${HYPEREVM_ETHERSCAN_API_KEY}", url = "https://hyperliquid.cloud.blockscout.com/api" }
+hemi = { chainId = 43111, key = "${HEMI_ETHERSCAN_API_KEY}", url = "https://explorer.hemi.xyz/api/" }
