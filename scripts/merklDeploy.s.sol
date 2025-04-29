@@ -8,7 +8,6 @@ import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { console } from "forge-std/console.sol";
 import { JsonReader } from "@utils/JsonReader.sol";
-import { AccessControlEnumerableUpgradeable } from "@openzeppelin/contracts-upgradeable/access/AccessControlEnumerableUpgradeable.sol";
 
 import { CreateXConstants } from "./utils/CreateXConstants.sol";
 import { TokensUtils } from "./utils/TokensUtils.sol";
@@ -31,7 +30,7 @@ import { MockToken } from "../contracts/mock/MockToken.sol";
 //     "0x0000000000000000000000000000000000000000" "0x0000000000000000000000000000000000000000" \
 //     --rpc-url $RPC_URL \
 //     -vvvv
-contract MainDeployScript is Script, JsonReader, TokensUtils, CreateXConstants, AccessControlEnumerableUpgradeable {
+contract MainDeployScript is Script, JsonReader, TokensUtils, CreateXConstants {
     uint256 private DEPLOYER_PRIVATE_KEY;
     uint256 private MERKL_DEPLOYER_PRIVATE_KEY;
 
@@ -168,20 +167,28 @@ contract MainDeployScript is Script, JsonReader, TokensUtils, CreateXConstants, 
         // Revoke GOVENOR from DEPLOYER_ADDRESS if deployer is GUARDIAN_ADDRESS (keeping GUARDIAN role), else revoke both roles by calling removeGovernor
         if (
             DEPLOYER_ADDRESS == GUARDIAN_ADDRESS &&
-            getRoleMemberCount(AccessControlManager(accessControlManager.proxy).GOVERNOR_ROLE()) > 1
+            AccessControlManager(accessControlManager.proxy).getRoleMemberCount(
+                AccessControlManager(accessControlManager.proxy).GOVERNOR_ROLE()
+            ) >
+            1
         ) {
             AccessControlManager(accessControlManager.proxy).revokeRole(
                 AccessControlManager(accessControlManager.proxy).GOVERNOR_ROLE(),
                 DEPLOYER_ADDRESS
             );
-        } if(
-            DEPLOYER_ADDRESS != GUARDIAN_ADDRESS &&
-            getRoleMemberCount(AccessControlManager(accessControlManager.proxy).GOVERNOR_ROLE()) > 1
-        ) {
-            AccessControlManager(accessControlManager.proxy).removeGovernor(DEPLOYER_ADDRESS);
-        } else(
-            revert("There is no governor to revoke, check previous steps of deployment");
-        );
+        } else {
+            if (
+                DEPLOYER_ADDRESS != GUARDIAN_ADDRESS &&
+                AccessControlManager(accessControlManager.proxy).getRoleMemberCount(
+                    AccessControlManager(accessControlManager.proxy).GOVERNOR_ROLE()
+                ) >
+                1
+            ) {
+                AccessControlManager(accessControlManager.proxy).removeGovernor(DEPLOYER_ADDRESS);
+            } else {
+                revert("There is no governor to revoke, check previous steps of deployment");
+            }
+        }
 
         vm.stopBroadcast();
 
