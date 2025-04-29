@@ -445,8 +445,12 @@ contract Distributor is UUPSHelper {
             bytes memory data = datas[i];
 
             // Only approved operator can claim for `user`
-            if (msg.sender != user && tx.origin != user && operators[user][msg.sender] == 0)
-                revert Errors.NotWhitelisted();
+            if (
+                msg.sender != user &&
+                tx.origin != user &&
+                operators[user][msg.sender] == 0 &&
+                operators[user][tx.origin] == 0
+            ) revert Errors.NotWhitelisted();
 
             // Verifying proof
             bytes32 leaf = keccak256(abi.encode(user, token, amount));
