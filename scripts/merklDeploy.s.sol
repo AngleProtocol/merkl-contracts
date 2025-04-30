@@ -165,29 +165,22 @@ contract MainDeployScript is Script, JsonReader, TokensUtils, CreateXConstants {
         address disputer = deployDisputer(distributor.proxy);
 
         // Revoke GOVENOR from DEPLOYER_ADDRESS if deployer is GUARDIAN_ADDRESS (keeping GUARDIAN role), else revoke both roles by calling removeGovernor
-        if (
-            DEPLOYER_ADDRESS == GUARDIAN_ADDRESS &&
-            AccessControlManager(accessControlManager.proxy).getRoleMemberCount(
-                AccessControlManager(accessControlManager.proxy).GOVERNOR_ROLE()
-            ) >
-            1
-        ) {
-            AccessControlManager(accessControlManager.proxy).revokeRole(
-                AccessControlManager(accessControlManager.proxy).GOVERNOR_ROLE(),
-                DEPLOYER_ADDRESS
-            );
-        } else {
+        if (DEPLOYER_ADDRESS == GUARDIAN_ADDRESS) {
             if (
-                DEPLOYER_ADDRESS != GUARDIAN_ADDRESS &&
                 AccessControlManager(accessControlManager.proxy).getRoleMemberCount(
                     AccessControlManager(accessControlManager.proxy).GOVERNOR_ROLE()
-                ) >
-                1
+                ) > 1
             ) {
-                AccessControlManager(accessControlManager.proxy).removeGovernor(DEPLOYER_ADDRESS);
+                AccessControlManager(accessControlManager.proxy).revokeRole(
+                    AccessControlManager(accessControlManager.proxy).GOVERNOR_ROLE(),
+                    DEPLOYER_ADDRESS
+                );
             } else {
-                revert("There is no governor to revoke, check previous steps of deployment");
+                console.log("No governor to revoke, there must have been an error in the deployment");
             }
+        } else {
+            // removeGovernor already checks that there is at least one governor
+            AccessControlManager(accessControlManager.proxy).removeGovernor(DEPLOYER_ADDRESS);
         }
 
         vm.stopBroadcast();
