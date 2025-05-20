@@ -13,7 +13,7 @@ fs_permissions = [
   { access = "write", path = "./transaction.json" }, 
   { access = "write", path = "./transactions.json" }
 ]
-solc = "0.8.25"
+solc = "0.8.19"
 
 ffi = true
 
@@ -78,6 +78,7 @@ zircuit = "${ZIRCUIT_NODE_URI}"
 apechain = "${APECHAIN_NODE_URI}"
 hyperevm = "${HYPEREVM_NODE_URI}"
 hemi="${HEMI_NODE_URI}"
+xdc="${XDC_NODE_URI}"
 
 [etherscan]
 localhost = { url = "http://localhost:4000", key = "none" }
@@ -130,3 +131,4 @@ zircuit = { chainId = 48900, key = "${ZIRCUIT_ETHERSCAN_API_KEY}", url = "https:
 apechain = { chainId = 33139, key = "${APECHAIN_ETHERSCAN_API_KEY}", url = "https://api.apescan.io/api" }
 hyperevm = { chainId = 999, key = "${HYPEREVM_ETHERSCAN_API_KEY}", url = "https://hyperliquid.cloud.blockscout.com/api" }
 hemi = { chainId = 43111, key = "${HEMI_ETHERSCAN_API_KEY}", url = "https://explorer.hemi.xyz/api/" }
+xdc = { chainId = 50, key = "${XDC_ETHERSCAN_API_KEY}", url = "https://api.xdcscan.com/api/" }
