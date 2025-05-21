@@ -10,7 +10,7 @@
     "foundry:compile": "forge build --optimize --optimizer-runs 1000",
     "foundry:coverage": "forge coverage --ir-minimum --report lcov && yarn lcov:clean && yarn lcov:generate-html",
     "foundry:script": "forge script -vvvv",
-    "foundry:deploy": "source .env && forge script --broadcast --verify -vvvv",
+    "foundry:deploy": "source .env && FOUNDRY_PROFILE=deploy forge script --broadcast --verify -vvvv",
     "foundry:gas": "forge test --gas-report",
     "foundry:run": "docker run -it --rm -v $(pwd):/app -w /app ghcr.io/foundry-rs/foundry sh",
     "foundry:setup": "curl -L https://foundry.paradigm.xyz | bash && foundryup && git submodule update --init --recursive",
