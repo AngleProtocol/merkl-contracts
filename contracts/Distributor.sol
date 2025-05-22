@@ -97,7 +97,10 @@ contract Distributor is UUPSHelper {
     /// @dev If the mapping is empty, by default rewards will accrue on the user address
     mapping(address => mapping(address => address)) public claimRecipient;
 
-    uint256[36] private __gap;
+    /// @notice Minimum fee amount to be paid for claiming
+    uint256 public singleClaimFeeInWei;
+
+    uint256[35] private __gap;
 
     /*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                                                         EVENTS                                                      
@@ -115,6 +118,7 @@ contract Distributor is UUPSHelper {
     event OperatorToggled(address indexed user, address indexed operator, bool isWhitelisted);
     event Recovered(address indexed token, address indexed to, uint256 amount);
     event Revoked(); // With this event an indexer could maintain a table (timestamp, merkleRootUpdate)
+    event SingleClaimFeeInWeiUpdated(uint256 newValue);
     event TreeUpdated(bytes32 merkleRoot, bytes32 ipfsHash, uint48 endOfDisputePeriod);
     event TrustedToggled(address indexed eoa, bool trust);
     event UpgradeabilityRevoked();
@@ -126,6 +130,12 @@ contract Distributor is UUPSHelper {
     /// @notice Checks whether the `msg.sender` has the governor role
     modifier onlyGovernor() {
         if (!accessControlManager.isGovernor(msg.sender)) revert Errors.NotGovernor();
+        _;
+    }
+
+    /// @notice Checks whether the `msg.sender` has the governor or the guardian role
+    modifier onlyGovernorOrGuardian() {
+        if (!accessControlManager.isGovernorOrGuardian(msg.sender)) revert Errors.NotGovernorOrGuardian();
         _;
     }
 
@@ -190,6 +200,7 @@ contract Distributor is UUPSHelper {
         uint256[] calldata amounts,
         bytes32[][] calldata proofs
     ) external {
+        if (singleClaimFeeInWei > 0) revert Errors.InvalidFee();
         address[] memory recipients = new address[](users.length);
         bytes[] memory datas = new bytes[](users.length);
         _claim(users, tokens, amounts, proofs, recipients, datas);
@@ -208,6 +219,34 @@ contract Distributor is UUPSHelper {
         address[] calldata recipients,
         bytes[] memory datas
     ) external {
+        if (singleClaimFeeInWei > 0) revert Errors.InvalidFee();
+        _claim(users, tokens, amounts, proofs, recipients, datas);
+    }
+
+    /// @notice Same as the function above but with the ability to pay a fee in ETH when claiming
+    function claimRewards(
+        address[] calldata users,
+        address[] calldata tokens,
+        uint256[] calldata amounts,
+        bytes32[][] calldata proofs
+    ) external payable {
+        uint256 usersLength = users.length;
+        if (msg.value < singleClaimFeeInWei * usersLength) revert Errors.InvalidFee();
+        address[] memory recipients = new address[](usersLength);
+        bytes[] memory datas = new bytes[](usersLength);
+        _claim(users, tokens, amounts, proofs, recipients, datas);
+    }
+
+    /// @notice Same as the function above but with the ability to pay a fee in ETH when claiming
+    function claimRewardsWithRecipients(
+        address[] calldata users,
+        address[] calldata tokens,
+        uint256[] calldata amounts,
+        bytes32[][] calldata proofs,
+        address[] calldata recipients,
+        bytes[] memory datas
+    ) external payable {
+        if (msg.value < singleClaimFeeInWei * users.length) revert Errors.InvalidFee();
         _claim(users, tokens, amounts, proofs, recipients, datas);
     }
 
@@ -343,6 +382,21 @@ contract Distributor is UUPSHelper {
         if (disputer != address(0)) revert Errors.UnresolvedDispute();
         disputeAmount = _disputeAmount;
         emit DisputeAmountUpdated(_disputeAmount);
+    }
+
+    /// @notice Sets the minimum fee to claim a given reward token on Merkl
+    function updateSingleClaimFeeInWei(uint256 amount) external onlyGovernor {
+        singleClaimFeeInWei = amount;
+        emit SingleClaimFeeInWeiUpdated(amount);
+    }
+
+    /// @notice Withdraws the ETH accumulated on the contract
+    function withdrawETH(address payable recipient) external onlyGovernorOrGuardian {
+        uint256 balance = address(this).balance;
+        if (balance > 0) {
+            (bool success, ) = recipient.call{ value: balance }("");
+            if (!success) revert Errors.InvalidParam();
+        }
     }
 
     /*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
