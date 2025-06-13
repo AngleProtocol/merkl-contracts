@@ -151,3 +151,4 @@ hyperevm = { chainId = 999, key = "${HYPEREVM_ETHERSCAN_API_KEY}", url = "https:
 hemi = { chainId = 43111, key = "${HEMI_ETHERSCAN_API_KEY}", url = "https://explorer.hemi.xyz/api/" }
 xdc = { chainId = 50, key = "${XDC_ETHERSCAN_API_KEY}", url = "https://api.xdcscan.com/api/" }
 katana = {chainId = 747474, key = "${$KATANA_ETHERSCAN_API_KEY}", url = "https://explorer.katanarpc.com/" }
+redbelly = {chainId = 151, key = "${$REDBELLY_ETHERSCAN_API_KEY}", url = "https://redbelly.routescan.io/" }
