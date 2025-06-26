@@ -24,6 +24,7 @@ contract PullTokenWrapper is UUPSHelper, ERC20Upgradeable {
     // Could be put as immutable in a non upgradeable contract
     address public token;
     address public holder;
+    address public feeRecipient;
     address public distributor;
     address public distributionCreator;
 
@@ -38,38 +39,32 @@ contract PullTokenWrapper is UUPSHelper, ERC20Upgradeable {
     // ================================= FUNCTIONS =================================
 
     function initialize(
-        address underlyingToken,
-        address _accessControlManager,
+        address _token,
         address _distributionCreator,
         address _holder,
-        string memory name,
-        string memory symbol
+        string memory _name,
+        string memory _symbol
     ) public initializer {
-        __ERC20_init(string.concat(name), string.concat(symbol));
+        __ERC20_init(string.concat(_name), string.concat(_symbol));
         __UUPSUpgradeable_init();
-        if (underlyingToken == address(0) || holder == address(0)) revert Errors.ZeroAddress();
-        IAccessControlManager(_accessControlManager).isGovernor(msg.sender);
+        if (_holder == address(0)) revert Errors.ZeroAddress();
+        IERC20(_token).balanceOf(_holder);
         distributor = DistributionCreator(_distributionCreator).distributor();
-        token = underlyingToken;
+        accessControlManager = DistributionCreator(_distributionCreator).accessControlManager();
+        token = _token;
         distributionCreator = _distributionCreator;
         holder = _holder;
-        accessControlManager = IAccessControlManager(_accessControlManager);
+        _setFeeRecipient();
     }
 
     function _beforeTokenTransfer(address from, address to, uint256 amount) internal override {
         // During claim transactions, tokens are pulled and transferred to the `to` address
-        if (from == distributor || to == _getFeeRecipient()) IERC20(token).safeTransferFrom(holder, to, amount);
+        if (from == distributor || to == feeRecipient) IERC20(token).safeTransferFrom(holder, to, amount);
     }
 
     function _afterTokenTransfer(address, address to, uint256 amount) internal override {
         // No leftover tokens can be kept except on the holder address
         if (to != address(distributor) && to != holder) _burn(to, amount);
-    }
-
-    function _getFeeRecipient() internal view returns (address feeRecipient) {
-        address _distributionCreator = distributionCreator;
-        feeRecipient = DistributionCreator(_distributionCreator).feeRecipient();
-        feeRecipient = feeRecipient == address(0) ? _distributionCreator : feeRecipient;
     }
 
     function setHolder(address _newHolder) external onlyHolderOrGovernor {
@@ -78,6 +73,15 @@ contract PullTokenWrapper is UUPSHelper, ERC20Upgradeable {
 
     function mint(uint256 amount) external onlyHolderOrGovernor {
         _mint(holder, amount);
+    }
+
+    function setFeeRecipient() external {
+        _setFeeRecipient();
+    }
+
+    function _setFeeRecipient() internal {
+        address _feeRecipient = DistributionCreator(distributionCreator).feeRecipient();
+        feeRecipient = _feeRecipient;
     }
 
     /// @inheritdoc UUPSHelper
