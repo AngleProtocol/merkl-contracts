@@ -20,7 +20,7 @@ contract Deploy is DistributorScript {
         uint256 chainId = block.chainid;
         console.log("DEPLOYER_ADDRESS:", broadcaster);
 
-        address accessControlManager = readAddress(chainId, "Merkl.CoreMerkl");
+        address accessControlManager = readAddress(chainId, "CoreMerkl");
 
         // Deploy implementation
         Distributor implementation = new Distributor();
@@ -50,7 +50,7 @@ contract UpdateTree is DistributorScript {
 
     function _run(bytes32 merkleRoot, bytes32 ipfsHash) internal {
         uint256 chainId = block.chainid;
-        address distributorAddress = readAddress(chainId, "Merkl.Distributor");
+        address distributorAddress = readAddress(chainId, "Distributor");
 
         MerkleTree memory newTree = MerkleTree({ merkleRoot: merkleRoot, ipfsHash: ipfsHash });
 
@@ -75,7 +75,7 @@ contract DisputeTree is DistributorScript {
 
     function _run(string memory reason) internal {
         uint256 chainId = block.chainid;
-        address distributorAddress = readAddress(chainId, "Merkl.Distributor");
+        address distributorAddress = readAddress(chainId, "Distributor");
 
         // Get dispute token and amount from the distributor
         IERC20 disputeToken = Distributor(distributorAddress).disputeToken();
@@ -107,7 +107,7 @@ contract ResolveDispute is DistributorScript {
 
     function _run(bool valid) internal {
         uint256 chainId = block.chainid;
-        address distributorAddress = readAddress(chainId, "Merkl.Distributor");
+        address distributorAddress = readAddress(chainId, "Distributor");
 
         Distributor(distributorAddress).resolveDispute(valid);
 
@@ -119,7 +119,7 @@ contract ResolveDispute is DistributorScript {
 contract RevokeTree is DistributorScript {
     function run() external broadcast {
         uint256 chainId = block.chainid;
-        address distributorAddress = readAddress(chainId, "Merkl.Distributor");
+        address distributorAddress = readAddress(chainId, "Distributor");
 
         Distributor(distributorAddress).revokeTree();
 
@@ -143,7 +143,7 @@ contract ToggleOperator is DistributorScript {
 
     function _run(address user, address operator) internal {
         uint256 chainId = block.chainid;
-        address distributorAddress = readAddress(chainId, "Merkl.Distributor");
+        address distributorAddress = readAddress(chainId, "Distributor");
 
         Distributor(distributorAddress).toggleOperator(user, operator);
 
@@ -167,7 +167,7 @@ contract RecoverERC20 is DistributorScript {
 
     function _run(address token, address to, uint256 amount) internal {
         uint256 chainId = block.chainid;
-        address distributorAddress = readAddress(chainId, "Merkl.Distributor");
+        address distributorAddress = readAddress(chainId, "Distributor");
 
         Distributor(distributorAddress).recoverERC20(token, to, amount);
 
@@ -189,7 +189,7 @@ contract SetDisputeToken is DistributorScript {
 
     function _run(IERC20 token) internal {
         uint256 chainId = block.chainid;
-        address distributorAddress = readAddress(chainId, "Merkl.Distributor");
+        address distributorAddress = readAddress(chainId, "Distributor");
 
         Distributor(distributorAddress).setDisputeToken(token);
 
@@ -211,7 +211,7 @@ contract SetDisputeAmount is DistributorScript {
 
     function _run(uint256 amount) internal {
         uint256 chainId = block.chainid;
-        address distributorAddress = readAddress(chainId, "Merkl.Distributor");
+        address distributorAddress = readAddress(chainId, "Distributor");
 
         Distributor(distributorAddress).setDisputeAmount(amount);
 
@@ -233,7 +233,7 @@ contract SetDisputePeriod is DistributorScript {
 
     function _run(uint48 period) internal {
         uint256 chainId = block.chainid;
-        address distributorAddress = readAddress(chainId, "Merkl.Distributor");
+        address distributorAddress = readAddress(chainId, "Distributor");
 
         Distributor(distributorAddress).setDisputePeriod(period);
 
@@ -255,7 +255,7 @@ contract ToggleTrusted is DistributorScript {
 
     function _run(address eoa) internal {
         uint256 chainId = block.chainid;
-        address distributorAddress = readAddress(chainId, "Merkl.Distributor");
+        address distributorAddress = readAddress(chainId, "Distributor");
 
         Distributor(distributorAddress).toggleTrusted(eoa);
 
@@ -290,7 +290,7 @@ contract Claim is DistributorScript {
         bytes32[][] memory proofs
     ) internal {
         uint256 chainId = block.chainid;
-        address distributorAddress = readAddress(chainId, "Merkl.Distributor");
+        address distributorAddress = readAddress(chainId, "Distributor");
 
         Distributor(distributorAddress).claim(users, tokens, amounts, proofs);
 
@@ -301,13 +301,13 @@ contract Claim is DistributorScript {
 contract BuildUpgradeToPayload is DistributorScript {
     function run() external broadcast {
         uint256 chainId = block.chainid;
-        address distributor = readAddress(chainId, "Merkl.Distributor");
+        address distributor = readAddress(chainId, "Distributor");
 
         address distributorImpl = address(new Distributor());
 
         bytes memory payload = abi.encodeWithSelector(ITransparentUpgradeableProxy.upgradeTo.selector, distributorImpl);
 
-        try this.externalReadAddress(chainId, "AngleLabs") returns (address safe) {
+        try this.externalReadAddress(chainId, "Multisig") returns (address safe) {
             _serializeJson(
                 chainId,
                 distributor, // target address (the proxy)

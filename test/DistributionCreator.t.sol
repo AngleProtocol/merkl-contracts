@@ -1154,10 +1154,10 @@ contract UpgradeDistributionCreatorTest is Test, JsonReader {
         chainId = block.chainid;
 
         // Load existing contracts
-        distributor = Distributor(this.readAddress(chainId, "Merkl.Distributor"));
-        distributionCreator = DistributionCreator(this.readAddress(chainId, "Merkl.DistributionCreator"));
-        governor = this.readAddress(chainId, "AngleLabs");
-        accessControlManager = IAccessControlManager(this.readAddress(chainId, "Merkl.CoreMerkl"));
+        distributor = Distributor(this.readAddress(chainId, "Distributor"));
+        distributionCreator = DistributionCreator(this.readAddress(chainId, "DistributionCreator"));
+        governor = this.readAddress(chainId, "Multisig");
+        accessControlManager = IAccessControlManager(this.readAddress(chainId, "CoreMerkl"));
         rewardToken = IERC20(0xC011882d0f7672D8942e7fE2248C174eeD640c8f); // aglaMerkl
 
         // Setup test campaign parameters
@@ -1208,8 +1208,8 @@ contract UpgradeDistributionCreatorTest is Test, JsonReader {
 
     function test_VerifyStorageSlots_Success() public {
         // Verify storage slots remain unchanged
-        assertEq(address(distributionCreator.accessControlManager()), this.readAddress(chainId, "Merkl.CoreMerkl"));
-        assertEq(address(distributionCreator.distributor()), this.readAddress(chainId, "Merkl.Distributor"));
+        assertEq(address(distributionCreator.accessControlManager()), this.readAddress(chainId, "CoreMerkl"));
+        assertEq(address(distributionCreator.distributor()), this.readAddress(chainId, "Distributor"));
         assertEq(distributionCreator.defaultFees(), 0.03e9);
 
         // Verify message and hash
@@ -1542,7 +1542,7 @@ contract UpgradeDistributionCreatorTest is Test, JsonReader {
 //         uint256 chainId = block.chainid;
 
 //         // Contract setup
-//         distributionCreator = DistributionCreator(this.readAddress(chainId, "Merkl.DistributionCreator"));
+//         distributionCreator = DistributionCreator(this.readAddress(chainId, "DistributionCreator"));
 //         require(address(distributionCreator) != address(0), "Invalid DistributionCreator address");
 
 //         // Token setup
