@@ -25,7 +25,7 @@ contract AddGovernor is AccessControlManagerScript {
 
     function _run(address _governor) internal broadcast {
         uint256 chainId = block.chainid;
-        address acmAddress = readAddress(chainId, "Merkl.CoreMerkl");
+        address acmAddress = readAddress(chainId, "CoreMerkl");
 
         AccessControlManager(acmAddress).addGovernor(_governor);
         console.log("Governor added:", _governor);
@@ -46,7 +46,7 @@ contract RemoveGovernor is AccessControlManagerScript {
 
     function _run(address _governor) internal broadcast {
         uint256 chainId = block.chainid;
-        address acmAddress = readAddress(chainId, "Merkl.CoreMerkl");
+        address acmAddress = readAddress(chainId, "CoreMerkl");
 
         AccessControlManager(acmAddress).removeGovernor(_governor);
         console.log("Governor removed:", _governor);
@@ -67,7 +67,7 @@ contract SetAccessControlManager is AccessControlManagerScript {
 
     function _run(IAccessControlManager _newAcm) internal broadcast {
         uint256 chainId = block.chainid;
-        address acmAddress = readAddress(chainId, "Merkl.CoreMerkl");
+        address acmAddress = readAddress(chainId, "CoreMerkl");
 
         AccessControlManager(acmAddress).setAccessControlManager(_newAcm);
         console.log("AccessControlManager updated to:", address(_newAcm));
@@ -88,7 +88,7 @@ contract CheckRoles is AccessControlManagerScript {
 
     function _run(address _account) internal {
         uint256 chainId = block.chainid;
-        address acmAddress = readAddress(chainId, "Merkl.CoreMerkl");
+        address acmAddress = readAddress(chainId, "CoreMerkl");
         AccessControlManager acm = AccessControlManager(acmAddress);
 
         bool isGovernor = acm.isGovernor(_account);

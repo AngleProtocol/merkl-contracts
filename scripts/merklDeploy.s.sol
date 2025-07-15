@@ -68,7 +68,7 @@ contract MainDeployScript is Script, JsonReader, TokensUtils, CreateXConstants {
             DISPUTE_TOKEN = address(0);
         }
 
-        try this.readAddress(block.chainid, "AngleLabs") returns (address _angleLabs) {
+        try this.readAddress(block.chainid, "Multisig") returns (address _angleLabs) {
             ANGLE_LABS = _angleLabs;
         } catch {
             ANGLE_LABS = TEMP_GOVERNOR;
@@ -94,7 +94,7 @@ contract MainDeployScript is Script, JsonReader, TokensUtils, CreateXConstants {
         if (angleLabs != address(0)) {
             ANGLE_LABS = angleLabs;
         } else {
-            try this.readAddress(block.chainid, "AngleLabs") returns (address _angleLabs) {
+            try this.readAddress(block.chainid, "Multisig") returns (address _angleLabs) {
                 ANGLE_LABS = _angleLabs;
             } catch {
                 ANGLE_LABS = TEMP_GOVERNOR;
