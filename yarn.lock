@@ -2665,7 +2665,7 @@ util-deprecate@^1.0.1:
 
 "utils@github:AngleProtocol/utils":
   version "1.0.0"
-  resolved "https://codeload.github.com/AngleProtocol/utils/tar.gz/5c99bceb207715ab353ba76530d478aa866357ca"
+  resolved "https://codeload.github.com/AngleProtocol/utils/tar.gz/bb85589eadece56a9a3607cedd9e4b2da8625c03"
   dependencies:
     "@angleprotocol/sdk" "^2.34.7"
 

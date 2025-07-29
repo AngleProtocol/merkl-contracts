@@ -22,7 +22,7 @@ contract DeployPointToken is PointTokenScript {
         string memory name = "Turtle TAC Point";
         string memory symbol = "TACPOINT";
         address minter = broadcaster;
-        address accessControlManager = readAddress(chainId, "Merkl.CoreMerkl");
+        address accessControlManager = readAddress(chainId, "Core");
         _run(name, symbol, minter, accessControlManager);
     }
 
