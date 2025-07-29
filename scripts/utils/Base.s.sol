@@ -58,6 +58,11 @@ abstract contract BaseScript is Script {
         vm.stopBroadcast();
     }
 
+    modifier fork(string memory network) {
+        vm.createSelectFork(vm.rpcUrl(network));
+        _;
+    }
+
     function _serializeJson(
         uint256 chainId,
         address to,
@@ -89,6 +94,6 @@ abstract contract BaseScript is Script {
         }
         string memory finalJson = vm.serializeBytes(json, "data", data);
 
-        vm.writeJson(finalJson, "./transaction.json");
+        vm.writeJson(finalJson, string.concat("./transactions/", vm.toString(chainId), ".json"));
     }
 }

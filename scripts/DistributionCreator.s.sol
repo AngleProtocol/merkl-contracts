@@ -890,3 +890,109 @@ contract SetRewardTokenMinAmountsDistributor is DistributionCreatorScript {
         DistributionCreator(creatorAddress).setRewardTokenMinAmounts(tokens, minAmounts);
     }
 }
+
+// SetFeesMultichain script
+contract SetFeesMultichain is DistributionCreatorScript {
+    struct FailedChain {
+        string network;
+        uint256 chainId;
+        string reason;
+    }
+
+    function externalReadAddress(uint256 chainId, string memory key) public view returns (address) {
+        return readAddress(chainId, key);
+    }
+
+    function run() external {
+        // Set default fees to 0 and campaign fees to 3% (30,000,000 in 9 decimals)
+        uint256 defaultFees = 0;
+        uint256 campaignFees = 5000000; // 0.5%
+
+        // Get all networks from foundry.toml
+        string[2][] memory networks = vm.rpcUrls();
+
+        // Track failed chains
+        FailedChain[] memory failedChains = new FailedChain[](networks.length);
+        uint256 failedCount = 0;
+        uint256 successCount = 0;
+
+        for (uint256 i = 0; i < networks.length; i++) {
+            string memory network = networks[i][0];
+
+            // Skip localhost and fork
+            if (
+                keccak256(abi.encodePacked(network)) == keccak256(abi.encodePacked("localhost")) ||
+                keccak256(abi.encodePacked(network)) == keccak256(abi.encodePacked("fork")) ||
+                keccak256(abi.encodePacked(network)) == keccak256(abi.encodePacked("zksync")) ||
+                keccak256(abi.encodePacked(network)) == keccak256(abi.encodePacked("nibiru")) // No multisig deployed
+            ) {
+                continue;
+            }
+
+            // // Create fork for this network
+            vm.createSelectFork(network);
+            uint256 chainId = block.chainid;
+            address creatorAddress = readAddress(chainId, "Merkl.DistributionCreator");
+
+            // Create contract instances to reuse existing logic
+            // SetFees setFeesContract = new SetFees();
+            // SetCampaignFees setCampaignFeesContract = new SetCampaignFees();
+
+            // Set default fees using existing contract
+            // TODO: Instead of broadcasting, we should just write the transaction to the json file
+            bytes memory setFeesPayload = abi.encodeWithSelector(DistributionCreator.setFees.selector, defaultFees);
+
+            // address safe = readAddress(chainId, "AngleLabs");
+            // console.log("Safe address: %s", safe);
+            address safe = readAddress(chainId, "AngleLabs");
+            _serializeJson(
+                chainId,
+                creatorAddress, // target address (the DistributionCreator proxy)
+                0, // value
+                setFeesPayload, // setFees call
+                Operation.Call, // standard call (not delegate)
+                hex"", // signature
+                safe // safe address
+            );
+            console.log("Default fees transaction serialized for %s (chain %s)", network, chainId);
+            successCount++;
+
+            // // Set campaign fees for each type using existing contract
+            // if (DistributionCreator(creatorAddress).campaignSpecificFees(27) != campaignFees) {
+            //     console.log("Setting campaign fees for type 27 to %s", campaignFees);
+            //     try setCampaignFeesContract.run(27, campaignFees) {
+            //         // Success
+            //         console.log("Fees updated on %s (chain %s)", network, chainId);
+            //         successCount++;
+            //     } catch (bytes memory err) {
+            //         console.log("Failed to set campaign fees for type %s on %s", 27, network);
+            //         failedChains[failedCount] = FailedChain(network, chainId, string(err));
+            //         failedCount++;
+            //         vm.stopBroadcast();
+            //     }
+            // }
+        }
+
+        // Display summary
+        console.log("");
+        console.log("=== MULTICHAIN FEE SETTING SUMMARY ===");
+        console.log("Successful chains: %s", successCount);
+        console.log("Failed chains: %s", failedCount);
+
+        if (failedCount > 0) {
+            console.log("");
+            console.log("Failed chains details:");
+            for (uint256 i = 0; i < failedCount; i++) {
+                console.log(
+                    "- %s (Chain ID: %s) - Reason: %s",
+                    failedChains[i].network,
+                    failedChains[i].chainId,
+                    failedChains[i].reason
+                );
+            }
+        }
+
+        console.log("");
+        console.log("Multichain fee setting completed!");
+    }
+}
