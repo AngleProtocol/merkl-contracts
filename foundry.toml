@@ -9,7 +9,7 @@ cache_path = 'cache-forge'
 gas_reports = ["*"]
 optimizer_runs = 100
 fs_permissions = [
-  { access = "read", path = "./node_modules/@angleprotocol/sdk/dist/src/registry/registry.json" }, 
+  { access = "read", path = "./node_modules/@merkl/registry/dist/src/registry.json" }, 
   { access = "write", path = "./transactions" }, 
 ]
 solc = "0.8.25"
@@ -27,7 +27,7 @@ cache_path = 'cache-forge'
 gas_reports = ["*"]
 optimizer_runs = 100
 fs_permissions = [
-  { access = "read", path = "./node_modules/@angleprotocol/sdk/dist/src/registry/registry.json" }, 
+  { access = "read", path = "./node_modules/@merkl/registry/dist/src/registry.json" }, 
   { access = "write", path = "./transaction.json" }, 
   { access = "write", path = "./transactions.json" }
 ]

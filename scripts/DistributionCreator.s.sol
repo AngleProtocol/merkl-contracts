@@ -183,8 +183,8 @@ contract RecoverFees is DistributionCreatorScript {
 contract SetUserFeeRebate is DistributionCreatorScript {
     function run() external {
         // MODIFY THESE VALUES TO SET YOUR DESIRED USER AND REBATE
-        address user = address(0x59A1A709c84C125F135C126ac46bE2A11b6f1bA4);
-        uint256 rebate = 250_000_000;
+        address user = address(0xFc6960197CDF33B6bfa0569E3fbe539947DDfa44);
+        uint256 rebate = 750000000;
         _run(user, rebate);
     }
 
@@ -361,106 +361,17 @@ contract CreateCampaign is DistributionCreatorScript {
     function run() external broadcast {
         bytes memory campaignData;
         // MODIFY THESE VALUES TO SET YOUR DESIRED CAMPAIGN PARAMETERS
-        // address targetToken = address(0xEe9BFf933aDD313C4289E98dA80fEfbF9d5Cd9Ba);
-        // uint32 campaignType = 22;
-        // uint32 subCampaignType = 0;
-        // uint256 tokenId = 0;
-        // address[] memory whitelist = new address[](0);
-        // address[] memory blacklist = new address[](0);
-        // string memory url = "https://app.hyperdrive.box/market/100/0xEe9BFf933aDD313C4289E98dA80fEfbF9d5Cd9Ba";
-        // bytes[] memory hooks = new bytes[](0);
-        // string memory apr = "1";
-        // bool targetTokenPricing = true;
-        // bool rewardTokenPricing = false;
-        // bytes memory campaignData = abi.encode(
-        //     targetToken,
-        //     subCampaignType,
-        //     tokenId,
-        //     whitelist,
-        //     blacklist,
-        //     url,
-        //     hooks,
-        //     apr,
-        //     targetTokenPricing,
-        //     rewardTokenPricing
-        // );
-        // //
-
-        // address targetToken = address(0x324395D5d835F84a02A75Aa26814f6fD22F25698);
-        // uint32 campaignType = 21;
-        // uint32 subCampaignType = 2;
-        // uint256 tokenId = 0;
-        // address[] memory whitelist = new address[](0);
-        // address[] memory blacklist = new address[](0);
-        // string memory url = "https://app.hyperdrive.box/market/1/0x324395D5d835F84a02A75Aa26814f6fD22F25698";
-        // bytes[] memory hooks = new bytes[](0);
-        // campaignData = abi.encode(targetToken, subCampaignType, tokenId, whitelist, blacklist, url, hooks);
-        // address rewardToken = address(0x6B175474E89094C44Da98b954EedeAC495271d0F);
-
-        address targetToken = address(0xEe9BFf933aDD313C4289E98dA80fEfbF9d5Cd9Ba);
-        uint32 campaignType = 21;
-        uint32 subCampaignType = 2;
-        uint256 tokenId = 0;
-        address[] memory whitelist = new address[](0);
-        address[] memory blacklist = new address[](0);
-        string memory url = "https://app.hyperdrive.box/market/100/0xEe9BFf933aDD313C4289E98dA80fEfbF9d5Cd9Ba";
-        bytes[] memory hooks = new bytes[](0);
-        campaignData = abi.encode(targetToken, subCampaignType, tokenId, whitelist, blacklist, url, hooks);
-        address rewardToken = address(0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d);
-
-        //
-
-        // address targetToken = address(0x004626A008B1aCdC4c74ab51644093b155e59A23);
-        // uint32 campaignType = 1;
-        // address[] memory whitelist = new address[](0);
-        // address[] memory blacklist = new address[](0);
-        // string memory url = "";
-        // bytes[] memory forwarders = new bytes[](0);
-        // bytes[] memory hooks = new bytes[](0);
-        // bytes memory campaignData = abi.encode(targetToken, whitelist, blacklist, url, forwarders, hooks, hex"");
-
-        // uint32 campaignType = 26;
-        // {
-        //     address baseToken = address(0);
-        //     address quoteToken = 0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34;
-        //     uint256 poolIdx = 420;
-        //     bool isOutOfRangeIncentivized = false;
-        //     uint32 weightFees = 2000;
-        //     uint32 weightToken0 = 3000;
-        //     uint32 weightToken1 = 5000;
-        //     address[] memory whitelist = new address[](0);
-        //     address[] memory blacklist = new address[](0);
-        //     string
-        //         memory url = "https://ambient.finance/trade/market/chain=0x783&tokenA=0x0000000000000000000000000000000000000000&tokenB=0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34";
-        //     bytes[] memory hooks = new bytes[](0);
-        //     bytes[] memory forwarders = new bytes[](0);
-        //     campaignData = abi.encode(
-        //         baseToken,
-        //         quoteToken,
-        //         poolIdx,
-        //         isOutOfRangeIncentivized,
-        //         weightFees,
-        //         weightToken0,
-        //         weightToken1,
-        //         whitelist,
-        //         blacklist,
-        //         url,
-        //         forwarders,
-        //         hooks,
-        //         hex""
-        //     );
-        // }
-        // END
+        address rewardToken = address(0xB63B9f0eb4A6E6f191529D71d4D88cc8900Df2C9);
 
         CampaignParameters memory campaign = CampaignParameters({
             campaignId: bytes32(0),
             creator: address(0),
             rewardToken: rewardToken,
-            amount: 5000 * 10 ** (IERC20Metadata(rewardToken).decimals()),
-            campaignType: campaignType,
-            startTimestamp: 1740063600,
-            duration: 30 days,
-            campaignData: campaignData
+            amount: 9867825382083116891581,
+            campaignType: 56,
+            startTimestamp: 1752764400,
+            duration: 385200,
+            campaignData: hex"00000000000000000000000084bbc0be5a6f831a4e2c28a2f3b892c70acaa5b3000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001400000000000000000000000000000000000000000000000000000000000000160000000000000000000000000000000000000000000000000000000000000018000000000000000000000000000000000000000000000000000000000000001a000000000000000000000000000000000000000000000000000000000000001c000000000000000000000000000000000000000000000000000000000000001e000000000000000000000000000000000000000000000000000000000000000010000000000000000000000009fee01e948353e0897968a3ea955815aaa49f58d000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
         });
         _run(campaign);
     }

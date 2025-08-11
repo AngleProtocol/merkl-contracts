@@ -5,6 +5,7 @@
       "name": "merkl-contracts",
       "devDependencies": {
         "@angleprotocol/sdk": "^2.41.43",
+        "@merkl/registry": "latest",
         "@openzeppelin/contracts": "^4.9.0",
         "@openzeppelin/contracts-upgradeable": "4.9.0",
         "forge-std": "github:foundry-rs/forge-std#v1.9.4",
@@ -96,7 +97,7 @@
 
     "@graphql-typed-document-node/core": ["@graphql-typed-document-node/core@3.2.0", "", { "peerDependencies": { "graphql": "^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0" } }, "sha512-mB9oAsNCm9aM3/SOv4YtBMqZbYj10R7dkq8byBqxGY/ncFwhf2oQzMV+LCRlWoDSEBJ3COiR1yeDvMtsoOsuFQ=="],
 
-    "@merkl/registry": ["@merkl/registry@0.1.14", "", {}, "sha512-rs0QrZlPHeGPhZN7e0FX5vXu8AGMTE2EWPtg1Ir0ciTTNlc3ZKQ0so4gw3sPP2orhiXn9RuUy3KAMj+0YWakSQ=="],
+    "@merkl/registry": ["@merkl/registry@0.1.88", "", {}, "sha512-Oabu5U0yFWuo7PYOj2AGhx4cdntXf5EIuHtdouTWEEIy3SedlP37eOaoKu+6rxa9iRE/HvXg9l/SzGr2OKYo4w=="],
 
     "@noble/curves": ["@noble/curves@1.8.2", "", { "dependencies": { "@noble/hashes": "1.7.2" } }, "sha512-vnI7V6lFNe0tLAuJMu+2sX+FcL14TaCWy1qiczg1VwRmPrpQCdq5ESXQMqUc2tluRNf6irBXrWbl1mGN8uaU/g=="],
 
@@ -997,6 +998,8 @@
     "typechain/fs-extra": ["fs-extra@7.0.1", "", { "dependencies": { "graceful-fs": "^4.1.2", "jsonfile": "^4.0.0", "universalify": "^0.1.0" } }, "sha512-YJDaCJZEnBmcbw13fvdAM9AwNOJwOzrE4pqMqBq5nFiEqXUqHwlK4B+3pUw6JNvfSPtX05xFHtYy/1ni01eGCw=="],
 
     "typechain/glob": ["glob@7.1.7", "", { "dependencies": { "fs.realpath": "^1.0.0", "inflight": "^1.0.4", "inherits": "2", "minimatch": "^3.0.4", "once": "^1.3.0", "path-is-absolute": "^1.0.0" } }, "sha512-OvD9ENzPLbegENnYP5UUfJIirTg4+XwMWGaQfQTY0JenxNvvIKP3U3/tAQSPIu/lHxXYSZmpXlUHeqAIdKzBLQ=="],
+
+    "utils/@merkl/registry": ["@merkl/registry@0.1.14", "", {}, "sha512-rs0QrZlPHeGPhZN7e0FX5vXu8AGMTE2EWPtg1Ir0ciTTNlc3ZKQ0so4gw3sPP2orhiXn9RuUy3KAMj+0YWakSQ=="],
 
     "web3-utils/@ethereumjs/util": ["@ethereumjs/util@8.1.0", "", { "dependencies": { "@ethereumjs/rlp": "^4.0.1", "ethereum-cryptography": "^2.0.0", "micro-ftch": "^0.3.1" } }, "sha512-zQ0IqbdX8FZ9aw11vP+dZkKDkS+kgIvQPHnSAXzP9pLu+Rfu3D3XEeLbicvoXJTYnhZiPmsZUxgdzXwNKxRPbA=="],
 

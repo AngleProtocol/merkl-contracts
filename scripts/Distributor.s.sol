@@ -6,10 +6,13 @@ import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { JsonReader } from "@utils/JsonReader.sol";
 import { ITransparentUpgradeableProxy } from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
+import { ProxyAdmin } from "@openzeppelin/contracts/proxy/transparent/ProxyAdmin.sol";
 
+import { ChainUtils, IMultiChainScript } from "./utils/ChainUtils.s.sol";
 import { BaseScript } from "./utils/Base.s.sol";
 import { Distributor, MerkleTree } from "../contracts/Distributor.sol";
 import { IAccessControlManager } from "../contracts/interfaces/IAccessControlManager.sol";
+import { AccessControlManager } from "../contracts/AccessControlManager.sol";
 
 // Base contract with shared utilities
 contract DistributorScript is BaseScript, JsonReader {}
@@ -322,5 +325,68 @@ contract BuildUpgradeToPayload is DistributorScript {
 
     function externalReadAddress(uint256 chainId, string memory key) external view returns (address) {
         return readAddress(chainId, key);
+    }
+}
+
+contract DisputeCheck is DistributorScript, ChainUtils {
+    function run() external broadcast {
+        uint256 chainId = block.chainid;
+        address _distributor = readAddress(chainId, "Distributor");
+        address _core = readAddress(chainId, "CoreMerkl");
+        address _multisig = readAddress(chainId, "Multisig");
+        address _proxyAdmin = readAddress(chainId, "ProxyAdmin");
+
+        // Now we can call verifyRegistryAddresses directly!
+        verifyRegistryAddresses(_distributor, _core, _multisig, _proxyAdmin);
+
+        uint256 disputeAmount = Distributor(_distributor).disputeAmount();
+        address disputeToken = address(Distributor(_distributor).disputeToken());
+        console.log("Dispute amount:", disputeAmount);
+        console.log("Dispute token:", disputeToken);
+
+        // deployCreateX();
+        if (disputeAmount == 0 && disputeToken == address(0)) {
+            disputeAmount = 100 * 10 ** 6;
+            disputeToken = address(0x79A02482A880bCE3F13e09Da970dC34db4CD24d1); // worldchain 480
+
+            bytes memory setDisputeTokenPayload = abi.encodeWithSelector(
+                Distributor.setDisputeToken.selector,
+                disputeToken
+            );
+
+            // address safe = readAddress(chainId, "AngleLabs");
+            // console.log("Safe address: %s", safe);
+            address safe = readAddress(chainId, "Multisig");
+            _serializeJson(
+                chainId,
+                _distributor, // target address (the DistributionCreator proxy)
+                0, // value
+                setDisputeTokenPayload, // setFees call
+                Operation.Call, // standard call (not delegate)
+                hex"", // signature
+                safe // safe address
+            );
+            // Distributor(distributor).setDisputeAmount(disputeAmount);
+            // Distributor(distributor).setDisputeToken(IERC20(disputeToken));
+            // Distributor(distributor).setDisputePeriod(1);
+        }
+    }
+}
+
+// New MultiChain version of the existing DisputeCheck
+contract DisputeCheckMultiChain is DistributorScript, ChainUtils {
+    function run() external {
+        // Run dispute check across all chains without using address(this)
+        bytes memory emptyData = "";
+        executeAcrossChains(address(0), emptyData, false);
+    }
+
+    // Override the executeScript function to run our dispute check logic
+    function executeScript(
+        address /* scriptContract */,
+        bytes memory /* data */
+    ) internal override returns (bool success, string memory errorReason) {
+        new DisputeCheck().run();
+        return (true, "");
     }
 }
