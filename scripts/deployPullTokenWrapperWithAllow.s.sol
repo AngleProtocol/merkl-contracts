@@ -41,6 +41,8 @@ contract DeployPullTokenWrapperWithAllow is BaseScript {
         // Initialize
         PullTokenWrapperWithAllow(address(proxy)).initialize(underlying, distributionCreator, minter, name, symbol);
 
+        DistributionCreator(distributionCreator).setRewardTokenMinAmounts([address(proxy)], [1e18]); // Set the minimum amount for the token wrapper
+
         vm.stopBroadcast();
     }
 }

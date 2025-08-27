@@ -20,14 +20,19 @@ contract PullTokenWrapperWithAllow is UUPSHelper, ERC20Upgradeable {
 
     /// @notice `AccessControlManager` contract handling access control
     IAccessControlManager public accessControlManager;
-
+    /// @notice Underlying token used and transferred to users claiming on Merkl
     address public token;
+    /// @notice Minter address that can mint tokens and set allowed addresses
     address public minter;
+    /// @notice Merkl fee recipient
     address public feeRecipient;
+    /// @notice Merkl main address
     address public distributor;
     address public distributionCreator;
     /// @notice Whether an address is allowed to hold some tokens and thus to create campaigns on Merkl
     mapping(address => uint256) public isAllowed;
+
+    uint256[43] private __gap;
 
     // ================================= MODIFIERS =================================
 
