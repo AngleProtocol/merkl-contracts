@@ -33,13 +33,14 @@ contract DeployPullTokenWrapper is BaseScript {
         // Deploy implementation
         PullTokenWrapper implementation = new PullTokenWrapper();
         console.log("PullTokenWrapper Implementation:", address(implementation));
-
+        /*
         // Deploy proxy
         ERC1967Proxy proxy = new ERC1967Proxy(address(implementation), "");
         console.log("PullTokenWrapper Proxy:", address(proxy));
 
         // Initialize
         PullTokenWrapper(address(proxy)).initialize(underlying, distributionCreator, holder, name, symbol);
+        */
 
         vm.stopBroadcast();
     }
