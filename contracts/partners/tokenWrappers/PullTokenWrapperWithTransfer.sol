@@ -4,7 +4,7 @@ pragma solidity ^0.8.17;
 
 import { ERC20Upgradeable } from "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import { IERC20 } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
+import { IERC20, IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 
 import { DistributionCreator } from "../../DistributionCreator.sol";
 import { UUPSHelper } from "../../utils/UUPSHelper.sol";
@@ -86,6 +86,10 @@ contract PullTokenWrapperWithTransfer is UUPSHelper, ERC20Upgradeable {
     function _setFeeRecipient() internal {
         address _feeRecipient = DistributionCreator(distributionCreator).feeRecipient();
         feeRecipient = _feeRecipient;
+    }
+
+    function decimals() public view override returns (uint8) {
+        return IERC20Metadata(token).decimals();
     }
 
     /// @inheritdoc UUPSHelper
