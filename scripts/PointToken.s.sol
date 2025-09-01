@@ -19,25 +19,94 @@ contract DeployPointToken is PointTokenScript {
     function run() external broadcast {
         uint256 chainId = block.chainid;
         // MODIFY THESE VALUES TO SET YOUR DESIRED TOKEN PARAMETERS
-        string memory name = "Turtle TAC Point";
-        string memory symbol = "TACPOINT";
-        address minter = broadcaster;
-        address accessControlManager = readAddress(chainId, "Core");
-        _run(name, symbol, minter, accessControlManager);
+        string memory name = "HypurrScore - Epoch 27";
+        string memory symbol = "HypurrScore-27";
+        address minter = 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701;
+        uint256 amount = 100_000_000_000_000 * 1e18; // 1000 tokens with 18 decimals
+        address creator = 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701;
+        uint8 decimals = 18;
+        address accessControlManager = readAddress(chainId, "Merkl.CoreMerkl");
+        _run(name, symbol, minter, accessControlManager, amount, creator);
     }
 
-    function _run(string memory name, string memory symbol, address minter, address accessControlManager) internal {
+    function _run(string memory name, string memory symbol, address minter, address accessControlManager,  uint256 amount, address creator) internal {
         console.log("DEPLOYER_ADDRESS:", broadcaster);
 
         // Deploy PointToken
         PointToken token = new PointToken(name, symbol, minter, accessControlManager);
+
+        // Load the point token contract
+        // PointToken token = PointToken(0xf9e03FfE6d23D37199CC4B29Dbe0224d8735d02C);
         console.log("Point token deployed at:", address(token));
         console.log("Name:", name);
         console.log("Symbol:", symbol);
         console.log("Decimals:", token.decimals());
 
         // Mint initial supply to deployer
-        token.mint(minter, 10e6 * 1e18);
+        token.mint(minter, amount);
+
+        // Whitelist the minter
+        token.toggleWhitelistedRecipient(minter);
+        console.log("Initial supply minted to deployer");
+
+        // Whitelist the Merkl Contracts
+        token.toggleWhitelistedRecipient(0x3Ef3D8bA38EBe18DB133cEc108f4D14CE00Dd9Ae);
+        // token.toggleWhitelistedRecipient(0x8BB4C975Ff3c250e0ceEA271728547f3802B36Fd);
+
+        // KAT SAFE
+        token.toggleWhitelistedRecipient(creator); //0xABb29f9CCd2dD058A2DA6b6022f82F90Ae0CEc90);
+
+        console.log("Whitelisted recipients:");
+        // transfer to the SAFE
+        if (creator != minter) {
+            console.log("Transferring initial supply to KAT SAFE:", creator);
+            token.transfer(creator, amount);
+        }
+       
+        console.log("Transferred initial supply to KAT SAFE");
+
+    }
+}
+
+contract MintMorePointToken is PointTokenScript {
+    // forge script scripts/PointToken.s.sol:MintMorePointToken --rpc-url hyperevm --broadcast --verify -vvvv
+    function run() external broadcast {
+        uint256 chainId = block.chainid;
+        address recipient = 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701;
+        address pointToken = 0x076C42Fe8E13253133738cC8674d85135137270D;
+        _run(recipient, pointToken);
+    }
+
+    function _run(address recipient, address pointToken) internal {
+        console.log("DEPLOYER_ADDRESS:", broadcaster);
+
+        // Deploy PointToken
+        PointToken token = PointToken(pointToken);
+
+        // Mint initial supply to deployer
+        token.mint(recipient, 1e12 * 1e18);
+        console.log("Initial supply minted to deployer");
+    }
+}
+
+contract WhitelistRecipient is PointTokenScript {
+    // forge script scripts/PointToken.s.sol:WhitelistRecipient --rpc-url hyperevm --broadcast --verify -vvvv
+    function run() external broadcast {
+        uint256 chainId = block.chainid;
+        // MODIFY THESE VALUES TO SET YOUR DESIRED TOKEN PARAMETERS
+        address recipient = 0xABb29f9CCd2dD058A2DA6b6022f82F90Ae0CEc90;
+        address pointToken = 0x49c7B39A2E01869d39548F232F9B1586DA8Ef9c2;
+        _run(recipient, pointToken);
+    }
+
+    function _run(address recipient, address pointToken) internal {
+        console.log("DEPLOYER_ADDRESS:", broadcaster);
+
+        // Deploy PointToken
+        PointToken token = PointToken(pointToken);
+
+        // Mint initial supply to deployer
+        token.toggleWhitelistedRecipient(recipient);
         console.log("Initial supply minted to deployer");
     }
 }
