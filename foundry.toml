@@ -97,6 +97,7 @@ hyperevm = "${HYPEREVM_NODE_URI}"
 hemi="${HEMI_NODE_URI}"
 xdc="${XDC_NODE_URI}"
 katana="${KATANA_NODE_URI}"
+plasma="${PLASMA_NODE_URI}"
 
 [etherscan]
 localhost = { url = "http://localhost:4000", key = "none" }
@@ -151,3 +152,4 @@ hyperevm = { chainId = 999, key = "${HYPEREVM_ETHERSCAN_API_KEY}", url = "https:
 hemi = { chainId = 43111, key = "${HEMI_ETHERSCAN_API_KEY}", url = "https://explorer.hemi.xyz/api/" }
 xdc = { chainId = 50, key = "${XDC_ETHERSCAN_API_KEY}", url = "https://api.xdcscan.com/api/" }
 katana = {chainId = 747474, key = "${$KATANA_ETHERSCAN_API_KEY}", url = "https://explorer.katanarpc.com/" }
+plasma = {chainId = 9745, key = "${$PLASMA_ETHERSCAN_API_KEY}", url = "https://plasmascan.to/"}
