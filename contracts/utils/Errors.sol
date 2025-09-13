@@ -10,6 +10,7 @@ library Errors {
     error CampaignRewardTooLow();
     error CampaignShouldStartInFuture();
     error InvalidDispute();
+    error InvalidFee();
     error InvalidLengths();
     error InvalidOverride();
     error InvalidParam();
