@@ -226,7 +226,6 @@ contract SetRewardTokenMinAmounts is DistributionCreatorScript {
         uint256 chainId = block.chainid;
         address creatorAddress = readAddress(chainId, "DistributionCreator");
 
-        address creatorAddress = 0x8BB4C975Ff3c250e0ceEA271728547f3802B36Fd;
         DistributionCreator(creatorAddress).setRewardTokenMinAmounts(_tokens, _amounts);
 
         console.log("Minimum amounts updated for %s tokens", _tokens.length);
