@@ -226,7 +226,6 @@ contract SetRewardTokenMinAmounts is DistributionCreatorScript {
         uint256 chainId = block.chainid;
         address creatorAddress = readAddress(chainId, "DistributionCreator");
 
-        address creatorAddress = 0x8BB4C975Ff3c250e0ceEA271728547f3802B36Fd;
         DistributionCreator(creatorAddress).setRewardTokenMinAmounts(_tokens, _amounts);
 
         console.log("Minimum amounts updated for %s tokens", _tokens.length);
@@ -365,106 +364,17 @@ contract CreateCampaign is DistributionCreatorScript {
     function run() external broadcast {
         bytes memory campaignData;
         // MODIFY THESE VALUES TO SET YOUR DESIRED CAMPAIGN PARAMETERS
-        // address targetToken = address(0xEe9BFf933aDD313C4289E98dA80fEfbF9d5Cd9Ba);
-        // uint32 campaignType = 22;
-        // uint32 subCampaignType = 0;
-        // uint256 tokenId = 0;
-        // address[] memory whitelist = new address[](0);
-        // address[] memory blacklist = new address[](0);
-        // string memory url = "https://app.hyperdrive.box/market/100/0xEe9BFf933aDD313C4289E98dA80fEfbF9d5Cd9Ba";
-        // bytes[] memory hooks = new bytes[](0);
-        // string memory apr = "1";
-        // bool targetTokenPricing = true;
-        // bool rewardTokenPricing = false;
-        // bytes memory campaignData = abi.encode(
-        //     targetToken,
-        //     subCampaignType,
-        //     tokenId,
-        //     whitelist,
-        //     blacklist,
-        //     url,
-        //     hooks,
-        //     apr,
-        //     targetTokenPricing,
-        //     rewardTokenPricing
-        // );
-        // //
-
-        // address targetToken = address(0x324395D5d835F84a02A75Aa26814f6fD22F25698);
-        // uint32 campaignType = 21;
-        // uint32 subCampaignType = 2;
-        // uint256 tokenId = 0;
-        // address[] memory whitelist = new address[](0);
-        // address[] memory blacklist = new address[](0);
-        // string memory url = "https://app.hyperdrive.box/market/1/0x324395D5d835F84a02A75Aa26814f6fD22F25698";
-        // bytes[] memory hooks = new bytes[](0);
-        // campaignData = abi.encode(targetToken, subCampaignType, tokenId, whitelist, blacklist, url, hooks);
-        // address rewardToken = address(0x6B175474E89094C44Da98b954EedeAC495271d0F);
-
-        address targetToken = address(0xEe9BFf933aDD313C4289E98dA80fEfbF9d5Cd9Ba);
-        uint32 campaignType = 21;
-        uint32 subCampaignType = 2;
-        uint256 tokenId = 0;
-        address[] memory whitelist = new address[](0);
-        address[] memory blacklist = new address[](0);
-        string memory url = "https://app.hyperdrive.box/market/100/0xEe9BFf933aDD313C4289E98dA80fEfbF9d5Cd9Ba";
-        bytes[] memory hooks = new bytes[](0);
-        campaignData = abi.encode(targetToken, subCampaignType, tokenId, whitelist, blacklist, url, hooks);
-        address rewardToken = address(0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d);
-
-        //
-
-        // address targetToken = address(0x004626A008B1aCdC4c74ab51644093b155e59A23);
-        // uint32 campaignType = 1;
-        // address[] memory whitelist = new address[](0);
-        // address[] memory blacklist = new address[](0);
-        // string memory url = "";
-        // bytes[] memory forwarders = new bytes[](0);
-        // bytes[] memory hooks = new bytes[](0);
-        // bytes memory campaignData = abi.encode(targetToken, whitelist, blacklist, url, forwarders, hooks, hex"");
-
-        // uint32 campaignType = 26;
-        // {
-        //     address baseToken = address(0);
-        //     address quoteToken = 0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34;
-        //     uint256 poolIdx = 420;
-        //     bool isOutOfRangeIncentivized = false;
-        //     uint32 weightFees = 2000;
-        //     uint32 weightToken0 = 3000;
-        //     uint32 weightToken1 = 5000;
-        //     address[] memory whitelist = new address[](0);
-        //     address[] memory blacklist = new address[](0);
-        //     string
-        //         memory url = "https://ambient.finance/trade/market/chain=0x783&tokenA=0x0000000000000000000000000000000000000000&tokenB=0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34";
-        //     bytes[] memory hooks = new bytes[](0);
-        //     bytes[] memory forwarders = new bytes[](0);
-        //     campaignData = abi.encode(
-        //         baseToken,
-        //         quoteToken,
-        //         poolIdx,
-        //         isOutOfRangeIncentivized,
-        //         weightFees,
-        //         weightToken0,
-        //         weightToken1,
-        //         whitelist,
-        //         blacklist,
-        //         url,
-        //         forwarders,
-        //         hooks,
-        //         hex""
-        //     );
-        // }
-        // END
+        address rewardToken = address(0xB63B9f0eb4A6E6f191529D71d4D88cc8900Df2C9);
 
         CampaignParameters memory campaign = CampaignParameters({
             campaignId: bytes32(0),
             creator: address(0),
             rewardToken: rewardToken,
-            amount: 5000 * 10 ** (IERC20Metadata(rewardToken).decimals()),
-            campaignType: campaignType,
-            startTimestamp: 1740063600,
-            duration: 30 days,
-            campaignData: campaignData
+            amount: 9867825382083116891581,
+            campaignType: 56,
+            startTimestamp: 1752764400,
+            duration: 385200,
+            campaignData: hex"00000000000000000000000084bbc0be5a6f831a4e2c28a2f3b892c70acaa5b3000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001400000000000000000000000000000000000000000000000000000000000000160000000000000000000000000000000000000000000000000000000000000018000000000000000000000000000000000000000000000000000000000000001a000000000000000000000000000000000000000000000000000000000000001c000000000000000000000000000000000000000000000000000000000000001e000000000000000000000000000000000000000000000000000000000000000010000000000000000000000009fee01e948353e0897968a3ea955815aaa49f58d000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
         });
         _run(campaign);
     }
@@ -892,5 +802,111 @@ contract SetRewardTokenMinAmountsDistributor is DistributionCreatorScript {
         address creatorAddress = readAddress(chainId, "DistributionCreator");
 
         DistributionCreator(creatorAddress).setRewardTokenMinAmounts(tokens, minAmounts);
+    }
+}
+
+// SetFeesMultichain script
+contract SetFeesMultichain is DistributionCreatorScript {
+    struct FailedChain {
+        string network;
+        uint256 chainId;
+        string reason;
+    }
+
+    function externalReadAddress(uint256 chainId, string memory key) public view returns (address) {
+        return readAddress(chainId, key);
+    }
+
+    function run() external {
+        // Set default fees to 0 and campaign fees to 3% (30,000,000 in 9 decimals)
+        uint256 defaultFees = 0;
+        uint256 campaignFees = 5000000; // 0.5%
+
+        // Get all networks from foundry.toml
+        string[2][] memory networks = vm.rpcUrls();
+
+        // Track failed chains
+        FailedChain[] memory failedChains = new FailedChain[](networks.length);
+        uint256 failedCount = 0;
+        uint256 successCount = 0;
+
+        for (uint256 i = 0; i < networks.length; i++) {
+            string memory network = networks[i][0];
+
+            // Skip localhost and fork
+            if (
+                keccak256(abi.encodePacked(network)) == keccak256(abi.encodePacked("localhost")) ||
+                keccak256(abi.encodePacked(network)) == keccak256(abi.encodePacked("fork")) ||
+                keccak256(abi.encodePacked(network)) == keccak256(abi.encodePacked("zksync")) ||
+                keccak256(abi.encodePacked(network)) == keccak256(abi.encodePacked("nibiru")) // No multisig deployed
+            ) {
+                continue;
+            }
+
+            // // Create fork for this network
+            vm.createSelectFork(network);
+            uint256 chainId = block.chainid;
+            address creatorAddress = readAddress(chainId, "Merkl.DistributionCreator");
+
+            // Create contract instances to reuse existing logic
+            // SetFees setFeesContract = new SetFees();
+            // SetCampaignFees setCampaignFeesContract = new SetCampaignFees();
+
+            // Set default fees using existing contract
+            // TODO: Instead of broadcasting, we should just write the transaction to the json file
+            bytes memory setFeesPayload = abi.encodeWithSelector(DistributionCreator.setFees.selector, defaultFees);
+
+            // address safe = readAddress(chainId, "AngleLabs");
+            // console.log("Safe address: %s", safe);
+            address safe = readAddress(chainId, "AngleLabs");
+            _serializeJson(
+                chainId,
+                creatorAddress, // target address (the DistributionCreator proxy)
+                0, // value
+                setFeesPayload, // setFees call
+                Operation.Call, // standard call (not delegate)
+                hex"", // signature
+                safe // safe address
+            );
+            console.log("Default fees transaction serialized for %s (chain %s)", network, chainId);
+            successCount++;
+
+            // // Set campaign fees for each type using existing contract
+            // if (DistributionCreator(creatorAddress).campaignSpecificFees(27) != campaignFees) {
+            //     console.log("Setting campaign fees for type 27 to %s", campaignFees);
+            //     try setCampaignFeesContract.run(27, campaignFees) {
+            //         // Success
+            //         console.log("Fees updated on %s (chain %s)", network, chainId);
+            //         successCount++;
+            //     } catch (bytes memory err) {
+            //         console.log("Failed to set campaign fees for type %s on %s", 27, network);
+            //         failedChains[failedCount] = FailedChain(network, chainId, string(err));
+            //         failedCount++;
+            //         vm.stopBroadcast();
+            //     }
+            // }
+        }
+
+        // Display summary
+        console.log("");
+        console.log("=== MULTICHAIN FEE SETTING SUMMARY ===");
+        console.log("Successful chains: %s", successCount);
+        console.log("Failed chains: %s", failedCount);
+
+        if (failedCount > 0) {
+            console.log("");
+            console.log("Failed chains details:");
+            for (uint256 i = 0; i < failedCount; i++) {
+                console.log(
+                    "- %s (Chain ID: %s) - Reason: %s",
+                    failedChains[i].network,
+                    failedChains[i].chainId,
+                    failedChains[i].reason
+                );
+            }
+        }
+
+        console.log("");
+        console.log("Multichain fee setting completed!");
     }
 }

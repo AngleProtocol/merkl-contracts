@@ -9,7 +9,7 @@ function usage {
 
 # Get list of chain IDs where DistributionCreator is deployed
 function get_available_chains() {
-    local registry_file="node_modules/@angleprotocol/sdk/dist/src/registry/registry.json"
+    local registry_file="node_modules/@merkl/registry/dist/src/registry.json"
     if [ ! -f "$registry_file" ]; then
         echo "Registry file not found!"
         exit 1
@@ -113,7 +113,7 @@ function main {
     fi
 
     # Path to the registry file
-    registry_file="node_modules/@angleprotocol/sdk/dist/src/registry/registry.json"
+    registry_file="node_modules/@merkl/registry/dist/src/registry.json"
 
     if [ ! -f "$registry_file" ]; then
         echo "Registry file not found!"
