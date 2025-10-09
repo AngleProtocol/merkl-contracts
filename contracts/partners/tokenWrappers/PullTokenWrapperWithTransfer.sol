@@ -11,9 +11,9 @@ import { UUPSHelper } from "../../utils/UUPSHelper.sol";
 import { IAccessControlManager } from "../../interfaces/IAccessControlManager.sol";
 import { Errors } from "../../utils/Errors.sol";
 
-/// @title PullTokenWrapper
+/// @title PullTokenWrapperWithTransfer
 /// @notice Wrapper for a reward token on Merkl so campaigns do not have to be prefunded
-contract PullTokenWrapper is UUPSHelper, ERC20Upgradeable {
+contract PullTokenWrapperWithTransfer is UUPSHelper, ERC20Upgradeable {
     using SafeERC20 for IERC20;
 
     // ================================= VARIABLES =================================
@@ -58,8 +58,8 @@ contract PullTokenWrapper is UUPSHelper, ERC20Upgradeable {
     }
 
     function _beforeTokenTransfer(address from, address to, uint256 amount) internal override {
-        // During claim transactions, tokens are pulled and transferred to the `to` address
-        if (from == distributor || to == feeRecipient) IERC20(token).safeTransferFrom(holder, to, amount);
+        // During claim transactions, tokens are transferred to the `to` address
+        if (from == distributor || to == feeRecipient) IERC20(token).safeTransfer(to, amount);
     }
 
     function _afterTokenTransfer(address, address to, uint256 amount) internal override {
@@ -73,6 +73,10 @@ contract PullTokenWrapper is UUPSHelper, ERC20Upgradeable {
 
     function mint(uint256 amount) external onlyHolderOrGovernor {
         _mint(holder, amount);
+    }
+
+    function recover(address _token, address _to, uint256 amount) external onlyHolderOrGovernor {
+        IERC20(_token).safeTransfer(_to, amount);
     }
 
     function setFeeRecipient() external {

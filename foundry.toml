@@ -3,7 +3,7 @@ auto_detect_solc = false
 src = 'contracts'
 out = 'out'
 test = 'test'
-libs = ["node_modules"]
+libs = ["node_modules", "lib"]
 script = 'scripts'
 cache_path = 'cache-forge'
 gas_reports = ["*"]
@@ -146,3 +146,4 @@ hemi = { chainId = 43111, key = "${HEMI_ETHERSCAN_API_KEY}", url = "${VERIFIER_U
 xdc = { chainId = 50, key = "${XDC_ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_50}" }
 katana = {chainId = 747474, key = "${KATANA_ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_747474}" }
 tac = {chainId = 239, key = "${TAC_ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_239}" }
+plasma = {chainId = 9745, key = "${$PLASMA_ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_9745}" }

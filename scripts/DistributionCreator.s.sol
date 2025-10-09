@@ -183,8 +183,11 @@ contract RecoverFees is DistributionCreatorScript {
 contract SetUserFeeRebate is DistributionCreatorScript {
     function run() external {
         // MODIFY THESE VALUES TO SET YOUR DESIRED USER AND REBATE
-        address user = address(0xFc6960197CDF33B6bfa0569E3fbe539947DDfa44);
-        uint256 rebate = 750000000;
+        // 1_000_000_000 = 100%
+        // 250_000_000 = 25%
+        // 330_000_000  = 3
+        address user = address(0x5117e91a4383991C6c4AadfacE69b05346535408);
+        uint256 rebate = 1_000_000_000; // 100% 500000000
         _run(user, rebate);
     }
 
@@ -204,14 +207,14 @@ contract SetUserFeeRebate is DistributionCreatorScript {
 
 // SetRewardTokenMinAmounts script
 contract SetRewardTokenMinAmounts is DistributionCreatorScript {
-    // forge script scripts/DistributionCreator.s.sol:SetRewardTokenMinAmounts --rpc-url https://rpc.katanarpc.com/GvoUxq4N7at9FyVTnF2FZyL7f7xb4nw6t --sender 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701 --broadcast -i 1
+    // forge script scripts/DistributionCreator.s.sol:SetRewardTokenMinAmounts --rpc-url bsc --sender 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701 --broadcast -i 1
     function run() external {
         console.log("DEPLOYER_ADDRESS:", broadcaster);
         // MODIFY THESE VALUES TO SET YOUR DESIRED TOKENS AND AMOUNTS
         address[] memory tokens = new address[](1);
         uint256[] memory amounts = new uint256[](1);
-        tokens[0] = 0x6ed1F491e2d31536D6561f6bdB2AdC8F092a6076;
-        amounts[0] = 0 ether;
+        tokens[0] = 0xb3b02E4A9Fb2bD28CC2ff97B0aB3F6B3Ec1eE9D2;
+        amounts[0] = 1 ether; // 0.1 tokens with 18 decimals
         _run(tokens, amounts);
     }
 
@@ -223,6 +226,7 @@ contract SetRewardTokenMinAmounts is DistributionCreatorScript {
         uint256 chainId = block.chainid;
         address creatorAddress = readAddress(chainId, "DistributionCreator");
 
+        address creatorAddress = 0x8BB4C975Ff3c250e0ceEA271728547f3802B36Fd;
         DistributionCreator(creatorAddress).setRewardTokenMinAmounts(_tokens, _amounts);
 
         console.log("Minimum amounts updated for %s tokens", _tokens.length);
