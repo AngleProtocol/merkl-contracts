@@ -16,6 +16,7 @@ interface IDistributionCreator {
 }
 
 contract DeployReferralRegistry is BaseScript {
+    // forge script scripts/deployReferralRegistry.s.sol:DeployReferralRegistry --rpc-url avalanche --broadcast --verify -vvvv
     function run() public {
         uint256 deployerPrivateKey = vm.envUint("DEPLOYER_PRIVATE_KEY");
         vm.startBroadcast(deployerPrivateKey);
@@ -26,15 +27,29 @@ contract DeployReferralRegistry is BaseScript {
         IAccessControlManager accessControlManager = distributionCreator.accessControlManager();
 
         // Deploy implementation
+        /*
         address implementation = address(new ReferralRegistry());
         console.log("ReferralRegistry Implementation:", implementation);
 
         // Deploy proxy
-        ERC1967Proxy proxy = new ERC1967Proxy{salt: vm.envBytes32("DEPLOY_SALT_2")}(implementation, "");
+        ERC1967Proxy proxy = new ERC1967Proxy(implementation, "");
         console.log("ReferralRegistry Proxy:", address(proxy));
 
         // Initialize
         ReferralRegistry(payable(address(proxy))).initialize(accessControlManager, feeSetup, feeRecipient);
+
+*/
+        string memory key = "avant-referral";
+
+        ReferralRegistry(payable(0x3FB2121208b40c7878089A78cc58f9b4D9D8b9F4)).addReferralKey(
+            key,
+            0,
+            false,
+            0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701,
+            false,
+            address(0)
+        );
+
         vm.stopBroadcast();
     }
 }

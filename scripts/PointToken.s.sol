@@ -7,6 +7,7 @@ import { JsonReader } from "@utils/JsonReader.sol";
 
 import { BaseScript } from "./utils/Base.s.sol";
 import { PointToken } from "../contracts/partners/tokenWrappers/PointToken.sol";
+import { DistributionCreator } from "../contracts/DistributionCreator.sol";
 import { IAccessControlManager } from "../contracts/interfaces/IAccessControlManager.sol";
 
 // Base contract with shared constants and utilities
@@ -17,19 +18,29 @@ contract PointTokenScript is BaseScript, JsonReader {
 // Deploy script
 contract DeployPointToken is PointTokenScript {
     function run() external broadcast {
+        // forge script scripts/PointToken.s.sol:DeployPointToken --rpc-url gnosis --broadcast --verify -vvvv
         uint256 chainId = block.chainid;
         // MODIFY THESE VALUES TO SET YOUR DESIRED TOKEN PARAMETERS
-        string memory name = "HypurrScore - Epoch 27";
-        string memory symbol = "HypurrScore-27";
+        string memory name = "IPOR Points";
+        string memory symbol = "ipor-points";
         address minter = 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701;
-        uint256 amount = 100_000_000_000_000 * 1e18; // 1000 tokens with 18 decimals
+        uint256 amount = 1_000_000_000 * 1e18;
         address creator = 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701;
         uint8 decimals = 18;
-        address accessControlManager = readAddress(chainId, "Merkl.CoreMerkl");
+
+        // address accessControlManager = readAddress(chainId, "Merkl.CoreMerkl");
+        address accessControlManager = 0xFD0DFC837Fe7ED19B23df589b6F6Da5a775F99E0;
         _run(name, symbol, minter, accessControlManager, amount, creator);
     }
 
-    function _run(string memory name, string memory symbol, address minter, address accessControlManager,  uint256 amount, address creator) internal {
+    function _run(
+        string memory name,
+        string memory symbol,
+        address minter,
+        address accessControlManager,
+        uint256 amount,
+        address creator
+    ) internal {
         console.log("DEPLOYER_ADDRESS:", broadcaster);
 
         // Deploy PointToken
@@ -51,10 +62,10 @@ contract DeployPointToken is PointTokenScript {
 
         // Whitelist the Merkl Contracts
         token.toggleWhitelistedRecipient(0x3Ef3D8bA38EBe18DB133cEc108f4D14CE00Dd9Ae);
-        // token.toggleWhitelistedRecipient(0x8BB4C975Ff3c250e0ceEA271728547f3802B36Fd);
-
-        // KAT SAFE
-        token.toggleWhitelistedRecipient(creator); //0xABb29f9CCd2dD058A2DA6b6022f82F90Ae0CEc90);
+        token.toggleWhitelistedRecipient(0x8BB4C975Ff3c250e0ceEA271728547f3802B36Fd);
+        token.toggleWhitelistedRecipient(0xeaC6A75e19beB1283352d24c0311De865a867DAB);
+        token.toggleWhitelistedRecipient(0x1384Fa5187D946F9639Afaa391287E0b86B31708);
+        token.transfer(0x1384Fa5187D946F9639Afaa391287E0b86B31708, 1e9 * 1e18);
 
         console.log("Whitelisted recipients:");
         // transfer to the SAFE
@@ -62,9 +73,8 @@ contract DeployPointToken is PointTokenScript {
             console.log("Transferring initial supply to KAT SAFE:", creator);
             token.transfer(creator, amount);
         }
-       
-        console.log("Transferred initial supply to KAT SAFE");
 
+        console.log("Transferred initial supply to KAT SAFE");
     }
 }
 
