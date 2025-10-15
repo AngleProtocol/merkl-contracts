@@ -38,7 +38,7 @@ pragma solidity ^0.8.17;
 import { DistributionCreator } from "../DistributionCreator.sol";
 import { IAccessControlManager } from "../interfaces/IAccessControlManager.sol";
 /// @title DistributionCreatorUpdatable
-/// @author Angle Labs, Inc.
+/// @author Merkl SAS
 //solhint-disable
 contract DistributionCreatorUpdatable is DistributionCreator {
     uint8 public accessControlManagerUpdated;

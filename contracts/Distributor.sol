@@ -97,7 +97,10 @@ contract Distributor is UUPSHelper {
     /// @dev If the mapping is empty, by default rewards will accrue on the user address
     mapping(address => mapping(address => address)) public claimRecipient;
 
-    uint256[36] private __gap;
+    /// @notice User -> Token -> authorisation to claim on behalf of every user for this token
+    mapping(address => mapping(address => uint256)) public mainOperators;
+
+    uint256[35] private __gap;
 
     /*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                                                         EVENTS                                                      
@@ -111,6 +114,7 @@ contract Distributor is UUPSHelper {
     event DisputeResolved(bool valid);
     event DisputeTokenUpdated(address indexed _disputeToken);
     event EpochDurationUpdated(uint32 newEpochDuration);
+    event MainOperatorStatusUpdated(address indexed operator, address indexed token, bool isWhitelisted);
     event OperatorClaimingToggled(address indexed user, bool isEnabled);
     event OperatorToggled(address indexed user, address indexed operator, bool isWhitelisted);
     event Recovered(address indexed token, address indexed to, uint256 amount);
@@ -129,13 +133,15 @@ contract Distributor is UUPSHelper {
         _;
     }
 
+    /// @notice Checks whether the `msg.sender` has the guardian role
+    modifier onlyGuardian() {
+        if (!accessControlManager.isGovernorOrGuardian(msg.sender)) revert Errors.NotGovernorOrGuardian();
+        _;
+    }
+
     /// @notice Checks whether the `msg.sender` is the `user` address or is a trusted address
     modifier onlyTrustedOrUser(address user) {
-        if (
-            user != msg.sender &&
-            canUpdateMerkleRoot[msg.sender] != 1 &&
-            !accessControlManager.isGovernorOrGuardian(msg.sender)
-        ) revert Errors.NotTrusted();
+        if (user != msg.sender && !accessControlManager.isGovernorOrGuardian(msg.sender)) revert Errors.NotTrusted();
         _;
     }
 
@@ -228,6 +234,7 @@ contract Distributor is UUPSHelper {
 
     /// @notice Toggles whitelisting for a given user and a given operator
     /// @dev When an operator is whitelisted for a user, the operator can claim rewards on behalf of the user
+    /// @dev Setting the operator address to the zero address enables any
     function toggleOperator(address user, address operator) external onlyTrustedOrUser(user) {
         uint256 oldValue = operators[user][operator];
         operators[user][operator] = 1 - oldValue;
@@ -239,9 +246,22 @@ contract Distributor is UUPSHelper {
     /// the user will still accrue all rewards to its address
     /// @dev Users may still specify a different recipient when they claim token rewards with the
     /// `claimWithRecipient` function
+    /// @dev Setting the zero address for a token will set the default recipient for all tokens
     function setClaimRecipient(address recipient, address token) external {
-        claimRecipient[msg.sender][token] = recipient;
-        emit ClaimRecipientUpdated(msg.sender, recipient, token);
+        _setClaimRecipient(msg.sender, recipient, token);
+    }
+
+    /// @notice Sets a recipient for a user claiming rewards for a token, through governance
+    /// @dev This is a sensitive operation so can only be performed by an address with governor rights
+    /// @dev Setting the zero address for a token will set the default recipient for all tokens
+    function setClaimRecipientWithGov(address user, address recipient, address token) external onlyGovernor {
+        _setClaimRecipient(user, recipient, token);
+    }
+
+    function toggleMainOperatorStatus(address operator, address token) external onlyGuardian {
+        uint256 oldValue = mainOperators[operator][token];
+        mainOperators[operator][token] = 1 - oldValue;
+        emit MainOperatorStatusUpdated(operator, token, oldValue == 0);
     }
 
     /// @notice Freezes the Merkle tree update until the dispute is resolved
@@ -374,9 +394,15 @@ contract Distributor is UUPSHelper {
             uint256 amount = amounts[i];
             bytes memory data = datas[i];
 
-            // Only approved operator can claim for `user`
-            if (msg.sender != user && tx.origin != user && operators[user][msg.sender] == 0)
-                revert Errors.NotWhitelisted();
+            // Only approved operators can claim for `user`
+            if (
+                msg.sender != user &&
+                tx.origin != user &&
+                mainOperators[msg.sender][token] == 0 &&
+                mainOperators[msg.sender][address(0)] == 0 &&
+                operators[user][msg.sender] == 0 &&
+                operators[user][address(0)] == 0
+            ) revert Errors.NotWhitelisted();
 
             // Verifying proof
             bytes32 leaf = keccak256(abi.encode(user, token, amount));
@@ -392,6 +418,7 @@ contract Distributor is UUPSHelper {
             // The recipient set in the context of the call to `claim` can override the default recipient set by the user
             if (msg.sender != user || recipient == address(0)) {
                 address userSetRecipient = claimRecipient[user][token];
+                if (userSetRecipient == address(0)) userSetRecipient = claimRecipient[user][address(0)];
                 if (userSetRecipient == address(0)) recipient = user;
                 else recipient = userSetRecipient;
             }
@@ -453,5 +480,11 @@ contract Distributor is UUPSHelper {
         bytes32 root = getMerkleRoot();
         if (root == bytes32(0)) revert Errors.InvalidUninitializedRoot();
         return currentHash == root;
+    }
+
+    /// @notice Internal version of `setClaimRecipient` and `setClaimRecipientWithGov`
+    function _setClaimRecipient(address user, address recipient, address token) internal {
+        claimRecipient[user][token] = recipient;
+        emit ClaimRecipientUpdated(user, recipient, token);
     }
 }

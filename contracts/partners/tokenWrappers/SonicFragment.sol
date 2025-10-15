@@ -11,7 +11,7 @@ import { Errors } from "../../utils/Errors.sol";
 
 /// @title SonicFragment
 /// @notice Contract for Sonic fragments which can be converted upon activation into S tokens
-/// @author Angle Labs, Inc.
+/// @author Merkl SAS
 contract SonicFragment is ERC20 {
     using SafeERC20 for IERC20;
 
