@@ -31,7 +31,7 @@ fs_permissions = [
   { access = "write", path = "./transaction.json" }, 
   { access = "write", path = "./transactions.json" }
 ]
-solc = "0.8.19"
+solc = "0.8.25"
 
 [fuzz]
 runs = 500
@@ -94,6 +94,10 @@ hemi="${HEMI_NODE_URI}"
 xdc="${XDC_NODE_URI}"
 katana="${KATANA_NODE_URI}"
 tac="${TAC_NODE_URI}"
+plasma="${PLASMA_NODE_URI}"
+mezo="${MEZO_NODE_URI}"
+redbelly="${REDBELLY_NODE_URI}"
+saga="${SAGA_NODE_URI}"
 
 [etherscan]
 localhost = { url = "http://localhost:4000", key = "none" }
@@ -146,4 +150,7 @@ hemi = { chainId = 43111, key = "${HEMI_ETHERSCAN_API_KEY}", url = "${VERIFIER_U
 xdc = { chainId = 50, key = "${XDC_ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_50}" }
 katana = {chainId = 747474, key = "${KATANA_ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_747474}" }
 tac = {chainId = 239, key = "${TAC_ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_239}" }
-plasma = {chainId = 9745, key = "${$PLASMA_ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_9745}" }
+plasma = {chainId = 9745, key = "${PLASMA_ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_9745}" }
+mezo = {chainId = 31612, key = "${MEZO_ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_31612}" }
+redbelly = {chainId = 151, key = "${REDBELLY_ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_151}" } 
+saga = {chainId = 5464, key = "$SAGA_ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_5464}" } 
