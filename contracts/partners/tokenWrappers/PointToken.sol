@@ -7,7 +7,7 @@ import { IAccessControlManager } from "../../interfaces/IAccessControlManager.so
 import "../../utils/Errors.sol";
 
 /// @title PointToken
-/// @author Angle Labs, Inc.
+/// @author Merkl SAS
 /// @notice Reference contract for points systems within Merkl
 contract PointToken is ERC20 {
     mapping(address => bool) public minters;

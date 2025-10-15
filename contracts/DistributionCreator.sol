@@ -6,7 +6,6 @@ import { ReentrancyGuardUpgradeable } from "@openzeppelin/contracts-upgradeable/
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import { ECDSA } from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
-import { SignatureChecker } from "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
 
 import { UUPSHelper } from "./utils/UUPSHelper.sol";
 import { IAccessControlManager } from "./interfaces/IAccessControlManager.sol";
@@ -14,16 +13,12 @@ import { Errors } from "./utils/Errors.sol";
 import { CampaignParameters } from "./struct/CampaignParameters.sol";
 import { DistributionParameters } from "./struct/DistributionParameters.sol";
 import { RewardTokenAmounts } from "./struct/RewardTokenAmounts.sol";
-import { Distributor } from "./Distributor.sol";
 
 /// @title DistributionCreator
-/// @author Angle Labs, Inc.
+/// @author Merkl SAS
 /// @notice Manages the distribution of rewards through the Merkl system
 /// @dev This contract is mostly a helper for APIs built on top of Merkl
-/// @dev This contract distinguishes two types of different rewards:
-/// - distributions: type of campaign for concentrated liquidity pools created before Feb 15 2024,
-/// now deprecated
-/// - campaigns: the more global name to describe any reward program on top of Merkl
+/// @dev The deprecated variables in this contract are kept for storage layout compatibility
 //solhint-disable
 contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     using SafeERC20 for IERC20;
@@ -54,27 +49,25 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @notice Message that needs to be acknowledged by users creating a campaign
     string public message;
 
-    /// @notice Hash of the message that needs to be signed
+    /// @notice Hash of the message that needs to be signed or accepted
     bytes32 public messageHash;
 
-    /// @notice List of all rewards distributed in the contract on campaigns created before mid Feb 2024
-    /// for concentrated liquidity pools
+    /// @notice Deprecated
     DistributionParameters[] public distributionList;
 
     /// @notice Maps an address to its fee rebate
     mapping(address => uint256) public feeRebate;
 
-    /// @notice Maps a token to whether it is whitelisted or not. No fees are to be paid for incentives given
-    /// on pools with whitelisted tokens
+    /// @notice Deprecated
     mapping(address => uint256) public isWhitelistedToken;
 
-    /// @notice Deprecated, kept for storage compatibility
+    /// @notice Deprecated
     mapping(address => uint256) public _nonces;
 
-    /// @notice Maps an address to the last valid hash signed
+    /// @notice Deprecated
     mapping(address => bytes32) public userSignatures;
 
-    /// @notice Maps a user to whether it is whitelisted for not signing
+    /// @notice Deprecated
     mapping(address => uint256) public userSignatureWhitelist;
 
     /// @notice Maps a token to the minimum amount that must be sent per epoch for a distribution to be valid
@@ -107,10 +100,22 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @notice List all reallocated address for a given campaign
     mapping(bytes32 => address[]) public campaignListReallocation;
 
+    /// @notice Maps a creator address to an operator to a reward token to an amount that can be pulled from the creator
+    mapping(address => mapping(address => mapping(address => uint256))) public creatorTokenAllowance;
+
+    /// @notice Maps a creator to a campaign operator to the ability to manage the campaign on behalf of the creator
+    mapping(address => mapping(address => uint256)) public creatorCampaignOperators;
+
     /*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                                                         EVENTS                                                      
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
+    event CreatorAllowanceUpdated(
+        address indexed user,
+        address indexed operator,
+        address indexed token,
+        uint256 amount
+    );
     event DistributorUpdated(address indexed _distributor);
     event FeeRebateUpdated(address indexed user, uint256 userFeeRebate);
     event FeeRecipientUpdated(address indexed _feeRecipient);
@@ -120,11 +125,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     event CampaignSpecificFeesSet(uint32 campaignType, uint256 _fees);
     event MessageUpdated(bytes32 _messageHash);
     event NewCampaign(CampaignParameters campaign);
-    event NewDistribution(DistributionParameters distribution, address indexed sender);
     event RewardTokenMinimumAmountUpdated(address indexed token, uint256 amount);
-    event TokenWhitelistToggled(address indexed token, uint256 toggleStatus);
-    event UserSigned(bytes32 messageHash, address indexed user);
-    event UserSigningWhitelistToggled(address indexed user, uint256 toggleStatus);
 
     /*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                                                        MODIFIERS                                                    
@@ -146,8 +147,8 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     modifier hasSigned() {
         if (
             userSignatureWhitelist[msg.sender] == 0 &&
-            userSignatures[msg.sender] != messageHash &&
             userSignatureWhitelist[tx.origin] == 0 &&
+            userSignatures[msg.sender] != messageHash &&
             userSignatures[tx.origin] != messageHash
         ) revert Errors.NotSigned();
         _;
@@ -204,49 +205,9 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         return campaignIds;
     }
 
-    /// @notice Allows a user to accept the conditions without signing the message
-    /// @dev Users may either call `acceptConditions` here or `sign` the message
+    /// @notice Allows a user to accept the Merkl conditions (expressed in the messageHash) in order to start their campaigns
     function acceptConditions() external {
         userSignatureWhitelist[msg.sender] = 1;
-    }
-
-    /// @notice Checks whether the `msg.sender`'s `signature` is compatible with the message
-    /// to sign and stores the signature
-    /// @dev If you signed the message once, and the message has not been modified, then you do not
-    /// need to sign again
-    function sign(bytes calldata signature) external {
-        _sign(signature);
-    }
-
-    /// @notice Combines signing the message and creating a campaign
-    function signAndCreateCampaign(
-        CampaignParameters memory newCampaign,
-        bytes calldata signature
-    ) external returns (bytes32) {
-        _sign(signature);
-        return _createCampaign(newCampaign);
-    }
-
-    /// @notice Creates a `distribution` to incentivize a given pool for a specific period of time
-    function createDistribution(
-        DistributionParameters memory newDistribution
-    ) external nonReentrant hasSigned returns (uint256 distributionAmount) {
-        return _createDistribution(newDistribution);
-    }
-
-    /// @notice Same as the function above but for multiple distributions at once
-    function createDistributions(
-        DistributionParameters[] memory distributions
-    ) external nonReentrant hasSigned returns (uint256[] memory) {
-        uint256 distributionsLength = distributions.length;
-        uint256[] memory distributionAmounts = new uint256[](distributionsLength);
-        for (uint256 i; i < distributionsLength; ) {
-            distributionAmounts[i] = _createDistribution(distributions[i]);
-            unchecked {
-                ++i;
-            }
-        }
-        return distributionAmounts;
     }
 
     /// @notice Overrides a campaign with new parameters
@@ -265,10 +226,6 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
             newCampaign.duration + _campaign.startTimestamp <= block.timestamp
         ) revert Errors.InvalidOverride();
 
-        // Take a new fee to not trick the system by creating a campaign with the smallest fee
-        // and then overriding it with a campaign with a bigger fee
-        _computeFees(newCampaign.campaignType, newCampaign.amount, newCampaign.rewardToken);
-
         newCampaign.campaignId = _campaignId;
         newCampaign.creator = msg.sender;
         campaignOverrides[_campaignId] = newCampaign;
@@ -277,44 +234,58 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     }
 
     /// @notice Reallocates rewards of a given campaign from one address to another
-    /// @dev To prevent manipulations by campaign creators, this function can only be called by the
-    /// initial campaign creator if the `from` address has never claimed any reward on the chain
-    /// @dev Compute engine should also make sure when reallocating rewards that `from` claimed amount
-    /// is still 0 - otherwise double allocation can happen
-    /// @dev It is meant to be used for the case of addresses accruing rewards but unable to claim them
+    /// @dev While this function may execute successfully, the reallocation may not be valid in the Merkl engine
     function reallocateCampaignRewards(bytes32 _campaignId, address[] memory froms, address to) external {
         CampaignParameters memory _campaign = campaign(_campaignId);
         if (_campaign.creator != msg.sender || block.timestamp < _campaign.startTimestamp + _campaign.duration)
             revert Errors.InvalidOverride();
 
         uint256 fromsLength = froms.length;
-        address[] memory successfullFrom = new address[](fromsLength);
-        uint256 count = 0;
-        for (uint256 i; i < fromsLength; i++) {
-            (uint208 amount, uint48 timestamp, ) = Distributor(distributor).claimed(froms[i], _campaign.rewardToken);
-            if (amount == 0 && timestamp == 0) {
-                successfullFrom[count] = froms[i];
-                campaignReallocation[_campaignId][froms[i]] = to;
-                campaignListReallocation[_campaignId].push(froms[i]);
-                count++;
+        for (uint256 i; i < fromsLength; ) {
+            campaignReallocation[_campaignId][froms[i]] = to;
+            campaignListReallocation[_campaignId].push(froms[i]);
+            unchecked {
+                ++i;
             }
         }
-        assembly {
-            mstore(successfullFrom, count)
-        }
+        emit CampaignReallocation(_campaignId, froms, to);
+    }
 
-        if (count == 0) revert Errors.InvalidOverride();
-        emit CampaignReallocation(_campaignId, successfullFrom, to);
+    /// @dev If a governor address calls this function, the user MUST have transferred the funds to the contract beforehand
+    function increaseCreatorTokenAllowance(
+        address user,
+        address operator,
+        address rewardToken,
+        uint256 amount
+    ) external {
+        if (operator == address(0)) revert Errors.ZeroAddress();
+        if (user == msg.sender) IERC20(rewardToken).safeTransferFrom(msg.sender, address(this), amount);
+        else if (!accessControlManager.isGovernor(msg.sender)) revert Errors.NotGovernor();
+
+        uint256 currentAllowance = creatorTokenAllowance[user][operator][rewardToken];
+        creatorTokenAllowance[user][operator][rewardToken] = currentAllowance + amount;
+        emit CreatorAllowanceUpdated(user, operator, rewardToken, currentAllowance + amount);
+    }
+
+    function decreaseCreatorTokenAllowance(
+        address user,
+        address operator,
+        address rewardToken,
+        uint256 amount
+    ) external {
+        if (operator == address(0)) revert Errors.ZeroAddress();
+        uint256 currentAllowance = creatorTokenAllowance[user][operator][rewardToken];
+        uint256 updateAmount = amount > currentAllowance ? currentAllowance : amount;
+        creatorTokenAllowance[user][operator][rewardToken] = currentAllowance - updateAmount;
+        if (user == msg.sender) IERC20(rewardToken).safeTransfer(msg.sender, updateAmount);
+        else if (!accessControlManager.isGovernor(msg.sender)) revert Errors.NotGovernor();
+
+        emit CreatorAllowanceUpdated(user, operator, rewardToken, currentAllowance - updateAmount);
     }
 
     /*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                                                         GETTERS                                                     
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
-
-    /// @notice Returns the distribution at a given index converted into a campaign
-    function distribution(uint256 index) external view returns (CampaignParameters memory) {
-        return _convertDistribution(distributionList[index]);
-    }
 
     /// @notice Returns the index of a campaign in the campaign list
     function campaignLookup(bytes32 _campaignId) public view returns (uint256) {
@@ -330,16 +301,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     }
 
     /// @notice Returns the campaign ID for a given campaign
-    /// @dev The campaign ID is computed as the hash of the following parameters:
-    ///  - `campaign.chainId`
-    ///  - `campaign.creator`
-    ///  - `campaign.rewardToken`
-    ///  - `campaign.campaignType`
-    ///  - `campaign.startTimestamp`
-    ///  - `campaign.duration`
-    ///  - `campaign.campaignData`
-    /// This prevents the creation by the same account of two campaigns with the same parameters
-    /// which is not a huge issue
+    /// @dev The campaign ID is computed as the hash of various parameters
     function campaignId(CampaignParameters memory campaignData) public view returns (bytes32) {
         return
             bytes32(
@@ -372,26 +334,12 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         return _getValidRewardTokens(skip, first);
     }
 
-    /// @notice Gets all the campaigns which were live at some point between `start` and `end` timestamp
-    /// @param skip Disregard distibutions with a global index lower than `skip`
-    /// @param first Limit the length of the returned array to `first`
-    /// @return searchCampaigns Eligible campaigns
-    /// @return lastIndexCampaign Index of the last campaign assessed in the list of all campaigns
-    /// @dev For pagniation purpose, in case of out of gas, you can call back the same function but with `skip` set to `lastIndexCampaign`
-    /// @dev Not to be queried on-chain and hence not optimized for gas consumption
-    function getCampaignsBetween(
-        uint32 start,
-        uint32 end,
-        uint32 skip,
-        uint32 first
-    ) external view returns (CampaignParameters[] memory, uint256 lastIndexCampaign) {
-        return _getCampaignsBetween(start, end, skip, first);
-    }
-
+    /// @notice Gets the list of timestamps for when a campaign was overridden
     function getCampaignOverridesTimestamp(bytes32 _campaignId) external view returns (uint256[] memory) {
         return campaignOverridesTimestamp[_campaignId];
     }
 
+    /// @notice Gets the list of addresses from which rewards were reallocated for a given campaign
     function getCampaignListReallocation(bytes32 _campaignId) external view returns (address[] memory) {
         return campaignListReallocation[_campaignId];
     }
@@ -431,7 +379,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         emit FeeRecipientUpdated(_feeRecipient);
     }
 
-    /// @notice Sets the message that needs to be signed by users before posting rewards
+    /// @notice Sets the message that needs to be accepted by users before posting rewards
     function setMessage(string memory _message) external onlyGovernor {
         message = _message;
         bytes32 _messageHash = ECDSA.toEthSignedMessageHash(bytes(_message));
@@ -447,13 +395,6 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         emit CampaignSpecificFeesSet(campaignType, _fees);
     }
 
-    /// @notice Toggles the fee whitelist for `token`
-    function toggleTokenWhitelist(address token) external onlyGovernorOrGuardian {
-        uint256 toggleStatus = 1 - isWhitelistedToken[token];
-        isWhitelistedToken[token] = toggleStatus;
-        emit TokenWhitelistToggled(token, toggleStatus);
-    }
-
     /// @notice Sets fee rebates for a given user
     function setUserFeeRebate(address user, uint256 userFeeRebate) external onlyGovernorOrGuardian {
         feeRebate[user] = userFeeRebate;
@@ -467,21 +408,17 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     ) external onlyGovernorOrGuardian {
         uint256 tokensLength = tokens.length;
         if (tokensLength != amounts.length) revert Errors.InvalidLengths();
-        for (uint256 i; i < tokensLength; ++i) {
+        for (uint256 i; i < tokensLength; ) {
             uint256 amount = amounts[i];
             // Basic logic check to make sure there are no duplicates in the `rewardTokens` table. If a token is
             // removed then re-added, it will appear as a duplicate in the list
             if (amount != 0 && rewardTokenMinAmounts[tokens[i]] == 0) rewardTokens.push(tokens[i]);
             rewardTokenMinAmounts[tokens[i]] = amount;
             emit RewardTokenMinimumAmountUpdated(tokens[i], amount);
+            unchecked {
+                ++i;
+            }
         }
-    }
-
-    /// @notice Toggles the whitelist status for `user` when it comes to signing messages before depositing rewards.
-    function toggleSigningWhitelist(address user) external onlyGovernorOrGuardian {
-        uint256 whitelistStatus = 1 - userSignatureWhitelist[user];
-        userSignatureWhitelist[user] = whitelistStatus;
-        emit UserSigningWhitelistToggled(user, whitelistStatus);
     }
 
     /*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -502,12 +439,8 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         if (newCampaign.creator == address(0)) newCampaign.creator = msg.sender;
 
         // Computing fees: these are waived for whitelisted addresses and if there is a whitelisted token in a pool
-        uint256 campaignAmountMinusFees = _computeFees(
-            newCampaign.campaignType,
-            newCampaign.amount,
-            newCampaign.rewardToken
-        );
-        IERC20(newCampaign.rewardToken).safeTransferFrom(msg.sender, distributor, campaignAmountMinusFees);
+        uint256 campaignAmountMinusFees = _computeFees(newCampaign.campaignType, newCampaign.amount);
+        _pullTokens(newCampaign.creator, newCampaign.rewardToken, newCampaign.amount, campaignAmountMinusFees);
         newCampaign.amount = campaignAmountMinusFees;
         newCampaign.campaignId = campaignId(newCampaign);
 
@@ -519,68 +452,32 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         return newCampaign.campaignId;
     }
 
-    /// @notice Creates a distribution from a deprecated distribution type
-    function _createDistribution(DistributionParameters memory newDistribution) internal returns (uint256) {
-        _createCampaign(_convertDistribution(newDistribution));
-        // Not gas efficient but deprecated
-        return campaignList[campaignList.length - 1].amount;
-    }
-
-    /// @notice Converts the deprecated distribution type into a campaign
-    function _convertDistribution(
-        DistributionParameters memory distributionToConvert
-    ) internal view returns (CampaignParameters memory) {
-        uint256 wrapperLength = distributionToConvert.wrapperTypes.length;
-        address[] memory whitelist = new address[](wrapperLength);
-        address[] memory blacklist = new address[](wrapperLength);
-        uint256 whitelistLength;
-        uint256 blacklistLength;
-        for (uint256 k = 0; k < wrapperLength; k++) {
-            if (distributionToConvert.wrapperTypes[k] == 0) {
-                whitelist[whitelistLength] = (distributionToConvert.positionWrappers[k]);
-                whitelistLength += 1;
-            }
-            if (distributionToConvert.wrapperTypes[k] == 3) {
-                blacklist[blacklistLength] = (distributionToConvert.positionWrappers[k]);
-                blacklistLength += 1;
-            }
+    function _pullTokens(
+        address creator,
+        address rewardToken,
+        uint256 campaignAmount,
+        uint256 campaignAmountMinusFees
+    ) internal {
+        uint256 senderAllowance = creatorTokenAllowance[creator][msg.sender][rewardToken];
+        uint256 fees = campaignAmount - campaignAmountMinusFees;
+        address _feeRecipient = feeRecipient;
+        _feeRecipient = _feeRecipient == address(0) ? address(this) : _feeRecipient;
+        if (senderAllowance > campaignAmount) {
+            creatorTokenAllowance[creator][msg.sender][rewardToken] = senderAllowance - campaignAmount;
+            emit CreatorAllowanceUpdated(creator, msg.sender, rewardToken, senderAllowance - campaignAmount);
+            if (fees > 0) IERC20(rewardToken).safeTransfer(_feeRecipient, fees);
+            IERC20(rewardToken).safeTransfer(distributor, campaignAmountMinusFees);
+        } else {
+            if (fees > 0) IERC20(rewardToken).safeTransferFrom(msg.sender, _feeRecipient, fees);
+            IERC20(rewardToken).safeTransferFrom(msg.sender, distributor, campaignAmountMinusFees);
         }
-
-        assembly {
-            mstore(whitelist, whitelistLength)
-            mstore(blacklist, blacklistLength)
-        }
-
-        return
-            CampaignParameters({
-                campaignId: distributionToConvert.rewardId,
-                creator: msg.sender,
-                rewardToken: distributionToConvert.rewardToken,
-                amount: distributionToConvert.amount,
-                campaignType: 2,
-                startTimestamp: distributionToConvert.epochStart,
-                duration: distributionToConvert.numEpoch * HOUR,
-                campaignData: abi.encode(
-                    distributionToConvert.uniV3Pool,
-                    distributionToConvert.propFees, // eg. 6000
-                    distributionToConvert.propToken0, // eg. 3000
-                    distributionToConvert.propToken1, // eg. 1000
-                    distributionToConvert.isOutOfRangeIncentivized, // eg. 0
-                    distributionToConvert.boostingAddress, // eg. NULL_ADDRESS
-                    distributionToConvert.boostedReward, // eg. 0
-                    whitelist, // eg. []
-                    blacklist, // eg. []
-                    "0x"
-                )
-            });
     }
 
     /// @notice Computes the fees to be taken on a campaign and transfers them to the fee recipient
     function _computeFees(
         uint32 campaignType,
-        uint256 distributionAmount,
-        address rewardToken
-    ) internal returns (uint256 distributionAmountMinusFees) {
+        uint256 distributionAmount
+    ) internal view returns (uint256 distributionAmountMinusFees) {
         uint256 baseFeesValue = campaignSpecificFees[campaignType];
         if (baseFeesValue == 1) baseFeesValue = 0;
         else if (baseFeesValue == 0) baseFeesValue = defaultFees;
@@ -589,60 +486,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         distributionAmountMinusFees = distributionAmount;
         if (_fees != 0) {
             distributionAmountMinusFees = (distributionAmount * (BASE_9 - _fees)) / BASE_9;
-            address _feeRecipient = feeRecipient;
-            _feeRecipient = _feeRecipient == address(0) ? address(this) : _feeRecipient;
-            IERC20(rewardToken).safeTransferFrom(
-                msg.sender,
-                _feeRecipient,
-                distributionAmount - distributionAmountMinusFees
-            );
         }
-    }
-
-    /// @notice Internal version of the `sign` function
-    function _sign(bytes calldata signature) internal {
-        bytes32 _messageHash = messageHash;
-        if (!SignatureChecker.isValidSignatureNow(msg.sender, _messageHash, signature))
-            revert Errors.InvalidSignature();
-        userSignatures[msg.sender] = _messageHash;
-        emit UserSigned(_messageHash, msg.sender);
-    }
-
-    /// @notice Rounds an `epoch` timestamp to the start of the corresponding period
-    function _getRoundedEpoch(uint32 epoch) internal pure returns (uint32) {
-        return (epoch / HOUR) * HOUR;
-    }
-
-    /// @notice Internal version of `getCampaignsBetween`
-    function _getCampaignsBetween(
-        uint32 start,
-        uint32 end,
-        uint32 skip,
-        uint32 first
-    ) internal view returns (CampaignParameters[] memory, uint256) {
-        uint256 length;
-        uint256 campaignListLength = campaignList.length;
-        uint256 returnSize = first > campaignListLength ? campaignListLength : first;
-        CampaignParameters[] memory activeRewards = new CampaignParameters[](returnSize);
-        uint32 i = skip;
-        while (i < campaignListLength) {
-            CampaignParameters memory campaignToProcess = campaignList[i];
-            if (
-                campaignToProcess.startTimestamp + campaignToProcess.duration > start &&
-                campaignToProcess.startTimestamp < end
-            ) {
-                activeRewards[length] = campaignToProcess;
-                length += 1;
-            }
-            unchecked {
-                ++i;
-            }
-            if (length == returnSize) break;
-        }
-        assembly {
-            mstore(activeRewards, length)
-        }
-        return (activeRewards, i);
     }
 
     /// @notice Builds the list of valid reward tokens
