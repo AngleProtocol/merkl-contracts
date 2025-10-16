@@ -40,7 +40,7 @@ runs = 500
 runs = 500
 
 [profile.dev]
-via_ir = true
+via_ir = false
 
 [rpc_endpoints]
 localhost = "${LOCALHOST_NODE_URI}"
