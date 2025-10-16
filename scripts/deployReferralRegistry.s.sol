@@ -7,13 +7,6 @@ import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy
 import { ReferralRegistry } from "../contracts/ReferralRegistry.sol";
 import { DistributionCreator } from "../contracts/DistributionCreator.sol";
 import { IAccessControlManager } from "../contracts/interfaces/IAccessControlManager.sol";
-interface IDistributionCreator {
-    function distributor() external view returns (address);
-
-    function feeRecipient() external view returns (address);
-
-    function accessControlManager() external view returns (IAccessControlManager);
-}
 
 contract DeployReferralRegistry is BaseScript {
     // forge script scripts/deployReferralRegistry.s.sol:DeployReferralRegistry --rpc-url avalanche --broadcast --verify -vvvv
@@ -22,7 +15,7 @@ contract DeployReferralRegistry is BaseScript {
         vm.startBroadcast(deployerPrivateKey);
         uint256 feeSetup = 0;
         // uint32 cliffDuration = 1 weeks;
-        IDistributionCreator distributionCreator = IDistributionCreator(0x8BB4C975Ff3c250e0ceEA271728547f3802B36Fd);
+        DistributionCreator distributionCreator = DistributionCreator(0x8BB4C975Ff3c250e0ceEA271728547f3802B36Fd);
         address feeRecipient = distributionCreator.feeRecipient();
         IAccessControlManager accessControlManager = distributionCreator.accessControlManager();
 

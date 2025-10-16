@@ -9,6 +9,7 @@ import { SafeCast } from "@openzeppelin/contracts/utils/math/SafeCast.sol";
 import { UUPSHelper } from "./utils/UUPSHelper.sol";
 import { IAccessControlManager } from "./interfaces/IAccessControlManager.sol";
 import { Errors } from "./utils/Errors.sol";
+import { IClaimRecipient } from "./interfaces/IClaimRecipient.sol";
 
 struct MerkleTree {
     // Root of a Merkle tree which leaves are `(address user, address token, uint amount)`
@@ -24,11 +25,6 @@ struct Claim {
     uint208 amount;
     uint48 timestamp;
     bytes32 merkleRoot;
-}
-
-interface IClaimRecipient {
-    /// @notice Hook to call within contracts receiving token rewards on behalf of users
-    function onClaim(address user, address token, uint256 amount, bytes memory data) external returns (bytes32);
 }
 
 /// @title Distributor
@@ -234,7 +230,7 @@ contract Distributor is UUPSHelper {
 
     /// @notice Toggles whitelisting for a given user and a given operator
     /// @dev When an operator is whitelisted for a user, the operator can claim rewards on behalf of the user
-    /// @dev Setting the operator address to the zero address enables any
+    /// @dev Setting the operator address to the zero address enables any address to act as an operator for the user (i.e., it whitelists all operators for that user)
     function toggleOperator(address user, address operator) external onlyTrustedOrUser(user) {
         uint256 oldValue = operators[user][operator];
         operators[user][operator] = 1 - oldValue;

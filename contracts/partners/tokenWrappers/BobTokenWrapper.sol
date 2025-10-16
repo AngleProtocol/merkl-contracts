@@ -10,11 +10,7 @@ import { IAccessControlManager } from "./BaseTokenWrapper.sol";
 
 import { UUPSHelper } from "../../utils/UUPSHelper.sol";
 import { Errors } from "../../utils/Errors.sol";
-
-interface IDistributionCreator {
-    function distributor() external view returns (address);
-    function feeRecipient() external view returns (address);
-}
+import { DistributionCreator } from "../../DistributionCreator.sol";
 
 interface IStaker {
     function stake(uint256 _amount, address receiver) external;
@@ -63,8 +59,8 @@ contract BobTokenWrapper is UUPSHelper, ERC20Upgradeable {
         accessControlManager = _accessControlManager;
         distributionCreator = _distributionCreator;
         staker = _staker;
-        distributor = IDistributionCreator(_distributionCreator).distributor();
-        feeRecipient = IDistributionCreator(_distributionCreator).feeRecipient();
+        distributor = DistributionCreator(_distributionCreator).distributor();
+        feeRecipient = DistributionCreator(_distributionCreator).feeRecipient();
         IERC20(underlying).safeApprove(_staker, type(uint256).max);
     }
 
@@ -127,7 +123,7 @@ contract BobTokenWrapper is UUPSHelper, ERC20Upgradeable {
     }
 
     function setDistributor(address _distributionCreator) external onlyGovernor {
-        address _distributor = IDistributionCreator(_distributionCreator).distributor();
+        address _distributor = DistributionCreator(_distributionCreator).distributor();
         distributor = _distributor;
         distributionCreator = _distributionCreator;
         emit MerklAddressesUpdated(_distributionCreator, _distributor);
@@ -139,7 +135,7 @@ contract BobTokenWrapper is UUPSHelper, ERC20Upgradeable {
     }
 
     function _setFeeRecipient() internal {
-        address _feeRecipient = IDistributionCreator(distributionCreator).feeRecipient();
+        address _feeRecipient = DistributionCreator(distributionCreator).feeRecipient();
         feeRecipient = _feeRecipient;
         emit FeeRecipientUpdated(_feeRecipient);
     }

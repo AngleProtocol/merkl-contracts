@@ -2,19 +2,8 @@
 
 pragma solidity ^0.8.17;
 
-import { ReentrancyGuardUpgradeable } from "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
-import { IERC20 } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
-import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import { ECDSA } from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
-import { SignatureChecker } from "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
-
-import { UUPSHelper } from "./utils/UUPSHelper.sol";
-import { IAccessControlManager } from "./interfaces/IAccessControlManager.sol";
-import { Errors } from "./utils/Errors.sol";
 import { CampaignParameters } from "./struct/CampaignParameters.sol";
 import { DistributionParameters } from "./struct/DistributionParameters.sol";
-import { RewardTokenAmounts } from "./struct/RewardTokenAmounts.sol";
-import { Distributor } from "./Distributor.sol";
 import { DistributionCreator } from "./DistributionCreator.sol";
 
 /// @title DistributionCreatorWithDistributions
@@ -28,8 +17,6 @@ import { DistributionCreator } from "./DistributionCreator.sol";
 /// @dev Useful notably on Polygon where some creators still use the old distribution model
 //solhint-disable
 contract DistributionCreatorWithDistributions is DistributionCreator {
-    using SafeERC20 for IERC20;
-
     /// @notice Returns the distribution at a given index converted into a campaign
     function distribution(uint256 index) external view returns (CampaignParameters memory) {
         return _convertDistribution(distributionList[index]);

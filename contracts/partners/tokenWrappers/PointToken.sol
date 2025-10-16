@@ -2,9 +2,9 @@
 
 pragma solidity ^0.8.7;
 
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import { IAccessControlManager } from "../../interfaces/IAccessControlManager.sol";
-import "../../utils/Errors.sol";
+import { Errors } from "../../utils/Errors.sol";
 
 /// @title PointToken
 /// @author Merkl SAS
