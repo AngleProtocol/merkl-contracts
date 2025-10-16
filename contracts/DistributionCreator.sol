@@ -509,7 +509,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         uint256 fees = campaignAmount - campaignAmountMinusFees;
         _feeRecipient = _feeRecipient == address(0) ? address(this) : _feeRecipient;
         uint256 userBalance = creatorBalance[creator][rewardToken];
-        if (userBalance > campaignAmount) {
+        if (userBalance >= campaignAmount) {
             if (msg.sender != creator) {
                 uint256 senderAllowance = creatorTokenAllowance[creator][msg.sender][rewardToken];
                 if (senderAllowance >= campaignAmount) {
