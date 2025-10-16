@@ -31,9 +31,6 @@ contract DistributionCreatorTest is Fixture {
         numEpoch = 25;
         initEndTime = startTime + numEpoch * EPOCH_DURATION;
 
-        vm.startPrank(guardian);
-
-        vm.startPrank(governor);
         address[] memory tokens = new address[](1);
         uint256[] memory amounts = new uint256[](1);
         tokens[0] = address(angle);
@@ -262,73 +259,6 @@ contract Test_DistributionCreator_CreateDistribution is DistributionCreatorTest 
         assertEq(distribution.numEpoch * 3600, fetchedCampaign.duration);
         assertEq(extraData, fetchedCampaign.campaignData);
         assertEq(campaignId, fetchedCampaign.campaignId);
-    }
-}
-
-contract Test_DistributionCreator_CreateDistributions is DistributionCreatorTest {
-    function test_RevertWhen_CampaignAlreadyExists() public {
-        DistributionParameters memory distribution = DistributionParameters({
-            uniV3Pool: address(pool),
-            rewardToken: address(angle),
-            positionWrappers: positionWrappers,
-            wrapperTypes: wrapperTypes,
-            amount: 1e10,
-            propToken0: 4000,
-            propToken1: 2000,
-            propFees: 4000,
-            isOutOfRangeIncentivized: 0,
-            epochStart: uint32(block.timestamp + 1),
-            numEpoch: 25,
-            boostedReward: 0,
-            boostingAddress: address(0),
-            rewardId: keccak256("TEST"),
-            additionalData: hex""
-        });
-        vm.expectRevert(Errors.CampaignAlreadyExists.selector);
-
-        DistributionParameters[] memory distributions = new DistributionParameters[](2);
-        distributions[0] = distribution;
-        distributions[1] = distribution;
-        vm.prank(alice);
-    }
-
-    function test_Success() public {
-        DistributionParameters[] memory distributions = new DistributionParameters[](2);
-        distributions[0] = DistributionParameters({
-            uniV3Pool: address(pool),
-            rewardToken: address(angle),
-            positionWrappers: positionWrappers,
-            wrapperTypes: wrapperTypes,
-            amount: 1e10,
-            propToken0: 4000,
-            propToken1: 2000,
-            propFees: 4000,
-            isOutOfRangeIncentivized: 0,
-            epochStart: uint32(block.timestamp + 1),
-            numEpoch: 25,
-            boostedReward: 0,
-            boostingAddress: address(0),
-            rewardId: keccak256("TEST"),
-            additionalData: hex""
-        });
-        distributions[1] = DistributionParameters({
-            uniV3Pool: address(pool),
-            rewardToken: address(angle),
-            positionWrappers: positionWrappers,
-            wrapperTypes: wrapperTypes,
-            amount: 2e10,
-            propToken0: 4000,
-            propToken1: 2000,
-            propFees: 4000,
-            isOutOfRangeIncentivized: 0,
-            epochStart: uint32(block.timestamp + 2),
-            numEpoch: 25,
-            boostedReward: 0,
-            boostingAddress: address(0),
-            rewardId: keccak256("TEST"),
-            additionalData: hex""
-        });
-        vm.prank(alice);
     }
 }
 

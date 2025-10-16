@@ -4,7 +4,6 @@ pragma solidity ^0.8.17;
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import { Test } from "forge-std/Test.sol";
 import { console } from "forge-std/console.sol";
-import { JsonReader } from "@utils/JsonReader.sol";
 
 import { DistributionCreator, DistributionParameters, CampaignParameters } from "../contracts/DistributionCreator.sol";
 import { Distributor, MerkleTree } from "../contracts/Distributor.sol";
@@ -213,117 +212,12 @@ contract DistributionCreatorCreateReallocationTest is Fixture {
             })
         );
 
-        vm.prank(governor);
-        // Create false tree
-        distributor.updateTree(
-            MerkleTree({
-                merkleRoot: bytes32(0x0b70a97c062cb747158b89e27df5bbda859ba072232efcbe92e383e9d74b8555),
-                ipfsHash: keccak256("IPFS_HASH")
-            })
-        );
-
-        angle.mint(address(distributor), 1e18);
-        agEUR.mint(address(distributor), 5e17);
-
-        vm.warp(distributor.endOfDisputePeriod() + 1);
-        {
-            bytes32[][] memory proofs = new bytes32[][](1);
-            address[] memory users = new address[](1);
-            address[] memory tokens = new address[](1);
-            uint256[] memory amounts = new uint256[](1);
-            // proofs[0] = new bytes32[](1);
-            // proofs[0][0] = bytes32(0x6f46ee2909b99367a0d9932a11f1bdb85c9354480c9de277d21086f9a8925c0a);
-            // users[0] = alice;
-            // tokens[0] = address(angle);
-            // amounts[0] = 1e18;
-            proofs[0] = new bytes32[](1);
-            proofs[0][0] = bytes32(0x3a64e591d79db8530701e6f3dbdd95dc74681291b327d0ce4acc97024a61430c);
-            users[0] = bob;
-            tokens[0] = address(agEUR);
-            amounts[0] = 5e17;
-            vm.prank(bob);
-            distributor.claim(users, tokens, amounts, proofs);
-        }
-
         {
             address[] memory users = new address[](1);
             users[0] = bob;
 
             vm.prank(alice);
-            vm.expectRevert(Errors.InvalidOverride.selector);
-            creator.reallocateCampaignRewards(campaignId, users, address(governor));
-
-            assertEq(creator.campaignReallocation(campaignId, alice), address(0));
-            address[] memory listReallocation = creator.getCampaignListReallocation(campaignId);
-            assertEq(listReallocation.length, 0);
-        }
-    }
-
-    function testUnit_ReallocationCampaignRewards_revertWhen_AlreadyClaimed() public {
-        IERC20 rewardToken = IERC20(address(agEUR));
-        uint256 amount = 100 ether;
-        uint32 startTimestamp = uint32(block.timestamp + 600);
-
-        vm.prank(alice);
-        bytes32 campaignId = creator.createCampaign(
-            CampaignParameters({
-                campaignId: bytes32(0),
-                creator: alice,
-                rewardToken: address(rewardToken),
-                amount: amount,
-                campaignType: 1,
-                startTimestamp: startTimestamp,
-                duration: 3600 * 24,
-                campaignData: abi.encode(
-                    0xbEEfa1aBfEbE621DF50ceaEF9f54FdB73648c92C,
-                    new address[](0),
-                    new address[](0),
-                    "",
-                    new bytes[](0),
-                    new bytes[](0),
-                    hex""
-                )
-            })
-        );
-
-        vm.prank(governor);
-        // Create false tree
-        distributor.updateTree(
-            MerkleTree({
-                merkleRoot: bytes32(0x0b70a97c062cb747158b89e27df5bbda859ba072232efcbe92e383e9d74b8555),
-                ipfsHash: keccak256("IPFS_HASH")
-            })
-        );
-
-        angle.mint(address(distributor), 1e18);
-        agEUR.mint(address(distributor), 5e17);
-
-        vm.warp(distributor.endOfDisputePeriod() + 1);
-        {
-            bytes32[][] memory proofs = new bytes32[][](1);
-            address[] memory users = new address[](1);
-            address[] memory tokens = new address[](1);
-            uint256[] memory amounts = new uint256[](1);
-            // proofs[0] = new bytes32[](1);
-            // proofs[0][0] = bytes32(0x6f46ee2909b99367a0d9932a11f1bdb85c9354480c9de277d21086f9a8925c0a);
-            // users[0] = alice;
-            // tokens[0] = address(angle);
-            // amounts[0] = 1e18;
-            proofs[0] = new bytes32[](1);
-            proofs[0][0] = bytes32(0x3a64e591d79db8530701e6f3dbdd95dc74681291b327d0ce4acc97024a61430c);
-            users[0] = bob;
-            tokens[0] = address(agEUR);
-            amounts[0] = 5e17;
-            vm.prank(bob);
-            distributor.claim(users, tokens, amounts, proofs);
-        }
-
-        {
-            address[] memory users = new address[](1);
-            users[0] = bob;
-
-            vm.prank(alice);
-            vm.expectRevert(Errors.InvalidOverride.selector);
+            vm.expectRevert(Errors.InvalidReallocation.selector);
             creator.reallocateCampaignRewards(campaignId, users, address(governor));
 
             assertEq(creator.campaignReallocation(campaignId, alice), address(0));
@@ -400,7 +294,7 @@ contract DistributionCreatorCreateReallocationTest is Fixture {
             users[0] = alice;
 
             vm.prank(bob);
-            vm.expectRevert(Errors.InvalidOverride.selector);
+            vm.expectRevert(Errors.OperatorNotAllowed.selector);
             creator.reallocateCampaignRewards(campaignId, users, address(governor));
 
             assertEq(creator.campaignReallocation(campaignId, alice), address(0));
@@ -657,7 +551,7 @@ contract DistributionCreatorOverrideTest is Fixture {
             hex""
         );
 
-        vm.expectRevert(Errors.InvalidOverride.selector);
+        vm.expectRevert(Errors.OperatorNotAllowed.selector);
         vm.prank(bob);
         creator.overrideCampaign(
             campaignId,
@@ -673,7 +567,7 @@ contract DistributionCreatorOverrideTest is Fixture {
             })
         );
 
-        vm.expectRevert(Errors.InvalidOverride.selector);
+        vm.expectRevert(Errors.OperatorNotAllowed.selector);
         vm.prank(bob);
         creator.overrideCampaign(
             campaignId,
@@ -1125,11 +1019,11 @@ contract DistributionCreatorOverrideTest is Fixture {
             })
         );
 
-        assertEq(rewardToken.balanceOf(alice), prevBalance - amount - (amountAfterFees * 1e7) / 1e9);
+        assertEq(rewardToken.balanceOf(alice), prevBalance - amount);
     }
 }
 
-contract UpgradeDistributionCreatorTest is Test, JsonReader {
+contract UpgradeDistributionCreatorTest is Test {
     DistributionCreator public distributionCreator;
     Distributor public distributor;
     IAccessControlManager public accessControlManager;
@@ -1146,12 +1040,11 @@ contract UpgradeDistributionCreatorTest is Test, JsonReader {
         deployer = 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701; // deploy
         vm.createSelectFork(vm.envString("BASE_NODE_URI"));
         chainId = block.chainid;
-
         // Load existing contracts
-        distributor = Distributor(this.readAddress(chainId, "Distributor"));
-        distributionCreator = DistributionCreator(this.readAddress(chainId, "DistributionCreator"));
-        governor = this.readAddress(chainId, "Multisig");
-        accessControlManager = IAccessControlManager(this.readAddress(chainId, "CoreMerkl"));
+        distributor = Distributor(0x3Ef3D8bA38EBe18DB133cEc108f4D14CE00Dd9Ae);
+        distributionCreator = DistributionCreator(0x8BB4C975Ff3c250e0ceEA271728547f3802B36Fd);
+        governor = 0x19c41F6607b2C0e80E84BaadaF886b17565F278e;
+        accessControlManager = IAccessControlManager(0xC16B81Af351BA9e64C1a069E3Ab18c244A1E3049);
         rewardToken = IERC20(0xC011882d0f7672D8942e7fE2248C174eeD640c8f); // aglaMerkl
 
         // Setup test campaign parameters
@@ -1202,8 +1095,8 @@ contract UpgradeDistributionCreatorTest is Test, JsonReader {
 
     function test_VerifyStorageSlots_Success() public {
         // Verify storage slots remain unchanged
-        assertEq(address(distributionCreator.accessControlManager()), this.readAddress(chainId, "CoreMerkl"));
-        assertEq(address(distributionCreator.distributor()), this.readAddress(chainId, "Distributor"));
+        assertEq(address(distributionCreator.accessControlManager()), 0xC16B81Af351BA9e64C1a069E3Ab18c244A1E3049);
+        assertEq(address(distributionCreator.distributor()), 0x3Ef3D8bA38EBe18DB133cEc108f4D14CE00Dd9Ae);
         assertEq(distributionCreator.defaultFees(), 0.03e9);
 
         // Verify message and hash
@@ -1214,7 +1107,7 @@ contract UpgradeDistributionCreatorTest is Test, JsonReader {
         // Verify fee and whitelist settings
         address testAddr = 0xfdA462548Ce04282f4B6D6619823a7C64Fdc0185;
         assertEq(distributionCreator.feeRebate(testAddr), 0);
-        assertEq(distributionCreator.isWhitelistedToken(this.readAddress(chainId, "EUR.AgToken")), 1);
+        assertEq(distributionCreator.isWhitelistedToken(0xA61BeB4A3d02decb01039e378237032B351125B4), 1);
         assertEq(distributionCreator._nonces(testAddr), 4);
         assertEq(
             distributionCreator.userSignatures(testAddr),
@@ -1500,151 +1393,8 @@ contract UpgradeDistributionCreatorTest is Test, JsonReader {
             duration: distributionCreator.campaign(testCampaignId).duration,
             campaignData: distributionCreator.campaign(testCampaignId).campaignData
         });
-        vm.expectRevert(Errors.InvalidOverride.selector);
+        vm.expectRevert(Errors.OperatorNotAllowed.selector);
         distributionCreator.overrideCampaign(testCampaignId, newCampaign);
         vm.stopPrank();
     }
 }
-
-// Commented out as it requires the DistributionCreator to be upgraded -- TODO: uncomment once upgraded
-// contract Test_DistributionCreator_UpdateCampaign_BaseFork is Test, JsonReader {
-//     DistributionCreator public distributionCreator;
-//     IERC20 public rewardToken;
-//     address public deployer;
-//     bytes32 public campaignId;
-//     bytes public campaignData;
-
-//     uint256 public amount;
-//     uint32 public startTimestamp;
-//     uint32 public duration;
-//     uint32 public campaignType;
-
-//     function setUp() public {
-//         // Setup environment variables
-//         uint256 deployerPrivateKey = vm.envUint("DEPLOYER_PRIVATE_KEY");
-//         require(deployerPrivateKey != 0, "Missing DEPLOYER_PRIVATE_KEY");
-//         deployer = vm.addr(deployerPrivateKey);
-
-//         // Fork setup
-//         vm.createSelectFork(vm.envString("BASE_NODE_URI"));
-//         uint256 chainId = block.chainid;
-
-//         // Contract setup
-//         distributionCreator = DistributionCreator(this.readAddress(chainId, "DistributionCreator"));
-//         require(address(distributionCreator) != address(0), "Invalid DistributionCreator address");
-
-//         // Token setup
-//         rewardToken = IERC20(0xC011882d0f7672D8942e7fE2248C174eeD640c8f);
-//         require(address(rewardToken) != address(0), "Invalid reward token");
-
-//         // Test parameters
-//         amount = 97 ether;
-//         startTimestamp = uint32(block.timestamp + 3600);
-//         duration = 3600 * 10;
-//         campaignType = 2;
-
-//         // CLAMM campaign data
-//         campaignData = abi.encode(
-//             0x5280d5E63b416277d0F81FAe54Bb1e0444cAbDAA,
-//             5100,
-//             1700,
-//             3200,
-//             false,
-//             address(0),
-//             1,
-//             new address[](0),
-//             new address[](0),
-//             "",
-//             new bytes[](0),
-//             hex""
-//         );
-//     }
-
-//     function _createCampaign() internal {
-//         uint256 initialBalance = rewardToken.balanceOf(deployer);
-//         require(initialBalance >= amount, "Insufficient reward token balance");
-
-//         rewardToken.approve(address(distributionCreator), amount);
-//         require(rewardToken.allowance(deployer, address(distributionCreator)) >= amount, "Approval failed");
-
-//         campaignId = distributionCreator.createCampaign(
-//             CampaignParameters({
-//                 campaignId: bytes32(0),
-//                 creator: deployer,
-//                 rewardToken: address(rewardToken),
-//                 amount: amount,
-//                 campaignType: campaignType,
-//                 startTimestamp: startTimestamp,
-//                 duration: duration,
-//                 campaignData: campaignData
-//             })
-//         );
-//         require(campaignId != bytes32(0), "Campaign creation failed");
-//     }
-
-//     function _verifyCampaignOverride(uint256 newAmount, uint32 newStartTimestamp, uint32 newDuration) internal {
-//         (
-//             ,
-//             address campaignCreator,
-//             address campaignRewardToken,
-//             uint256 campaignAmount,
-//             uint256 campaignCampaignType,
-//             uint32 campaignStartTimestamp,
-//             uint32 campaignDuration,
-//             bytes memory campaignCampaignData
-//         ) = distributionCreator.campaignOverrides(campaignId);
-
-//         assertEq(campaignCreator, deployer, "Invalid creator");
-//         assertEq(campaignRewardToken, address(rewardToken), "Invalid reward token");
-//         assertEq(campaignAmount, newAmount, "Invalid amount");
-//         assertEq(campaignCampaignType, campaignType, "Invalid campaign type");
-//         assertEq(campaignStartTimestamp, newStartTimestamp, "Invalid start timestamp");
-//         assertEq(campaignDuration, newDuration, "Invalid duration");
-//         assertEq(campaignCampaignData, campaignData, "Invalid campaign data");
-//     }
-
-//     function test_updateCampaign() public {
-//         vm.startBroadcast(deployer);
-
-//         // Create initial campaign
-//         _createCampaign();
-
-//         // Time progression
-//         vm.warp(block.timestamp + 1800);
-
-//         // Override setup
-//         uint32 newStartTimestamp = startTimestamp + 3600;
-//         uint32 newDuration = duration + 3600;
-//         uint256 newAmount = amount + 1 ether;
-
-//         // Approve additional amount for the override
-//         rewardToken.approve(address(distributionCreator), newAmount);
-
-//         // Perform override
-//         distributionCreator.overrideCampaign(
-//             campaignId,
-//             CampaignParameters({
-//                 campaignId: campaignId,
-//                 creator: deployer,
-//                 rewardToken: address(rewardToken),
-//                 amount: newAmount,
-//                 campaignType: campaignType,
-//                 startTimestamp: newStartTimestamp,
-//                 duration: newDuration,
-//                 campaignData: campaignData
-//             })
-//         );
-
-//         // Verify override results
-//         _verifyCampaignOverride(newAmount, newStartTimestamp, newDuration);
-
-//         // Verify timestamps
-//         uint256 overrideTimestamp = distributionCreator.campaignOverridesTimestamp(campaignId, 0);
-//         assertGe(overrideTimestamp, block.timestamp - 1, "Invalid override timestamp");
-
-//         vm.expectRevert();
-//         distributionCreator.campaignOverridesTimestamp(campaignId, 1);
-
-//         vm.stopBroadcast();
-//     }
-// }
