@@ -135,12 +135,6 @@ contract Distributor is UUPSHelper {
         _;
     }
 
-    /// @notice Checks whether the `msg.sender` is the `user` address or is a trusted address
-    modifier onlyTrustedOrUser(address user) {
-        if (user != msg.sender && !accessControlManager.isGovernorOrGuardian(msg.sender)) revert Errors.NotTrusted();
-        _;
-    }
-
     /// @notice Checks whether the contract is upgradeable or whether the caller is allowed to upgrade the contract
     modifier onlyUpgradeableInstance() {
         if (upgradeabilityDeactivated == 1) revert Errors.NotUpgradeable();
@@ -231,7 +225,8 @@ contract Distributor is UUPSHelper {
     /// @notice Toggles whitelisting for a given user and a given operator
     /// @dev When an operator is whitelisted for a user, the operator can claim rewards on behalf of the user
     /// @dev Setting the operator address to the zero address enables any address to act as an operator for the user (i.e., it whitelists all operators for that user)
-    function toggleOperator(address user, address operator) external onlyTrustedOrUser(user) {
+    function toggleOperator(address user, address operator) external {
+        if (user != msg.sender && !accessControlManager.isGovernorOrGuardian(msg.sender)) revert Errors.NotTrusted();
         uint256 oldValue = operators[user][operator];
         operators[user][operator] = 1 - oldValue;
         emit OperatorToggled(user, operator, oldValue == 0);
