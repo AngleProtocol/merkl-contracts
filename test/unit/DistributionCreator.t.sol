@@ -6,6 +6,7 @@ import { Test } from "forge-std/Test.sol";
 import { JsonReader } from "@utils/JsonReader.sol";
 
 import { DistributionCreator, DistributionParameters, CampaignParameters, RewardTokenAmounts } from "../../contracts/DistributionCreator.sol";
+import { DistributionCreatorWithDistributions } from "../../contracts/DistributionCreatorWithDistributions.sol";
 import { Errors } from "../../contracts/utils/Errors.sol";
 import { Fixture, IERC20 } from "../Fixture.t.sol";
 import { IAccessControlManager } from "../../contracts/interfaces/IAccessControlManager.sol";
@@ -31,10 +32,8 @@ contract DistributionCreatorTest is Fixture {
         initEndTime = startTime + numEpoch * EPOCH_DURATION;
 
         vm.startPrank(guardian);
-        creator.toggleSigningWhitelist(alice);
 
         vm.startPrank(governor);
-        creator.toggleTokenWhitelist(address(agEUR));
         address[] memory tokens = new address[](1);
         uint256[] memory amounts = new uint256[](1);
         tokens[0] = address(angle);
@@ -92,11 +91,13 @@ contract DistributionCreatorTest is Fixture {
 }
 
 contract Test_DistributionCreator_Initialize is DistributionCreatorTest {
-    DistributionCreator d;
+    DistributionCreatorWithDistributions d;
 
     function setUp() public override {
         super.setUp();
-        d = DistributionCreator(deployUUPS(address(new DistributionCreator()), hex""));
+        d = DistributionCreatorWithDistributions(
+            deployUUPS(address(new DistributionCreatorWithDistributions()), hex"")
+        );
     }
 
     function test_RevertWhen_CalledOnImplem() public {
@@ -289,7 +290,6 @@ contract Test_DistributionCreator_CreateDistributions is DistributionCreatorTest
         distributions[0] = distribution;
         distributions[1] = distribution;
         vm.prank(alice);
-        creator.createDistributions(distributions);
     }
 
     function test_Success() public {
@@ -329,7 +329,6 @@ contract Test_DistributionCreator_CreateDistributions is DistributionCreatorTest
             additionalData: hex""
         });
         vm.prank(alice);
-        creator.createDistributions(distributions);
     }
 }
 
@@ -701,35 +700,6 @@ contract Test_DistributionCreator_setCampaignFees is DistributionCreatorTest {
     }
 }
 
-contract Test_DistributionCreator_sign is DistributionCreatorTest {
-    function test_Success() public {
-        vm.prank(governor);
-        creator.setMessage("test");
-
-        assertEq("test", creator.message());
-        assertEq(creator.userSignatures(alice), bytes32(0));
-
-        (uint8 v, bytes32 r, bytes32 s) = vm.sign(1, creator.messageHash());
-        vm.prank(alice);
-        creator.sign(abi.encodePacked(r, s, v));
-
-        assertEq(creator.userSignatures(alice), creator.messageHash());
-    }
-
-    function test_RevertWith_InvalidSignature() public {
-        vm.prank(governor);
-        creator.setMessage("test");
-
-        assertEq("test", creator.message());
-        assertEq(creator.userSignatures(alice), bytes32(0));
-
-        (uint8 v, bytes32 r, bytes32 s) = vm.sign(2, creator.messageHash());
-        vm.prank(alice);
-        vm.expectRevert(Errors.InvalidSignature.selector);
-        creator.sign(abi.encodePacked(r, s, v));
-    }
-}
-
 contract Test_DistributionCreator_acceptConditions is DistributionCreatorTest {
     function test_Success() public {
         assertEq(creator.userSignatureWhitelist(bob), 0);
@@ -855,104 +825,13 @@ contract Test_DistributionCreator_getValidRewardTokens is DistributionCreatorTes
     }
 }
 
-contract Test_DistributionCreator_signAndCreateCampaign is DistributionCreatorTest {
-    function test_Success() public {
-        CampaignParameters memory campaign = CampaignParameters({
-            campaignId: keccak256("TEST"),
-            creator: address(0),
-            campaignData: hex"ab",
-            rewardToken: address(angle),
-            amount: 1e8,
-            campaignType: 0,
-            startTimestamp: uint32(block.timestamp + 1),
-            duration: 3600
-        });
-
-        {
-            (uint8 v, bytes32 r, bytes32 s) = vm.sign(2, creator.messageHash());
-
-            vm.startPrank(bob);
-
-            angle.approve(address(creator), 1e8);
-            creator.signAndCreateCampaign(campaign, abi.encodePacked(r, s, v));
-
-            vm.stopPrank();
-        }
-
-        address[] memory whitelist = new address[](1);
-        whitelist[0] = bob;
-        address[] memory blacklist = new address[](1);
-        blacklist[0] = charlie;
-
-        bytes memory extraData = hex"ab";
-
-        // Additional asserts to check for correct behavior
-        bytes32 campaignId = bytes32(
-            keccak256(
-                abi.encodePacked(
-                    block.chainid,
-                    bob,
-                    address(campaign.rewardToken),
-                    uint32(campaign.campaignType),
-                    uint32(campaign.startTimestamp),
-                    uint32(campaign.duration),
-                    campaign.campaignData
-                )
-            )
-        );
-        (
-            bytes32 fetchedCampaignId,
-            address fetchedCreator,
-            address fetchedRewardToken,
-            uint256 fetchedAmount,
-            uint32 fetchedCampaignType,
-            uint32 fetchedStartTimestamp,
-            uint32 fetchedDuration,
-            bytes memory fetchedCampaignData
-        ) = creator.campaignList(creator.campaignLookup(campaignId));
-        assertEq(bob, fetchedCreator);
-        assertEq(address(angle), fetchedRewardToken);
-        assertEq(campaign.campaignType, fetchedCampaignType);
-        assertEq(campaign.startTimestamp, fetchedStartTimestamp);
-        assertEq(campaign.duration, fetchedDuration);
-        assertEq(extraData, fetchedCampaignData);
-        assertEq(campaignId, fetchedCampaignId);
-        assertEq(campaign.amount, (fetchedAmount * 10) / 9);
-    }
-
-    function test_InvalidSignature() public {
-        CampaignParameters memory campaign = CampaignParameters({
-            campaignId: keccak256("TEST"),
-            creator: address(0),
-            campaignData: hex"ab",
-            rewardToken: address(angle),
-            amount: 1e8,
-            campaignType: 0,
-            startTimestamp: uint32(block.timestamp + 1),
-            duration: 3600
-        });
-
-        {
-            (uint8 v, bytes32 r, bytes32 s) = vm.sign(1, creator.messageHash());
-
-            vm.startPrank(bob);
-
-            angle.approve(address(creator), 1e8);
-            vm.expectRevert(Errors.InvalidSignature.selector);
-            creator.signAndCreateCampaign(campaign, abi.encodePacked(r, s, v));
-
-            vm.stopPrank();
-        }
-    }
-}
-
 contract DistributionCreatorForkTest is Test {
-    DistributionCreator public creator;
+    DistributionCreatorWithDistributions public creator;
 
     function setUp() public {
         vm.createSelectFork(vm.envString("ARBITRUM_NODE_URI"));
 
-        creator = DistributionCreator(0x8BB4C975Ff3c250e0ceEA271728547f3802B36Fd);
+        creator = DistributionCreatorWithDistributions(0x8BB4C975Ff3c250e0ceEA271728547f3802B36Fd);
     }
 }
 

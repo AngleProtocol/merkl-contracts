@@ -30,6 +30,11 @@ import { DistributionCreator } from "./DistributionCreator.sol";
 contract DistributionCreatorWithDistributions is DistributionCreator {
     using SafeERC20 for IERC20;
 
+    /// @notice Returns the distribution at a given index converted into a campaign
+    function distribution(uint256 index) external view returns (CampaignParameters memory) {
+        return _convertDistribution(distributionList[index]);
+    }
+
     /// @notice Creates a `distribution` to incentivize a given pool for a specific period of time
     function createDistribution(
         DistributionParameters memory newDistribution

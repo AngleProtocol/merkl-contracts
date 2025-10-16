@@ -104,7 +104,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     mapping(address => mapping(address => mapping(address => uint256))) public creatorTokenAllowance;
 
     /// @notice Maps a creator to a campaign operator to the ability to manage the campaign on behalf of the creator
-    mapping(address => mapping(address => uint256)) public creatorCampaignOperators;
+    mapping(address => mapping(address => uint256)) public campaignOperators;
 
     /*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                                                         EVENTS                                                      
@@ -120,6 +120,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     event FeeRebateUpdated(address indexed user, uint256 userFeeRebate);
     event FeeRecipientUpdated(address indexed _feeRecipient);
     event FeesSet(uint256 _fees);
+    event CampaignOperatorToggled(address indexed user, address indexed operator, bool isWhitelisted);
     event CampaignOverride(bytes32 _campaignId, CampaignParameters campaign);
     event CampaignReallocation(bytes32 _campaignId, address[] indexed from, address indexed to);
     event CampaignSpecificFeesSet(uint32 campaignType, uint256 _fees);
@@ -217,8 +218,8 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @dev Some fields in the new campaign parameters will be disregarded anyway (like the amount)
     function overrideCampaign(bytes32 _campaignId, CampaignParameters memory newCampaign) external {
         CampaignParameters memory _campaign = campaign(_campaignId);
+        _isValidOperator(_campaign.creator);
         if (
-            _campaign.creator != msg.sender ||
             newCampaign.rewardToken != _campaign.rewardToken ||
             newCampaign.amount != _campaign.amount ||
             (newCampaign.startTimestamp != _campaign.startTimestamp && block.timestamp > _campaign.startTimestamp) || // Allow to update startTimestamp before campaign start
@@ -237,8 +238,8 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @dev While this function may execute successfully, the reallocation may not be valid in the Merkl engine
     function reallocateCampaignRewards(bytes32 _campaignId, address[] memory froms, address to) external {
         CampaignParameters memory _campaign = campaign(_campaignId);
-        if (_campaign.creator != msg.sender || block.timestamp < _campaign.startTimestamp + _campaign.duration)
-            revert Errors.InvalidOverride();
+        _isValidOperator(_campaign.creator);
+        if (block.timestamp < _campaign.startTimestamp + _campaign.duration) revert Errors.InvalidReallocation();
 
         uint256 fromsLength = froms.length;
         for (uint256 i; i < fromsLength; ) {
@@ -251,6 +252,8 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         emit CampaignReallocation(_campaignId, froms, to);
     }
 
+    /// @notice Increases the token allowance of an `operator` for a `user`
+    /// @dev Only the user themselves or a governor can call this function
     /// @dev If a governor address calls this function, the user MUST have transferred the funds to the contract beforehand
     function increaseCreatorTokenAllowance(
         address user,
@@ -267,6 +270,8 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         emit CreatorAllowanceUpdated(user, operator, rewardToken, currentAllowance + amount);
     }
 
+    /// @notice Decreases the token allowance of an `operator` for a `user`
+    /// @dev Only the user themselves or a governor can call this function
     function decreaseCreatorTokenAllowance(
         address user,
         address operator,
@@ -277,10 +282,20 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         uint256 currentAllowance = creatorTokenAllowance[user][operator][rewardToken];
         uint256 updateAmount = amount > currentAllowance ? currentAllowance : amount;
         creatorTokenAllowance[user][operator][rewardToken] = currentAllowance - updateAmount;
-        if (user == msg.sender) IERC20(rewardToken).safeTransfer(msg.sender, updateAmount);
-        else if (!accessControlManager.isGovernor(msg.sender)) revert Errors.NotGovernor();
+        if (user == msg.sender && !accessControlManager.isGovernor(msg.sender)) revert Errors.NotAllowed();
+
+        IERC20(rewardToken).safeTransfer(msg.sender, updateAmount);
 
         emit CreatorAllowanceUpdated(user, operator, rewardToken, currentAllowance - updateAmount);
+    }
+
+    /// @notice Toggles the ability of an `operator` to manage campaigns on behalf of a `user`
+    /// @dev Only the user themselves or a governor can call this function
+    function toggleCampaignOperator(address user, address operator) external {
+        if (user != msg.sender && !accessControlManager.isGovernor(msg.sender)) revert Errors.NotAllowed();
+        uint256 currentStatus = campaignOperators[user][operator];
+        campaignOperators[user][operator] = 1 - currentStatus;
+        emit CampaignOperatorToggled(user, operator, currentStatus == 0);
     }
 
     /*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -452,6 +467,17 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         return newCampaign.campaignId;
     }
 
+    /// @notice Checks whether `msg.sender` is allowed to manage the campaign of `creator`
+    function _isValidOperator(address creator) internal view {
+        if (
+            creator != msg.sender &&
+            campaignOperators[creator][msg.sender] == 0 &&
+            !accessControlManager.isGovernor(msg.sender)
+        ) {
+            revert Errors.OperatorNotAllowed();
+        }
+    }
+
     function _pullTokens(
         address creator,
         address rewardToken,
@@ -462,7 +488,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         uint256 fees = campaignAmount - campaignAmountMinusFees;
         address _feeRecipient = feeRecipient;
         _feeRecipient = _feeRecipient == address(0) ? address(this) : _feeRecipient;
-        if (senderAllowance > campaignAmount) {
+        if (senderAllowance >= campaignAmount) {
             creatorTokenAllowance[creator][msg.sender][rewardToken] = senderAllowance - campaignAmount;
             emit CreatorAllowanceUpdated(creator, msg.sender, rewardToken, senderAllowance - campaignAmount);
             if (fees > 0) IERC20(rewardToken).safeTransfer(_feeRecipient, fees);

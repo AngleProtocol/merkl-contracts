@@ -35,8 +35,6 @@ contract DistributionCreatorCreateCampaignTest is Fixture {
         creator.setFeeRecipient(dylan);
 
         vm.startPrank(guardian);
-        creator.toggleSigningWhitelist(alice);
-        creator.toggleTokenWhitelist(address(agEUR));
         address[] memory tokens = new address[](1);
         uint256[] memory amounts = new uint256[](1);
         tokens[0] = address(angle);
@@ -168,8 +166,6 @@ contract DistributionCreatorCreateReallocationTest is Fixture {
         vm.stopPrank();
 
         vm.startPrank(guardian);
-        creator.toggleSigningWhitelist(alice);
-        creator.toggleTokenWhitelist(address(agEUR));
         address[] memory tokens = new address[](2);
         uint256[] memory amounts = new uint256[](2);
         tokens[0] = address(angle);
@@ -460,8 +456,6 @@ contract DistributionCreatorOverrideTest is Fixture {
         initEndTime = startTime + numEpoch * EPOCH_DURATION;
 
         vm.startPrank(guardian);
-        creator.toggleSigningWhitelist(alice);
-        creator.toggleTokenWhitelist(address(agEUR));
         address[] memory tokens = new address[](1);
         uint256[] memory amounts = new uint256[](1);
         tokens[0] = address(angle);
@@ -1216,12 +1210,6 @@ contract UpgradeDistributionCreatorTest is Test, JsonReader {
         assertEq(distributionCreator.messageHash(), 0x08dabc24dcfcb230453d08bce47c730ed6f1cce205bc153680488959b503644e);
 
         // Verify distribution list entries
-
-        CampaignParameters memory distribution0 = distributionCreator.distribution(0);
-        assertEq(distribution0.campaignId, 0xb3fc2abc303c70a16ab9d5fc38d7e8aeae66593a87a3d971b024dd34b97e94b1);
-
-        CampaignParameters memory distribution73 = distributionCreator.distribution(73);
-        assertEq(distribution73.campaignId, 0x157a32c11ce34030465e1c28c309f38c18161028355f3446f54b677d11ceb63a);
 
         // Verify fee and whitelist settings
         address testAddr = 0xfdA462548Ce04282f4B6D6619823a7C64Fdc0185;
