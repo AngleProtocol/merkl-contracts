@@ -100,7 +100,10 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @notice List all reallocated address for a given campaign
     mapping(bytes32 => address[]) public campaignListReallocation;
 
-    /// @notice Maps a creator address to an operator to a reward token to an amount that can be pulled from the creator
+    /// @notice Maps a creator to a reward token to the balance pre-deposited by the creator for this token
+    mapping(address => mapping(address => uint256)) public creatorBalance;
+
+    /// @notice Maps a creator address to an operator to a reward token to an amount that can be pulled from the creator's balance
     mapping(address => mapping(address => mapping(address => uint256))) public creatorTokenAllowance;
 
     /// @notice Maps a creator to a campaign operator to the ability to manage the campaign on behalf of the creator
@@ -116,6 +119,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         address indexed token,
         uint256 amount
     );
+    event CreatorBalanceUpdated(address indexed user, address indexed token, uint256 amount);
     event DistributorUpdated(address indexed _distributor);
     event FeeRebateUpdated(address indexed user, uint256 userFeeRebate);
     event FeeRecipientUpdated(address indexed _feeRecipient);
@@ -152,6 +156,12 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
             userSignatures[msg.sender] != messageHash &&
             userSignatures[tx.origin] != messageHash
         ) revert Errors.NotSigned();
+        _;
+    }
+
+    /// @notice Checks whether the `msg.sender` is the `user` address or is a governor
+    modifier onlyUserOrGovernor(address user) {
+        if (user != msg.sender && !accessControlManager.isGovernor(msg.sender)) revert Errors.NotAllowed();
         _;
     }
 
@@ -253,40 +263,52 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     }
 
     /// @notice Increases the token allowance of an `operator` for a `user`
-    /// @dev Only the user themselves or a governor can call this function
-    /// @dev If a governor address calls this function, the user MUST have transferred the funds to the contract beforehand
     function increaseCreatorTokenAllowance(
         address user,
         address operator,
         address rewardToken,
         uint256 amount
-    ) external {
+    ) external onlyUserOrGovernor(user) {
         if (operator == address(0)) revert Errors.ZeroAddress();
-        if (user == msg.sender) IERC20(rewardToken).safeTransferFrom(msg.sender, address(this), amount);
-        else if (!accessControlManager.isGovernor(msg.sender)) revert Errors.NotGovernor();
-
         uint256 currentAllowance = creatorTokenAllowance[user][operator][rewardToken];
         creatorTokenAllowance[user][operator][rewardToken] = currentAllowance + amount;
         emit CreatorAllowanceUpdated(user, operator, rewardToken, currentAllowance + amount);
     }
 
     /// @notice Decreases the token allowance of an `operator` for a `user`
-    /// @dev Only the user themselves or a governor can call this function
     function decreaseCreatorTokenAllowance(
         address user,
         address operator,
         address rewardToken,
         uint256 amount
-    ) external {
+    ) external onlyUserOrGovernor(user) {
         if (operator == address(0)) revert Errors.ZeroAddress();
         uint256 currentAllowance = creatorTokenAllowance[user][operator][rewardToken];
         uint256 updateAmount = amount > currentAllowance ? currentAllowance : amount;
         creatorTokenAllowance[user][operator][rewardToken] = currentAllowance - updateAmount;
-        if (user == msg.sender && !accessControlManager.isGovernor(msg.sender)) revert Errors.NotAllowed();
-
-        IERC20(rewardToken).safeTransfer(msg.sender, updateAmount);
-
         emit CreatorAllowanceUpdated(user, operator, rewardToken, currentAllowance - updateAmount);
+    }
+
+    /// @dev If a governor is calling the function, the user must have sent the tokens beforehand
+    function preDepositTokens(address user, address rewardToken, uint256 amount) external {
+        if (!accessControlManager.isGovernor(msg.sender))
+            IERC20(rewardToken).safeTransferFrom(msg.sender, address(this), amount);
+        uint256 userBalance = creatorBalance[user][rewardToken];
+        creatorBalance[user][rewardToken] = userBalance + amount;
+        emit CreatorBalanceUpdated(user, rewardToken, userBalance + amount);
+    }
+
+    function recoverPreDepositedTokens(
+        address user,
+        address rewardToken,
+        address to,
+        uint256 amount
+    ) external onlyUserOrGovernor(user) {
+        uint256 userBalance = creatorBalance[user][rewardToken];
+        if (amount > userBalance) revert Errors.NotEnoughBalance();
+        creatorBalance[user][rewardToken] = userBalance - amount;
+        IERC20(rewardToken).safeTransfer(to, amount);
+        emit CreatorBalanceUpdated(user, rewardToken, userBalance - amount);
     }
 
     /// @notice Toggles the ability of an `operator` to manage campaigns on behalf of a `user`
@@ -484,13 +506,23 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         uint256 campaignAmount,
         uint256 campaignAmountMinusFees
     ) internal {
-        uint256 senderAllowance = creatorTokenAllowance[creator][msg.sender][rewardToken];
         uint256 fees = campaignAmount - campaignAmountMinusFees;
-        address _feeRecipient = feeRecipient;
         _feeRecipient = _feeRecipient == address(0) ? address(this) : _feeRecipient;
-        if (senderAllowance >= campaignAmount) {
-            creatorTokenAllowance[creator][msg.sender][rewardToken] = senderAllowance - campaignAmount;
-            emit CreatorAllowanceUpdated(creator, msg.sender, rewardToken, senderAllowance - campaignAmount);
+        uint256 userBalance = creatorBalance[creator][rewardToken];
+        if (userBalance > campaignAmount) {
+            if (msg.sender != creator) {
+                uint256 senderAllowance = creatorTokenAllowance[creator][msg.sender][rewardToken];
+                if (senderAllowance >= campaignAmount) {
+                    creatorTokenAllowance[creator][msg.sender][rewardToken] = senderAllowance - campaignAmount;
+                    emit CreatorAllowanceUpdated(creator, msg.sender, rewardToken, senderAllowance - campaignAmount);
+                } else {
+                    if (fees > 0) IERC20(rewardToken).safeTransferFrom(msg.sender, _feeRecipient, fees);
+                    IERC20(rewardToken).safeTransferFrom(msg.sender, distributor, campaignAmountMinusFees);
+                    return;
+                }
+            }
+            creatorBalance[creator][rewardToken] = userBalance - campaignAmount;
+            emit CreatorBalanceUpdated(creator, rewardToken, userBalance - campaignAmount);
             if (fees > 0) IERC20(rewardToken).safeTransfer(_feeRecipient, fees);
             IERC20(rewardToken).safeTransfer(distributor, campaignAmountMinusFees);
         } else {
