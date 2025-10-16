@@ -16,6 +16,7 @@ library Errors {
     error InvalidParams();
     error InvalidProof();
     error InvalidUninitializedRoot();
+    error InvalidReallocation();
     error InvalidReturnMessage();
     error InvalidReward();
     error InvalidSignature();
@@ -30,6 +31,7 @@ library Errors {
     error NotTrusted();
     error NotUpgradeable();
     error NotWhitelisted();
+    error OperatorNotAllowed();
     error UnresolvedDispute();
     error ZeroAddress();
     error DisputeFundsTransferFailed();
