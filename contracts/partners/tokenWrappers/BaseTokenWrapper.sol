@@ -9,20 +9,15 @@ import { IERC20, IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/exte
 import { UUPSHelper } from "../../utils/UUPSHelper.sol";
 import { IAccessControlManager } from "../../interfaces/IAccessControlManager.sol";
 import { Errors } from "../../utils/Errors.sol";
-
-interface IDistributionCreator {
-    function distributor() external view returns (address);
-
-    function feeRecipient() external view returns (address);
-}
+import { DistributionCreator } from "../../DistributionCreator.sol";
 
 abstract contract BaseMerklTokenWrapper is UUPSHelper, ERC20Upgradeable {
     using SafeERC20 for IERC20;
 
     // ================================= CONSTANTS =================================
 
-    IDistributionCreator public constant DISTRIBUTOR_CREATOR =
-        IDistributionCreator(0x8BB4C975Ff3c250e0ceEA271728547f3802B36Fd);
+    DistributionCreator public constant DISTRIBUTOR_CREATOR =
+        DistributionCreator(0x8BB4C975Ff3c250e0ceEA271728547f3802B36Fd);
 
     address public immutable DISTRIBUTOR = DISTRIBUTOR_CREATOR.distributor();
     address public immutable FEE_RECIPIENT = DISTRIBUTOR_CREATOR.feeRecipient();

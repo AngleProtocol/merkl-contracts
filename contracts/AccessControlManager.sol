@@ -8,7 +8,7 @@ import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/I
 import { IAccessControlManager } from "./interfaces/IAccessControlManager.sol";
 
 /// @title AccessControlManager
-/// @author Angle Labs, Inc.
+/// @author Merkl SAS
 /// @notice This contract handles the access control across all contracts
 contract AccessControlManager is IAccessControlManager, Initializable, AccessControlEnumerableUpgradeable {
     /// @notice Role for guardians

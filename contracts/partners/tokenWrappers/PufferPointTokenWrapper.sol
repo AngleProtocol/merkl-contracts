@@ -10,6 +10,7 @@ import { IAccessControlManager } from "./BaseTokenWrapper.sol";
 
 import { UUPSHelper } from "../../utils/UUPSHelper.sol";
 import { Errors } from "../../utils/Errors.sol";
+import { DistributionCreator } from "../../DistributionCreator.sol";
 
 struct VestingID {
     uint128 amount;
@@ -19,11 +20,6 @@ struct VestingID {
 struct VestingData {
     VestingID[] allVestings;
     uint256 nextClaimIndex;
-}
-
-interface IDistributionCreator {
-    function distributor() external view returns (address);
-    function feeRecipient() external view returns (address);
 }
 
 /// @title PufferPointTokenWrapper
@@ -75,8 +71,8 @@ contract PufferPointTokenWrapper is UUPSHelper, ERC20Upgradeable {
         accessControlManager = _accessControlManager;
         cliffDuration = _cliffDuration;
         distributionCreator = _distributionCreator;
-        distributor = IDistributionCreator(_distributionCreator).distributor();
-        feeRecipient = IDistributionCreator(_distributionCreator).feeRecipient();
+        distributor = DistributionCreator(_distributionCreator).distributor();
+        feeRecipient = DistributionCreator(_distributionCreator).feeRecipient();
     }
 
     function isTokenWrapper() external pure returns (bool) {
@@ -193,7 +189,7 @@ contract PufferPointTokenWrapper is UUPSHelper, ERC20Upgradeable {
     }
 
     function setDistributor(address _distributionCreator) external onlyGovernor {
-        address _distributor = IDistributionCreator(_distributionCreator).distributor();
+        address _distributor = DistributionCreator(_distributionCreator).distributor();
         distributor = _distributor;
         distributionCreator = _distributionCreator;
         emit MerklAddressesUpdated(_distributionCreator, _distributor);
@@ -211,7 +207,7 @@ contract PufferPointTokenWrapper is UUPSHelper, ERC20Upgradeable {
     }
 
     function _setFeeRecipient() internal {
-        address _feeRecipient = IDistributionCreator(distributionCreator).feeRecipient();
+        address _feeRecipient = DistributionCreator(distributionCreator).feeRecipient();
         feeRecipient = _feeRecipient;
         emit FeeRecipientUpdated(_feeRecipient);
     }

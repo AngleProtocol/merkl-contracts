@@ -16,6 +16,7 @@ library Errors {
     error InvalidParams();
     error InvalidProof();
     error InvalidUninitializedRoot();
+    error InvalidReallocation();
     error InvalidReturnMessage();
     error InvalidReward();
     error InvalidSignature();
@@ -23,6 +24,8 @@ library Errors {
     error NoDispute();
     error NoOverrideForCampaign();
     error NotAllowed();
+    error NotEnoughAllowance();
+    error NotEnoughBalance();
     error NotEnoughPayment();
     error NotGovernor();
     error NotGovernorOrGuardian();
@@ -30,6 +33,7 @@ library Errors {
     error NotTrusted();
     error NotUpgradeable();
     error NotWhitelisted();
+    error OperatorNotAllowed();
     error UnresolvedDispute();
     error ZeroAddress();
     error DisputeFundsTransferFailed();

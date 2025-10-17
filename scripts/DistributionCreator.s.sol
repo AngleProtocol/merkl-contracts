@@ -134,28 +134,6 @@ contract SetCampaignFees is DistributionCreatorScript {
     }
 }
 
-// ToggleTokenWhitelist script
-contract ToggleTokenWhitelist is DistributionCreatorScript {
-    function run() external {
-        // MODIFY THIS VALUE TO SET YOUR DESIRED TOKEN ADDRESS
-        address token = address(0);
-        _run(token);
-    }
-
-    function run(address token) external {
-        _run(token);
-    }
-
-    function _run(address _token) internal broadcast {
-        uint256 chainId = block.chainid;
-        address creatorAddress = readAddress(chainId, "DistributionCreator");
-
-        DistributionCreator(creatorAddress).toggleTokenWhitelist(_token);
-
-        console.log("Token whitelist toggled for:", _token);
-    }
-}
-
 // RecoverFees script
 contract RecoverFees is DistributionCreatorScript {
     function run() external {
@@ -207,24 +185,20 @@ contract SetUserFeeRebate is DistributionCreatorScript {
 
 // SetRewardTokenMinAmounts script
 contract SetRewardTokenMinAmounts is DistributionCreatorScript {
-    // forge script scripts/DistributionCreator.s.sol:SetRewardTokenMinAmounts --rpc-url bsc --sender 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701 --broadcast -i 1
+    // forge script scripts/DistributionCreator.s.sol:SetRewardTokenMinAmounts --rpc-url ronin --sender 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701 --broadcast
     function run() external {
         console.log("DEPLOYER_ADDRESS:", broadcaster);
         // MODIFY THESE VALUES TO SET YOUR DESIRED TOKENS AND AMOUNTS
         address[] memory tokens = new address[](1);
         uint256[] memory amounts = new uint256[](1);
-        tokens[0] = 0xb3b02E4A9Fb2bD28CC2ff97B0aB3F6B3Ec1eE9D2;
-        amounts[0] = 1 ether; // 0.1 tokens with 18 decimals
-        _run(tokens, amounts);
-    }
-
-    function run(address[] calldata tokens, uint256[] calldata amounts) external {
+        tokens[0] = 0x3E12b9d6A4D12cd9b4a6d613872d0Eb32f68b380;
+        amounts[0] = 1000000000000000000; // 0.1 tokens with 18 decimals
         _run(tokens, amounts);
     }
 
     function _run(address[] memory _tokens, uint256[] memory _amounts) internal broadcast {
         uint256 chainId = block.chainid;
-        address creatorAddress = readAddress(chainId, "DistributionCreator");
+        address creatorAddress = 0x8BB4C975Ff3c250e0ceEA271728547f3802B36Fd;
 
         DistributionCreator(creatorAddress).setRewardTokenMinAmounts(_tokens, _amounts);
 
@@ -289,28 +263,6 @@ contract GetMessage is DistributionCreatorScript {
     }
 }
 
-// ToggleSigningWhitelist script
-contract ToggleSigningWhitelist is DistributionCreatorScript {
-    function run() external {
-        // MODIFY THIS VALUE TO SET YOUR DESIRED USER ADDRESS
-        address user = address(0);
-        _run(user);
-    }
-
-    function run(address user) external {
-        _run(user);
-    }
-
-    function _run(address _user) internal broadcast {
-        uint256 chainId = block.chainid;
-        address creatorAddress = readAddress(chainId, "DistributionCreator");
-
-        DistributionCreator(creatorAddress).toggleSigningWhitelist(_user);
-
-        console.log("Signing whitelist toggled for user:", _user);
-    }
-}
-
 // AcceptConditions script
 contract AcceptConditions is DistributionCreatorScript {
     function run() external broadcast {
@@ -320,28 +272,6 @@ contract AcceptConditions is DistributionCreatorScript {
         DistributionCreator(creatorAddress).acceptConditions();
 
         console.log("Conditions accepted for:", broadcaster);
-    }
-}
-
-// Sign script
-contract Sign is DistributionCreatorScript {
-    function run() external {
-        // MODIFY THIS VALUE TO SET YOUR DESIRED SIGNATURE
-        bytes memory signature = "";
-        _run(signature);
-    }
-
-    function run(bytes calldata signature) external {
-        _run(signature);
-    }
-
-    function _run(bytes memory _signature) internal broadcast {
-        uint256 chainId = block.chainid;
-        address creatorAddress = readAddress(chainId, "DistributionCreator");
-
-        DistributionCreator(creatorAddress).sign(_signature);
-
-        console.log("Message signed by:", broadcaster);
     }
 }
 
@@ -717,38 +647,6 @@ contract CreateCampaignTest is DistributionCreatorScript {
         require(campaign.duration == 3600 * 24, "Invalid duration");
 
         console.log("Campaign created with ID:", vm.toString(campaignId));
-    }
-}
-
-// SignAndCreateCampaign script
-contract SignAndCreateCampaign is DistributionCreatorScript {
-    function run() external broadcast {
-        // MODIFY THESE VALUES TO SET YOUR DESIRED CAMPAIGN PARAMETERS AND SIGNATURE
-        CampaignParameters memory campaign = CampaignParameters({
-            campaignId: bytes32(0),
-            creator: address(0),
-            rewardToken: address(0),
-            amount: 0,
-            campaignType: 0,
-            startTimestamp: uint32(block.timestamp),
-            duration: 7 days,
-            campaignData: ""
-        });
-        bytes memory signature = "";
-        _run(campaign, signature);
-    }
-
-    function run(CampaignParameters calldata campaign, bytes calldata signature) external broadcast {
-        _run(campaign, signature);
-    }
-
-    function _run(CampaignParameters memory campaign, bytes memory signature) internal {
-        uint256 chainId = block.chainid;
-        address creatorAddress = readAddress(chainId, "DistributionCreator");
-
-        bytes32 campaignId = DistributionCreator(creatorAddress).signAndCreateCampaign(campaign, signature);
-
-        console.log("Message signed and campaign created with ID:", vm.toString(campaignId));
     }
 }
 

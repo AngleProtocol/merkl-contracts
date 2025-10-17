@@ -10,11 +10,7 @@ import { IAccessControlManager } from "./BaseTokenWrapper.sol";
 
 import { UUPSHelper } from "../../utils/UUPSHelper.sol";
 import { Errors } from "../../utils/Errors.sol";
-
-interface IDistributionCreator {
-    function distributor() external view returns (address);
-    function feeRecipient() external view returns (address);
-}
+import { DistributionCreator } from "../../DistributionCreator.sol";
 
 interface IEtherealExchange {
     function depositOnBehalf(uint256 _amount, address receiver) external;
@@ -64,8 +60,8 @@ contract EtherealWrapper is UUPSHelper, ERC20Upgradeable {
         accessControlManager = _accessControlManager;
         distributionCreator = _distributionCreator;
         etherealExchange = _etherealExchange;
-        distributor = IDistributionCreator(_distributionCreator).distributor();
-        feeRecipient = IDistributionCreator(_distributionCreator).feeRecipient();
+        distributor = DistributionCreator(_distributionCreator).distributor();
+        feeRecipient = DistributionCreator(_distributionCreator).feeRecipient();
         IERC20(underlying).safeApprove(_etherealExchange, type(uint256).max);
     }
 
@@ -128,7 +124,7 @@ contract EtherealWrapper is UUPSHelper, ERC20Upgradeable {
     }
 
     function setDistributor(address _distributionCreator) external onlyGovernor {
-        address _distributor = IDistributionCreator(_distributionCreator).distributor();
+        address _distributor = DistributionCreator(_distributionCreator).distributor();
         distributor = _distributor;
         distributionCreator = _distributionCreator;
         emit MerklAddressesUpdated(_distributionCreator, _distributor);
@@ -140,7 +136,7 @@ contract EtherealWrapper is UUPSHelper, ERC20Upgradeable {
     }
 
     function _setFeeRecipient() internal {
-        address _feeRecipient = IDistributionCreator(distributionCreator).feeRecipient();
+        address _feeRecipient = DistributionCreator(distributionCreator).feeRecipient();
         feeRecipient = _feeRecipient;
         emit FeeRecipientUpdated(_feeRecipient);
     }

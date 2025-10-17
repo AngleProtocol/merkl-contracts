@@ -100,9 +100,6 @@ forge script scripts/DistributionCreator.s.sol:SetRewardTokenMinAmounts --rpc-ur
 forge script scripts/DistributionCreator.s.sol:SetCampaignFees --rpc-url <network> --sender <address> --broadcast \
   --sig "run(uint32,uint256)" <campaign_type> <fees>
 
-# Toggle token whitelist status
-forge script scripts/DistributionCreator.s.sol:ToggleTokenWhitelist --rpc-url <network> --sender <address> --broadcast \
-  --sig "run(address)" <token_address>
 ```
 
 For scripts without parameters, you can modify the default values directly in the script file:

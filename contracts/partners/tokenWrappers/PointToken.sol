@@ -2,12 +2,12 @@
 
 pragma solidity ^0.8.7;
 
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import { IAccessControlManager } from "../../interfaces/IAccessControlManager.sol";
-import "../../utils/Errors.sol";
+import { Errors } from "../../utils/Errors.sol";
 
 /// @title PointToken
-/// @author Angle Labs, Inc.
+/// @author Merkl SAS
 /// @notice Reference contract for points systems within Merkl
 contract PointToken is ERC20 {
     mapping(address => bool) public minters;
