@@ -24,6 +24,8 @@ library Errors {
     error NoDispute();
     error NoOverrideForCampaign();
     error NotAllowed();
+    error NotEnoughAllowance();
+    error NotEnoughBalance();
     error NotEnoughPayment();
     error NotGovernor();
     error NotGovernorOrGuardian();
