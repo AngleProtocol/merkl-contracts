@@ -513,8 +513,11 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         uint256 campaignAmountMinusFees
     ) internal {
         uint256 fees = campaignAmount - campaignAmountMinusFees;
-        address _feeRecipient = feeRecipient;
-        _feeRecipient = _feeRecipient == address(0) ? address(this) : _feeRecipient;
+        address _feeRecipient;
+        if (fees > 0) {
+            _feeRecipient = feeRecipient;
+            _feeRecipient = _feeRecipient == address(0) ? address(this) : _feeRecipient;
+        }
         uint256 userBalance = creatorBalance[creator][rewardToken];
         if (userBalance >= campaignAmount) {
             if (msg.sender != creator) {
@@ -528,7 +531,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
                 }
             }
             _updateBalance(creator, rewardToken, userBalance - campaignAmount);
-            if (fees > 0) IERC20(rewardToken).safeTransfer(_feeRecipient, fees);
+            if (fees > 0 && _feeRecipient != address(this)) IERC20(rewardToken).safeTransfer(_feeRecipient, fees);
             IERC20(rewardToken).safeTransfer(distributor, campaignAmountMinusFees);
         } else {
             if (fees > 0) IERC20(rewardToken).safeTransferFrom(msg.sender, _feeRecipient, fees);
