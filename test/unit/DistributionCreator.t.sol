@@ -782,3 +782,178 @@ contract Test_DistributionCreator_distribution is DistributionCreatorForkTest {
         );
     }
 }
+
+contract Test_DistributionCreator_adjustTokenBalance is DistributionCreatorTest {
+    function test_SuccessWhenUser() public {
+        uint256 balance = angle.balanceOf(address(alice));
+        uint256 creatorBalance = angle.balanceOf(address(creator));
+        vm.startPrank(alice);
+        creator.increaseTokenBalance(address(bob), address(angle), 1e9);
+        assertEq(creator.creatorBalance(address(bob), address(angle)), 1e9);
+        assertEq(angle.balanceOf(address(alice)), balance - 1e9);
+        assertEq(angle.balanceOf(address(creator)), creatorBalance + 1e9);
+        creator.increaseTokenBalance(address(alice), address(angle), 1e10);
+        assertEq(creator.creatorBalance(address(alice), address(angle)), 1e10);
+        assertEq(angle.balanceOf(address(alice)), balance - 1e9 - 1e10);
+        assertEq(angle.balanceOf(address(creator)), creatorBalance + 1e9 + 1e10);
+        creator.decreaseTokenBalance(address(alice), address(angle), address(alice), 1e10 / 2);
+        assertEq(creator.creatorBalance(address(alice), address(angle)), 1e10 / 2);
+        assertEq(angle.balanceOf(address(alice)), balance - 1e9 - 1e10 + 1e10 / 2);
+        assertEq(angle.balanceOf(address(creator)), creatorBalance + 1e9 + 1e10 - 1e10 / 2);
+        creator.decreaseTokenBalance(address(alice), address(angle), address(dylan), 1e9);
+        assertEq(creator.creatorBalance(address(alice), address(angle)), 1e10 / 2 - 1e9);
+        assertEq(angle.balanceOf(address(dylan)), 1e9);
+        vm.stopPrank();
+    }
+
+    function test_SuccessWhenGovernor() public {
+        uint256 balance = angle.balanceOf(address(alice));
+        uint256 balance2 = angle.balanceOf(address(governor));
+        uint256 balance3 = angle.balanceOf(address(bob));
+        uint256 creatorBalance = angle.balanceOf(address(creator));
+        vm.startPrank(governor);
+        creator.increaseTokenBalance(address(bob), address(angle), 1e9);
+        assertEq(creator.creatorBalance(address(bob), address(angle)), 1e9);
+        assertEq(angle.balanceOf(address(governor)), balance2);
+        assertEq(angle.balanceOf(address(alice)), balance);
+        assertEq(angle.balanceOf(address(bob)), balance3);
+        assertEq(angle.balanceOf(address(creator)), creatorBalance);
+        creator.increaseTokenBalance(address(alice), address(angle), 1e10);
+        assertEq(creator.creatorBalance(address(alice), address(angle)), 1e10);
+        assertEq(angle.balanceOf(address(governor)), balance2);
+        assertEq(angle.balanceOf(address(alice)), balance);
+        assertEq(angle.balanceOf(address(bob)), balance3);
+        assertEq(angle.balanceOf(address(creator)), creatorBalance);
+
+        IERC20[] memory tokens = new IERC20[](1);
+        tokens[0] = angle;
+        creator.recoverFees(tokens, address(bob));
+        vm.expectRevert();
+        creator.decreaseTokenBalance(address(alice), address(angle), address(alice), 1e10 / 2);
+        vm.stopPrank();
+    }
+    function test_RevertWhenNotUserOrGovernor() public {
+        uint256 balance = angle.balanceOf(address(alice));
+        uint256 creatorBalance = angle.balanceOf(address(creator));
+        vm.startPrank(alice);
+        creator.increaseTokenBalance(address(bob), address(angle), 1e9);
+        assertEq(creator.creatorBalance(address(bob), address(angle)), 1e9);
+        assertEq(angle.balanceOf(address(alice)), balance - 1e9);
+        assertEq(angle.balanceOf(address(creator)), creatorBalance + 1e9);
+        vm.expectRevert(Errors.NotAllowed.selector);
+        creator.decreaseTokenBalance(address(bob), address(angle), address(alice), 1e9);
+        vm.stopPrank();
+    }
+
+    function test_RevertWhenNotEnoughBalance() public {
+        uint256 balance = angle.balanceOf(address(alice));
+        uint256 creatorBalance = angle.balanceOf(address(creator));
+        vm.startPrank(alice);
+        creator.increaseTokenBalance(address(alice), address(angle), 1e9);
+        assertEq(creator.creatorBalance(address(alice), address(angle)), 1e9);
+        assertEq(angle.balanceOf(address(alice)), balance - 1e9);
+        assertEq(angle.balanceOf(address(creator)), creatorBalance + 1e9);
+        vm.expectRevert();
+        creator.decreaseTokenBalance(address(alice), address(angle), address(alice), 1e10);
+        vm.stopPrank();
+    }
+}
+
+contract Test_DistributionCreator_adjustTokenAllowance is DistributionCreatorTest {
+    function test_SuccessWhenUser() public {
+        vm.startPrank(alice);
+        creator.increaseTokenAllowance(address(alice), address(bob), address(angle), 1e9);
+        assertEq(creator.creatorAllowance(address(alice), address(bob), address(angle)), 1e9);
+
+        creator.increaseTokenAllowance(address(alice), address(bob), address(angle), 1e5);
+        assertEq(creator.creatorAllowance(address(alice), address(bob), address(angle)), 1e9 + 1e5);
+
+        creator.increaseTokenAllowance(address(alice), address(dylan), address(angle), 1e10);
+        assertEq(creator.creatorAllowance(address(alice), address(dylan), address(angle)), 1e10);
+
+        creator.increaseTokenAllowance(address(alice), address(dylan), address(angle), 1e6);
+        assertEq(creator.creatorAllowance(address(alice), address(dylan), address(angle)), 1e10 + 1e6);
+
+        creator.decreaseTokenAllowance(address(alice), address(dylan), address(angle), 1e8);
+        assertEq(creator.creatorAllowance(address(alice), address(dylan), address(angle)), 1e10 + 1e6 - 1e8);
+
+        creator.decreaseTokenAllowance(address(alice), address(bob), address(angle), 1e7);
+        assertEq(creator.creatorAllowance(address(alice), address(bob), address(angle)), 1e9 + 1e5 - 1e7);
+
+        vm.stopPrank();
+    }
+
+    function test_SuccessWhenGovernor() public {
+        vm.startPrank(governor);
+        creator.increaseTokenAllowance(address(alice), address(bob), address(angle), 1e9);
+        assertEq(creator.creatorAllowance(address(alice), address(bob), address(angle)), 1e9);
+
+        creator.increaseTokenAllowance(address(alice), address(bob), address(angle), 1e5);
+        assertEq(creator.creatorAllowance(address(alice), address(bob), address(angle)), 1e9 + 1e5);
+
+        creator.increaseTokenAllowance(address(alice), address(dylan), address(angle), 1e10);
+        assertEq(creator.creatorAllowance(address(alice), address(dylan), address(angle)), 1e10);
+
+        creator.increaseTokenAllowance(address(alice), address(dylan), address(angle), 1e6);
+        assertEq(creator.creatorAllowance(address(alice), address(dylan), address(angle)), 1e10 + 1e6);
+
+        creator.decreaseTokenAllowance(address(alice), address(dylan), address(angle), 1e8);
+        assertEq(creator.creatorAllowance(address(alice), address(dylan), address(angle)), 1e10 + 1e6 - 1e8);
+
+        creator.decreaseTokenAllowance(address(alice), address(bob), address(angle), 1e7);
+        assertEq(creator.creatorAllowance(address(alice), address(bob), address(angle)), 1e9 + 1e5 - 1e7);
+        vm.stopPrank();
+    }
+
+    function test_RevertWhenNotUserOrGovernor() public {
+        vm.startPrank(bob);
+        vm.expectRevert(Errors.NotAllowed.selector);
+        creator.increaseTokenAllowance(address(alice), address(bob), address(angle), 1e9);
+        vm.stopPrank();
+    }
+
+    function test_RevertWhenNotEnoughAllowance() public {
+        vm.startPrank(alice);
+        creator.increaseTokenAllowance(address(alice), address(bob), address(angle), 1e9);
+        assertEq(creator.creatorAllowance(address(alice), address(bob), address(angle)), 1e9);
+        vm.expectRevert();
+        creator.decreaseTokenAllowance(address(alice), address(bob), address(angle), 1e10);
+
+        vm.expectRevert();
+        creator.decreaseTokenAllowance(address(alice), address(dylan), address(angle), 1);
+
+        vm.stopPrank();
+    }
+}
+
+contract Test_DistributionCreator_toggleCampaignOperator is DistributionCreatorTest {
+    function test_SuccessWhenUser() public {
+        vm.startPrank(alice);
+        creator.toggleCampaignOperator(address(alice), address(bob));
+        assertEq(creator.campaignOperators(address(alice), address(bob)), 1);
+        creator.toggleCampaignOperator(address(alice), address(bob));
+        assertEq(creator.campaignOperators(address(alice), address(bob)), 0);
+        creator.toggleCampaignOperator(address(alice), address(dylan));
+        assertEq(creator.campaignOperators(address(alice), address(dylan)), 1);
+
+        vm.stopPrank();
+    }
+
+    function test_SuccessWhenGovernor() public {
+        vm.startPrank(governor);
+        creator.toggleCampaignOperator(address(alice), address(bob));
+        assertEq(creator.campaignOperators(address(alice), address(bob)), 1);
+        creator.toggleCampaignOperator(address(alice), address(bob));
+        assertEq(creator.campaignOperators(address(alice), address(bob)), 0);
+        creator.toggleCampaignOperator(address(alice), address(dylan));
+        assertEq(creator.campaignOperators(address(alice), address(dylan)), 1);
+        vm.stopPrank();
+    }
+
+    function test_RevertWhenNotUserOrGovernor() public {
+        vm.startPrank(bob);
+        vm.expectRevert(Errors.NotAllowed.selector);
+        creator.toggleCampaignOperator(address(alice), address(bob));
+        vm.stopPrank();
+    }
+}
