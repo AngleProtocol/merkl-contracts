@@ -85,7 +85,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @notice Maps a campaignId to the ID of the campaign in the campaign list + 1
     mapping(bytes32 => uint256) internal _campaignLookup;
 
-    /// @notice Maps a campaign type to the fees for this specific campaign
+    /// @notice Maps a campaign type to the fees for this specific campaign type
     mapping(uint32 => uint256) public campaignSpecificFees;
 
     /// @notice Maps a campaignId to a potential override written
@@ -103,7 +103,8 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @notice Maps a creator to a reward token to the balance pre-deposited by the creator for this token
     mapping(address => mapping(address => uint256)) public creatorBalance;
 
-    /// @notice Maps a creator address to an operator to a reward token to an amount that can be pulled from the creator's balance
+    /// @notice Maps a creator address to an operator to a reward token to an amount that can be pulled from the
+    /// creator's predeposited balance
     mapping(address => mapping(address => mapping(address => uint256))) public creatorTokenAllowance;
 
     /// @notice Maps a creator to a campaign operator to the ability to manage the campaign on behalf of the creator
@@ -190,9 +191,9 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
                                                  USER FACING FUNCTIONS                                              
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
-    /// @notice Creates a `campaign` to incentivize a given pool for a specific period of time
-    /// @return The campaignId of the new campaign
-    /// @dev If the campaign is badly specified, it will not be handled by the campaign script and rewards may be lost
+    /// @notice Creates a `campaign` on Merkl
+    /// @return campaignId of the new campaign
+    /// @dev If the campaign is badly formatted, it will not be handled by the reward engine and rewards may be lost
     /// @dev Reward tokens sent as part of campaigns must have been whitelisted before and amounts
     /// sent should be bigger than a minimum amount specific to each token
     /// @dev This function reverts if the sender has not accepted the terms and conditions
@@ -201,7 +202,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     }
 
     /// @notice Same as the function above but for multiple campaigns at once
-    /// @return List of all the campaign amounts actually deposited for each `campaign` in the `campaigns` list
+    /// @return List of all the campaignIds created
     function createCampaigns(
         CampaignParameters[] memory campaigns
     ) external nonReentrant hasSigned returns (bytes32[] memory) {
@@ -262,6 +263,27 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         emit CampaignReallocation(_campaignId, froms, to);
     }
 
+    /// @notice Increases the predeposited token balance of a `user` for a given `rewardToken`
+    /// @dev If a governor is calling the function, the user must have sent the tokens beforehand
+    /// @dev This function can be used to deposit on behalf of another user
+    function increaseTokenBalance(address user, address rewardToken, uint256 amount) external {
+        if (!accessControlManager.isGovernor(msg.sender))
+            IERC20(rewardToken).safeTransferFrom(msg.sender, address(this), amount);
+        _updateBalance(user, rewardToken, creatorBalance[user][rewardToken] + amount);
+    }
+
+    /// @notice Decreases the predeposited token balance of a `user` for a given `rewardToken`
+    /// @dev Only the user themselves or a governor can call this function
+    function decreaseTokenBalance(
+        address user,
+        address rewardToken,
+        address to,
+        uint256 amount
+    ) external onlyUserOrGovernor(user) {
+        _updateBalance(user, rewardToken, creatorBalance[user][rewardToken] - amount);
+        IERC20(rewardToken).safeTransfer(to, amount);
+    }
+
     /// @notice Increases the token allowance of an `operator` for a `user`
     function increaseCreatorTokenAllowance(
         address user,
@@ -269,10 +291,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         address rewardToken,
         uint256 amount
     ) external onlyUserOrGovernor(user) {
-        if (operator == address(0)) revert Errors.ZeroAddress();
-        uint256 currentAllowance = creatorTokenAllowance[user][operator][rewardToken];
-        creatorTokenAllowance[user][operator][rewardToken] = currentAllowance + amount;
-        emit CreatorAllowanceUpdated(user, operator, rewardToken, currentAllowance + amount);
+        _updateAllowance(user, operator, rewardToken, creatorTokenAllowance[user][operator][rewardToken] + amount);
     }
 
     /// @notice Decreases the token allowance of an `operator` for a `user`
@@ -282,39 +301,12 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         address rewardToken,
         uint256 amount
     ) external onlyUserOrGovernor(user) {
-        if (operator == address(0)) revert Errors.ZeroAddress();
-        uint256 currentAllowance = creatorTokenAllowance[user][operator][rewardToken];
-        uint256 updateAmount = amount > currentAllowance ? currentAllowance : amount;
-        creatorTokenAllowance[user][operator][rewardToken] = currentAllowance - updateAmount;
-        emit CreatorAllowanceUpdated(user, operator, rewardToken, currentAllowance - updateAmount);
-    }
-
-    /// @dev If a governor is calling the function, the user must have sent the tokens beforehand
-    function preDepositTokens(address user, address rewardToken, uint256 amount) external {
-        if (!accessControlManager.isGovernor(msg.sender))
-            IERC20(rewardToken).safeTransferFrom(msg.sender, address(this), amount);
-        uint256 userBalance = creatorBalance[user][rewardToken];
-        creatorBalance[user][rewardToken] = userBalance + amount;
-        emit CreatorBalanceUpdated(user, rewardToken, userBalance + amount);
-    }
-
-    function recoverPreDepositedTokens(
-        address user,
-        address rewardToken,
-        address to,
-        uint256 amount
-    ) external onlyUserOrGovernor(user) {
-        uint256 userBalance = creatorBalance[user][rewardToken];
-        if (amount > userBalance) revert Errors.NotEnoughBalance();
-        creatorBalance[user][rewardToken] = userBalance - amount;
-        IERC20(rewardToken).safeTransfer(to, amount);
-        emit CreatorBalanceUpdated(user, rewardToken, userBalance - amount);
+        _updateAllowance(user, operator, rewardToken, creatorTokenAllowance[user][operator][rewardToken] - amount);
     }
 
     /// @notice Toggles the ability of an `operator` to manage campaigns on behalf of a `user`
     /// @dev Only the user themselves or a governor can call this function
-    function toggleCampaignOperator(address user, address operator) external {
-        if (user != msg.sender && !accessControlManager.isGovernor(msg.sender)) revert Errors.NotAllowed();
+    function toggleCampaignOperator(address user, address operator) external onlyUserOrGovernor(user) {
         uint256 currentStatus = campaignOperators[user][operator];
         campaignOperators[user][operator] = 1 - currentStatus;
         emit CampaignOperatorToggled(user, operator, currentStatus == 0);
@@ -392,13 +384,6 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         emit DistributorUpdated(_distributor);
     }
 
-    /// @notice Sets the defaultFees on deposit
-    function setFees(uint256 _defaultFees) external onlyGovernor {
-        if (_defaultFees >= BASE_9) revert Errors.InvalidParam();
-        defaultFees = _defaultFees;
-        emit FeesSet(_defaultFees);
-    }
-
     /// @notice Recovers fees accrued on the contract for a list of `tokens`
     function recoverFees(IERC20[] calldata tokens, address to) external onlyGovernor {
         uint256 tokensLength = tokens.length;
@@ -417,11 +402,18 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     }
 
     /// @notice Sets the message that needs to be accepted by users before posting rewards
-    function setMessage(string memory _message) external onlyGovernor {
+    function setMessage(string memory _message) external onlyGovernorOrGuardian {
         message = _message;
         bytes32 _messageHash = ECDSA.toEthSignedMessageHash(bytes(_message));
         messageHash = _messageHash;
         emit MessageUpdated(_messageHash);
+    }
+
+    /// @notice Sets the defaultFees on deposit
+    function setFees(uint256 _defaultFees) external onlyGovernorOrGuardian {
+        if (_defaultFees >= BASE_9) revert Errors.InvalidParam();
+        defaultFees = _defaultFees;
+        emit FeesSet(_defaultFees);
     }
 
     /// @notice Sets the fees specific for a campaign
@@ -500,6 +492,19 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         }
     }
 
+    /// @notice Internal helper to update the allowance of an operator for a user
+    function _updateAllowance(address user, address operator, address rewardToken, uint256 newAllowance) internal {
+        creatorTokenAllowance[user][operator][rewardToken] = newAllowance;
+        emit CreatorAllowanceUpdated(user, operator, rewardToken, newAllowance);
+    }
+
+    /// @notice Internal helper to update the balance of a user for a reward token
+    function _updateBalance(address user, address rewardToken, uint256 newBalance) internal {
+        creatorBalance[user][rewardToken] = newBalance;
+        emit CreatorBalanceUpdated(user, rewardToken, newBalance);
+    }
+
+    /// @notice Pulls tokens from either the predeposited balance of a creator or from the `msg.sender`
     function _pullTokens(
         address creator,
         address rewardToken,
@@ -507,22 +512,21 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         uint256 campaignAmountMinusFees
     ) internal {
         uint256 fees = campaignAmount - campaignAmountMinusFees;
+        address _feeRecipient = feeRecipient;
         _feeRecipient = _feeRecipient == address(0) ? address(this) : _feeRecipient;
         uint256 userBalance = creatorBalance[creator][rewardToken];
         if (userBalance >= campaignAmount) {
             if (msg.sender != creator) {
                 uint256 senderAllowance = creatorTokenAllowance[creator][msg.sender][rewardToken];
                 if (senderAllowance >= campaignAmount) {
-                    creatorTokenAllowance[creator][msg.sender][rewardToken] = senderAllowance - campaignAmount;
-                    emit CreatorAllowanceUpdated(creator, msg.sender, rewardToken, senderAllowance - campaignAmount);
+                    _updateAllowance(creator, msg.sender, rewardToken, senderAllowance - campaignAmount);
                 } else {
                     if (fees > 0) IERC20(rewardToken).safeTransferFrom(msg.sender, _feeRecipient, fees);
                     IERC20(rewardToken).safeTransferFrom(msg.sender, distributor, campaignAmountMinusFees);
                     return;
                 }
             }
-            creatorBalance[creator][rewardToken] = userBalance - campaignAmount;
-            emit CreatorBalanceUpdated(creator, rewardToken, userBalance - campaignAmount);
+            _updateBalance(creator, rewardToken, userBalance - campaignAmount);
             if (fees > 0) IERC20(rewardToken).safeTransfer(_feeRecipient, fees);
             IERC20(rewardToken).safeTransfer(distributor, campaignAmountMinusFees);
         } else {
