@@ -105,7 +105,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
 
     /// @notice Maps a creator address to an operator to a reward token to an amount that can be pulled from the
     /// creator's predeposited balance
-    mapping(address => mapping(address => mapping(address => uint256))) public creatorTokenAllowance;
+    mapping(address => mapping(address => mapping(address => uint256))) public creatorAllowance;
 
     /// @notice Maps a creator to a campaign operator to the ability to manage the campaign on behalf of the creator
     mapping(address => mapping(address => uint256)) public campaignOperators;
@@ -239,7 +239,8 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         ) revert Errors.InvalidOverride();
 
         newCampaign.campaignId = _campaignId;
-        newCampaign.creator = msg.sender;
+        // The creator address cannot be changed
+        newCampaign.creator = _campaign.creator;
         campaignOverrides[_campaignId] = newCampaign;
         campaignOverridesTimestamp[_campaignId].push(block.timestamp);
         emit CampaignOverride(_campaignId, newCampaign);
@@ -285,23 +286,23 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     }
 
     /// @notice Increases the token allowance of an `operator` for a `user`
-    function increaseCreatorTokenAllowance(
+    function increaseTokenAllowance(
         address user,
         address operator,
         address rewardToken,
         uint256 amount
     ) external onlyUserOrGovernor(user) {
-        _updateAllowance(user, operator, rewardToken, creatorTokenAllowance[user][operator][rewardToken] + amount);
+        _updateAllowance(user, operator, rewardToken, creatorAllowance[user][operator][rewardToken] + amount);
     }
 
     /// @notice Decreases the token allowance of an `operator` for a `user`
-    function decreaseCreatorTokenAllowance(
+    function decreaseTokenAllowance(
         address user,
         address operator,
         address rewardToken,
         uint256 amount
     ) external onlyUserOrGovernor(user) {
-        _updateAllowance(user, operator, rewardToken, creatorTokenAllowance[user][operator][rewardToken] - amount);
+        _updateAllowance(user, operator, rewardToken, creatorAllowance[user][operator][rewardToken] - amount);
     }
 
     /// @notice Toggles the ability of an `operator` to manage campaigns on behalf of a `user`
@@ -494,7 +495,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
 
     /// @notice Internal helper to update the allowance of an operator for a user
     function _updateAllowance(address user, address operator, address rewardToken, uint256 newAllowance) internal {
-        creatorTokenAllowance[user][operator][rewardToken] = newAllowance;
+        creatorAllowance[user][operator][rewardToken] = newAllowance;
         emit CreatorAllowanceUpdated(user, operator, rewardToken, newAllowance);
     }
 
@@ -517,7 +518,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         uint256 userBalance = creatorBalance[creator][rewardToken];
         if (userBalance >= campaignAmount) {
             if (msg.sender != creator) {
-                uint256 senderAllowance = creatorTokenAllowance[creator][msg.sender][rewardToken];
+                uint256 senderAllowance = creatorAllowance[creator][msg.sender][rewardToken];
                 if (senderAllowance >= campaignAmount) {
                     _updateAllowance(creator, msg.sender, rewardToken, senderAllowance - campaignAmount);
                 } else {
