@@ -98,6 +98,7 @@ plasma="${PLASMA_NODE_URI}"
 mezo="${MEZO_NODE_URI}"
 redbelly="${REDBELLY_NODE_URI}"
 saga="${SAGA_NODE_URI}"
+ethereal="${ETHEREAL_NODE_URI}"
 
 [etherscan]
 localhost = { url = "http://localhost:4000", key = "none" }
@@ -152,5 +153,6 @@ katana = {chainId = 747474, key = "${KATANA_ETHERSCAN_API_KEY}", url = "${VERIFI
 tac = {chainId = 239, key = "${TAC_ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_239}" }
 plasma = {chainId = 9745, key = "${PLASMA_ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_9745}" }
 mezo = {chainId = 31612, key = "${MEZO_ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_31612}" }
-redbelly = {chainId = 151, key = "${REDBELLY_ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_151}" } 
-saga = {chainId = 5464, key = "$SAGA_ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_5464}" } 
+redbelly = {chainId = 151, key = "${REDBELLY_ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_151}" }
+saga = {chainId = 5464, key = "${SAGA_ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_5464}" } 
+ethereal = {chainId = 5064014, key = "none", url = "${VERIFIER_URL_5064014}" } 
