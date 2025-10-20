@@ -18,18 +18,18 @@ contract PointTokenScript is BaseScript, JsonReader {
 // Deploy script
 contract DeployPointToken is PointTokenScript {
     function run() external broadcast {
-        // forge script scripts/PointToken.s.sol:DeployPointToken --rpc-url gnosis --broadcast --verify -vvvv
+        // forge script scripts/PointToken.s.sol:DeployPointToken --rpc-url hyperevm --broadcast --verify -vvvv
         uint256 chainId = block.chainid;
         // MODIFY THESE VALUES TO SET YOUR DESIRED TOKEN PARAMETERS
-        string memory name = "IPOR Points";
-        string memory symbol = "ipor-points";
+        string memory name = "cHIPs";
+        string memory symbol = "cHIPs";
         address minter = 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701;
         uint256 amount = 1_000_000_000 * 1e18;
         address creator = 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701;
         uint8 decimals = 18;
 
         // address accessControlManager = readAddress(chainId, "Merkl.CoreMerkl");
-        address accessControlManager = 0xFD0DFC837Fe7ED19B23df589b6F6Da5a775F99E0;
+        address accessControlManager = 0x9a0F97FAC6154d9233A0FDFcE4Dc27dCB48b95ff;
         _run(name, symbol, minter, accessControlManager, amount, creator);
     }
 
@@ -64,8 +64,8 @@ contract DeployPointToken is PointTokenScript {
         token.toggleWhitelistedRecipient(0x3Ef3D8bA38EBe18DB133cEc108f4D14CE00Dd9Ae);
         token.toggleWhitelistedRecipient(0x8BB4C975Ff3c250e0ceEA271728547f3802B36Fd);
         token.toggleWhitelistedRecipient(0xeaC6A75e19beB1283352d24c0311De865a867DAB);
-        token.toggleWhitelistedRecipient(0x1384Fa5187D946F9639Afaa391287E0b86B31708);
-        token.transfer(0x1384Fa5187D946F9639Afaa391287E0b86B31708, 1e9 * 1e18);
+        token.toggleWhitelistedRecipient(0x79b42b18c4479a6F0f0cf398CFF5674896A12AD1);
+        token.transfer(0x79b42b18c4479a6F0f0cf398CFF5674896A12AD1, 1e9 * 1e18);
 
         console.log("Whitelisted recipients:");
         // transfer to the SAFE

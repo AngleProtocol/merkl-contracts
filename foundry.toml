@@ -93,7 +93,6 @@ hyperevm = "${HYPEREVM_NODE_URI}"
 hemi="${HEMI_NODE_URI}"
 xdc="${XDC_NODE_URI}"
 katana="${KATANA_NODE_URI}"
-<<<<<<< HEAD
 tac="${TAC_NODE_URI}"
 plasma="${PLASMA_NODE_URI}"
 mezo="${MEZO_NODE_URI}"
