@@ -101,7 +101,6 @@ saga="${SAGA_NODE_URI}"
 
 [etherscan]
 localhost = { url = "http://localhost:4000", key = "none" }
-localhost = { url = "http://localhost:4000", key = "none" }
 mainnet = { chainId = 1, key = "${MAINNET_ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_1}" }
 polygon = { chainId = 137, key = "${POLYGON_ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_137}" }
 fantom = { chainId = 250, key = "${FANTOM_ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_250}" }
