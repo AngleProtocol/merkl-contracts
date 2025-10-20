@@ -207,24 +207,20 @@ contract SetUserFeeRebate is DistributionCreatorScript {
 
 // SetRewardTokenMinAmounts script
 contract SetRewardTokenMinAmounts is DistributionCreatorScript {
-    // forge script scripts/DistributionCreator.s.sol:SetRewardTokenMinAmounts --rpc-url bsc --sender 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701 --broadcast -i 1
+    // forge script scripts/DistributionCreator.s.sol:SetRewardTokenMinAmounts --rpc-url xdc --sender 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701 --broadcast --legacy
     function run() external {
         console.log("DEPLOYER_ADDRESS:", broadcaster);
         // MODIFY THESE VALUES TO SET YOUR DESIRED TOKENS AND AMOUNTS
         address[] memory tokens = new address[](1);
         uint256[] memory amounts = new uint256[](1);
-        tokens[0] = 0xb3b02E4A9Fb2bD28CC2ff97B0aB3F6B3Ec1eE9D2;
-        amounts[0] = 1 ether; // 0.1 tokens with 18 decimals
-        _run(tokens, amounts);
-    }
-
-    function run(address[] calldata tokens, uint256[] calldata amounts) external {
+        tokens[0] = 0xc3ef7ed4F97450Ae8dA2473068375788BdeB5c5c;
+        amounts[0] = 1 ether / 10; // 0.1 tokens with 18 decimals
         _run(tokens, amounts);
     }
 
     function _run(address[] memory _tokens, uint256[] memory _amounts) internal broadcast {
         uint256 chainId = block.chainid;
-        address creatorAddress = readAddress(chainId, "DistributionCreator");
+        // address creatorAddress = readAddress(chainId, "DistributionCreator");
 
         DistributionCreator(creatorAddress).setRewardTokenMinAmounts(_tokens, _amounts);
 

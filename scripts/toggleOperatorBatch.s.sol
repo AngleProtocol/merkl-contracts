@@ -17,21 +17,20 @@ import { IAccessControlManager } from "../contracts/interfaces/IAccessControlMan
 import { MockToken } from "../contracts/mock/MockToken.sol";
 
 contract toggleOperatorBatch is BaseScript {
-    // forge script scripts/toggleOperatorBatch.s.sol --rpc-url mainnet --sender 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701 --broadcast
+    // forge script scripts/toggleOperatorBatch.s.sol --rpc-url arbitrum --sender 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701 --broadcast
     function run() public {
         uint256 deployerPrivateKey = vm.envUint("DEPLOYER_PRIVATE_KEY");
         vm.startBroadcast(deployerPrivateKey);
 
         address distributor = 0x3Ef3D8bA38EBe18DB133cEc108f4D14CE00Dd9Ae;
 
-        address operator = 0x1b5f15DCb82d25f91c65b53CEe151E8b9fBdD271;
+        address operator = 0x0E24b0F342F034446Ec814281AD1a7653cBd85e9;
 
         // Ethereum
-        
-        Distributor(distributor).toggleOperator(0x529619a10129396a2F642cae32099C1eA7FA2834, 0xb08AB4332AD871F89da24df4751968A61e58013c);
-        Distributor(distributor).toggleOperator(0x4402fe14C4C3ad83e468B426966B49195257E470, 0x82b7ab2Ef4e553A443c6cC05b1577f0B5267BF86);
-        Distributor(distributor).toggleOperator(0xEA8c9Dacf681FbB0760bc2FC5e21475f3A234F75, 0x40326059F14c9c23e3B9E76c37282B8798138E0F);
-        Distributor(distributor).toggleOperator(0xE928099Fc939aF47F8658B4bC50d961364d29C1d, 0xa7218a037F3713C0Ce03a1CAa3C471A95880E608);
+        Distributor(distributor).toggleOperator(0xD5E56dCd97f51130798747edAfAa4A3f27995e54, operator);
+
+        Distributor(distributor).toggleOperator(0x155F6eb8C52991e6c092C659a4c7E28293A74704, operator);
+        Distributor(distributor).toggleOperator(0xd71Eb01698F7A6BE19D211De37D55cf2b8bD8528, operator);
 
         // Katana
         /*
@@ -46,7 +45,6 @@ contract toggleOperatorBatch is BaseScript {
         Distributor(distributor).toggleOperator(0x58B369aEC52DD904f70122cF72ed311f7AAe3bAc, operator);
         Distributor(distributor).toggleOperator(0x0a1937F0D7f15B9ADee5d96616f269a0C6749C6d, operator);
         */
-        
 
         // Base
         /*
@@ -60,7 +58,6 @@ contract toggleOperatorBatch is BaseScript {
         Distributor(distributor).toggleOperator(0xBDD79a7DF622E9d9e19a7d92Bc7ea212FA0D2F3E, operator);
         Distributor(distributor).toggleOperator(0xa72a60e6167E8fC5e523184911475c4B37B835E2, operator);
         */
-        
 
         vm.stopBroadcast();
     }

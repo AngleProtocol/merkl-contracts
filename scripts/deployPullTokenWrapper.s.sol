@@ -12,28 +12,38 @@ import { JsonReader } from "@utils/JsonReader.sol";
 import { ContractType } from "@utils/Constants.sol";
 
 import { PullTokenWrapper } from "../contracts/partners/tokenWrappers/PullTokenWrapper.sol";
+import { PullTokenWrapperWithdraw } from "../contracts/partners/tokenWrappers/PullTokenWrapperWithdraw.sol";
 import { DistributionCreator } from "../contracts/DistributionCreator.sol";
 import { IAccessControlManager } from "../contracts/interfaces/IAccessControlManager.sol";
 import { MockToken } from "../contracts/mock/MockToken.sol";
 
 contract DeployPullTokenWrapper is BaseScript {
-    // forge script scripts/deployPullTokenWrapper.s.sol --rpc-url zksync --sender 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701 --broadcast --verify
+    // forge script scripts/deployPullTokenWrapper.s.sol --rpc-url mainnet --sender 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701 --broadcast --verify
     function run() public {
         uint256 deployerPrivateKey = vm.envUint("DEPLOYER_PRIVATE_KEY");
         vm.startBroadcast(deployerPrivateKey);
-
-        address underlying = 0xd6cD2c0fC55936498726CacC497832052A9B2D1B;
-        address distributionCreator = 0xb2FFe1D404D284243a80BEa2D3DeB1a0108d9B9f;
+        address distributionCreator = 0x8BB4C975Ff3c250e0ceEA271728547f3802B36Fd;
+        // ------------------------------------------------------------------------
+        // TO EDIT
+        address underlying = 0xEc4ef66D4fCeEba34aBB4dE69dB391Bc5476ccc8;
         address holder = 0xdef1FA4CEfe67365ba046a7C630D6B885298E210;
+
+        // Need to choose the implementation type and if implementation needs to be deployed
+        address implementation = address(new PullTokenWrapperWithdraw());
+        // address implementation = address(new PullTokenWrapper());
+        // Ethereum implementation of PullTokenWrapper
+        // address implementation = 0x979a04fd2f3A6a2B3945A715e24b974323E93567;
+        // Ethereum implementation of PullTokenWrapperWithdraw
+        // address implementation = 0x721d37cf37e230E120a09adbBB7aAB0CF729AcA1
+        // ------------------------------------------------------------------------
+
         // Keeping the same name and symbol as the original underlying token so it's invisible for users
         string memory name = string(abi.encodePacked(IERC20Metadata(underlying).name(), " (wrapped)"));
         string memory symbol = IERC20Metadata(underlying).symbol();
 
-        // Deploy implementation
-        PullTokenWrapper implementation = new PullTokenWrapper();
-
-        // Ethereum implementation
-        // PullTokenWrapper implementation = PullTokenWrapper(0x979a04fd2f3A6a2B3945A715e24b974323E93567);
+        // Names to override if deploying a PullTokenWrapperWithdraw implementation
+        name = "USDtb (wrapped)";
+        symbol = "USDtb";
 
         console.log("PullTokenWrapper Implementation:", address(implementation));
 
