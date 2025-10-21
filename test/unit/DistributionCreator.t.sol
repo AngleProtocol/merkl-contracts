@@ -709,7 +709,7 @@ contract Test_DistributionCreator_CreateCampaign is DistributionCreatorTest {
         assertEq(campaignId, fetchedCampaignId);
     }
 
-    function test_SuccessFromPreDepositedBalanceWithNoFees() public {
+    function test_SuccessFromPreDepositedBalanceAndAllowanceWithNoFees() public {
         uint256 amount = 1e8;
         CampaignParameters memory campaign = CampaignParameters({
             campaignId: keccak256("TEST"),
@@ -728,17 +728,29 @@ contract Test_DistributionCreator_CreateCampaign is DistributionCreatorTest {
         vm.prank(governor);
         creator.setFeeRecipient(dylan);
 
+        angle.mint(address(charlie), 1e10);
+        vm.prank(charlie);
+        angle.approve(address(creator), type(uint256).max);
+
         {
             vm.startPrank(alice);
             creator.increaseTokenBalance(alice, address(angle), 1e10);
+            creator.increaseTokenAllowance(alice, charlie, address(angle), 1e11);
             assertEq(creator.creatorBalance(address(alice), address(angle)), 1e10);
+            assertEq(creator.creatorAllowance(address(alice), address(charlie), address(angle)), 1e11);
+            vm.stopPrank();
+
             address distributor = creator.distributor();
             uint256 balance = angle.balanceOf(address(alice));
+            uint256 charlieBalance = angle.balanceOf(address(charlie));
             uint256 creatorBalance = angle.balanceOf(address(creator));
             uint256 distributorBalance = angle.balanceOf(address(distributor));
+            vm.prank(charlie);
             creator.createCampaign(campaign);
             assertEq(creator.creatorBalance(address(alice), address(angle)), 1e10 - amount);
+            assertEq(creator.creatorAllowance(address(alice), address(charlie), address(angle)), 1e11 - amount);
             assertEq(angle.balanceOf(address(alice)), balance);
+            assertEq(angle.balanceOf(address(charlie)), charlieBalance);
             assertEq(angle.balanceOf(address(creator)), creatorBalance - amount);
             assertEq(angle.balanceOf(address(dylan)), 0);
             assertEq(angle.balanceOf(address(distributor)), distributorBalance + amount);
@@ -777,6 +789,335 @@ contract Test_DistributionCreator_CreateCampaign is DistributionCreatorTest {
         ) = creator.campaignList(creator.campaignLookup(campaignId));
         assertEq(alice, fetchedCreator);
         assertEq(amount, fetchedAmount);
+        assertEq(address(angle), fetchedRewardToken);
+        assertEq(campaign.campaignType, fetchedCampaignType);
+        assertEq(campaign.startTimestamp, fetchedStartTimestamp);
+        assertEq(campaign.duration, fetchedDuration);
+        assertEq(extraData, fetchedCampaignData);
+        assertEq(campaignId, fetchedCampaignId);
+    }
+
+    function test_SuccessFromPreDepositedBalanceAndNoAllowanceWithNoFees() public {
+        uint256 amount = 1e8;
+        CampaignParameters memory campaign = CampaignParameters({
+            campaignId: keccak256("TEST"),
+            creator: address(alice),
+            campaignData: hex"ab",
+            rewardToken: address(angle),
+            amount: amount,
+            campaignType: 0,
+            startTimestamp: uint32(block.timestamp + 1),
+            duration: 3600
+        });
+
+        vm.prank(governor);
+        creator.setFees(0);
+
+        vm.prank(governor);
+        creator.setFeeRecipient(dylan);
+
+        angle.mint(address(charlie), 1e10);
+        vm.prank(charlie);
+        angle.approve(address(creator), type(uint256).max);
+
+        {
+            vm.startPrank(alice);
+            creator.increaseTokenBalance(alice, address(angle), 1e10);
+            creator.increaseTokenAllowance(alice, charlie, address(angle), 1e7);
+            assertEq(creator.creatorBalance(address(alice), address(angle)), 1e10);
+            assertEq(creator.creatorAllowance(address(alice), address(charlie), address(angle)), 1e7);
+            vm.stopPrank();
+
+            address distributor = creator.distributor();
+            uint256 balance = angle.balanceOf(address(alice));
+            uint256 creatorBalance = angle.balanceOf(address(creator));
+            uint256 charlieBalance = angle.balanceOf(address(charlie));
+            uint256 distributorBalance = angle.balanceOf(address(distributor));
+            vm.prank(charlie);
+            creator.createCampaign(campaign);
+            assertEq(creator.creatorBalance(address(alice), address(angle)), 1e10);
+            assertEq(creator.creatorAllowance(address(alice), address(charlie), address(angle)), 1e7);
+            assertEq(angle.balanceOf(address(alice)), balance);
+            assertEq(angle.balanceOf(address(charlie)), charlieBalance - amount);
+            assertEq(angle.balanceOf(address(creator)), creatorBalance);
+            assertEq(angle.balanceOf(address(dylan)), 0);
+            assertEq(angle.balanceOf(address(distributor)), distributorBalance + amount);
+        }
+
+        address[] memory whitelist = new address[](1);
+        whitelist[0] = alice;
+        address[] memory blacklist = new address[](1);
+        blacklist[0] = charlie;
+
+        bytes memory extraData = hex"ab";
+
+        // Additional asserts to check for correct behavior
+        bytes32 campaignId = bytes32(
+            keccak256(
+                abi.encodePacked(
+                    block.chainid,
+                    alice,
+                    address(campaign.rewardToken),
+                    uint32(campaign.campaignType),
+                    uint32(campaign.startTimestamp),
+                    uint32(campaign.duration),
+                    campaign.campaignData
+                )
+            )
+        );
+        (
+            bytes32 fetchedCampaignId,
+            address fetchedCreator,
+            address fetchedRewardToken,
+            uint256 fetchedAmount,
+            uint32 fetchedCampaignType,
+            uint32 fetchedStartTimestamp,
+            uint32 fetchedDuration,
+            bytes memory fetchedCampaignData
+        ) = creator.campaignList(creator.campaignLookup(campaignId));
+        assertEq(alice, fetchedCreator);
+        assertEq(amount, fetchedAmount);
+        assertEq(address(angle), fetchedRewardToken);
+        assertEq(campaign.campaignType, fetchedCampaignType);
+        assertEq(campaign.startTimestamp, fetchedStartTimestamp);
+        assertEq(campaign.duration, fetchedDuration);
+        assertEq(extraData, fetchedCampaignData);
+        assertEq(campaignId, fetchedCampaignId);
+    }
+
+    function test_SuccessFromPreDepositedBalanceAndNoAllowanceWithFees() public {
+        uint256 amount = 1e8;
+        CampaignParameters memory campaign = CampaignParameters({
+            campaignId: keccak256("TEST"),
+            creator: address(alice),
+            campaignData: hex"ab",
+            rewardToken: address(angle),
+            amount: amount,
+            campaignType: 0,
+            startTimestamp: uint32(block.timestamp + 1),
+            duration: 3600
+        });
+
+        vm.prank(governor);
+        creator.setFeeRecipient(dylan);
+
+        angle.mint(address(charlie), 1e10);
+        vm.prank(charlie);
+        angle.approve(address(creator), type(uint256).max);
+
+        {
+            vm.startPrank(alice);
+            creator.increaseTokenBalance(alice, address(angle), 1e10);
+            creator.increaseTokenAllowance(alice, charlie, address(angle), 1e7);
+            assertEq(creator.creatorBalance(address(alice), address(angle)), 1e10);
+            assertEq(creator.creatorAllowance(address(alice), address(charlie), address(angle)), 1e7);
+            vm.stopPrank();
+
+            address distributor = creator.distributor();
+            uint256 balance = angle.balanceOf(address(alice));
+            uint256 creatorBalance = angle.balanceOf(address(creator));
+            uint256 charlieBalance = angle.balanceOf(address(charlie));
+            uint256 distributorBalance = angle.balanceOf(address(distributor));
+            vm.prank(charlie);
+            creator.createCampaign(campaign);
+            assertEq(creator.creatorBalance(address(alice), address(angle)), 1e10);
+            assertEq(creator.creatorAllowance(address(alice), address(charlie), address(angle)), 1e7);
+            assertEq(angle.balanceOf(address(alice)), balance);
+            assertEq(angle.balanceOf(address(charlie)), charlieBalance - amount);
+            assertEq(angle.balanceOf(address(creator)), creatorBalance);
+            assertEq(angle.balanceOf(address(dylan)), amount / 10);
+            assertEq(angle.balanceOf(address(distributor)), distributorBalance + amount - amount / 10);
+        }
+
+        address[] memory whitelist = new address[](1);
+        whitelist[0] = alice;
+        address[] memory blacklist = new address[](1);
+        blacklist[0] = charlie;
+
+        bytes memory extraData = hex"ab";
+
+        // Additional asserts to check for correct behavior
+        bytes32 campaignId = bytes32(
+            keccak256(
+                abi.encodePacked(
+                    block.chainid,
+                    alice,
+                    address(campaign.rewardToken),
+                    uint32(campaign.campaignType),
+                    uint32(campaign.startTimestamp),
+                    uint32(campaign.duration),
+                    campaign.campaignData
+                )
+            )
+        );
+        (
+            bytes32 fetchedCampaignId,
+            address fetchedCreator,
+            address fetchedRewardToken,
+            uint256 fetchedAmount,
+            uint32 fetchedCampaignType,
+            uint32 fetchedStartTimestamp,
+            uint32 fetchedDuration,
+            bytes memory fetchedCampaignData
+        ) = creator.campaignList(creator.campaignLookup(campaignId));
+        assertEq(alice, fetchedCreator);
+        assertEq((amount * 9) / 10, fetchedAmount);
+        assertEq(address(angle), fetchedRewardToken);
+        assertEq(campaign.campaignType, fetchedCampaignType);
+        assertEq(campaign.startTimestamp, fetchedStartTimestamp);
+        assertEq(campaign.duration, fetchedDuration);
+        assertEq(extraData, fetchedCampaignData);
+        assertEq(campaignId, fetchedCampaignId);
+    }
+
+    function test_SuccessFromPreDepositedBalanceAndNoFeeRecipient() public {
+        uint256 amount = 1e8;
+        CampaignParameters memory campaign = CampaignParameters({
+            campaignId: keccak256("TEST"),
+            creator: address(alice),
+            campaignData: hex"ab",
+            rewardToken: address(angle),
+            amount: amount,
+            campaignType: 0,
+            startTimestamp: uint32(block.timestamp + 1),
+            duration: 3600
+        });
+
+        vm.prank(governor);
+        creator.setFeeRecipient(address(0));
+
+        {
+            vm.startPrank(alice);
+            creator.increaseTokenBalance(alice, address(angle), 1e10);
+            assertEq(creator.creatorBalance(address(alice), address(angle)), 1e10);
+            address distributor = creator.distributor();
+            uint256 balance = angle.balanceOf(address(alice));
+            uint256 creatorBalance = angle.balanceOf(address(creator));
+            uint256 distributorBalance = angle.balanceOf(address(distributor));
+            creator.createCampaign(campaign);
+            assertEq(creator.creatorBalance(address(alice), address(angle)), 1e10 - amount);
+            assertEq(angle.balanceOf(address(alice)), balance);
+            assertEq(angle.balanceOf(address(creator)), creatorBalance - amount + amount / 10);
+            assertEq(angle.balanceOf(address(distributor)), distributorBalance + amount - amount / 10);
+        }
+
+        address[] memory whitelist = new address[](1);
+        whitelist[0] = alice;
+        address[] memory blacklist = new address[](1);
+        blacklist[0] = charlie;
+
+        bytes memory extraData = hex"ab";
+
+        // Additional asserts to check for correct behavior
+        bytes32 campaignId = bytes32(
+            keccak256(
+                abi.encodePacked(
+                    block.chainid,
+                    alice,
+                    address(campaign.rewardToken),
+                    uint32(campaign.campaignType),
+                    uint32(campaign.startTimestamp),
+                    uint32(campaign.duration),
+                    campaign.campaignData
+                )
+            )
+        );
+        (
+            bytes32 fetchedCampaignId,
+            address fetchedCreator,
+            address fetchedRewardToken,
+            uint256 fetchedAmount,
+            uint32 fetchedCampaignType,
+            uint32 fetchedStartTimestamp,
+            uint32 fetchedDuration,
+            bytes memory fetchedCampaignData
+        ) = creator.campaignList(creator.campaignLookup(campaignId));
+        assertEq(alice, fetchedCreator);
+        assertEq((amount * 9) / 10, fetchedAmount);
+        assertEq(address(angle), fetchedRewardToken);
+        assertEq(campaign.campaignType, fetchedCampaignType);
+        assertEq(campaign.startTimestamp, fetchedStartTimestamp);
+        assertEq(campaign.duration, fetchedDuration);
+        assertEq(extraData, fetchedCampaignData);
+        assertEq(campaignId, fetchedCampaignId);
+    }
+
+    function test_SuccessFromPreDepositedBalanceAndNoAllowanceWithFeesButNoRecipient() public {
+        uint256 amount = 1e8;
+        CampaignParameters memory campaign = CampaignParameters({
+            campaignId: keccak256("TEST"),
+            creator: address(alice),
+            campaignData: hex"ab",
+            rewardToken: address(angle),
+            amount: amount,
+            campaignType: 0,
+            startTimestamp: uint32(block.timestamp + 1),
+            duration: 3600
+        });
+
+        vm.prank(governor);
+        creator.setFeeRecipient(address(0));
+
+        angle.mint(address(charlie), 1e10);
+        vm.prank(charlie);
+        angle.approve(address(creator), type(uint256).max);
+
+        {
+            vm.startPrank(alice);
+            creator.increaseTokenBalance(alice, address(angle), 1e10);
+            creator.increaseTokenAllowance(alice, charlie, address(angle), 1e7);
+            assertEq(creator.creatorBalance(address(alice), address(angle)), 1e10);
+            assertEq(creator.creatorAllowance(address(alice), address(charlie), address(angle)), 1e7);
+            vm.stopPrank();
+
+            address distributor = creator.distributor();
+            uint256 balance = angle.balanceOf(address(alice));
+            uint256 creatorBalance = angle.balanceOf(address(creator));
+            uint256 charlieBalance = angle.balanceOf(address(charlie));
+            uint256 distributorBalance = angle.balanceOf(address(distributor));
+            vm.prank(charlie);
+            creator.createCampaign(campaign);
+            assertEq(creator.creatorBalance(address(alice), address(angle)), 1e10);
+            assertEq(creator.creatorAllowance(address(alice), address(charlie), address(angle)), 1e7);
+            assertEq(angle.balanceOf(address(alice)), balance);
+            assertEq(angle.balanceOf(address(charlie)), charlieBalance - amount);
+            assertEq(angle.balanceOf(address(creator)), creatorBalance + amount / 10);
+            assertEq(angle.balanceOf(address(distributor)), distributorBalance + amount - amount / 10);
+        }
+
+        address[] memory whitelist = new address[](1);
+        whitelist[0] = alice;
+        address[] memory blacklist = new address[](1);
+        blacklist[0] = charlie;
+
+        bytes memory extraData = hex"ab";
+
+        // Additional asserts to check for correct behavior
+        bytes32 campaignId = bytes32(
+            keccak256(
+                abi.encodePacked(
+                    block.chainid,
+                    alice,
+                    address(campaign.rewardToken),
+                    uint32(campaign.campaignType),
+                    uint32(campaign.startTimestamp),
+                    uint32(campaign.duration),
+                    campaign.campaignData
+                )
+            )
+        );
+        (
+            bytes32 fetchedCampaignId,
+            address fetchedCreator,
+            address fetchedRewardToken,
+            uint256 fetchedAmount,
+            uint32 fetchedCampaignType,
+            uint32 fetchedStartTimestamp,
+            uint32 fetchedDuration,
+            bytes memory fetchedCampaignData
+        ) = creator.campaignList(creator.campaignLookup(campaignId));
+        assertEq(alice, fetchedCreator);
+        assertEq((amount * 9) / 10, fetchedAmount);
         assertEq(address(angle), fetchedRewardToken);
         assertEq(campaign.campaignType, fetchedCampaignType);
         assertEq(campaign.startTimestamp, fetchedStartTimestamp);

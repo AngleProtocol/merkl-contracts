@@ -1453,6 +1453,7 @@ contract UpgradeDistributionCreatorTest is Test {
         vm.startPrank(deployer);
         MockToken(address(rewardToken)).mint(deployer, amount);
         rewardToken.approve(address(distributionCreator), amount);
+        distributionCreator.acceptConditions();
 
         // Create test campaign
         testCampaignId = distributionCreator.createCampaign(

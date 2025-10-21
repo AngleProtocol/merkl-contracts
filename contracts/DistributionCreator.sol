@@ -132,6 +132,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     event MessageUpdated(bytes32 _messageHash);
     event NewCampaign(CampaignParameters campaign);
     event RewardTokenMinimumAmountUpdated(address indexed token, uint256 amount);
+    event UserSigningWhitelistToggled(address indexed user, uint256 toggleStatus);
 
     /*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                                                        MODIFIERS                                                    
@@ -429,6 +430,13 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     function setUserFeeRebate(address user, uint256 userFeeRebate) external onlyGovernorOrGuardian {
         feeRebate[user] = userFeeRebate;
         emit FeeRebateUpdated(user, userFeeRebate);
+    }
+
+    /// @notice Toggles the whitelist status for `user` when it comes to signing messages before depositing rewards.
+    function toggleSigningWhitelist(address user) external onlyGovernorOrGuardian {
+        uint256 whitelistStatus = 1 - userSignatureWhitelist[user];
+        userSignatureWhitelist[user] = whitelistStatus;
+        emit UserSigningWhitelistToggled(user, whitelistStatus);
     }
 
     /// @notice Sets the minimum amounts per distribution epoch for different reward tokens
