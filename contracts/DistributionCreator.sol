@@ -465,11 +465,9 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         // if the amount distributed is too small with respect to what is allowed
         if ((newCampaign.amount * HOUR) / newCampaign.duration < rewardTokenMinAmount)
             revert Errors.CampaignRewardTooLow();
-
-        if (newCampaign.creator == address(0)) newCampaign.creator = msg.sender;
-
-        // Computing fees: these are waived for whitelisted addresses and if there is a whitelisted token in a pool
+        // Computing fees and pulling tokens
         uint256 campaignAmountMinusFees = _computeFees(newCampaign.campaignType, newCampaign.amount);
+        if (newCampaign.creator == address(0)) newCampaign.creator = msg.sender;
         _pullTokens(newCampaign.creator, newCampaign.rewardToken, newCampaign.amount, campaignAmountMinusFees);
         newCampaign.amount = campaignAmountMinusFees;
         newCampaign.campaignId = campaignId(newCampaign);
@@ -547,7 +545,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         uint256 baseFeesValue = campaignSpecificFees[campaignType];
         if (baseFeesValue == 1) baseFeesValue = 0;
         else if (baseFeesValue == 0) baseFeesValue = defaultFees;
-
+        // Fee rebates are applied to the msg.sender and not to the creator of the campaign
         uint256 _fees = (baseFeesValue * (BASE_9 - feeRebate[msg.sender])) / BASE_9;
         distributionAmountMinusFees = distributionAmount;
         if (_fees != 0) {
