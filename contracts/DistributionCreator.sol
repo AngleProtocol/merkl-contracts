@@ -268,6 +268,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @notice Increases the predeposited token balance of a `user` for a given `rewardToken`
     /// @dev If a governor is calling the function, the user must have sent the tokens beforehand
     /// @dev This function can be used to deposit on behalf of another user
+    /// @dev This function MUST NOT be used to deposit a rebasing token
     function increaseTokenBalance(address user, address rewardToken, uint256 amount) external {
         if (!accessControlManager.isGovernor(msg.sender))
             IERC20(rewardToken).safeTransferFrom(msg.sender, address(this), amount);
