@@ -478,15 +478,14 @@ contract Test_Distributor_claim is DistributorTest {
         tokens[1] = address(agEUR);
         amounts[1] = 5e17;
 
-        // uint256 aliceBalance = angle.balanceOf(address(alice));
-        // uint256 bobBalance = agEUR.balanceOf(address(bob));
+        uint256 aliceBalance = angle.balanceOf(address(alice));
+        uint256 bobBalance = agEUR.balanceOf(address(bob));
 
         vm.prank(governor);
-        vm.expectRevert(Errors.NotWhitelisted.selector); // governor not able to claim anymore
         distributor.claim(users, tokens, amounts, proofs);
 
-        // assertEq(angle.balanceOf(address(alice)), aliceBalance + 1e18);
-        // assertEq(agEUR.balanceOf(address(bob)), bobBalance + 5e17);
+        assertEq(angle.balanceOf(address(alice)), aliceBalance + 1e18);
+        assertEq(agEUR.balanceOf(address(bob)), bobBalance + 5e17);
     }
 
     function test_SuccessOperator() public {

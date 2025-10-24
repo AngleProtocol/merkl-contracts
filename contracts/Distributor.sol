@@ -392,7 +392,8 @@ contract Distributor is UUPSHelper {
                 mainOperators[msg.sender][token] == 0 &&
                 mainOperators[msg.sender][address(0)] == 0 &&
                 operators[user][msg.sender] == 0 &&
-                operators[user][address(0)] == 0
+                operators[user][address(0)] == 0 &&
+                !accessControlManager.isGovernorOrGuardian(msg.sender)
             ) revert Errors.NotWhitelisted();
 
             // Verifying proof
