@@ -10,7 +10,7 @@ struct CampaignParameters {
     bytes32 campaignId;
     // CHOSEN BY CAMPAIGN CREATOR
 
-    // Address of the campaign creator, if marked as address(0), it will be overriden with the
+    // Address of the campaign creator, if marked as address(0), it will be overridden with the
     // address of the `msg.sender` creating the campaign
     address creator;
     // Address of the token used as a reward

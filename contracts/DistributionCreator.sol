@@ -324,7 +324,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     }
 
     /// @notice Returns the campaign parameters of a given campaignId
-    /// @dev If a campaign has been overriden, this function still shows the original state of the campaign
+    /// @dev If a campaign has been overridden, this function still shows the original state of the campaign
     function campaign(bytes32 _campaignId) public view returns (CampaignParameters memory) {
         return campaignList[campaignLookup(_campaignId)];
     }
@@ -373,7 +373,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     }
 
     /// @notice Gets all the campaigns which were live at some point between `start` and `end` timestamp
-    /// @param skip Disregard distibutions with a global index lower than `skip`
+    /// @param skip Disregard distributions with a global index lower than `skip`
     /// @param first Limit the length of the returned array to `first`
     /// @return searchCampaigns Eligible campaigns
     /// @return lastIndexCampaign Index of the last campaign assessed in the list of all campaigns
