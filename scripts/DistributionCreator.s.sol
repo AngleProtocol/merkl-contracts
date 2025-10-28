@@ -264,6 +264,28 @@ contract GetMessage is DistributionCreatorScript {
     }
 }
 
+// ToggleSigningWhitelist script
+contract ToggleSigningWhitelist is DistributionCreatorScript {
+    function run() external {
+        // MODIFY THIS VALUE TO SET YOUR DESIRED USER ADDRESS
+        address user = address(0);
+        _run(user);
+    }
+
+    function run(address user) external {
+        _run(user);
+    }
+
+    function _run(address _user) internal broadcast {
+        uint256 chainId = block.chainid;
+        address creatorAddress = readAddress(chainId, "DistributionCreator");
+
+        DistributionCreator(creatorAddress).toggleSigningWhitelist(_user);
+
+        console.log("Signing whitelist toggled for user:", _user);
+    }
+}
+
 // AcceptConditions script
 contract AcceptConditions is DistributionCreatorScript {
     function run() external broadcast {

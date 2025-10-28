@@ -327,7 +327,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     }
 
     /// @notice Returns the campaign parameters of a given campaignId
-    /// @dev If a campaign has been overriden, this function still shows the original state of the campaign
+    /// @dev If a campaign has been overridden, this function still shows the original state of the campaign
     function campaign(bytes32 _campaignId) public view returns (CampaignParameters memory) {
         return campaignList[campaignLookup(_campaignId)];
     }
@@ -491,11 +491,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
 
     /// @notice Checks whether `msg.sender` is allowed to manage the campaign of `creator`
     function _isValidOperator(address creator) internal view {
-        if (
-            creator != msg.sender &&
-            campaignOperators[creator][msg.sender] == 0 &&
-            !accessControlManager.isGovernor(msg.sender)
-        ) {
+        if (creator != msg.sender && campaignOperators[creator][msg.sender] == 0) {
             revert Errors.OperatorNotAllowed();
         }
     }

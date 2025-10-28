@@ -249,6 +249,9 @@ contract Distributor is UUPSHelper {
         _setClaimRecipient(user, recipient, token);
     }
 
+    /// @notice Updates the mainOperator status for `operator` on `token`
+    /// @dev Adding a mainOperator status on an address for the zero address gives the right to claim any token
+    /// on behalf of anyone on the chain
     function toggleMainOperatorStatus(address operator, address token) external onlyGuardian {
         uint256 oldValue = mainOperators[operator][token];
         mainOperators[operator][token] = 1 - oldValue;

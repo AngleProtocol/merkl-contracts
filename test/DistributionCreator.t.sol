@@ -458,7 +458,9 @@ contract DistributionCreatorCreateReallocationTest is Fixture {
         );
 
         vm.prank(governor);
+        creator.toggleCampaignOperator(alice, governor);
         // Create false tree
+        vm.prank(governor);
         distributor.updateTree(
             MerkleTree({
                 merkleRoot: bytes32(0x0b70a97c062cb747158b89e27df5bbda859ba072232efcbe92e383e9d74b8555),
@@ -485,9 +487,6 @@ contract DistributionCreatorCreateReallocationTest is Fixture {
             users[0] = bob;
             tokens[0] = address(agEUR);
             amounts[0] = 5e17;
-
-            uint256 aliceBalance = angle.balanceOf(address(alice));
-            uint256 bobBalance = agEUR.balanceOf(address(bob));
 
             vm.prank(bob);
             distributor.claim(users, tokens, amounts, proofs);
@@ -758,6 +757,9 @@ contract DistributionCreatorOverrideTest is Fixture {
                 campaignData: campaignData
             })
         );
+
+        vm.prank(governor);
+        creator.toggleCampaignOperator(alice, governor);
 
         vm.warp(block.timestamp + 1000);
         vm.roll(4);

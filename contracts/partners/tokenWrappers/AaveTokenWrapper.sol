@@ -64,7 +64,7 @@ contract AaveTokenWrapper is UUPSHelper, ERC20Upgradeable {
         // Needs an approval before hand, this is how mints are done
         if (to == distributor) {
             IERC20(token).safeTransferFrom(from, address(this), amount);
-            _mint(from, amount); // These are then transfered to the distributor
+            _mint(from, amount); // These are then transferred to the distributor
         } else {
             if (to == _getFeeRecipient()) {
                 IERC20(token).safeTransferFrom(from, to, amount);
