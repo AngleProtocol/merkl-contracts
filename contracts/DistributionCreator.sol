@@ -542,7 +542,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         }
     }
 
-    /// @notice Computes the fees to be taken on a campaign and transfers them to the fee recipient
+    /// @notice Computes the fees to be taken on a campaign
     function _computeFees(
         uint32 campaignType,
         uint256 distributionAmount
