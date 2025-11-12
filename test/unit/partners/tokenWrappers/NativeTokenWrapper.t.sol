@@ -153,13 +153,13 @@ contract Test_NativeTokenWrapper_Mint is NativeTokenWrapperTest {
     }
 }
 
-contract Test_NativeTokenWrapper_MintWithETH is NativeTokenWrapperTest {
+contract Test_NativeTokenWrapper_mintWithNative is NativeTokenWrapperTest {
     function test_RevertWhen_NotAllowed() public {
         vm.deal(bob, 10 ether);
 
         vm.expectRevert(Errors.NotAllowed.selector);
         vm.prank(bob);
-        wrapper.mintWithETH{ value: 5 ether }();
+        wrapper.mintWithNative{ value: 5 ether }();
     }
 
     function test_Success_AllowedAddress() public {
@@ -171,7 +171,7 @@ contract Test_NativeTokenWrapper_MintWithETH is NativeTokenWrapperTest {
         uint256 wrapperBalanceBefore = address(wrapper).balance;
 
         vm.prank(bob);
-        wrapper.mintWithETH{ value: 5 ether }();
+        wrapper.mintWithNative{ value: 5 ether }();
 
         assertEq(wrapper.balanceOf(bob), 5 ether);
         assertEq(address(wrapper).balance, wrapperBalanceBefore + 5 ether);
@@ -182,7 +182,7 @@ contract Test_NativeTokenWrapper_MintWithETH is NativeTokenWrapperTest {
         uint256 wrapperBalanceBefore = address(wrapper).balance;
 
         vm.prank(alice);
-        wrapper.mintWithETH{ value: 3 ether }();
+        wrapper.mintWithNative{ value: 3 ether }();
 
         assertEq(wrapper.balanceOf(alice), 3 ether);
         assertEq(address(wrapper).balance, wrapperBalanceBefore + 3 ether);
@@ -449,7 +449,7 @@ contract Test_NativeTokenWrapper_Integration is NativeTokenWrapperTest {
 
         vm.deal(bob, 10 ether);
         vm.prank(bob);
-        wrapper.mintWithETH{ value: 5 ether }();
+        wrapper.mintWithNative{ value: 5 ether }();
 
         assertEq(wrapper.balanceOf(bob), 5 ether);
         assertEq(address(wrapper).balance, 105 ether); // 100 initial + 5 minted

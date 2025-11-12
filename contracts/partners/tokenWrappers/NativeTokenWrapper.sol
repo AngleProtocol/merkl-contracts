@@ -95,7 +95,7 @@ contract NativeTokenWrapper is UUPSHelper, ERC20Upgradeable {
         _mint(recipient, amount);
     }
 
-    function mintWithETH() external payable {
+    function mintWithNative() external payable {
         if (isAllowed[msg.sender] == 0) revert Errors.NotAllowed();
         uint256 amount = msg.value;
         _mint(msg.sender, amount);
