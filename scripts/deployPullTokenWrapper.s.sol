@@ -18,19 +18,19 @@ import { IAccessControlManager } from "../contracts/interfaces/IAccessControlMan
 import { MockToken } from "../contracts/mock/MockToken.sol";
 
 contract DeployPullTokenWrapper is BaseScript {
-    // forge script scripts/deployPullTokenWrapper.s.sol --rpc-url celo --sender 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701 --broadcast --verify
+    // forge script scripts/deployPullTokenWrapper.s.sol --rpc-url plasma --sender 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701 --broadcast --verify
     function run() public {
         uint256 deployerPrivateKey = vm.envUint("DEPLOYER_PRIVATE_KEY");
         vm.startBroadcast(deployerPrivateKey);
         address distributionCreator = 0x8BB4C975Ff3c250e0ceEA271728547f3802B36Fd;
         // ------------------------------------------------------------------------
         // TO EDIT
-        address underlying = 0xBba98352628B0B0c4b40583F593fFCb630935a45;
+        address underlying = 0x5D72a9d9A9510Cd8cBdBA12aC62593A58930a948;
         address holder = 0xdef1FA4CEfe67365ba046a7C630D6B885298E210;
 
         // Need to choose the implementation type and if implementation needs to be deployed
-        // address implementation = address(new PullTokenWrapperWithdraw());
-        address implementation = address(new PullTokenWrapper());
+        address implementation = address(new PullTokenWrapperWithdraw());
+        // address implementation = address(new PullTokenWrapper());
         // Ethereum implementation of PullTokenWrapper
         // address implementation = 0x979a04fd2f3A6a2B3945A715e24b974323E93567;
         // Ethereum implementation of PullTokenWrapperWithdraw
@@ -42,8 +42,8 @@ contract DeployPullTokenWrapper is BaseScript {
         string memory symbol = IERC20Metadata(underlying).symbol();
 
         // Names to override if deploying a PullTokenWrapperWithdraw implementation
-        // name = "USDtb (wrapped)";
-        // symbol = "USDtb";
+        name = "USDT0 (wrapped)";
+        symbol = "USDT0";
 
         console.log("PullTokenWrapper Implementation:", address(implementation));
 
