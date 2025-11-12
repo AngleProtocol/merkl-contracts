@@ -6,12 +6,14 @@ import { console } from "forge-std/console.sol";
 import { BaseScript } from "./utils/Base.s.sol";
 
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
-import { ITransparentUpgradeableProxy } from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
+import {
+    ITransparentUpgradeableProxy
+} from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
 import { IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import { JsonReader } from "@utils/JsonReader.sol";
 import { ContractType } from "@utils/Constants.sol";
 
-import { PullTokenWrapper } from "../contracts/partners/tokenWrappers/PullTokenWrapper.sol";
+import { PullTokenWrapperAllow } from "../contracts/partners/tokenWrappers/PullTokenWrapperAllow.sol";
 import { PullTokenWrapperWithdraw } from "../contracts/partners/tokenWrappers/PullTokenWrapperWithdraw.sol";
 import { DistributionCreator } from "../contracts/DistributionCreator.sol";
 import { IAccessControlManager } from "../contracts/interfaces/IAccessControlManager.sol";
@@ -30,7 +32,7 @@ contract DeployPullTokenWrapper is BaseScript {
 
         // Need to choose the implementation type and if implementation needs to be deployed
         address implementation = address(new PullTokenWrapperWithdraw());
-        // address implementation = address(new PullTokenWrapper());
+        // address implementation = address(new PullTokenWrapperAllow());
         // Ethereum implementation of PullTokenWrapper
         // address implementation = 0x979a04fd2f3A6a2B3945A715e24b974323E93567;
         // Ethereum implementation of PullTokenWrapperWithdraw
@@ -52,7 +54,7 @@ contract DeployPullTokenWrapper is BaseScript {
         console.log("PullTokenWrapper Proxy:", address(proxy));
 
         // Initialize
-        PullTokenWrapper(address(proxy)).initialize(underlying, distributionCreator, holder, name, symbol);
+        PullTokenWrapperAllow(address(proxy)).initialize(underlying, distributionCreator, holder, name, symbol);
 
         vm.stopBroadcast();
     }

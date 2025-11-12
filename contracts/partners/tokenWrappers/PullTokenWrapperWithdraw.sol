@@ -23,6 +23,10 @@ interface IAavePool {
 
 /// @title PullTokenWrapperWithdraw
 /// @notice Wrapper for a reward token on Merkl so campaigns do not have to be prefunded
+/// @dev In this version of the PullTokenWrapper, tokens are pulled from a holder address during claims
+/// @dev This implementation is similar to the PullTokenWrapperAllow but in this case the tokens are withdrawn from Aave at every claim
+/// @dev Managers of such wrapper contracts must ensure that the holder address has enough allowance to the wrapper contract
+/// for the token pulled during claims
 contract PullTokenWrapperWithdraw is UUPSHelper, ERC20Upgradeable {
     using SafeERC20 for IERC20;
 

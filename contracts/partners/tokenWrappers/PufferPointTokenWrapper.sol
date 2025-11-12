@@ -6,7 +6,7 @@ import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.s
 import { ERC20Upgradeable } from "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 import { IERC20, IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 
-import { IAccessControlManager } from "./BaseTokenWrapper.sol";
+import { IAccessControlManager } from "../../interfaces/IAccessControlManager.sol";
 
 import { UUPSHelper } from "../../utils/UUPSHelper.sol";
 import { Errors } from "../../utils/Errors.sol";

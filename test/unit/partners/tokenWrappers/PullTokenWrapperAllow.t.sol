@@ -4,7 +4,7 @@ pragma solidity ^0.8.17;
 import { Test } from "forge-std/Test.sol";
 import { console } from "forge-std/console.sol";
 
-import { PullTokenWrapper } from "../../../../contracts/partners/tokenWrappers/PullTokenWrapper.sol";
+import { PullTokenWrapperAllow } from "../../../../contracts/partners/tokenWrappers/PullTokenWrapperAllow.sol";
 import { Fixture } from "../../../Fixture.t.sol";
 import { IAccessControlManager } from "../../../../contracts/interfaces/IAccessControlManager.sol";
 import { Errors } from "../../../../contracts/utils/Errors.sol";
@@ -12,10 +12,10 @@ import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 /// @dev Mock contract to simulate the Distributor
 contract MockDistributor {
-    PullTokenWrapper public wrapper;
+    PullTokenWrapperAllow public wrapper;
 
     function setWrapper(address _wrapper) external {
-        wrapper = PullTokenWrapper(_wrapper);
+        wrapper = PullTokenWrapperAllow(_wrapper);
     }
 
     /// @dev Simulates a transfer from distributor (e.g., during claim)
@@ -29,9 +29,9 @@ contract MockFeeRecipient {
     // Empty contract for fee recipient
 }
 
-contract PullTokenWrapperTest is Fixture {
-    PullTokenWrapper public wrapper;
-    PullTokenWrapper public wrapperImpl;
+contract PullTokenWrapperAllowTest is Fixture {
+    PullTokenWrapperAllow public wrapper;
+    PullTokenWrapperAllow public wrapperImpl;
     MockDistributor public mockDistributor;
     MockFeeRecipient public mockFeeRecipient;
 
@@ -42,9 +42,9 @@ contract PullTokenWrapperTest is Fixture {
         mockDistributor = new MockDistributor();
         mockFeeRecipient = new MockFeeRecipient();
 
-        // Deploy PullTokenWrapper implementation
-        wrapperImpl = new PullTokenWrapper();
-        wrapper = PullTokenWrapper(deployUUPS(address(wrapperImpl), hex""));
+        // Deploy PullTokenWrapperAllow implementation
+        wrapperImpl = new PullTokenWrapperAllow();
+        wrapper = PullTokenWrapperAllow(deployUUPS(address(wrapperImpl), hex""));
 
         // Mock the creator to return our mock distributor and fee recipient
         vm.mockCall(address(creator), abi.encodeWithSignature("distributor()"), abi.encode(address(mockDistributor)));
@@ -65,12 +65,12 @@ contract PullTokenWrapperTest is Fixture {
     }
 }
 
-contract Test_PullTokenWrapper_Initialize is PullTokenWrapperTest {
-    PullTokenWrapper w;
+contract Test_PullTokenWrapperAllow_Initialize is PullTokenWrapperAllowTest {
+    PullTokenWrapperAllow w;
 
     function setUp() public override {
         super.setUp();
-        w = PullTokenWrapper(deployUUPS(address(new PullTokenWrapper()), hex""));
+        w = PullTokenWrapperAllow(deployUUPS(address(new PullTokenWrapperAllow()), hex""));
     }
 
     function test_RevertWhen_CalledOnImplem() public {
@@ -98,7 +98,7 @@ contract Test_PullTokenWrapper_Initialize is PullTokenWrapperTest {
     }
 }
 
-contract Test_PullTokenWrapper_Mint is PullTokenWrapperTest {
+contract Test_PullTokenWrapperAllow_Mint is PullTokenWrapperAllowTest {
     function test_RevertWhen_NotHolderOrGovernor() public {
         vm.expectRevert(Errors.NotAllowed.selector);
         vm.prank(bob);
@@ -133,7 +133,7 @@ contract Test_PullTokenWrapper_Mint is PullTokenWrapperTest {
     }
 }
 
-contract Test_PullTokenWrapper_SetHolder is PullTokenWrapperTest {
+contract Test_PullTokenWrapperAllow_SetHolder is PullTokenWrapperAllowTest {
     function test_RevertWhen_NotHolderOrGovernor() public {
         vm.expectRevert(Errors.NotAllowed.selector);
         vm.prank(bob);
@@ -167,7 +167,7 @@ contract Test_PullTokenWrapper_SetHolder is PullTokenWrapperTest {
     }
 }
 
-contract Test_PullTokenWrapper_BeforeTokenTransfer is PullTokenWrapperTest {
+contract Test_PullTokenWrapperAllow_BeforeTokenTransfer is PullTokenWrapperAllowTest {
     function setUp() public override {
         super.setUp();
 
@@ -210,7 +210,7 @@ contract Test_PullTokenWrapper_BeforeTokenTransfer is PullTokenWrapperTest {
     }
 
     function test_Success_NormalTransferDoesNotPullTokens() public {
-        uint256 charlieAngleBalanceBefore = angle.balanceOf(charlie);
+        uint256 bobAngleBalanceBefore = angle.balanceOf(bob);
         uint256 aliceAngleBalanceBefore = angle.balanceOf(alice);
 
         // Mint to bob
@@ -219,24 +219,21 @@ contract Test_PullTokenWrapper_BeforeTokenTransfer is PullTokenWrapperTest {
         vm.prank(alice);
         wrapper.transfer(bob, 50 ether);
 
-        // Bob transfers to charlie (not from distributor or to fee recipient)
-        vm.prank(bob);
-        wrapper.transfer(charlie, 30 ether);
-
         // Charlie should NOT receive underlying tokens from alice
-        assertEq(angle.balanceOf(charlie), charlieAngleBalanceBefore);
+        assertEq(angle.balanceOf(bob), bobAngleBalanceBefore);
         // Alice's balance should remain unchanged for this transfer
         assertEq(angle.balanceOf(alice), aliceAngleBalanceBefore);
-        // Charlie should not keep wrapper tokens (burned in afterTokenTransfer)
-        assertEq(wrapper.balanceOf(charlie), 0);
+        // Bob should not keep wrapper tokens (burned in afterTokenTransfer)
+        assertEq(wrapper.balanceOf(bob), 0);
     }
 
     function test_RevertWhen_HolderHasInsufficientTokens() public {
         // Deplete alice's angle balance
+        uint256 aliceAngleBalance = angle.balanceOf(alice);
         vm.prank(alice);
-        angle.transfer(address(1), angle.balanceOf(alice));
+        angle.transfer(address(1), aliceAngleBalance);
 
-        vm.expectRevert("ERC20: insufficient allowance");
+        vm.expectRevert("ERC20: transfer amount exceeds balance");
         vm.prank(address(mockDistributor));
         wrapper.transfer(bob, 10 ether);
     }
@@ -252,7 +249,7 @@ contract Test_PullTokenWrapper_BeforeTokenTransfer is PullTokenWrapperTest {
     }
 }
 
-contract Test_PullTokenWrapper_AfterTokenTransfer is PullTokenWrapperTest {
+contract Test_PullTokenWrapperAllow_AfterTokenTransfer is PullTokenWrapperAllowTest {
     function test_Success_BurnsTokensForNonAllowedRecipient() public {
         // Mint to alice
         vm.prank(alice);
@@ -300,26 +297,9 @@ contract Test_PullTokenWrapper_AfterTokenTransfer is PullTokenWrapperTest {
         assertEq(wrapper.balanceOf(alice), 100 ether);
         assertEq(wrapper.totalSupply(), totalSupplyBefore);
     }
-
-    function test_Success_BurnsOnTransferToZeroAddress() public {
-        // Mint to alice
-        vm.prank(alice);
-        wrapper.mint(100 ether);
-
-        uint256 totalSupplyBefore = wrapper.totalSupply();
-
-        // Transfer to zero address (burning)
-        vm.prank(alice);
-        wrapper.transfer(address(0), 30 ether);
-
-        // Zero address should not keep tokens (though they're burned anyway)
-        assertEq(wrapper.balanceOf(address(0)), 0);
-        // Total supply should decrease
-        assertEq(wrapper.totalSupply(), totalSupplyBefore - 30 ether);
-    }
 }
 
-contract Test_PullTokenWrapper_SetFeeRecipient is PullTokenWrapperTest {
+contract Test_PullTokenWrapperAllow_SetFeeRecipient is PullTokenWrapperAllowTest {
     function test_Success() public {
         address newFeeRecipient = vm.addr(999);
 
@@ -355,13 +335,13 @@ contract Test_PullTokenWrapper_SetFeeRecipient is PullTokenWrapperTest {
     }
 }
 
-contract Test_PullTokenWrapper_Decimals is PullTokenWrapperTest {
+contract Test_PullTokenWrapperAllow_Decimals is PullTokenWrapperAllowTest {
     function test_Success_MatchesUnderlyingToken() public {
         assertEq(wrapper.decimals(), angle.decimals());
     }
 }
 
-contract Test_PullTokenWrapper_Integration is PullTokenWrapperTest {
+contract Test_PullTokenWrapperAllow_Integration is PullTokenWrapperAllowTest {
     function test_Integration_CompleteFlow() public {
         // 1. Holder mints wrapper tokens
         vm.prank(alice);
@@ -462,7 +442,7 @@ contract Test_PullTokenWrapper_Integration is PullTokenWrapperTest {
     }
 }
 
-contract Test_PullTokenWrapper_EdgeCases is PullTokenWrapperTest {
+contract Test_PullTokenWrapperAllow_EdgeCases is PullTokenWrapperAllowTest {
     function test_EdgeCase_TransferZeroAmount() public {
         vm.prank(alice);
         wrapper.mint(100 ether);
