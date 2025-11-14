@@ -18,7 +18,7 @@ struct DistributionParameters {
     // which need to be specified and which are not automatically detected.
     address[] positionWrappers;
     // Type (blacklist==3, whitelist==0, ...) encoded as a `uint32` for each wrapper in the list above. Mapping between
-    // wrapper types and their corresponding `uint32` value can be found in Angle Docs
+    // wrapper types and their corresponding `uint32` value can be found in Merkl Docs
     uint32[] wrapperTypes;
     // In the incentivization formula, how much of the fees should go to holders of token0
     // in base 10**4
