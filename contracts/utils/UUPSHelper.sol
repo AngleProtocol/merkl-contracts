@@ -19,8 +19,7 @@ abstract contract UUPSHelper is UUPSUpgradeable {
     }
 
     modifier onlyGovernorUpgrader(IAccessControlManager _accessControlManager) {
-        if (address(_accessControlManager) != address(0) && !_accessControlManager.isGovernor(msg.sender))
-            revert Errors.NotGovernor();
+        if (address(_accessControlManager) != address(0) && !_accessControlManager.isGovernor(msg.sender)) revert Errors.NotGovernor();
         _;
     }
 

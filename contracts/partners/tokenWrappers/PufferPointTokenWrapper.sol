@@ -138,18 +138,13 @@ contract PufferPointTokenWrapper is UUPSHelper, ERC20Upgradeable {
         (amountClaimable, ) = _claimable(user, maxClaimIndex);
     }
 
-    function getUserVestings(
-        address user
-    ) external view returns (VestingID[] memory allVestings, uint256 nextClaimIndex) {
+    function getUserVestings(address user) external view returns (VestingID[] memory allVestings, uint256 nextClaimIndex) {
         VestingData storage userVestingData = vestingData[user];
         allVestings = userVestingData.allVestings;
         nextClaimIndex = userVestingData.nextClaimIndex;
     }
 
-    function _claimable(
-        address user,
-        uint256 maxClaimIndex
-    ) internal view returns (uint256 amountClaimable, uint256 nextClaimIndex) {
+    function _claimable(address user, uint256 maxClaimIndex) internal view returns (uint256 amountClaimable, uint256 nextClaimIndex) {
         VestingData storage userVestingData = vestingData[user];
         VestingID[] storage userAllVestings = userVestingData.allVestings;
         uint256 i = userVestingData.nextClaimIndex;

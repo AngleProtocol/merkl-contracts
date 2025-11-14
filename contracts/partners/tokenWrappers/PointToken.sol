@@ -15,12 +15,7 @@ contract PointToken is ERC20 {
     IAccessControlManager public accessControlManager;
     uint8 public allowedTransfers;
 
-    constructor(
-        string memory name_,
-        string memory symbol_,
-        address _minter,
-        address _accessControlManager
-    ) ERC20(name_, symbol_) {
+    constructor(string memory name_, string memory symbol_, address _minter, address _accessControlManager) ERC20(name_, symbol_) {
         if (_accessControlManager == address(0) || _minter == address(0)) revert Errors.ZeroAddress();
         accessControlManager = IAccessControlManager(_accessControlManager);
         minters[_minter] = true;
@@ -69,12 +64,7 @@ contract PointToken is ERC20 {
     }
 
     function _beforeTokenTransfer(address from, address to, uint256) internal view override {
-        if (
-            allowedTransfers == 0 &&
-            from != address(0) &&
-            to != address(0) &&
-            !whitelistedRecipients[from] &&
-            !whitelistedRecipients[to]
-        ) revert Errors.NotAllowed();
+        if (allowedTransfers == 0 && from != address(0) && to != address(0) && !whitelistedRecipients[from] && !whitelistedRecipients[to])
+            revert Errors.NotAllowed();
     }
 }

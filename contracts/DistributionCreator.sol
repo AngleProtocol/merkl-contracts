@@ -2,9 +2,7 @@
 
 pragma solidity ^0.8.17;
 
-import {
-    ReentrancyGuardUpgradeable
-} from "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
+import { ReentrancyGuardUpgradeable } from "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import { ECDSA } from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
@@ -117,12 +115,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
                                                         EVENTS                                                      
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
-    event CreatorAllowanceUpdated(
-        address indexed user,
-        address indexed operator,
-        address indexed token,
-        uint256 amount
-    );
+    event CreatorAllowanceUpdated(address indexed user, address indexed operator, address indexed token, uint256 amount);
     event CreatorBalanceUpdated(address indexed user, address indexed token, uint256 amount);
     event DistributorUpdated(address indexed _distributor);
     event FeeRebateUpdated(address indexed user, uint256 userFeeRebate);
@@ -180,11 +173,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @param _accessControlManager Address of the access control manager contract
     /// @param _distributor Address of the Distributor contract
     /// @param _fees Default fee rate in base 10^9 (must be less than BASE_9)
-    function initialize(
-        IAccessControlManager _accessControlManager,
-        address _distributor,
-        uint256 _fees
-    ) external initializer {
+    function initialize(IAccessControlManager _accessControlManager, address _distributor, uint256 _fees) external initializer {
         if (address(_accessControlManager) == address(0) || _distributor == address(0)) revert Errors.ZeroAddress();
         if (_fees >= BASE_9) revert Errors.InvalidParam();
         distributor = _distributor;
@@ -214,9 +203,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @notice Creates multiple reward distribution campaigns in a single transaction
     /// @param campaigns Array of campaign parameters to create
     /// @return Array of campaign IDs for all newly created campaigns
-    function createCampaigns(
-        CampaignParameters[] memory campaigns
-    ) external nonReentrant hasSigned returns (bytes32[] memory) {
+    function createCampaigns(CampaignParameters[] memory campaigns) external nonReentrant hasSigned returns (bytes32[] memory) {
         uint256 campaignsLength = campaigns.length;
         bytes32[] memory campaignIds = new bytes32[](campaignsLength);
         for (uint256 i; i < campaignsLength; ) {
@@ -290,8 +277,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @dev Can be used to deposit on behalf of another user
     /// @dev WARNING: Do not use with rebasing tokens as they will cause accounting issues
     function increaseTokenBalance(address user, address rewardToken, uint256 amount) external {
-        if (!accessControlManager.isGovernor(msg.sender))
-            IERC20(rewardToken).safeTransferFrom(msg.sender, address(this), amount);
+        if (!accessControlManager.isGovernor(msg.sender)) IERC20(rewardToken).safeTransferFrom(msg.sender, address(this), amount);
         _updateBalance(user, rewardToken, creatorBalance[user][rewardToken] + amount);
     }
 
@@ -301,12 +287,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @param to Address that will receive the withdrawn tokens
     /// @param amount Amount to withdraw
     /// @dev Only callable by the user themselves or a governor
-    function decreaseTokenBalance(
-        address user,
-        address rewardToken,
-        address to,
-        uint256 amount
-    ) external onlyUserOrGovernor(user) {
+    function decreaseTokenBalance(address user, address rewardToken, address to, uint256 amount) external onlyUserOrGovernor(user) {
         _updateBalance(user, rewardToken, creatorBalance[user][rewardToken] - amount);
         IERC20(rewardToken).safeTransfer(to, amount);
     }
@@ -317,12 +298,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @param rewardToken Token for which allowance is granted
     /// @param amount Amount to increase the allowance by
     /// @dev Only callable by the user themselves or a governor
-    function increaseTokenAllowance(
-        address user,
-        address operator,
-        address rewardToken,
-        uint256 amount
-    ) external onlyUserOrGovernor(user) {
+    function increaseTokenAllowance(address user, address operator, address rewardToken, uint256 amount) external onlyUserOrGovernor(user) {
         _updateAllowance(user, operator, rewardToken, creatorAllowance[user][operator][rewardToken] + amount);
     }
 
@@ -332,12 +308,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @param rewardToken Token for which allowance is reduced
     /// @param amount Amount to decrease the allowance by
     /// @dev Only callable by the user themselves or a governor
-    function decreaseTokenAllowance(
-        address user,
-        address operator,
-        address rewardToken,
-        uint256 amount
-    ) external onlyUserOrGovernor(user) {
+    function decreaseTokenAllowance(address user, address operator, address rewardToken, uint256 amount) external onlyUserOrGovernor(user) {
         _updateAllowance(user, operator, rewardToken, creatorAllowance[user][operator][rewardToken] - amount);
     }
 
@@ -408,10 +379,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @param first Maximum number of tokens to return
     /// @return Array of reward tokens and total count
     /// @dev Not optimized for onchain queries; intended for off-chain/API use
-    function getValidRewardTokens(
-        uint32 skip,
-        uint32 first
-    ) external view returns (RewardTokenAmounts[] memory, uint256) {
+    function getValidRewardTokens(uint32 skip, uint32 first) external view returns (RewardTokenAmounts[] memory, uint256) {
         return _getValidRewardTokens(skip, first);
     }
 
@@ -523,10 +491,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @dev Only callable by governor or guardian
     /// @dev Setting amount to 0 effectively removes the token from the whitelist
     /// @dev Prevents duplicate entries when adding previously removed tokens
-    function setRewardTokenMinAmounts(
-        address[] calldata tokens,
-        uint256[] calldata amounts
-    ) external onlyGovernorOrGuardian {
+    function setRewardTokenMinAmounts(address[] calldata tokens, uint256[] calldata amounts) external onlyGovernorOrGuardian {
         uint256 tokensLength = tokens.length;
         if (tokensLength != amounts.length) revert Errors.InvalidLengths();
         for (uint256 i; i < tokensLength; ) {
@@ -559,8 +524,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         // if the reward token is not whitelisted as an incentive token
         if (rewardTokenMinAmount == 0) revert Errors.CampaignRewardTokenNotWhitelisted();
         // if the amount distributed is too small with respect to what is allowed
-        if ((newCampaign.amount * HOUR) / newCampaign.duration < rewardTokenMinAmount)
-            revert Errors.CampaignRewardTooLow();
+        if ((newCampaign.amount * HOUR) / newCampaign.duration < rewardTokenMinAmount) revert Errors.CampaignRewardTooLow();
         // Computing fees and pulling tokens
         uint256 campaignAmountMinusFees = _computeFees(newCampaign.campaignType, newCampaign.amount);
         if (newCampaign.creator == address(0)) newCampaign.creator = msg.sender;
@@ -612,12 +576,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @dev Attempts to use predeposited balance first, checking operator allowance if applicable
     /// @dev Falls back to direct transfer from msg.sender if insufficient predeposited balance
     /// @dev Sends fees to feeRecipient (or this contract if feeRecipient is zero address)
-    function _pullTokens(
-        address creator,
-        address rewardToken,
-        uint256 campaignAmount,
-        uint256 campaignAmountMinusFees
-    ) internal {
+    function _pullTokens(address creator, address rewardToken, uint256 campaignAmount, uint256 campaignAmountMinusFees) internal {
         uint256 fees = campaignAmount - campaignAmountMinusFees;
         address _feeRecipient;
         if (fees > 0) {
@@ -652,10 +611,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @dev Uses campaign-specific fees if set, otherwise uses default fees
     /// @dev Campaign-specific fee of 1 is treated as 0 (fee waiver)
     /// @dev Applies fee rebates to msg.sender (not creator)
-    function _computeFees(
-        uint32 campaignType,
-        uint256 distributionAmount
-    ) internal view returns (uint256 distributionAmountMinusFees) {
+    function _computeFees(uint32 campaignType, uint256 distributionAmount) internal view returns (uint256 distributionAmountMinusFees) {
         uint256 baseFeesValue = campaignSpecificFees[campaignType];
         if (baseFeesValue == 1) baseFeesValue = 0;
         else if (baseFeesValue == 0) baseFeesValue = defaultFees;
@@ -673,10 +629,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @return Array of valid reward tokens and the index where iteration stopped
     /// @dev Only includes tokens with non-zero minimum amounts (active whitelist entries)
     /// @dev Uses assembly to resize the return array to actual length
-    function _getValidRewardTokens(
-        uint32 skip,
-        uint32 first
-    ) internal view returns (RewardTokenAmounts[] memory, uint256) {
+    function _getValidRewardTokens(uint32 skip, uint32 first) internal view returns (RewardTokenAmounts[] memory, uint256) {
         uint256 length;
         uint256 rewardTokenListLength = rewardTokens.length;
         uint256 returnSize = first > rewardTokenListLength ? rewardTokenListLength : first;

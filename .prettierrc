@@ -10,9 +10,10 @@
     {
       "files": "*.sol",
       "options": {
-        "printWidth": 120,
+        "printWidth": 145,
         "singleQuote": false,
-        "bracketSpacing": true
+        "bracketSpacing": true,
+        "explicitTypes": "always"
       }
     }
   ]

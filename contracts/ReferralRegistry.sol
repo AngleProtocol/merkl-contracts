@@ -116,13 +116,7 @@ contract ReferralRegistry is UUPSHelper {
             requiresRefererToBeSet: newRequiresRefererToBeSet,
             paymentToken: newPaymentToken
         });
-        emit ReferralProgramModified(
-            key,
-            newCost,
-            newRequiresAuthorization,
-            newRequiresRefererToBeSet,
-            newPaymentToken
-        );
+        emit ReferralProgramModified(key, newCost, newRequiresAuthorization, newRequiresRefererToBeSet, newPaymentToken);
     }
 
     /// @notice Marks an address as allowed to be a referrer for a specific referral key
@@ -248,11 +242,7 @@ contract ReferralRegistry is UUPSHelper {
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
     constructor() initializer {}
-    function initialize(
-        IAccessControlManager _accessControlManager,
-        uint256 _costReferralProgram,
-        address _feeRecipient
-    ) external initializer {
+    function initialize(IAccessControlManager _accessControlManager, uint256 _costReferralProgram, address _feeRecipient) external initializer {
         if (address(_accessControlManager) == address(0)) revert Errors.ZeroAddress();
         accessControlManager = _accessControlManager;
         costReferralProgram = _costReferralProgram;

@@ -1,20 +1,20 @@
 [![CI](https://github.com/AngleProtocol/merkl-contracts/actions/workflows/ci.yml/badge.svg)](https://github.com/AngleProtocol/merkl-contracts/actions)
 [![Coverage](https://codecov.io/gh/AngleProtocol/merkl-contracts/branch/main/graph/badge.svg)](https://codecov.io/gh/AngleProtocol/merkl-contracts)
 
-This repository contains the smart contracts of Merkl.
+This repository contains the core smart contracts for the Merkl solution.
 
-It basically contains two contracts:
+The system consists of two primary contracts:
 
-- `DistributionCreator`: to which DAOs and individuals can deposit their rewards to incentivize onchain actions
-- `Distributor`: the contract where users can claim their rewards
+- `DistributionCreator`: Allows DAOs and individuals to deposit rewards for incentivizing onchain actions
+- `Distributor`: Enables users to claim their earned rewards
 
-You can learn more about the Merkl system in the [documentation](https://docs.merkl.xyz).
+Learn more about Merkl in the [official documentation](https://docs.merkl.xyz).
 
 ## Setup
 
 ### Install packages
 
-You can install all dependencies by running
+Install all dependencies by running:
 
 ```bash
 bun i
@@ -22,37 +22,48 @@ bun i
 
 ### Create `.env` file
 
-You can copy paste `.env.example` file into `.env` and fill with your keys/RPCs.
+Copy the `.env.example` file to `.env` and populate it with your keys and RPC endpoints:
 
-Warning: always keep your confidential information safe.
+```bash
+cp .env.example .env
+```
+
+**Warning:** Always keep your confidential information secure and never commit `.env` files to version control.
 
 ### Foundry Installation
+
+Install Foundry using the official installer:
 
 ```bash
 curl -L https://foundry.paradigm.xyz | bash
 
 source /root/.zshrc
-# or, if you're under bash: source /root/.bashrc
+# or, if you're using bash: source /root/.bashrc
 
 foundryup
 ```
 
 ## Tests
 
+Run the complete test suite:
+
 ```bash
-# Whole test suite
 forge test
 ```
 
 ## Deploying
 
-Run without broadcasting:
+### Simulate deployment (dry run)
+
+Run a script without broadcasting transactions to the network:
 
 ```bash
 yarn foundry:script <path_to_script> --rpc-url <network>
 ```
 
-Run with broadcasting:
+### Deploy to network
+
+Execute and broadcast transactions:
 
 ```bash
 yarn foundry:deploy <path_to_script> --rpc-url <network>
@@ -60,64 +71,77 @@ yarn foundry:deploy <path_to_script> --rpc-url <network>
 
 ## Scripts
 
-Scripts can be executed in two ways:
+Scripts can be executed with or without parameters:
 
-1. With parameters: directly passing values as arguments
-2. Without parameters: modifying the default values in the script
+1. **With parameters:** Pass values directly as command-line arguments
+2. **Without parameters:** Modify default values within the script file before running
 
 ### Running Scripts
 
+Execute scripts using the following pattern:
+
 ```bash
-# With parameters
+# With parameters - pass values as arguments
 forge script scripts/MockToken.s.sol:Deploy --rpc-url <network> --sender <address> --broadcast -i 1 \
   --sig "run(string,string,uint8)" "MyToken" "MTK" 18
 
-# Without parameters (modify default values in the script first)
+# Without parameters - modify default values in the script first
 forge script scripts/MockToken.s.sol:Deploy --rpc-url <network> --sender <address> --broadcast -i 1
 
 # Common options:
-#   --broadcast         Broadcasts the transactions to the network
-#   --sender <address>  The address which will execute the script
-#   -i 1                Open an interactive prompt to enter private key of the sender when broadcasting
+#   --broadcast         Broadcasts transactions to the network
+#   --sender <address>  Address that will execute the script
+#   -i 1                Opens an interactive prompt to securely enter the sender's private key
 ```
 
 ### Examples
 
+#### Deploy a mock ERC20 token
+
 ```bash
-# Deploy a Mock Token
 forge script scripts/MockToken.s.sol:Deploy --rpc-url <network> --sender <address> --broadcast \
   --sig "run(string,string,uint8)" "MyToken" "MTK" 18
-
-# Mint tokens
-forge script scripts/MockToken.s.sol:Mint --rpc-url <network> --sender <address> --broadcast \
-  --sig "run(address,address,uint256)" <token_address> <recipient> 1000000000000000000
-
-# Set minimum reward token amount
-forge script scripts/DistributionCreator.s.sol:SetRewardTokenMinAmounts --rpc-url <network> --sender <address> --broadcast \
-  --sig "run(address,uint256)" <reward_token_address> <min_amount>
-
-# Set fees for campaign
-forge script scripts/DistributionCreator.s.sol:SetCampaignFees --rpc-url <network> --sender <address> --broadcast \
-  --sig "run(uint32,uint256)" <campaign_type> <fees>
-
 ```
 
-For scripts without parameters, you can modify the default values directly in the script file:
+#### Mint tokens to an address
+
+```bash
+forge script scripts/MockToken.s.sol:Mint --rpc-url <network> --sender <address> --broadcast \
+  --sig "run(address,address,uint256)" <token_address> <recipient> 1000000000000000000
+```
+
+#### Configure minimum reward token amount
+
+```bash
+forge script scripts/DistributionCreator.s.sol:SetRewardTokenMinAmounts --rpc-url <network> --sender <address> --broadcast \
+  --sig "run(address,uint256)" <reward_token_address> <min_amount>
+```
+
+#### Set campaign fees
+
+```bash
+forge script scripts/DistributionCreator.s.sol:SetCampaignFees --rpc-url <network> --sender <address> --broadcast \
+  --sig "run(uint32,uint256)" <campaign_type> <fees>
+```
+
+### Modifying Default Script Parameters
+
+For scripts without parameters, modify the default values directly in the script file before execution:
 
 ```solidity
 // In scripts/MockToken.s.sol:Deploy
 function run() external broadcast {
   // MODIFY THESE VALUES TO SET YOUR DESIRED TOKEN PARAMETERS
-  string memory name = 'My Token'; // <- modify this
-  string memory symbol = 'MTK'; // <- modify this
-  uint8 decimals = 18; // <- modify this
+  string memory name = 'My Token'; // <- Customize token name
+  string memory symbol = 'MTK'; // <- Customize token symbol
+  uint8 decimals = 18; // <- Customize decimal places
   _run(name, symbol, decimals);
 }
 ```
 
 ## Audits
 
-The Merkl smart contracts have been audited by Code4rena, find the audit report [here](https://code4rena.com/reports/2023-06-angle).
+The Merkl smart contracts have been audited by Code4rena. View the [Code4rena audit report](https://code4rena.com/reports/2023-06-angle) for details.
 
 ## Access Control
 
@@ -125,4 +149,4 @@ The Merkl smart contracts have been audited by Code4rena, find the audit report 
 
 ## Media
 
-Don't hesitate to reach out on [Twitter](https://x.com/merkl_xyz) 🐦
+Reach out to us on [Twitter](https://x.com/merkl_xyz) 🐦

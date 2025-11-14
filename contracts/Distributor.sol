@@ -199,12 +199,7 @@ contract Distributor is UUPSHelper {
     /// @param proofs Merkle proofs validating each claim
     /// @dev Users can only claim for themselves unless they've authorized an operator
     /// @dev Arrays must all have the same length
-    function claim(
-        address[] calldata users,
-        address[] calldata tokens,
-        uint256[] calldata amounts,
-        bytes32[][] calldata proofs
-    ) external {
+    function claim(address[] calldata users, address[] calldata tokens, uint256[] calldata amounts, bytes32[][] calldata proofs) external {
         address[] memory recipients = new address[](users.length);
         bytes[] memory datas = new bytes[](users.length);
         _claim(users, tokens, amounts, proofs, recipients, datas);
@@ -319,8 +314,7 @@ contract Distributor is UUPSHelper {
             disputer != address(0) ||
             // A trusted address cannot update a tree right after a precedent tree update otherwise it can de facto
             // validate a tree which has not passed the dispute period
-            ((canUpdateMerkleRoot[msg.sender] != 1 || block.timestamp < endOfDisputePeriod) &&
-                !accessControlManager.isGovernor(msg.sender))
+            ((canUpdateMerkleRoot[msg.sender] != 1 || block.timestamp < endOfDisputePeriod) && !accessControlManager.isGovernor(msg.sender))
         ) revert Errors.NotTrusted();
         MerkleTree memory _lastTree = tree;
         tree = _tree;
@@ -492,9 +486,7 @@ contract Distributor is UUPSHelper {
             if (toSend != 0) {
                 IERC20(token).safeTransfer(recipient, toSend);
                 if (data.length != 0) {
-                    try IClaimRecipient(recipient).onClaim(user, token, amount, data) returns (
-                        bytes32 callbackSuccess
-                    ) {
+                    try IClaimRecipient(recipient).onClaim(user, token, amount, data) returns (bytes32 callbackSuccess) {
                         if (callbackSuccess != CALLBACK_SUCCESS) revert Errors.InvalidReturnMessage();
                     } catch {}
                 }

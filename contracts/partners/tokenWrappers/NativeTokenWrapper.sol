@@ -48,12 +48,7 @@ contract NativeTokenWrapper is UUPSHelper, ERC20Upgradeable {
     /// @notice Allows contract to receive ETH via fallback
     fallback() external payable {}
 
-    function initialize(
-        address _distributionCreator,
-        address _minter,
-        string memory _name,
-        string memory _symbol
-    ) public initializer {
+    function initialize(address _distributionCreator, address _minter, string memory _name, string memory _symbol) public initializer {
         __ERC20_init(string.concat(_name), string.concat(_symbol));
         __UUPSUpgradeable_init();
         if (_minter == address(0)) revert Errors.ZeroAddress();
