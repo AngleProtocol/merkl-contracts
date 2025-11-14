@@ -459,13 +459,6 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
 
     /// @notice Updates the address that receives protocol fees from campaign creation
     /// @param _feeRecipient New fee recipient address
-    function setFeeRecipient(address _feeRecipient) external onlyGovernor {
-        feeRecipient = _feeRecipient;
-        emit FeeRecipientUpdated(_feeRecipient);
-    }
-
-    /// @notice Updates the address that receives protocol fees from campaign creation
-    /// @param _feeRecipient New fee recipient address
     /// @dev Only callable by governor
     function setFeeRecipient(address _feeRecipient) external onlyGovernor {
         feeRecipient = _feeRecipient;
