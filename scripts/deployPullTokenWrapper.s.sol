@@ -6,9 +6,7 @@ import { console } from "forge-std/console.sol";
 import { BaseScript } from "./utils/Base.s.sol";
 
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
-import {
-    ITransparentUpgradeableProxy
-} from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
+import { ITransparentUpgradeableProxy } from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
 import { IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import { JsonReader } from "@utils/JsonReader.sol";
 import { ContractType } from "@utils/Constants.sol";
@@ -20,21 +18,21 @@ import { IAccessControlManager } from "../contracts/interfaces/IAccessControlMan
 import { MockToken } from "../contracts/mock/MockToken.sol";
 
 contract DeployPullTokenWrapper is BaseScript {
-    // forge script scripts/deployPullTokenWrapper.s.sol --rpc-url mainnet --sender 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701 --broadcast --verify
+    // forge script scripts/deployPullTokenWrapper.s.sol --rpc-url bsc --sender 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701 --broadcast --verify
     function run() public {
         uint256 deployerPrivateKey = vm.envUint("DEPLOYER_PRIVATE_KEY");
         vm.startBroadcast(deployerPrivateKey);
         address distributionCreator = 0x8BB4C975Ff3c250e0ceEA271728547f3802B36Fd;
         // ------------------------------------------------------------------------
         // TO EDIT
-        address underlying = 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48; // USDC
-        address holder = 0x304C9C032a82Ca287C1681EA68189f8C0De5746d;
+        address underlying = 0x499D35eBE6cEe9B2Ac35Fd003fcBbeeB9CFc7B32; // USDC
+        address holder = 0x19674E9Af1A04DAf183F8E1A23E0afc2bc79A939;
 
         // Need to choose the implementation type and if implementation needs to be deployed
         // address implementation = address(new PullTokenWrapperWithdraw());
-        // address implementation = address(new PullTokenWrapperAllow());
+        address implementation = address(new PullTokenWrapperAllow());
         // Ethereum implementation of PullTokenWrapperAllow
-        address implementation = 0x979a04fd2f3A6a2B3945A715e24b974323E93567;
+        // address implementation = 0x979a04fd2f3A6a2B3945A715e24b974323E93567;
         // Ethereum implementation of PullTokenWrapperWithdraw
         // address implementation = 0x721d37cf37e230E120a09adbBB7aAB0CF729AcA1
 

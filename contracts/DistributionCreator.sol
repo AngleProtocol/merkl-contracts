@@ -51,7 +51,8 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @notice Terms and conditions message that users must acknowledge before creating campaigns
     string public message;
 
-    /// @notice Keccak256 hash of the message that users must sign or accept
+    /// @notice Keccak256 hash of the conditions that users must accept before creating campaigns
+    /// @dev The message may be a link to the full terms hosted offchain
     bytes32 public messageHash;
 
     /// @notice Deprecated - kept for storage layout compatibility
@@ -66,10 +67,12 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @notice Deprecated - kept for storage layout compatibility
     mapping(address => uint256) public _nonces;
 
-    /// @notice Deprecated - kept for storage layout compatibility
+    /// @notice Maps user addresses to the hash of the last terms and conditions they accepted
+    /// @dev The name includes 'signature' for legacy reasons, reflecting the original requirement for users to sign conditions
     mapping(address => bytes32) public userSignatures;
 
-    /// @notice Deprecated - kept for storage layout compatibility
+    /// @notice Maps user addresses to their whitelist status for signature requirements
+    /// @dev The name includes 'signature' for legacy reasons, reflecting the original requirement for users to sign conditions
     mapping(address => uint256) public userSignatureWhitelist;
 
     /// @notice Maps each reward token to its minimum required amount per epoch for campaign validity
@@ -108,7 +111,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @dev creator => operator => rewardToken => allowance amount
     mapping(address => mapping(address => mapping(address => uint256))) public creatorAllowance;
 
-    /// @notice Maps creator addresses to authorized campaign operators who can manage campaigns on their behalf
+    /// @notice Maps manager addresses to authorized campaign operators who can manage campaigns on their behalf
     mapping(address => mapping(address => uint256)) public campaignOperators;
 
     /*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -146,7 +149,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         _;
     }
 
-    /// @notice Ensures the caller has either signed the required message or is whitelisted from signing
+    /// @notice Ensures the caller has accepted the current terms or is whitelisted for this
     /// @dev Checks both msg.sender and tx.origin for signature or whitelist status
     modifier hasSigned() {
         if (
@@ -216,9 +219,10 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     }
 
     /// @notice Allows a user to accept Merkl's terms and conditions to enable campaign creation
-    /// @dev Sets the sender's whitelist status to bypass signature requirements
+    /// @dev If the conditions change (through setMessage), users must accept again the new terms
+    /// @dev If the messageHash is not set, it means that there are no conditions to accept
     function acceptConditions() external {
-        userSignatureWhitelist[msg.sender] = 1;
+        userSignatures[msg.sender] = messageHash;
     }
 
     /// @notice Updates parameters of an existing campaign while preserving core immutable fields
@@ -228,6 +232,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @dev Can only update startTimestamp if the campaign has not yet started
     /// @dev New end time (startTimestamp + duration) must be in the future
     /// @dev The Merkl engine validates override correctness; invalid overrides are ignored
+    /// @dev In the case of an invalid override, the campaign may not be processed and fees may still be taken by the Merkl engine
     function overrideCampaign(bytes32 _campaignId, CampaignParameters memory newCampaign) external {
         CampaignParameters memory _campaign = campaign(_campaignId);
         _isValidOperator(_campaign.creator);
@@ -240,7 +245,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         ) revert Errors.InvalidOverride();
 
         newCampaign.campaignId = _campaignId;
-        // The creator address cannot be changed
+        // The manager address cannot be changed
         newCampaign.creator = _campaign.creator;
         campaignOverrides[_campaignId] = newCampaign;
         campaignOverridesTimestamp[_campaignId].push(block.timestamp);
@@ -275,7 +280,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @param amount Amount to deposit
     /// @dev When called by a governor, the user must have sent tokens to the contract beforehand
     /// @dev Can be used to deposit on behalf of another user
-    /// @dev WARNING: Do not use with rebasing tokens as they will cause accounting issues
+    /// @dev WARNING: Do not use with any non strictly standard ERC20 (like rebasing tokens) as they will cause accounting issues
     function increaseTokenBalance(address user, address rewardToken, uint256 amount) external {
         if (!accessControlManager.isGovernor(msg.sender)) IERC20(rewardToken).safeTransferFrom(msg.sender, address(this), amount);
         _updateBalance(user, rewardToken, creatorBalance[user][rewardToken] + amount);
@@ -433,10 +438,11 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         emit FeeRecipientUpdated(_feeRecipient);
     }
 
-    /// @notice Updates the terms and conditions message that users must accept before creating campaigns
+    /// @notice Updates the terms and conditions that users must accept before creating campaigns
     /// @param _message New terms and conditions message text
     /// @dev Only callable by governor or guardian
-    /// @dev Automatically computes and stores the keccak256 hash for signature verification
+    /// @dev Automatically computes and stores the keccak256 hash
+    /// @dev The message may be a link to the full terms hosted offchain
     function setMessage(string memory _message) external onlyGovernorOrGuardian {
         message = _message;
         bytes32 _messageHash = ECDSA.toEthSignedMessageHash(bytes(_message));
@@ -478,7 +484,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @notice Toggles whether a user must sign the terms message before creating campaigns
     /// @param user User address whose whitelist status is being toggled
     /// @dev Only callable by governor or guardian
-    /// @dev Whitelisted users (status = 1) can create campaigns without signing
+    /// @dev Whitelisted users (status = 1) can create campaigns without accepting Merkl terms
     function toggleSigningWhitelist(address user) external onlyGovernorOrGuardian {
         uint256 whitelistStatus = 1 - userSignatureWhitelist[user];
         userSignatureWhitelist[user] = whitelistStatus;
@@ -540,11 +546,11 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         return newCampaign.campaignId;
     }
 
-    /// @notice Validates that the caller is authorized to manage campaigns for the specified creator
-    /// @param creator Address of the campaign creator
-    /// @dev Reverts if msg.sender is not the creator and not an authorized operator
-    function _isValidOperator(address creator) internal view {
-        if (creator != msg.sender && campaignOperators[creator][msg.sender] == 0) {
+    /// @notice Validates that the caller is authorized to manage campaigns for the specified manager
+    /// @param manager Address of the campaign manager
+    /// @dev Reverts if msg.sender is not the manager and not an authorized operator
+    function _isValidOperator(address manager) internal view {
+        if (manager != msg.sender && campaignOperators[manager][msg.sender] == 0) {
             revert Errors.OperatorNotAllowed();
         }
     }

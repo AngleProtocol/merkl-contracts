@@ -2,6 +2,7 @@
 pragma solidity ^0.8.17;
 
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import { ECDSA } from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import { Test } from "forge-std/Test.sol";
 import { JsonReader } from "@utils/JsonReader.sol";
 
@@ -92,9 +93,7 @@ contract Test_DistributionCreator_Initialize is DistributionCreatorTest {
 
     function setUp() public override {
         super.setUp();
-        d = DistributionCreatorWithDistributions(
-            deployUUPS(address(new DistributionCreatorWithDistributions()), hex"")
-        );
+        d = DistributionCreatorWithDistributions(deployUUPS(address(new DistributionCreatorWithDistributions()), hex""));
     }
 
     function test_RevertWhen_CalledOnImplem() public {
@@ -1334,7 +1333,21 @@ contract Test_DistributionCreator_acceptConditions is DistributionCreatorTest {
         vm.prank(bob);
         creator.acceptConditions();
 
-        assertEq(creator.userSignatureWhitelist(bob), 1);
+        bytes32 message;
+
+        assertEq(creator.userSignatures(bob), message);
+
+        string memory newMessage = "merkl terms";
+
+        vm.prank(guardian);
+        creator.setMessage(newMessage);
+
+        bytes32 expectedMessage = ECDSA.toEthSignedMessageHash(bytes(newMessage));
+        assertEq(creator.messageHash(), expectedMessage);
+
+        vm.prank(bob);
+        creator.acceptConditions();
+        assertEq(creator.userSignatures(bob), expectedMessage);
     }
 }
 

@@ -17,7 +17,7 @@ struct MerkleTree {
     /// @dev The Merkle tree contains only monotonically increasing amounts: if a user previously claimed 1 token,
     /// subsequent tree updates should show amounts x > 1 for that user
     bytes32 merkleRoot;
-    /// @notice IPFS hash of the complete tree data
+    /// @dev Deprecated: this used to be the IPFS hash of the complete tree data
     bytes32 ipfsHash;
 }
 
@@ -139,13 +139,13 @@ contract Distributor is UUPSHelper {
 
     /// @notice Restricts function access to addresses with governor role only
     modifier onlyGovernor() {
-        if (!accessControlManager.isGovernor(msg.sender)) revert Errors.NotGovernor();
+        _onlyGovernor();
         _;
     }
 
     /// @notice Restricts function access to addresses with governor or guardian role
     modifier onlyGuardian() {
-        if (!accessControlManager.isGovernorOrGuardian(msg.sender)) revert Errors.NotGovernorOrGuardian();
+        _onlyGuardian();
         _;
     }
 
@@ -267,21 +267,14 @@ contract Distributor is UUPSHelper {
         _setClaimRecipient(msg.sender, recipient, token);
     }
 
-    /// @notice Sets a custom recipient for a user through governance
-    /// @param user User for whom to set the recipient
-    /// @param recipient Address that will receive claimed tokens
-    /// @param token Token for which to set the recipient (zero address = all tokens)
-    /// @dev Only callable by governor - use with caution as it overrides user preferences
-    function setClaimRecipientWithGov(address user, address recipient, address token) external onlyGovernor {
-        _setClaimRecipient(user, recipient, token);
-    }
-
     /// @notice Toggles a main operator's authorization to claim tokens on behalf of any user
     /// @param operator Operator whose status is being toggled
     /// @param token Token for which authorization applies (zero address = all tokens)
-    /// @dev Only callable by guardian or governor
+    /// @dev Only callable by guardian for an individual token or governor if it's for all tokens
     /// @dev Main operators can claim for any user without individual user authorization
-    function toggleMainOperatorStatus(address operator, address token) external onlyGuardian {
+    function toggleMainOperatorStatus(address operator, address token) external {
+        if (token == address(0)) _onlyGovernor();
+        else _onlyGuardian();
         uint256 oldValue = mainOperators[operator][token];
         mainOperators[operator][token] = 1 - oldValue;
         emit MainOperatorStatusUpdated(operator, token, oldValue == 0);
@@ -551,5 +544,15 @@ contract Distributor is UUPSHelper {
     function _setClaimRecipient(address user, address recipient, address token) internal {
         claimRecipient[user][token] = recipient;
         emit ClaimRecipientUpdated(user, recipient, token);
+    }
+
+    /// @notice Ensures the caller has governor role
+    function _onlyGovernor() internal view {
+        if (!accessControlManager.isGovernor(msg.sender)) revert Errors.NotGovernor();
+    }
+
+    /// @notice Ensures the caller has guardian role
+    function _onlyGuardian() internal view {
+        if (!accessControlManager.isGovernorOrGuardian(msg.sender)) revert Errors.NotGovernorOrGuardian();
     }
 }

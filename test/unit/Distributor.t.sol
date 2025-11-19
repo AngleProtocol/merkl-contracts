@@ -974,6 +974,10 @@ contract Test_Distributor_toggleMainOperatorStatus is DistributorTest {
         vm.prank(alice);
         vm.expectRevert(Errors.NotGovernorOrGuardian.selector);
         distributor.toggleMainOperatorStatus(bob, address(angle));
+
+        vm.prank(guardian);
+        vm.expectRevert(Errors.NotGovernor.selector);
+        distributor.toggleMainOperatorStatus(bob, address(0));
     }
 
     function test_Success_Governor() public {
@@ -1182,143 +1186,5 @@ contract Test_Distributor_toggleMainOperatorStatus is DistributorTest {
         distributor.claim(users, tokens, amounts, proofs);
 
         assertEq(angle.balanceOf(address(alice)), aliceBalance + 1e18);
-    }
-}
-
-contract Test_Distributor_setClaimRecipientWithGov is DistributorTest {
-    function test_RevertWhen_NotGovernor() public {
-        vm.prank(alice);
-        vm.expectRevert(Errors.NotGovernor.selector);
-        distributor.setClaimRecipientWithGov(bob, alice, address(angle));
-    }
-
-    function test_Success_SetRecipientForUser() public {
-        // Initial state - no recipient set
-        assertEq(distributor.claimRecipient(bob, address(angle)), address(0));
-
-        // Governor sets recipient
-        vm.prank(governor);
-        distributor.setClaimRecipientWithGov(bob, alice, address(angle));
-
-        // Verify recipient was set
-        assertEq(distributor.claimRecipient(bob, address(angle)), alice);
-    }
-
-    function test_Success_SetDefaultRecipient() public {
-        // Test with zero address for token (default for all tokens)
-        assertEq(distributor.claimRecipient(bob, address(0)), address(0));
-
-        // Governor sets default recipient
-        vm.prank(governor);
-        distributor.setClaimRecipientWithGov(bob, alice, address(0));
-
-        // Verify default recipient was set
-        assertEq(distributor.claimRecipient(bob, address(0)), alice);
-    }
-
-    function test_Success_ChangeRecipient() public {
-        // Set initial recipient
-        vm.prank(governor);
-        distributor.setClaimRecipientWithGov(bob, alice, address(angle));
-        assertEq(distributor.claimRecipient(bob, address(angle)), alice);
-
-        // Change recipient to someone else
-        vm.prank(governor);
-        distributor.setClaimRecipientWithGov(bob, address(0x123), address(angle));
-        assertEq(distributor.claimRecipient(bob, address(angle)), address(0x123));
-    }
-
-    function test_Success_RecipientReceivesRewards() public {
-        // Setup merkle tree
-        vm.prank(governor);
-        distributor.updateTree(
-            MerkleTree({
-                merkleRoot: bytes32(0x0b70a97c062cb747158b89e27df5bbda859ba072232efcbe92e383e9d74b8555),
-                ipfsHash: keccak256("IPFS_HASH")
-            })
-        );
-
-        angle.mint(address(distributor), 1e18);
-        vm.warp(distributor.endOfDisputePeriod() + 1);
-
-        // Governor sets bob as recipient for alice's claims
-        address customRecipient = address(0x456);
-        vm.prank(governor);
-        distributor.setClaimRecipientWithGov(alice, customRecipient, address(angle));
-
-        // Setup claim data
-        bytes32[][] memory proofs = new bytes32[][](1);
-        address[] memory users = new address[](1);
-        address[] memory tokens = new address[](1);
-        uint256[] memory amounts = new uint256[](1);
-        proofs[0] = new bytes32[](1);
-        proofs[0][0] = bytes32(0x6f46ee2909b99367a0d9932a11f1bdb85c9354480c9de277d21086f9a8925c0a);
-        users[0] = alice;
-        tokens[0] = address(angle);
-        amounts[0] = 1e18;
-
-        uint256 recipientBalance = angle.balanceOf(customRecipient);
-        uint256 aliceBalance = angle.balanceOf(alice);
-
-        // Alice claims and rewards should go to custom recipient
-        vm.prank(alice);
-        distributor.claim(users, tokens, amounts, proofs);
-
-        // Verify rewards went to custom recipient, not alice
-        assertEq(angle.balanceOf(customRecipient), recipientBalance + 1e18);
-        assertEq(angle.balanceOf(alice), aliceBalance);
-    }
-
-    function test_Success_RecipientReceivesRewardsWhenGlobal() public {
-        // Setup merkle tree
-        vm.prank(governor);
-        distributor.updateTree(
-            MerkleTree({
-                merkleRoot: bytes32(0x0b70a97c062cb747158b89e27df5bbda859ba072232efcbe92e383e9d74b8555),
-                ipfsHash: keccak256("IPFS_HASH")
-            })
-        );
-
-        angle.mint(address(distributor), 1e18);
-        vm.warp(distributor.endOfDisputePeriod() + 1);
-
-        // Governor sets bob as recipient for alice's claims
-        address customRecipient = address(0x456);
-        vm.prank(governor);
-        distributor.setClaimRecipientWithGov(alice, customRecipient, address(0));
-
-        // Setup claim data
-        bytes32[][] memory proofs = new bytes32[][](1);
-        address[] memory users = new address[](1);
-        address[] memory tokens = new address[](1);
-        uint256[] memory amounts = new uint256[](1);
-        proofs[0] = new bytes32[](1);
-        proofs[0][0] = bytes32(0x6f46ee2909b99367a0d9932a11f1bdb85c9354480c9de277d21086f9a8925c0a);
-        users[0] = alice;
-        tokens[0] = address(angle);
-        amounts[0] = 1e18;
-
-        uint256 recipientBalance = angle.balanceOf(customRecipient);
-        uint256 aliceBalance = angle.balanceOf(alice);
-
-        // Alice claims and rewards should go to custom recipient
-        vm.prank(alice);
-        distributor.claim(users, tokens, amounts, proofs);
-
-        // Verify rewards went to custom recipient, not alice
-        assertEq(angle.balanceOf(customRecipient), recipientBalance + 1e18);
-        assertEq(angle.balanceOf(alice), aliceBalance);
-    }
-
-    function test_Success_ClearRecipient() public {
-        // Set recipient
-        vm.prank(governor);
-        distributor.setClaimRecipientWithGov(bob, alice, address(angle));
-        assertEq(distributor.claimRecipient(bob, address(angle)), alice);
-
-        // Clear recipient by setting to zero address
-        vm.prank(governor);
-        distributor.setClaimRecipientWithGov(bob, address(0), address(angle));
-        assertEq(distributor.claimRecipient(bob, address(angle)), address(0));
     }
 }

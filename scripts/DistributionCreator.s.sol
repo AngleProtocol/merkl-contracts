@@ -48,11 +48,7 @@ contract Deploy is DistributionCreatorScript {
         console.log("DistributionCreator Proxy:", address(proxy));
 
         // Initialize
-        DistributionCreator(address(proxy)).initialize(
-            IAccessControlManager(accessControlManager),
-            distributor,
-            defaultFees
-        );
+        DistributionCreator(address(proxy)).initialize(IAccessControlManager(accessControlManager), distributor, defaultFees);
     }
 }
 
@@ -159,24 +155,20 @@ contract RecoverFees is DistributionCreatorScript {
 
 // SetUserFeeRebate script
 contract SetUserFeeRebate is DistributionCreatorScript {
+    // forge script scripts/DistributionCreator.s.sol:SetUserFeeRebate --rpc-url bsc --sender 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701 --broadcast --legacy
     function run() external {
         // MODIFY THESE VALUES TO SET YOUR DESIRED USER AND REBATE
         // 1_000_000_000 = 100%
         // 250_000_000 = 25%
         // 330_000_000  = 3
-        address user = address(0x5117e91a4383991C6c4AadfacE69b05346535408);
+        address user = address(0x19674E9Af1A04DAf183F8E1A23E0afc2bc79A939);
         uint256 rebate = 1_000_000_000; // 100% 500000000
-        _run(user, rebate);
-    }
-
-    function run(address user, uint256 rebate) external {
         _run(user, rebate);
     }
 
     function _run(address _user, uint256 _rebate) internal broadcast {
         uint256 chainId = block.chainid;
-        address creatorAddress = readAddress(chainId, "DistributionCreator");
-
+        address creatorAddress = 0x8BB4C975Ff3c250e0ceEA271728547f3802B36Fd;
         DistributionCreator(creatorAddress).setUserFeeRebate(_user, _rebate);
 
         console.log("Fee rebate set to %s for user: %s", _rebate, _user);
@@ -680,10 +672,7 @@ contract UpgradeAndBuildUpgradeToPayload is DistributionCreatorScript {
 
         address distributionCreatorImpl = address(new DistributionCreator());
 
-        bytes memory payload = abi.encodeWithSelector(
-            ITransparentUpgradeableProxy.upgradeTo.selector,
-            distributionCreatorImpl
-        );
+        bytes memory payload = abi.encodeWithSelector(ITransparentUpgradeableProxy.upgradeTo.selector, distributionCreatorImpl);
 
         try this.externalReadAddress(chainId, "Multisig") returns (address safe) {
             _serializeJson(
@@ -818,12 +807,7 @@ contract SetFeesMultichain is DistributionCreatorScript {
             console.log("");
             console.log("Failed chains details:");
             for (uint256 i = 0; i < failedCount; i++) {
-                console.log(
-                    "- %s (Chain ID: %s) - Reason: %s",
-                    failedChains[i].network,
-                    failedChains[i].chainId,
-                    failedChains[i].reason
-                );
+                console.log("- %s (Chain ID: %s) - Reason: %s", failedChains[i].network, failedChains[i].chainId, failedChains[i].reason);
             }
         }
 

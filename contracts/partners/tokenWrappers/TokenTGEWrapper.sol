@@ -43,20 +43,11 @@ contract TokenTGEWrapper is UUPSHelper, ERC20Upgradeable {
 
     // ================================= FUNCTIONS =================================
 
-    function initialize(
-        address _underlying,
-        uint256 _unlockTimestamp,
-        IAccessControlManager _accessControlManager,
-        address _distributionCreator
-    ) public initializer {
-        __ERC20_init(
-            string.concat("Merkl Token Wrapper - ", IERC20Metadata(_underlying).name()),
-            string.concat("mtw", IERC20Metadata(_underlying).symbol())
-        );
+    function initialize(address _underlying, uint256 _unlockTimestamp, address _distributionCreator) public initializer {
+        __ERC20_init(string.concat(IERC20Metadata(_underlying).name(), " (wrapped)"), IERC20Metadata(_underlying).symbol());
         __UUPSUpgradeable_init();
-        if (address(_accessControlManager) == address(0)) revert Errors.ZeroAddress();
         underlying = _underlying;
-        accessControlManager = _accessControlManager;
+        accessControlManager = DistributionCreator(_distributionCreator).accessControlManager();
         unlockTimestamp = _unlockTimestamp;
         distributionCreator = _distributionCreator;
         distributor = DistributionCreator(_distributionCreator).distributor();
