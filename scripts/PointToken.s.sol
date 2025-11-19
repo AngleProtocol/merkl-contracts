@@ -18,18 +18,20 @@ contract PointTokenScript is BaseScript, JsonReader {
 // Deploy script
 contract DeployPointToken is PointTokenScript {
     function run() external broadcast {
-        // forge script scripts/PointToken.s.sol:DeployPointToken --rpc-url hyperevm --broadcast --verify -vvvv
+        // forge script scripts/PointToken.s.sol:DeployPointToken --rpc-url gnosis --broadcast --verify -vvvv
         uint256 chainId = block.chainid;
         // MODIFY THESE VALUES TO SET YOUR DESIRED TOKEN PARAMETERS
-        string memory name = "cHIPs";
-        string memory symbol = "cHIPs";
+        string memory name = "kpk Points";
+        string memory symbol = "kpkPoints";
         address minter = 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701;
         uint256 amount = 1_000_000_000 * 1e18;
         address creator = 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701;
         uint8 decimals = 18;
 
         // address accessControlManager = readAddress(chainId, "Merkl.CoreMerkl");
-        address accessControlManager = 0x9a0F97FAC6154d9233A0FDFcE4Dc27dCB48b95ff;
+        address accessControlManager = address(
+            DistributionCreator(0x8BB4C975Ff3c250e0ceEA271728547f3802B36Fd).accessControlManager()
+        );
         _run(name, symbol, minter, accessControlManager, amount, creator);
     }
 
@@ -64,8 +66,8 @@ contract DeployPointToken is PointTokenScript {
         token.toggleWhitelistedRecipient(0x3Ef3D8bA38EBe18DB133cEc108f4D14CE00Dd9Ae);
         token.toggleWhitelistedRecipient(0x8BB4C975Ff3c250e0ceEA271728547f3802B36Fd);
         token.toggleWhitelistedRecipient(0xeaC6A75e19beB1283352d24c0311De865a867DAB);
-        token.toggleWhitelistedRecipient(0x79b42b18c4479a6F0f0cf398CFF5674896A12AD1);
-        token.transfer(0x79b42b18c4479a6F0f0cf398CFF5674896A12AD1, 1e9 * 1e18);
+        token.toggleWhitelistedRecipient(0x58e6c7ab55Aa9012eAccA16d1ED4c15795669E1C);
+        token.transfer(0x58e6c7ab55Aa9012eAccA16d1ED4c15795669E1C, 1e9 * 1e18);
 
         console.log("Whitelisted recipients:");
         // transfer to the SAFE

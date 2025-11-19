@@ -11,9 +11,10 @@ import { UUPSHelper } from "../../utils/UUPSHelper.sol";
 import { IAccessControlManager } from "../../interfaces/IAccessControlManager.sol";
 import { Errors } from "../../utils/Errors.sol";
 
-/// @title PullTokenWrapperWithTransfer
+/// @title PullTokenWrapperTransfer
 /// @notice Wrapper for a reward token on Merkl so campaigns do not have to be prefunded
-contract PullTokenWrapperWithTransfer is UUPSHelper, ERC20Upgradeable {
+/// @dev This is a deprecated version of the PullTokenWrapperTransfer used by Morpho on Katana
+contract PullTokenWrapperTransferV0 is UUPSHelper, ERC20Upgradeable {
     using SafeERC20 for IERC20;
 
     // ================================= VARIABLES =================================

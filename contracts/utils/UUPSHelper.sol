@@ -9,7 +9,7 @@ import { Errors } from "./Errors.sol";
 
 /// @title UUPSHelper
 /// @notice Helper contract for UUPSUpgradeable contracts where the upgradeability is controlled by a specific address
-/// @author Angle Labs., Inc
+/// @author Merkl SAS
 /// @dev The 0 address check in the modifier allows the use of these modifiers during initialization
 abstract contract UUPSHelper is UUPSUpgradeable {
     modifier onlyGuardianUpgrader(IAccessControlManager _accessControlManager) {
@@ -19,8 +19,7 @@ abstract contract UUPSHelper is UUPSUpgradeable {
     }
 
     modifier onlyGovernorUpgrader(IAccessControlManager _accessControlManager) {
-        if (address(_accessControlManager) != address(0) && !_accessControlManager.isGovernor(msg.sender))
-            revert Errors.NotGovernor();
+        if (address(_accessControlManager) != address(0) && !_accessControlManager.isGovernor(msg.sender)) revert Errors.NotGovernor();
         _;
     }
 

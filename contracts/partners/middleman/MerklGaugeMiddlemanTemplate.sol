@@ -36,8 +36,7 @@ contract MerklGaugeMiddlemanTemplate is Ownable {
     /// @notice Address of the Merkl contract managing rewards to be distributed
     function merklDistributionCreator() public view virtual returns (DistributionCreator _distributionCreator) {
         _distributionCreator = DistributionCreator(distributionCreator);
-        if (address(_distributionCreator) == address(0))
-            return DistributionCreator(0x8BB4C975Ff3c250e0ceEA271728547f3802B36Fd);
+        if (address(_distributionCreator) == address(0)) return DistributionCreator(0x8BB4C975Ff3c250e0ceEA271728547f3802B36Fd);
     }
 
     /// @notice Called by the gauge system to effectively create a campaign on `token` for `gauge`
@@ -70,8 +69,7 @@ contract MerklGaugeMiddlemanTemplate is Ownable {
     /// @dev Infinite allowances on Merkl contracts are safe here (this contract never holds funds and Merkl is safe)
     function _handleAllowance(address token, address _distributionCreator, uint256 amount) internal {
         uint256 currentAllowance = IERC20(token).allowance(address(this), _distributionCreator);
-        if (currentAllowance < amount)
-            IERC20(token).safeIncreaseAllowance(_distributionCreator, type(uint256).max - currentAllowance);
+        if (currentAllowance < amount) IERC20(token).safeIncreaseAllowance(_distributionCreator, type(uint256).max - currentAllowance);
     }
 
     /// @notice Recovers idle tokens left on the contract

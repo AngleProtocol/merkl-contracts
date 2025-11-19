@@ -2,28 +2,34 @@
 
 pragma solidity >=0.8.0;
 
+/// @notice Parameters defining a Merkl reward distribution campaign
 struct CampaignParameters {
-    // POPULATED ONCE CREATED
+    // ========== POPULATED BY CONTRACT ==========
 
-    // ID of the campaign. This can be left as a null bytes32 when creating campaigns
-    // on Merkl.
+    /// @notice Unique identifier for the campaign
+    /// @dev Can be left as bytes32(0) when creating a new campaign - will be computed by the contract
     bytes32 campaignId;
-    // CHOSEN BY CAMPAIGN CREATOR
+    // ========== CONFIGURED BY CREATOR ==========
 
-    // Address of the campaign creator, if marked as address(0), it will be overriden with the
-    // address of the `msg.sender` creating the campaign
+    /// @notice Address of the campaign creator
+    /// @dev If set to address(0), will be automatically set to msg.sender when the campaign is created
     address creator;
-    // Address of the token used as a reward
+    /// @notice Token distributed as rewards to campaign participants
     address rewardToken;
-    // Amount of `rewardToken` to distribute across all the epochs
-    // Amount distributed per epoch is `amount/numEpoch`
+    /// @notice Total amount of rewardToken to distribute over the entire campaign duration
+    /// @dev Must meet the minimum amount requirement for the reward token
     uint256 amount;
-    // Type of campaign
+    /// @notice Type identifier for the campaign structure and rules
+    /// @dev Different types may have different campaignData encoding schemes
     uint32 campaignType;
-    // Timestamp at which the campaign should start
+    /// @notice Unix timestamp when reward distribution begins
     uint32 startTimestamp;
-    // Duration of the campaign in seconds. Has to be a multiple of EPOCH = 3600
+    /// @notice Total duration of the campaign in seconds
+    /// @dev Must be a multiple of EPOCH_DURATION (3600 seconds / 1 hour)
+    /// @dev Must be at least EPOCH_DURATION (1 hour minimum)
     uint32 duration;
-    // Extra data to pass to specify the campaign
+    /// @notice Encoded campaign-specific parameters
+    /// @dev Encoding structure depends on campaignType
+    /// @dev May include pool addresses, reward distribution rules, whitelists, etc.
     bytes campaignData;
 }

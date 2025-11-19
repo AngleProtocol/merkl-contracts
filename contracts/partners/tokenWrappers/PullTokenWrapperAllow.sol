@@ -11,23 +11,12 @@ import { UUPSHelper } from "../../utils/UUPSHelper.sol";
 import { IAccessControlManager } from "../../interfaces/IAccessControlManager.sol";
 import { Errors } from "../../utils/Errors.sol";
 
-interface IAaveToken {
-    function POOL() external view returns (address);
-
-    function UNDERLYING_ASSET_ADDRESS() external view returns (address);
-}
-
-interface IAavePool {
-    function withdraw(address asset, uint256 amount, address to) external returns (uint256);
-}
-
-/// @title PullTokenWrapperWithdraw
+/// @title PullTokenWrapperAllow
 /// @notice Wrapper for a reward token on Merkl so campaigns do not have to be prefunded
 /// @dev In this version of the PullTokenWrapper, tokens are pulled from a holder address during claims
-/// @dev This implementation is similar to the PullTokenWrapperAllow but in this case the tokens are withdrawn from Aave at every claim
 /// @dev Managers of such wrapper contracts must ensure that the holder address has enough allowance to the wrapper contract
 /// for the token pulled during claims
-contract PullTokenWrapperWithdraw is UUPSHelper, ERC20Upgradeable {
+contract PullTokenWrapperAllow is UUPSHelper, ERC20Upgradeable {
     using SafeERC20 for IERC20;
 
     // ================================= VARIABLES =================================
@@ -41,8 +30,6 @@ contract PullTokenWrapperWithdraw is UUPSHelper, ERC20Upgradeable {
     address public feeRecipient;
     address public distributor;
     address public distributionCreator;
-    address public pool;
-    address public underlying;
 
     // ================================= MODIFIERS =================================
 
@@ -70,17 +57,12 @@ contract PullTokenWrapperWithdraw is UUPSHelper, ERC20Upgradeable {
         token = _token;
         distributionCreator = _distributionCreator;
         holder = _holder;
-        pool = IAaveToken(_token).POOL();
-        underlying = IAaveToken(_token).UNDERLYING_ASSET_ADDRESS();
         _setFeeRecipient();
     }
 
     function _beforeTokenTransfer(address from, address to, uint256 amount) internal override {
         // During claim transactions, tokens are pulled and transferred to the `to` address
-        if (from == distributor || to == feeRecipient) {
-            IERC20(token).safeTransferFrom(holder, address(this), amount);
-            IAavePool(pool).withdraw(underlying, amount, to);
-        }
+        if (from == distributor || to == feeRecipient) IERC20(token).safeTransferFrom(holder, to, amount);
     }
 
     function _afterTokenTransfer(address, address to, uint256 amount) internal override {

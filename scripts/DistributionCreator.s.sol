@@ -48,11 +48,7 @@ contract Deploy is DistributionCreatorScript {
         console.log("DistributionCreator Proxy:", address(proxy));
 
         // Initialize
-        DistributionCreator(address(proxy)).initialize(
-            IAccessControlManager(accessControlManager),
-            distributor,
-            defaultFees
-        );
+        DistributionCreator(address(proxy)).initialize(IAccessControlManager(accessControlManager), distributor, defaultFees);
     }
 }
 
@@ -134,28 +130,6 @@ contract SetCampaignFees is DistributionCreatorScript {
     }
 }
 
-// ToggleTokenWhitelist script
-contract ToggleTokenWhitelist is DistributionCreatorScript {
-    function run() external {
-        // MODIFY THIS VALUE TO SET YOUR DESIRED TOKEN ADDRESS
-        address token = address(0);
-        _run(token);
-    }
-
-    function run(address token) external {
-        _run(token);
-    }
-
-    function _run(address _token) internal broadcast {
-        uint256 chainId = block.chainid;
-        address creatorAddress = readAddress(chainId, "DistributionCreator");
-
-        DistributionCreator(creatorAddress).toggleTokenWhitelist(_token);
-
-        console.log("Token whitelist toggled for:", _token);
-    }
-}
-
 // RecoverFees script
 contract RecoverFees is DistributionCreatorScript {
     function run() external {
@@ -181,24 +155,20 @@ contract RecoverFees is DistributionCreatorScript {
 
 // SetUserFeeRebate script
 contract SetUserFeeRebate is DistributionCreatorScript {
+    // forge script scripts/DistributionCreator.s.sol:SetUserFeeRebate --rpc-url bsc --sender 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701 --broadcast --legacy
     function run() external {
         // MODIFY THESE VALUES TO SET YOUR DESIRED USER AND REBATE
         // 1_000_000_000 = 100%
         // 250_000_000 = 25%
         // 330_000_000  = 3
-        address user = address(0x5117e91a4383991C6c4AadfacE69b05346535408);
+        address user = address(0x19674E9Af1A04DAf183F8E1A23E0afc2bc79A939);
         uint256 rebate = 1_000_000_000; // 100% 500000000
-        _run(user, rebate);
-    }
-
-    function run(address user, uint256 rebate) external {
         _run(user, rebate);
     }
 
     function _run(address _user, uint256 _rebate) internal broadcast {
         uint256 chainId = block.chainid;
-        address creatorAddress = readAddress(chainId, "DistributionCreator");
-
+        address creatorAddress = 0x8BB4C975Ff3c250e0ceEA271728547f3802B36Fd;
         DistributionCreator(creatorAddress).setUserFeeRebate(_user, _rebate);
 
         console.log("Fee rebate set to %s for user: %s", _rebate, _user);
@@ -221,6 +191,7 @@ contract SetRewardTokenMinAmounts is DistributionCreatorScript {
     function _run(address[] memory _tokens, uint256[] memory _amounts) internal broadcast {
         uint256 chainId = block.chainid;
         // address creatorAddress = readAddress(chainId, "DistributionCreator");
+        address creatorAddress = 0x8BB4C975Ff3c250e0ceEA271728547f3802B36Fd;
 
         DistributionCreator(creatorAddress).setRewardTokenMinAmounts(_tokens, _amounts);
 
@@ -316,28 +287,6 @@ contract AcceptConditions is DistributionCreatorScript {
         DistributionCreator(creatorAddress).acceptConditions();
 
         console.log("Conditions accepted for:", broadcaster);
-    }
-}
-
-// Sign script
-contract Sign is DistributionCreatorScript {
-    function run() external {
-        // MODIFY THIS VALUE TO SET YOUR DESIRED SIGNATURE
-        bytes memory signature = "";
-        _run(signature);
-    }
-
-    function run(bytes calldata signature) external {
-        _run(signature);
-    }
-
-    function _run(bytes memory _signature) internal broadcast {
-        uint256 chainId = block.chainid;
-        address creatorAddress = readAddress(chainId, "DistributionCreator");
-
-        DistributionCreator(creatorAddress).sign(_signature);
-
-        console.log("Message signed by:", broadcaster);
     }
 }
 
@@ -716,38 +665,6 @@ contract CreateCampaignTest is DistributionCreatorScript {
     }
 }
 
-// SignAndCreateCampaign script
-contract SignAndCreateCampaign is DistributionCreatorScript {
-    function run() external broadcast {
-        // MODIFY THESE VALUES TO SET YOUR DESIRED CAMPAIGN PARAMETERS AND SIGNATURE
-        CampaignParameters memory campaign = CampaignParameters({
-            campaignId: bytes32(0),
-            creator: address(0),
-            rewardToken: address(0),
-            amount: 0,
-            campaignType: 0,
-            startTimestamp: uint32(block.timestamp),
-            duration: 7 days,
-            campaignData: ""
-        });
-        bytes memory signature = "";
-        _run(campaign, signature);
-    }
-
-    function run(CampaignParameters calldata campaign, bytes calldata signature) external broadcast {
-        _run(campaign, signature);
-    }
-
-    function _run(CampaignParameters memory campaign, bytes memory signature) internal {
-        uint256 chainId = block.chainid;
-        address creatorAddress = readAddress(chainId, "DistributionCreator");
-
-        bytes32 campaignId = DistributionCreator(creatorAddress).signAndCreateCampaign(campaign, signature);
-
-        console.log("Message signed and campaign created with ID:", vm.toString(campaignId));
-    }
-}
-
 contract UpgradeAndBuildUpgradeToPayload is DistributionCreatorScript {
     function run() external broadcast {
         uint256 chainId = block.chainid;
@@ -755,10 +672,7 @@ contract UpgradeAndBuildUpgradeToPayload is DistributionCreatorScript {
 
         address distributionCreatorImpl = address(new DistributionCreator());
 
-        bytes memory payload = abi.encodeWithSelector(
-            ITransparentUpgradeableProxy.upgradeTo.selector,
-            distributionCreatorImpl
-        );
+        bytes memory payload = abi.encodeWithSelector(ITransparentUpgradeableProxy.upgradeTo.selector, distributionCreatorImpl);
 
         try this.externalReadAddress(chainId, "Multisig") returns (address safe) {
             _serializeJson(
@@ -893,12 +807,7 @@ contract SetFeesMultichain is DistributionCreatorScript {
             console.log("");
             console.log("Failed chains details:");
             for (uint256 i = 0; i < failedCount; i++) {
-                console.log(
-                    "- %s (Chain ID: %s) - Reason: %s",
-                    failedChains[i].network,
-                    failedChains[i].chainId,
-                    failedChains[i].reason
-                );
+                console.log("- %s (Chain ID: %s) - Reason: %s", failedChains[i].network, failedChains[i].chainId, failedChains[i].reason);
             }
         }
 

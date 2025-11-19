@@ -8,12 +8,14 @@ import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/I
 import { IAccessControlManager } from "./interfaces/IAccessControlManager.sol";
 
 /// @title AccessControlManager
-/// @author Angle Labs, Inc.
-/// @notice This contract handles the access control across all contracts
+/// @author Merkl SAS
+/// @notice Manages role-based access control across all Merkl protocol contracts
+/// @dev Implements a two-tier permission system with governor and guardian roles
+/// @dev All governors automatically have guardian privileges
 contract AccessControlManager is IAccessControlManager, Initializable, AccessControlEnumerableUpgradeable {
-    /// @notice Role for guardians
+    /// @notice Role identifier for guardians (limited administrative privileges)
     bytes32 public constant GUARDIAN_ROLE = keccak256("GUARDIAN_ROLE");
-    /// @notice Role for governors
+    /// @notice Role identifier for governors (full administrative privileges)
     bytes32 public constant GOVERNOR_ROLE = keccak256("GOVERNOR_ROLE");
 
     // =============================== Events ======================================
@@ -27,9 +29,12 @@ contract AccessControlManager is IAccessControlManager, Initializable, AccessCon
     error NotEnoughGovernorsLeft();
     error ZeroAddress();
 
-    /// @notice Initializes the `AccessControlManager` contract
-    /// @param governor Address of the governor of the Angle Protocol
-    /// @param guardian Guardian address of the protocol
+    /// @notice Initializes the AccessControlManager with initial governor and guardian
+    /// @param governor Address to be granted the governor role (full administrative privileges)
+    /// @param guardian Address to be granted the guardian role (limited administrative privileges)
+    /// @dev Governor and guardian must be different non-zero addresses
+    /// @dev Governor automatically receives both GOVERNOR_ROLE and GUARDIAN_ROLE
+    /// @dev Sets GOVERNOR_ROLE as the admin role for both GOVERNOR_ROLE and GUARDIAN_ROLE
     function initialize(address governor, address guardian) public initializer {
         if (governor == address(0) || guardian == address(0)) revert ZeroAddress();
         if (governor == guardian) revert IncompatibleGovernorAndGuardian();
@@ -57,30 +62,31 @@ contract AccessControlManager is IAccessControlManager, Initializable, AccessCon
 
     // =========================== Governor Functions ==============================
 
-    /// @notice Adds a governor in the protocol
-    /// @param governor Address to grant the role to
-    /// @dev It is necessary to call this function to grant a governor role to make sure
-    /// all governors also have the guardian role
+    /// @notice Grants governor role to a new address
+    /// @param governor Address to receive governor privileges
+    /// @dev Must be called instead of grantRole to ensure the address receives both governor and guardian roles
+    /// @dev Only existing governors can call this function
     function addGovernor(address governor) external {
         grantRole(GOVERNOR_ROLE, governor);
         grantRole(GUARDIAN_ROLE, governor);
     }
 
-    /// @notice Revokes a governor from the protocol
-    /// @param governor Address to remove the role to
-    /// @dev It is necessary to call this function to remove a governor role to make sure
-    /// the address also loses its guardian role
+    /// @notice Revokes governor role from an address
+    /// @param governor Address to lose governor privileges
+    /// @dev Must be called instead of revokeRole to ensure both governor and guardian roles are removed
+    /// @dev Cannot remove the last governor - at least one must remain
+    /// @dev Only existing governors can call this function
     function removeGovernor(address governor) external {
         if (getRoleMemberCount(GOVERNOR_ROLE) <= 1) revert NotEnoughGovernorsLeft();
         revokeRole(GUARDIAN_ROLE, governor);
         revokeRole(GOVERNOR_ROLE, governor);
     }
 
-    /// @notice Changes the accessControlManager contract of the protocol
-    /// @param _accessControlManager New accessControlManager contract
-    /// @dev This function verifies that all governors of the current accessControlManager contract are also governors
-    /// of the new accessControlManager contract.
-    /// @dev Governance wishing to change the accessControlManager contract should also make sure to call `setAccessControlManager`
+    /// @notice Migrates to a new AccessControlManager contract
+    /// @param _accessControlManager Address of the new AccessControlManager contract
+    /// @dev Validates that all current governors are also governors in the new contract
+    /// @dev After calling this, governance should also update all protocol contracts to use the new AccessControlManager
+    /// @dev Only callable by existing governors
     function setAccessControlManager(IAccessControlManager _accessControlManager) external onlyRole(GOVERNOR_ROLE) {
         uint256 count = getRoleMemberCount(GOVERNOR_ROLE);
         bool success;

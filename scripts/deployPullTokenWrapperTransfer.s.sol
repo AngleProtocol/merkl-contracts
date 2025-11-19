@@ -6,18 +6,20 @@ import { console } from "forge-std/console.sol";
 import { BaseScript } from "./utils/Base.s.sol";
 
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
-import { ITransparentUpgradeableProxy } from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
+import {
+    ITransparentUpgradeableProxy
+} from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { JsonReader } from "@utils/JsonReader.sol";
 import { ContractType } from "@utils/Constants.sol";
 
-import { PullTokenWrapperWithAllow } from "../contracts/partners/tokenWrappers/PullTokenWrapperWithAllow.sol";
+import { PullTokenWrapperTransfer } from "../contracts/partners/tokenWrappers/PullTokenWrapperTransfer.sol";
 import { DistributionCreator } from "../contracts/DistributionCreator.sol";
 import { IAccessControlManager } from "../contracts/interfaces/IAccessControlManager.sol";
 import { MockToken } from "../contracts/mock/MockToken.sol";
 
-contract DeployPullTokenWrapperWithAllow is BaseScript {
-    // forge script scripts/deployPullTokenWrapperWithAllow.s.sol --rpc-url katana --sender 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701 --broadcast --verify —verifier=blockscout   --verifier-url 'https://explorer.katanarpc.com/api/'
+contract DeployPullTokenWrapperTransfer is BaseScript {
+    // forge script scripts/deployPullTokenWrapperTransfer.s.sol --rpc-url katana --sender 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701 --broadcast --verify —verifier=blockscout   --verifier-url 'https://explorer.katanarpc.com/api/'
     function run() public {
         uint256 deployerPrivateKey = vm.envUint("DEPLOYER_PRIVATE_KEY");
         vm.startBroadcast(deployerPrivateKey);
@@ -31,15 +33,15 @@ contract DeployPullTokenWrapperWithAllow is BaseScript {
         string memory symbol = "KAT";
 
         // Deploy implementation
-        PullTokenWrapperWithAllow implementation = new PullTokenWrapperWithAllow();
-        console.log("PullTokenWrapperWithAllow Implementation:", address(implementation));
+        PullTokenWrapperTransfer implementation = new PullTokenWrapperTransfer();
+        console.log("PullTokenWrapperTransfer Implementation:", address(implementation));
 
         // Deploy proxy
         ERC1967Proxy proxy = new ERC1967Proxy(address(implementation), "");
-        console.log("PullTokenWrapperWithAllow Proxy:", address(proxy));
+        console.log("PullTokenWrapperTransfer Proxy:", address(proxy));
 
         // Initialize
-        PullTokenWrapperWithAllow(address(proxy)).initialize(underlying, distributionCreator, minter, name, symbol);
+        PullTokenWrapperTransfer(address(proxy)).initialize(underlying, distributionCreator, minter, name, symbol);
 
         address[] memory tokens;
         tokens[0] = address(proxy);

@@ -6,15 +6,11 @@ import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.s
 import { ERC20Upgradeable } from "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 import { IERC20, IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 
-import { IAccessControlManager } from "./BaseTokenWrapper.sol";
+import { IAccessControlManager } from "../../interfaces/IAccessControlManager.sol";
 
 import { UUPSHelper } from "../../utils/UUPSHelper.sol";
 import { Errors } from "../../utils/Errors.sol";
-
-interface IDistributionCreator {
-    function distributor() external view returns (address);
-    function feeRecipient() external view returns (address);
-}
+import { DistributionCreator } from "../../DistributionCreator.sol";
 
 /// @title TokenTGEWrapper
 /// @dev This token can only be held by Merkl distributor
@@ -47,24 +43,15 @@ contract TokenTGEWrapper is UUPSHelper, ERC20Upgradeable {
 
     // ================================= FUNCTIONS =================================
 
-    function initialize(
-        address _underlying,
-        uint256 _unlockTimestamp,
-        IAccessControlManager _accessControlManager,
-        address _distributionCreator
-    ) public initializer {
-        __ERC20_init(
-            string.concat("Merkl Token Wrapper - ", IERC20Metadata(_underlying).name()),
-            string.concat("mtw", IERC20Metadata(_underlying).symbol())
-        );
+    function initialize(address _underlying, uint256 _unlockTimestamp, address _distributionCreator) public initializer {
+        __ERC20_init(string.concat(IERC20Metadata(_underlying).name(), " (wrapped)"), IERC20Metadata(_underlying).symbol());
         __UUPSUpgradeable_init();
-        if (address(_accessControlManager) == address(0)) revert Errors.ZeroAddress();
         underlying = _underlying;
-        accessControlManager = _accessControlManager;
+        accessControlManager = DistributionCreator(_distributionCreator).accessControlManager();
         unlockTimestamp = _unlockTimestamp;
         distributionCreator = _distributionCreator;
-        distributor = IDistributionCreator(_distributionCreator).distributor();
-        feeRecipient = IDistributionCreator(_distributionCreator).feeRecipient();
+        distributor = DistributionCreator(_distributionCreator).distributor();
+        feeRecipient = DistributionCreator(_distributionCreator).feeRecipient();
     }
 
     function isTokenWrapper() external pure returns (bool) {
@@ -127,7 +114,7 @@ contract TokenTGEWrapper is UUPSHelper, ERC20Upgradeable {
     }
 
     function setDistributor(address _distributionCreator) external onlyGovernor {
-        address _distributor = IDistributionCreator(_distributionCreator).distributor();
+        address _distributor = DistributionCreator(_distributionCreator).distributor();
         distributor = _distributor;
         distributionCreator = _distributionCreator;
         emit MerklAddressesUpdated(_distributionCreator, _distributor);
@@ -144,7 +131,7 @@ contract TokenTGEWrapper is UUPSHelper, ERC20Upgradeable {
     }
 
     function _setFeeRecipient() internal {
-        address _feeRecipient = IDistributionCreator(distributionCreator).feeRecipient();
+        address _feeRecipient = DistributionCreator(distributionCreator).feeRecipient();
         feeRecipient = _feeRecipient;
         emit FeeRecipientUpdated(_feeRecipient);
     }

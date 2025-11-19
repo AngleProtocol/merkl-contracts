@@ -8,12 +8,12 @@ import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy
 import { console } from "forge-std/console.sol";
 
 import { DistributionCreator } from "../contracts/DistributionCreator.sol";
+import { DistributionCreatorWithDistributions } from "../contracts/DistributionCreatorWithDistributions.sol";
 import { MockTokenPermit } from "../contracts/mock/MockTokenPermit.sol";
 import { MockUniswapV3Pool } from "../contracts/mock/MockUniswapV3Pool.sol";
 import { MockAccessControl } from "../contracts/mock/MockAccessControl.sol";
 import { IAccessControlManager } from "../contracts/interfaces/IAccessControlManager.sol";
 import { UUPSHelper } from "../contracts/utils/UUPSHelper.sol";
-import { DistributionCreator } from "../contracts/DistributionCreator.sol";
 import { MockTokenPermit } from "../contracts/mock/MockTokenPermit.sol";
 import { MockUniswapV3Pool } from "../contracts/mock/MockUniswapV3Pool.sol";
 import { MockAccessControl } from "../contracts/mock/MockAccessControl.sol";
@@ -28,8 +28,8 @@ contract Fixture is Test {
 
     MockAccessControl public accessControlManager;
     MockUniswapV3Pool public pool;
-    DistributionCreator public creatorImpl;
-    DistributionCreator public creator;
+    DistributionCreatorWithDistributions public creatorImpl;
+    DistributionCreatorWithDistributions public creator;
 
     address public alice;
     address public bob;
@@ -68,8 +68,8 @@ contract Fixture is Test {
         pool = new MockUniswapV3Pool();
 
         // DistributionCreator
-        creatorImpl = new DistributionCreator();
-        creator = DistributionCreator(deployUUPS(address(creatorImpl), hex""));
+        creatorImpl = new DistributionCreatorWithDistributions();
+        creator = DistributionCreatorWithDistributions(deployUUPS(address(creatorImpl), hex""));
 
         // Set
         pool.setToken(address(token0), 0);

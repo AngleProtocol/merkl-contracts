@@ -9,95 +9,108 @@ import { SafeCast } from "@openzeppelin/contracts/utils/math/SafeCast.sol";
 import { UUPSHelper } from "./utils/UUPSHelper.sol";
 import { IAccessControlManager } from "./interfaces/IAccessControlManager.sol";
 import { Errors } from "./utils/Errors.sol";
+import { IClaimRecipient } from "./interfaces/IClaimRecipient.sol";
 
 struct MerkleTree {
-    // Root of a Merkle tree which leaves are `(address user, address token, uint amount)`
-    // representing an amount of tokens accumulated by `user`.
-    // The Merkle tree is assumed to have only increasing amounts: that is to say if a user can claim 1,
-    // then after the amount associated in the Merkle tree for this token should be x > 1
+    /// @notice Root of a Merkle tree whose leaves are `(address user, address token, uint amount)`
+    /// representing the cumulative amount of tokens earned by each user
+    /// @dev The Merkle tree contains only monotonically increasing amounts: if a user previously claimed 1 token,
+    /// subsequent tree updates should show amounts x > 1 for that user
     bytes32 merkleRoot;
-    // Ipfs hash of the tree data
+    /// @dev Deprecated: this used to be the IPFS hash of the complete tree data
     bytes32 ipfsHash;
 }
 
 struct Claim {
+    /// @notice Cumulative amount claimed by the user for this token
     uint208 amount;
+    /// @notice Timestamp of the last claim
     uint48 timestamp;
+    /// @notice Merkle root that was active when the last claim occurred
     bytes32 merkleRoot;
 }
 
-interface IClaimRecipient {
-    /// @notice Hook to call within contracts receiving token rewards on behalf of users
-    function onClaim(address user, address token, uint256 amount, bytes memory data) external returns (bytes32);
-}
-
 /// @title Distributor
-/// @notice Allows to claim rewards distributed to them through Merkl
-/// @author Angle Labs. Inc
+/// @notice Manages the distribution of Merkl rewards and allows users to claim their earned tokens
+/// @dev Implements a Merkle tree-based reward distribution system with dispute resolution mechanism
+/// @author Merkl SAS
 contract Distributor is UUPSHelper {
     using SafeERC20 for IERC20;
 
-    /// @notice Default epoch duration
+    /// @notice Default epoch duration in seconds (1 hour)
     uint32 internal constant _EPOCH_DURATION = 3600;
 
-    /// @notice Success message received when calling a `ClaimRecipient` contract
+    /// @notice Success message that must be returned by `IClaimRecipient.onClaim` callback
     bytes32 public constant CALLBACK_SUCCESS = keccak256("IClaimRecipient.onClaim");
 
     /*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                                                        VARIABLES                                                    
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
-    /// @notice Tree of claimable tokens through this contract
+    /// @notice Current active Merkle tree containing claimable token data
     MerkleTree public tree;
 
-    /// @notice Tree that was in place in the contract before the last `tree` update
+    /// @notice Previous Merkle tree that was active before the last update
+    /// @dev Used to revert to if the current tree is disputed and found invalid
     MerkleTree public lastTree;
 
-    /// @notice Token to deposit to freeze the roots update
+    /// @notice Token required as a deposit to dispute a tree update
     IERC20 public disputeToken;
 
-    /// @notice `AccessControlManager` contract handling access control
+    /// @notice Access control manager contract handling role-based permissions
     IAccessControlManager public accessControlManager;
 
-    /// @notice Address which created the last dispute
-    /// @dev Used to store if there is an ongoing dispute
+    /// @notice Address that created the current ongoing dispute
+    /// @dev Non-zero value indicates there is an active dispute
     address public disputer;
 
-    /// @notice When the current tree becomes valid
+    /// @notice Timestamp after which the current tree becomes effective and undisputable
     uint48 public endOfDisputePeriod;
 
-    /// @notice Time after which a change in a tree becomes effective, in EPOCH_DURATION
+    /// @notice Number of epochs (in EPOCH_DURATION units) to wait before a tree update becomes effective
     uint48 public disputePeriod;
 
-    /// @notice Amount to deposit to freeze the roots update
+    /// @notice Amount of disputeToken required to create a dispute
     uint256 public disputeAmount;
 
-    /// @notice Mapping user -> token -> amount to track claimed amounts
+    /// @notice Tracks cumulative claimed amounts for each user and token
+    /// @dev Maps user => token => Claim details (amount, timestamp, merkleRoot)
     mapping(address => mapping(address => Claim)) public claimed;
 
-    /// @notice Trusted EOAs to update the Merkle root
+    /// @notice Trusted addresses authorized to update the Merkle root
+    /// @dev 1 = trusted, 0 = not trusted
     mapping(address => uint256) public canUpdateMerkleRoot;
 
-    /// @notice Deprecated mapping
+    /// @notice Deprecated - kept for storage layout compatibility
     mapping(address => uint256) public onlyOperatorCanClaim;
 
-    /// @notice User -> Operator -> authorisation to claim on behalf of the user
+    /// @notice Authorization for operators to claim on behalf of users
+    /// @dev Maps user => operator => authorization status (1 = authorized, 0 = not authorized)
     mapping(address => mapping(address => uint256)) public operators;
 
-    /// @notice Whether the contract has been made non upgradeable or not
+    /// @notice Whether contract upgradeability has been permanently disabled
+    /// @dev 1 = upgrades disabled, 0 = upgrades allowed
     uint128 public upgradeabilityDeactivated;
 
-    /// @notice Reentrancy status
+    /// @notice Reentrancy guard status
+    /// @dev 1 = not entered, 2 = entered
     uint96 private _status;
 
-    /// @notice Epoch duration for dispute periods (in seconds)
+    /// @notice Custom epoch duration for dispute periods in seconds
+    /// @dev If 0, defaults to _EPOCH_DURATION
     uint32 internal _epochDuration;
 
-    /// @notice user -> token -> recipient address for when user claims `token`
-    /// @dev If the mapping is empty, by default rewards will accrue on the user address
+    /// @notice Custom recipient addresses for user claims per token
+    /// @dev Maps user => token => recipient address (zero address = use default behavior)
+    /// @dev Setting recipient for address(0) token sets the default recipient for all tokens
     mapping(address => mapping(address => address)) public claimRecipient;
 
-    uint256[36] private __gap;
+    /// @notice Global operators authorized to claim specific tokens on behalf of any user
+    /// @dev Maps operator => token => authorization (1 = authorized, 0 = not authorized)
+    /// @dev Authorization for address(0) token allows claiming any token for any user
+    mapping(address => mapping(address => uint256)) public mainOperators;
+
+    uint256[35] private __gap;
 
     /*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                                                         EVENTS                                                      
@@ -111,6 +124,7 @@ contract Distributor is UUPSHelper {
     event DisputeResolved(bool valid);
     event DisputeTokenUpdated(address indexed _disputeToken);
     event EpochDurationUpdated(uint32 newEpochDuration);
+    event MainOperatorStatusUpdated(address indexed operator, address indexed token, bool isWhitelisted);
     event OperatorClaimingToggled(address indexed user, bool isEnabled);
     event OperatorToggled(address indexed user, address indexed operator, bool isWhitelisted);
     event Recovered(address indexed token, address indexed to, uint256 amount);
@@ -123,30 +137,28 @@ contract Distributor is UUPSHelper {
                                                        MODIFIERS                                                    
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
-    /// @notice Checks whether the `msg.sender` has the governor role
+    /// @notice Restricts function access to addresses with governor role only
     modifier onlyGovernor() {
-        if (!accessControlManager.isGovernor(msg.sender)) revert Errors.NotGovernor();
+        _onlyGovernor();
         _;
     }
 
-    /// @notice Checks whether the `msg.sender` is the `user` address or is a trusted address
-    modifier onlyTrustedOrUser(address user) {
-        if (
-            user != msg.sender &&
-            canUpdateMerkleRoot[msg.sender] != 1 &&
-            !accessControlManager.isGovernorOrGuardian(msg.sender)
-        ) revert Errors.NotTrusted();
+    /// @notice Restricts function access to addresses with governor or guardian role
+    modifier onlyGuardian() {
+        _onlyGuardian();
         _;
     }
 
-    /// @notice Checks whether the contract is upgradeable or whether the caller is allowed to upgrade the contract
+    /// @notice Ensures the contract is still upgradeable and caller has governor role
+    /// @dev Reverts if upgradeability has been revoked or caller is not a governor
     modifier onlyUpgradeableInstance() {
         if (upgradeabilityDeactivated == 1) revert Errors.NotUpgradeable();
         else if (!accessControlManager.isGovernor(msg.sender)) revert Errors.NotGovernor();
         _;
     }
 
-    /// @notice Checks whether a call is reentrant or not
+    /// @notice Prevents reentrancy attacks by locking the contract during execution
+    /// @dev Uses a status flag that is set to 2 during execution and reset to 1 after
     modifier nonReentrant() {
         if (_status == 2) revert Errors.ReentrantCall();
 
@@ -166,6 +178,8 @@ contract Distributor is UUPSHelper {
 
     constructor() initializer {}
 
+    /// @notice Initializes the contract with access control manager
+    /// @param _accessControlManager Address of the access control manager contract
     function initialize(IAccessControlManager _accessControlManager) external initializer {
         if (address(_accessControlManager) == address(0)) revert Errors.ZeroAddress();
         accessControlManager = _accessControlManager;
@@ -178,28 +192,28 @@ contract Distributor is UUPSHelper {
                                                     MAIN FUNCTIONS                                                  
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
-    /// @notice Claims rewards for a given set of users
-    /// @dev Unless another address has been approved for claiming, only an address can claim for itself
-    /// @param users Addresses for which claiming is taking place
-    /// @param tokens ERC20 token claimed
-    /// @param amounts Amount of tokens that will be sent to the corresponding users
-    /// @param proofs Array of hashes bridging from a leaf `(hash of user | token | amount)` to the Merkle root
-    function claim(
-        address[] calldata users,
-        address[] calldata tokens,
-        uint256[] calldata amounts,
-        bytes32[][] calldata proofs
-    ) external {
+    /// @notice Claims rewards for a set of users based on Merkle proofs
+    /// @param users Addresses claiming rewards (or being claimed for)
+    /// @param tokens ERC20 tokens being claimed
+    /// @param amounts Cumulative amounts earned (not incremental amounts)
+    /// @param proofs Merkle proofs validating each claim
+    /// @dev Users can only claim for themselves unless they've authorized an operator
+    /// @dev Arrays must all have the same length
+    function claim(address[] calldata users, address[] calldata tokens, uint256[] calldata amounts, bytes32[][] calldata proofs) external {
         address[] memory recipients = new address[](users.length);
         bytes[] memory datas = new bytes[](users.length);
         _claim(users, tokens, amounts, proofs, recipients, datas);
     }
 
-    /// @notice Same as the function above except that for each token claimed, the caller may set different
-    /// recipients for rewards and pass arbitrary data to the reward recipient on claim
-    /// @dev Only a `msg.sender` calling for itself can set a different recipient for the token rewards
-    /// within the context of a call to claim
-    /// @dev Non-zero recipient addresses given by the `msg.sender` can override any previously set reward address
+    /// @notice Claims rewards with custom recipient addresses and callback data
+    /// @param users Addresses claiming rewards (or being claimed for)
+    /// @param tokens ERC20 tokens being claimed
+    /// @param amounts Cumulative amounts earned (not incremental amounts)
+    /// @param proofs Merkle proofs validating each claim
+    /// @param recipients Custom recipient addresses for each claim (zero address = use default)
+    /// @param datas Arbitrary data passed to recipient's onClaim callback (if recipient is a contract)
+    /// @dev Only msg.sender claiming for themselves can override the recipient address
+    /// @dev Non-zero recipient addresses override any previously set default recipients
     function claimWithRecipient(
         address[] calldata users,
         address[] calldata tokens,
@@ -211,12 +225,18 @@ contract Distributor is UUPSHelper {
         _claim(users, tokens, amounts, proofs, recipients, datas);
     }
 
-    /// @notice Returns the Merkle root that is currently live for the contract
+    /// @notice Returns the currently active Merkle root for claim verification
+    /// @return The Merkle root that is currently valid for claims
+    /// @dev Returns lastTree.merkleRoot if within dispute period or if there's an active dispute
+    /// @dev Returns tree.merkleRoot if dispute period has passed and no active dispute
     function getMerkleRoot() public view returns (bytes32) {
         if (block.timestamp >= endOfDisputePeriod && disputer == address(0)) return tree.merkleRoot;
         else return lastTree.merkleRoot;
     }
 
+    /// @notice Returns the epoch duration used for dispute period calculations
+    /// @return epochDuration The current epoch duration in seconds
+    /// @dev Returns custom _epochDuration if set, otherwise returns default _EPOCH_DURATION (3600 seconds)
     function getEpochDuration() public view returns (uint32 epochDuration) {
         epochDuration = _epochDuration;
         if (epochDuration == 0) epochDuration = _EPOCH_DURATION;
@@ -226,27 +246,45 @@ contract Distributor is UUPSHelper {
                                                  USER ADMIN FUNCTIONS                                               
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
-    /// @notice Toggles whitelisting for a given user and a given operator
-    /// @dev When an operator is whitelisted for a user, the operator can claim rewards on behalf of the user
-    function toggleOperator(address user, address operator) external onlyTrustedOrUser(user) {
+    /// @notice Toggles an operator's authorization to claim rewards on behalf of a user
+    /// @param user User granting or revoking the authorization
+    /// @param operator Operator address being authorized or deauthorized
+    /// @dev When operator is address(0), it enables any address to claim for the user
+    /// @dev Only the user themselves or governance can toggle operator status
+    function toggleOperator(address user, address operator) external {
+        if (user != msg.sender && !accessControlManager.isGovernorOrGuardian(msg.sender)) revert Errors.NotTrusted();
         uint256 oldValue = operators[user][operator];
         operators[user][operator] = 1 - oldValue;
         emit OperatorToggled(user, operator, oldValue == 0);
     }
 
-    /// @notice Sets a recipient for a user claiming rewards for a token
-    /// @dev This is an optional functionality and if the `recipient` is set to the zero address, then
-    /// the user will still accrue all rewards to its address
-    /// @dev Users may still specify a different recipient when they claim token rewards with the
-    /// `claimWithRecipient` function
+    /// @notice Sets a custom recipient address for a user's token claims
+    /// @param recipient Address that will receive claimed tokens (zero address = default to user)
+    /// @param token Token for which to set the recipient (zero address = all tokens)
+    /// @dev Users can override this recipient when calling claimWithRecipient
+    /// @dev Setting recipient to address(0) removes the custom recipient
     function setClaimRecipient(address recipient, address token) external {
-        claimRecipient[msg.sender][token] = recipient;
-        emit ClaimRecipientUpdated(msg.sender, recipient, token);
+        _setClaimRecipient(msg.sender, recipient, token);
     }
 
-    /// @notice Freezes the Merkle tree update until the dispute is resolved
-    /// @dev Requires a deposit of `disputeToken` that'll be slashed if the dispute is not accepted
-    /// @dev It is only possible to create a dispute within `disputePeriod` after each tree update
+    /// @notice Toggles a main operator's authorization to claim tokens on behalf of any user
+    /// @param operator Operator whose status is being toggled
+    /// @param token Token for which authorization applies (zero address = all tokens)
+    /// @dev Only callable by guardian for an individual token or governor if it's for all tokens
+    /// @dev Main operators can claim for any user without individual user authorization
+    function toggleMainOperatorStatus(address operator, address token) external {
+        if (token == address(0)) _onlyGovernor();
+        else _onlyGuardian();
+        uint256 oldValue = mainOperators[operator][token];
+        mainOperators[operator][token] = 1 - oldValue;
+        emit MainOperatorStatusUpdated(operator, token, oldValue == 0);
+    }
+
+    /// @notice Creates a dispute to freeze the current Merkle tree update
+    /// @param reason Explanation for why the tree update is being disputed
+    /// @dev Requires depositing disputeAmount of disputeToken as collateral
+    /// @dev Can only dispute within disputePeriod after a tree update
+    /// @dev Deposit is slashed if dispute is rejected, returned if dispute is valid
     function disputeTree(string memory reason) external {
         if (disputer != address(0)) revert Errors.UnresolvedDispute();
         if (block.timestamp >= endOfDisputePeriod) revert Errors.InvalidDispute();
@@ -259,14 +297,17 @@ contract Distributor is UUPSHelper {
                                                  GOVERNANCE FUNCTIONS                                               
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
-    /// @notice Updates the Merkle tree
+    /// @notice Updates the active Merkle tree with new reward data
+    /// @param _tree New Merkle tree containing updated reward information
+    /// @dev Can only be called by trusted addresses or governor
+    /// @dev Trusted addresses cannot update during an active dispute period to prevent circumventing disputes
+    /// @dev Saves the current tree to lastTree before updating
     function updateTree(MerkleTree calldata _tree) external {
         if (
             disputer != address(0) ||
             // A trusted address cannot update a tree right after a precedent tree update otherwise it can de facto
             // validate a tree which has not passed the dispute period
-            ((canUpdateMerkleRoot[msg.sender] != 1 || block.timestamp < endOfDisputePeriod) &&
-                !accessControlManager.isGovernor(msg.sender))
+            ((canUpdateMerkleRoot[msg.sender] != 1 || block.timestamp < endOfDisputePeriod) && !accessControlManager.isGovernor(msg.sender))
         ) revert Errors.NotTrusted();
         MerkleTree memory _lastTree = tree;
         tree = _tree;
@@ -277,27 +318,37 @@ contract Distributor is UUPSHelper {
         emit TreeUpdated(_tree.merkleRoot, _tree.ipfsHash, _endOfPeriod);
     }
 
-    /// @notice Adds or removes addresses which are trusted to update the Merkle root
+    /// @notice Toggles an address's authorization to update the Merkle tree
+    /// @param trustAddress Address whose trusted status is being toggled
+    /// @dev Only callable by governor
+    /// @dev Trusted addresses can update trees but must wait for dispute periods
     function toggleTrusted(address trustAddress) external onlyGovernor {
         uint256 trustedStatus = 1 - canUpdateMerkleRoot[trustAddress];
         canUpdateMerkleRoot[trustAddress] = trustedStatus;
         emit TrustedToggled(trustAddress, trustedStatus == 1);
     }
 
-    /// @notice Prevents future contract upgrades
+    /// @notice Permanently disables contract upgradeability
+    /// @dev Only callable by governor
+    /// @dev This action is irreversible - use with extreme caution
     function revokeUpgradeability() external onlyGovernor {
         upgradeabilityDeactivated = 1;
         emit UpgradeabilityRevoked();
     }
 
-    /// @notice Updates the epoch duration period
+    /// @notice Updates the epoch duration used for dispute period calculations
+    /// @param epochDuration New epoch duration in seconds
+    /// @dev Only callable by governor
     function setEpochDuration(uint32 epochDuration) external onlyGovernor {
         _epochDuration = epochDuration;
         emit EpochDurationUpdated(epochDuration);
     }
 
-    /// @notice Resolve the ongoing dispute, if any
-    /// @param valid Whether the dispute was valid
+    /// @notice Resolves an ongoing dispute
+    /// @param valid True if the dispute is valid (tree will be reverted), false if invalid (disputer loses deposit)
+    /// @dev Only callable by governor
+    /// @dev If valid: returns deposit to disputer and reverts to lastTree
+    /// @dev If invalid: sends deposit to governor and extends dispute period
     function resolveDispute(bool valid) external onlyGovernor {
         if (disputer == address(0)) revert Errors.NoDispute();
         if (valid) {
@@ -312,33 +363,46 @@ contract Distributor is UUPSHelper {
         emit DisputeResolved(valid);
     }
 
-    /// @notice Allows the governor of this contract to fallback to the last version of the tree
-    /// immediately
+    /// @notice Reverts to the previous Merkle tree immediately
+    /// @dev Only callable by governor
+    /// @dev Cannot be called if there's an active dispute (must resolve dispute first)
     function revokeTree() external onlyGovernor {
         if (disputer != address(0)) revert Errors.UnresolvedDispute();
         _revokeTree();
     }
 
-    /// @notice Recovers any ERC20 token left on the contract
+    /// @notice Recovers ERC20 tokens accidentally sent to the contract
+    /// @param tokenAddress Address of the token to recover
+    /// @param to Address that will receive the recovered tokens
+    /// @param amountToRecover Amount of tokens to recover
+    /// @dev Only callable by governor
     function recoverERC20(address tokenAddress, address to, uint256 amountToRecover) external onlyGovernor {
         IERC20(tokenAddress).safeTransfer(to, amountToRecover);
         emit Recovered(tokenAddress, to, amountToRecover);
     }
 
-    /// @notice Sets the dispute period after which a tree update becomes effective
+    /// @notice Updates the dispute period duration
+    /// @param _disputePeriod New dispute period in epoch units
+    /// @dev Only callable by governor
     function setDisputePeriod(uint48 _disputePeriod) external onlyGovernor {
         disputePeriod = uint48(_disputePeriod);
         emit DisputePeriodUpdated(_disputePeriod);
     }
 
-    /// @notice Sets the token used as a caution during disputes
+    /// @notice Updates the token required as collateral for disputes
+    /// @param _disputeToken New dispute token address
+    /// @dev Only callable by governor
+    /// @dev Cannot be changed during an active dispute
     function setDisputeToken(IERC20 _disputeToken) external onlyGovernor {
         if (disputer != address(0)) revert Errors.UnresolvedDispute();
         disputeToken = _disputeToken;
         emit DisputeTokenUpdated(address(_disputeToken));
     }
 
-    /// @notice Sets the amount of `disputeToken` used as a caution during disputes
+    /// @notice Updates the amount of tokens required to create a dispute
+    /// @param _disputeAmount New dispute amount
+    /// @dev Only callable by governor
+    /// @dev Cannot be changed during an active dispute
     function setDisputeAmount(uint256 _disputeAmount) external onlyGovernor {
         if (disputer != address(0)) revert Errors.UnresolvedDispute();
         disputeAmount = _disputeAmount;
@@ -349,7 +413,15 @@ contract Distributor is UUPSHelper {
                                                    INTERNAL HELPERS                                                 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
-    /// @notice Internal version of `claimWithRecipient`
+    /// @notice Internal implementation of reward claiming with full recipient and callback support
+    /// @param users Addresses claiming rewards
+    /// @param tokens Tokens being claimed
+    /// @param amounts Cumulative earned amounts (not incremental)
+    /// @param proofs Merkle proofs for validation
+    /// @param recipients Custom recipient addresses (zero = use default)
+    /// @param datas Callback data for recipients
+    /// @dev Validates authorization, verifies proofs, updates claimed amounts, and transfers tokens
+    /// @dev Attempts to call onClaim callback on recipient if data is provided
     function _claim(
         address[] calldata users,
         address[] calldata tokens,
@@ -374,9 +446,16 @@ contract Distributor is UUPSHelper {
             uint256 amount = amounts[i];
             bytes memory data = datas[i];
 
-            // Only approved operator can claim for `user`
-            if (msg.sender != user && tx.origin != user && operators[user][msg.sender] == 0)
-                revert Errors.NotWhitelisted();
+            // Only approved operators can claim for `user`
+            if (
+                msg.sender != user &&
+                tx.origin != user &&
+                mainOperators[msg.sender][token] == 0 &&
+                mainOperators[msg.sender][address(0)] == 0 &&
+                operators[user][msg.sender] == 0 &&
+                operators[user][address(0)] == 0 &&
+                !accessControlManager.isGovernorOrGuardian(msg.sender)
+            ) revert Errors.NotWhitelisted();
 
             // Verifying proof
             bytes32 leaf = keccak256(abi.encode(user, token, amount));
@@ -392,6 +471,7 @@ contract Distributor is UUPSHelper {
             // The recipient set in the context of the call to `claim` can override the default recipient set by the user
             if (msg.sender != user || recipient == address(0)) {
                 address userSetRecipient = claimRecipient[user][token];
+                if (userSetRecipient == address(0)) userSetRecipient = claimRecipient[user][address(0)];
                 if (userSetRecipient == address(0)) recipient = user;
                 else recipient = userSetRecipient;
             }
@@ -399,9 +479,7 @@ contract Distributor is UUPSHelper {
             if (toSend != 0) {
                 IERC20(token).safeTransfer(recipient, toSend);
                 if (data.length != 0) {
-                    try IClaimRecipient(recipient).onClaim(user, token, amount, data) returns (
-                        bytes32 callbackSuccess
-                    ) {
+                    try IClaimRecipient(recipient).onClaim(user, token, amount, data) returns (bytes32 callbackSuccess) {
                         if (callbackSuccess != CALLBACK_SUCCESS) revert Errors.InvalidReturnMessage();
                     } catch {}
                 }
@@ -412,7 +490,8 @@ contract Distributor is UUPSHelper {
         }
     }
 
-    /// @notice Fallback to the last version of the tree
+    /// @notice Reverts to the previous Merkle tree
+    /// @dev Resets endOfDisputePeriod to 0 and emits both Revoked and TreeUpdated events
     function _revokeTree() internal {
         MerkleTree memory _tree = lastTree;
         endOfDisputePeriod = 0;
@@ -426,17 +505,20 @@ contract Distributor is UUPSHelper {
         );
     }
 
-    /// @notice Returns the end of the dispute period
-    /// @dev treeUpdate is rounded up to next hour and then `disputePeriod` hours are added
+    /// @notice Calculates when a tree update's dispute period ends
+    /// @param treeUpdate Timestamp when the tree was updated
+    /// @return Timestamp when the dispute period ends and tree becomes effective
+    /// @dev Rounds treeUpdate up to next epoch boundary, then adds disputePeriod epochs
     function _endOfDisputePeriod(uint48 treeUpdate) internal view returns (uint48) {
         uint32 epochDuration = getEpochDuration();
         return ((treeUpdate - 1) / epochDuration + 1 + disputePeriod) * (epochDuration);
     }
 
-    /// @notice Checks the validity of a proof
-    /// @param leaf Hashed leaf data, the starting point of the proof
-    /// @param proof Array of hashes forming a hash chain from leaf to root
-    /// @return true If proof is correct, else false
+    /// @notice Verifies a Merkle proof against the current active root
+    /// @param leaf Hashed leaf data representing the claim (user, token, amount)
+    /// @param proof Array of sibling hashes forming the path from leaf to root
+    /// @return True if the proof is valid, false otherwise
+    /// @dev Uses standard Merkle tree verification with sorted concatenation
     function _verifyProof(bytes32 leaf, bytes32[] memory proof) internal view returns (bool) {
         bytes32 currentHash = leaf;
         uint256 proofLength = proof.length;
@@ -453,5 +535,24 @@ contract Distributor is UUPSHelper {
         bytes32 root = getMerkleRoot();
         if (root == bytes32(0)) revert Errors.InvalidUninitializedRoot();
         return currentHash == root;
+    }
+
+    /// @notice Internal implementation for setting a claim recipient
+    /// @param user User for whom to set the recipient
+    /// @param recipient Address that will receive claimed tokens
+    /// @param token Token for which recipient is set (address(0) = all tokens)
+    function _setClaimRecipient(address user, address recipient, address token) internal {
+        claimRecipient[user][token] = recipient;
+        emit ClaimRecipientUpdated(user, recipient, token);
+    }
+
+    /// @notice Ensures the caller has governor role
+    function _onlyGovernor() internal view {
+        if (!accessControlManager.isGovernor(msg.sender)) revert Errors.NotGovernor();
+    }
+
+    /// @notice Ensures the caller has guardian role
+    function _onlyGuardian() internal view {
+        if (!accessControlManager.isGovernorOrGuardian(msg.sender)) revert Errors.NotGovernorOrGuardian();
     }
 }
