@@ -24,14 +24,12 @@
     "prettier": "prettier --ignore-path .gitignore --write '*.{js,ts,sol}'"
   },
   "keywords": [],
-  "author": "Angle Core Team",
+  "author": "Merkl SAS",
   "license": "BUSL-1.1",
   "bugs": {
     "url": "https://github.com/AngleProtocol/merkl-contracts/issues"
   },
   "devDependencies": {
-    "@merkl/registry": "latest",
-    "@angleprotocol/sdk": "^2.41.43",
     "@openzeppelin/contracts": "^4.9.0",
     "@openzeppelin/contracts-upgradeable": "4.9.0",
     "prettier": "^2.0.0",
@@ -42,5 +40,8 @@
     "forge-std": "github:foundry-rs/forge-std#v1.9.4",
     "utils": "github:AngleProtocol/utils"
   },
-  "dependencies": {}
+  "dependencies": {},
+  "resolutions": {
+    "minimatch": "9.0.5"
+  }
 }
