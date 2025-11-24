@@ -2,8 +2,8 @@
 pragma solidity ^0.8.17;
 
 import { console } from "forge-std/console.sol";
+import { Script } from "forge-std/Script.sol";
 import { ProxyAdmin } from "@openzeppelin/contracts/proxy/transparent/ProxyAdmin.sol";
-import { JsonReader } from "@utils/JsonReader.sol";
 import { BaseScript } from "./Base.s.sol";
 
 // Interface for scripts that can be executed across chains
@@ -12,7 +12,7 @@ interface IMultiChainScript {
     function executeOnChain(bytes calldata data) external;
 }
 
-contract ChainUtils is JsonReader {
+contract ChainUtils is Script {
     struct FailedChain {
         string network;
         uint256 chainId;
@@ -32,25 +32,14 @@ contract ChainUtils is JsonReader {
     event ChainExecutionCompleted(string network, uint256 chainId, bool success);
     event ChainExecutionFailed(string network, uint256 chainId, string reason);
 
-    function externalReadAddress(uint256 chainId, string memory key) public view returns (address) {
-        return readAddress(chainId, key);
-    }
-
     // Registry verification function
-    function verifyRegistryAddresses(
-        address _distributor,
-        address _core,
-        address _multisig,
-        address _proxyAdmin
-    ) public view {
+    function verifyRegistryAddresses(address _distributor, address _core, address _multisig, address _proxyAdmin) public view {
         bytes memory coreData;
         (bool success, bytes memory returnData) = _distributor.staticcall(abi.encodeWithSignature("core()"));
         if (success) {
             coreData = returnData;
         } else {
-            (bool success2, bytes memory returnData2) = _distributor.staticcall(
-                abi.encodeWithSignature("accessControlManager()")
-            );
+            (bool success2, bytes memory returnData2) = _distributor.staticcall(abi.encodeWithSignature("accessControlManager()"));
             require(success2, "Invalid accessControlManager()");
             coreData = returnData2;
         }
@@ -111,25 +100,19 @@ contract ChainUtils is JsonReader {
                 forkSuccess = false;
                 console.log("[FAILED] Failed to create fork for network:", network);
             }
-
             if (forkSuccess) {
                 uint256 chainId = block.chainid;
                 emit ChainExecutionStarted(network, chainId);
 
-                results[totalChains] = ExecutionResult({
-                    network: network,
-                    chainId: chainId,
-                    success: false,
-                    reason: "",
-                    returnData: ""
-                });
+                results[totalChains] = ExecutionResult({ network: network, chainId: chainId, success: false, reason: "", returnData: "" });
 
                 if (verificationOnly) {
                     // Perform registry verification
-                    address _distributor = readAddress(chainId, "Distributor");
-                    address _core = readAddress(chainId, "CoreMerkl");
-                    address _multisig = readAddress(chainId, "Multisig");
-                    address _proxyAdmin = readAddress(chainId, "ProxyAdmin");
+                    address _distributor = 0x3Ef3D8bA38EBe18DB133cEc108f4D14CE00Dd9Ae;
+                    // TODO: replace
+                    address _core = address(0);
+                    address _multisig = address(0);
+                    address _proxyAdmin = address(0);
 
                     verifyRegistryAddresses(_distributor, _core, _multisig, _proxyAdmin);
                     results[totalChains].success = true;
@@ -165,10 +148,7 @@ contract ChainUtils is JsonReader {
     }
 
     // Execute a specific script with error handling
-    function executeScript(
-        address scriptContract,
-        bytes memory data
-    ) internal virtual returns (bool success, string memory errorReason) {
+    function executeScript(address scriptContract, bytes memory data) internal virtual returns (bool success, string memory errorReason) {
         if (scriptContract == address(0)) {
             return (false, "Script contract cannot be zero address");
         }
@@ -305,10 +285,11 @@ contract ChainUtilsScript is BaseScript, ChainUtils {
         vm.createSelectFork(network);
         uint256 chainId = block.chainid;
 
-        address _distributor = readAddress(chainId, "Distributor");
-        address _core = readAddress(chainId, "CoreMerkl");
-        address _multisig = readAddress(chainId, "Multisig");
-        address _proxyAdmin = readAddress(chainId, "ProxyAdmin");
+        address _distributor = 0x3Ef3D8bA38EBe18DB133cEc108f4D14CE00Dd9Ae;
+        // TODO: replace
+        address _core = address(0);
+        address _multisig = address(0);
+        address _proxyAdmin = address(0);
 
         verifyRegistryAddresses(_distributor, _core, _multisig, _proxyAdmin);
         console.log("[SUCCESS] Registry verification completed for", network);

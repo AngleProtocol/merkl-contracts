@@ -3,7 +3,6 @@ pragma solidity ^0.8.17;
 
 import { console } from "forge-std/console.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import { JsonReader } from "@utils/JsonReader.sol";
 
 import { BaseScript } from "./utils/Base.s.sol";
 import { PointToken } from "../contracts/partners/tokenWrappers/PointToken.sol";
@@ -11,7 +10,7 @@ import { DistributionCreator } from "../contracts/DistributionCreator.sol";
 import { IAccessControlManager } from "../contracts/interfaces/IAccessControlManager.sol";
 
 // Base contract with shared constants and utilities
-contract PointTokenScript is BaseScript, JsonReader {
+contract PointTokenScript is BaseScript {
     // Common constants and utilities for PointToken scripts
 }
 
@@ -28,7 +27,6 @@ contract DeployPointToken is PointTokenScript {
         address creator = 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701;
         uint8 decimals = 18;
 
-        // address accessControlManager = readAddress(chainId, "Merkl.CoreMerkl");
         address accessControlManager = address(DistributionCreator(0x8BB4C975Ff3c250e0ceEA271728547f3802B36Fd).accessControlManager());
         _run(name, symbol, minter, accessControlManager, amount, creator);
     }

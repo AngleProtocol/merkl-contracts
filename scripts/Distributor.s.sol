@@ -4,7 +4,6 @@ pragma solidity ^0.8.17;
 import { console } from "forge-std/console.sol";
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import { JsonReader } from "@utils/JsonReader.sol";
 import { ITransparentUpgradeableProxy } from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
 import { ProxyAdmin } from "@openzeppelin/contracts/proxy/transparent/ProxyAdmin.sol";
 
@@ -15,15 +14,15 @@ import { IAccessControlManager } from "../contracts/interfaces/IAccessControlMan
 import { AccessControlManager } from "../contracts/AccessControlManager.sol";
 
 // Base contract with shared utilities
-contract DistributorScript is BaseScript, JsonReader {}
+contract DistributorScript is BaseScript {}
 
 // Deploy script
 contract Deploy is DistributorScript {
     function run() external broadcast {
         uint256 chainId = block.chainid;
         console.log("DEPLOYER_ADDRESS:", broadcaster);
-
-        address accessControlManager = readAddress(chainId, "CoreMerkl");
+        // TODO
+        address accessControlManager = address(0);
 
         // Deploy implementation
         Distributor implementation = new Distributor();
@@ -53,7 +52,8 @@ contract UpdateTree is DistributorScript {
 
     function _run(bytes32 merkleRoot, bytes32 ipfsHash) internal {
         uint256 chainId = block.chainid;
-        address distributorAddress = readAddress(chainId, "Distributor");
+        // TODO
+        address distributorAddress = address(0);
 
         MerkleTree memory newTree = MerkleTree({ merkleRoot: merkleRoot, ipfsHash: ipfsHash });
 
@@ -78,7 +78,7 @@ contract DisputeTree is DistributorScript {
 
     function _run(string memory reason) internal {
         uint256 chainId = block.chainid;
-        address distributorAddress = readAddress(chainId, "Distributor");
+        address distributorAddress = 0x3Ef3D8bA38EBe18DB133cEc108f4D14CE00Dd9Ae;
 
         // Get dispute token and amount from the distributor
         IERC20 disputeToken = Distributor(distributorAddress).disputeToken();
@@ -110,7 +110,7 @@ contract ResolveDispute is DistributorScript {
 
     function _run(bool valid) internal {
         uint256 chainId = block.chainid;
-        address distributorAddress = readAddress(chainId, "Distributor");
+        address distributorAddress = 0x3Ef3D8bA38EBe18DB133cEc108f4D14CE00Dd9Ae;
 
         Distributor(distributorAddress).resolveDispute(valid);
 
@@ -122,7 +122,7 @@ contract ResolveDispute is DistributorScript {
 contract RevokeTree is DistributorScript {
     function run() external broadcast {
         uint256 chainId = block.chainid;
-        address distributorAddress = readAddress(chainId, "Distributor");
+        address distributorAddress = 0x3Ef3D8bA38EBe18DB133cEc108f4D14CE00Dd9Ae;
 
         Distributor(distributorAddress).revokeTree();
 
@@ -146,7 +146,7 @@ contract ToggleOperator is DistributorScript {
 
     function _run(address user, address operator) internal {
         uint256 chainId = block.chainid;
-        address distributorAddress = readAddress(chainId, "Distributor");
+        address distributorAddress = 0x3Ef3D8bA38EBe18DB133cEc108f4D14CE00Dd9Ae;
 
         Distributor(distributorAddress).toggleOperator(user, operator);
 
@@ -170,7 +170,7 @@ contract RecoverERC20 is DistributorScript {
 
     function _run(address token, address to, uint256 amount) internal {
         uint256 chainId = block.chainid;
-        address distributorAddress = readAddress(chainId, "Distributor");
+        address distributorAddress = 0x3Ef3D8bA38EBe18DB133cEc108f4D14CE00Dd9Ae;
 
         Distributor(distributorAddress).recoverERC20(token, to, amount);
 
@@ -192,7 +192,7 @@ contract SetDisputeToken is DistributorScript {
 
     function _run(IERC20 token) internal {
         uint256 chainId = block.chainid;
-        address distributorAddress = readAddress(chainId, "Distributor");
+        address distributorAddress = 0x3Ef3D8bA38EBe18DB133cEc108f4D14CE00Dd9Ae;
 
         Distributor(distributorAddress).setDisputeToken(token);
 
@@ -214,7 +214,7 @@ contract SetDisputeAmount is DistributorScript {
 
     function _run(uint256 amount) internal {
         uint256 chainId = block.chainid;
-        address distributorAddress = readAddress(chainId, "Distributor");
+        address distributorAddress = 0x3Ef3D8bA38EBe18DB133cEc108f4D14CE00Dd9Ae;
 
         Distributor(distributorAddress).setDisputeAmount(amount);
 
@@ -236,7 +236,7 @@ contract SetDisputePeriod is DistributorScript {
 
     function _run(uint48 period) internal {
         uint256 chainId = block.chainid;
-        address distributorAddress = readAddress(chainId, "Distributor");
+        address distributorAddress = 0x3Ef3D8bA38EBe18DB133cEc108f4D14CE00Dd9Ae;
 
         Distributor(distributorAddress).setDisputePeriod(period);
 
@@ -258,7 +258,7 @@ contract ToggleTrusted is DistributorScript {
 
     function _run(address eoa) internal {
         uint256 chainId = block.chainid;
-        address distributorAddress = readAddress(chainId, "Distributor");
+        address distributorAddress = 0x3Ef3D8bA38EBe18DB133cEc108f4D14CE00Dd9Ae;
 
         Distributor(distributorAddress).toggleTrusted(eoa);
 
@@ -286,14 +286,9 @@ contract Claim is DistributorScript {
         _run(users, tokens, amounts, proofs);
     }
 
-    function _run(
-        address[] memory users,
-        address[] memory tokens,
-        uint256[] memory amounts,
-        bytes32[][] memory proofs
-    ) internal {
+    function _run(address[] memory users, address[] memory tokens, uint256[] memory amounts, bytes32[][] memory proofs) internal {
         uint256 chainId = block.chainid;
-        address distributorAddress = readAddress(chainId, "Distributor");
+        address distributorAddress = 0x3Ef3D8bA38EBe18DB133cEc108f4D14CE00Dd9Ae;
 
         Distributor(distributorAddress).claim(users, tokens, amounts, proofs);
 
@@ -304,37 +299,24 @@ contract Claim is DistributorScript {
 contract BuildUpgradeToPayload is DistributorScript {
     function run() external broadcast {
         uint256 chainId = block.chainid;
-        address distributor = readAddress(chainId, "Distributor");
+        address distributor = 0x3Ef3D8bA38EBe18DB133cEc108f4D14CE00Dd9Ae;
 
         address distributorImpl = address(new Distributor());
 
         bytes memory payload = abi.encodeWithSelector(ITransparentUpgradeableProxy.upgradeTo.selector, distributorImpl);
 
-        try this.externalReadAddress(chainId, "Multisig") returns (address safe) {
-            _serializeJson(
-                chainId,
-                distributor, // target address (the proxy)
-                0, // value
-                payload, // direct upgrade call
-                Operation.Call, // standard call (not delegate)
-                hex"", // signature
-                safe // safe address
-            );
-        } catch {}
-    }
-
-    function externalReadAddress(uint256 chainId, string memory key) external view returns (address) {
-        return readAddress(chainId, key);
+        address safe = address(0);
     }
 }
 
 contract DisputeCheck is DistributorScript, ChainUtils {
     function run() external broadcast {
         uint256 chainId = block.chainid;
-        address _distributor = readAddress(chainId, "Distributor");
-        address _core = readAddress(chainId, "CoreMerkl");
-        address _multisig = readAddress(chainId, "Multisig");
-        address _proxyAdmin = readAddress(chainId, "ProxyAdmin");
+        address _distributor = 0x3Ef3D8bA38EBe18DB133cEc108f4D14CE00Dd9Ae;
+        // TODO: replace
+        address _core = address(0);
+        address _multisig = address(0);
+        address _proxyAdmin = address(0);
 
         // Now we can call verifyRegistryAddresses directly!
         verifyRegistryAddresses(_distributor, _core, _multisig, _proxyAdmin);
@@ -349,14 +331,10 @@ contract DisputeCheck is DistributorScript, ChainUtils {
             disputeAmount = 100 * 10 ** 6;
             disputeToken = address(0x79A02482A880bCE3F13e09Da970dC34db4CD24d1); // worldchain 480
 
-            bytes memory setDisputeTokenPayload = abi.encodeWithSelector(
-                Distributor.setDisputeToken.selector,
-                disputeToken
-            );
+            bytes memory setDisputeTokenPayload = abi.encodeWithSelector(Distributor.setDisputeToken.selector, disputeToken);
 
-            // address safe = readAddress(chainId, "AngleLabs");
             // console.log("Safe address: %s", safe);
-            address safe = readAddress(chainId, "Multisig");
+            address safe = address(0);
             _serializeJson(
                 chainId,
                 _distributor, // target address (the DistributionCreator proxy)

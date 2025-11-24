@@ -6,8 +6,6 @@ import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy
 import { ITransparentUpgradeableProxy } from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { IERC20Metadata } from "@openzeppelin/contracts/interfaces/IERC20Metadata.sol";
-import { JsonReader } from "@utils/JsonReader.sol";
-import { ContractType } from "@utils/Constants.sol";
 
 import { BaseScript } from "./utils/Base.s.sol";
 import { DistributionCreator } from "../contracts/DistributionCreator.sol";
@@ -16,7 +14,7 @@ import { CampaignParameters } from "../contracts/struct/CampaignParameters.sol";
 import { MockToken } from "../contracts/mock/MockToken.sol";
 
 // Base contract with shared utilities
-contract DistributionCreatorScript is BaseScript, JsonReader {
+contract DistributionCreatorScript is BaseScript {
     struct CampaignInput {
         address creator;
         address rewardToken;
@@ -35,8 +33,8 @@ contract Deploy is DistributionCreatorScript {
         console.log("DEPLOYER_ADDRESS:", broadcaster);
 
         // Read configuration from JSON
-        address accessControlManager = readAddress(chainId, "Core");
-        address distributor = readAddress(chainId, "Distributor");
+        address accessControlManager = address(0);
+        address distributor = 0x3Ef3D8bA38EBe18DB133cEc108f4D14CE00Dd9Ae;
         uint256 defaultFees = 0.03 gwei; // 0.03 gwei
 
         // Deploy implementation
@@ -77,7 +75,7 @@ contract SetNewDistributor is DistributionCreatorScript {
 
     function _run(address _distributor) internal broadcast {
         uint256 chainId = block.chainid;
-        address creatorAddress = readAddress(chainId, "DistributionCreator");
+        address creatorAddress = 0x8BB4C975Ff3c250e0ceEA271728547f3802B36Fd;
 
         DistributionCreator(creatorAddress).setNewDistributor(_distributor);
 
@@ -99,7 +97,7 @@ contract SetFees is DistributionCreatorScript {
 
     function _run(uint256 _fees) internal broadcast {
         uint256 chainId = block.chainid;
-        address creatorAddress = readAddress(chainId, "DistributionCreator");
+        address creatorAddress = 0x8BB4C975Ff3c250e0ceEA271728547f3802B36Fd;
 
         DistributionCreator(creatorAddress).setFees(_fees);
 
@@ -122,7 +120,7 @@ contract SetCampaignFees is DistributionCreatorScript {
 
     function _run(uint32 _campaignType, uint256 _fees) internal broadcast {
         uint256 chainId = block.chainid;
-        address creatorAddress = readAddress(chainId, "DistributionCreator");
+        address creatorAddress = 0x8BB4C975Ff3c250e0ceEA271728547f3802B36Fd;
 
         DistributionCreator(creatorAddress).setCampaignFees(_campaignType, _fees);
 
@@ -145,7 +143,7 @@ contract RecoverFees is DistributionCreatorScript {
 
     function _run(IERC20[] memory _tokens, address _to) internal broadcast {
         uint256 chainId = block.chainid;
-        address creatorAddress = readAddress(chainId, "DistributionCreator");
+        address creatorAddress = 0x8BB4C975Ff3c250e0ceEA271728547f3802B36Fd;
 
         DistributionCreator(creatorAddress).recoverFees(_tokens, _to);
 
@@ -190,7 +188,7 @@ contract SetRewardTokenMinAmounts is DistributionCreatorScript {
 
     function _run(address[] memory _tokens, uint256[] memory _amounts) internal broadcast {
         uint256 chainId = block.chainid;
-        // address creatorAddress = readAddress(chainId, "DistributionCreator");
+        // address creatorAddress = 0x8BB4C975Ff3c250e0ceEA271728547f3802B36Fd;
         address creatorAddress = 0x8BB4C975Ff3c250e0ceEA271728547f3802B36Fd;
 
         DistributionCreator(creatorAddress).setRewardTokenMinAmounts(_tokens, _amounts);
@@ -213,7 +211,7 @@ contract SetFeeRecipient is DistributionCreatorScript {
 
     function _run(address _recipient) internal broadcast {
         uint256 chainId = block.chainid;
-        address creatorAddress = readAddress(chainId, "DistributionCreator");
+        address creatorAddress = 0x8BB4C975Ff3c250e0ceEA271728547f3802B36Fd;
 
         DistributionCreator(creatorAddress).setFeeRecipient(_recipient);
 
@@ -235,7 +233,7 @@ contract SetMessage is DistributionCreatorScript {
 
     function _run(string memory _message) internal broadcast {
         uint256 chainId = block.chainid;
-        address creatorAddress = readAddress(chainId, "DistributionCreator");
+        address creatorAddress = 0x8BB4C975Ff3c250e0ceEA271728547f3802B36Fd;
 
         DistributionCreator(creatorAddress).setMessage(_message);
 
@@ -247,7 +245,7 @@ contract SetMessage is DistributionCreatorScript {
 contract GetMessage is DistributionCreatorScript {
     function run() external broadcast {
         uint256 chainId = block.chainid;
-        address creatorAddress = readAddress(chainId, "DistributionCreator");
+        address creatorAddress = 0x8BB4C975Ff3c250e0ceEA271728547f3802B36Fd;
 
         console.log("Creator address:", creatorAddress);
         string memory message = DistributionCreator(creatorAddress).message();
@@ -270,7 +268,7 @@ contract ToggleSigningWhitelist is DistributionCreatorScript {
 
     function _run(address _user) internal broadcast {
         uint256 chainId = block.chainid;
-        address creatorAddress = readAddress(chainId, "DistributionCreator");
+        address creatorAddress = 0x8BB4C975Ff3c250e0ceEA271728547f3802B36Fd;
 
         DistributionCreator(creatorAddress).toggleSigningWhitelist(_user);
 
@@ -282,7 +280,7 @@ contract ToggleSigningWhitelist is DistributionCreatorScript {
 contract AcceptConditions is DistributionCreatorScript {
     function run() external broadcast {
         uint256 chainId = block.chainid;
-        address creatorAddress = readAddress(chainId, "DistributionCreator");
+        address creatorAddress = 0x8BB4C975Ff3c250e0ceEA271728547f3802B36Fd;
 
         DistributionCreator(creatorAddress).acceptConditions();
 
@@ -330,7 +328,7 @@ contract CreateCampaign is DistributionCreatorScript {
 
     function _run(CampaignParameters memory campaign) internal {
         uint256 chainId = block.chainid;
-        address creatorAddress = readAddress(chainId, "DistributionCreator");
+        address creatorAddress = 0x8BB4C975Ff3c250e0ceEA271728547f3802B36Fd;
         IERC20(campaign.rewardToken).approve(creatorAddress, campaign.amount);
         bytes32 campaignId = DistributionCreator(creatorAddress).createCampaign(campaign);
 
@@ -452,7 +450,7 @@ contract CreateCampaigns is DistributionCreatorScript {
     }
 
     function _run(CampaignInput[] memory inputs) internal {
-        address creatorAddress = readAddress(block.chainid, "DistributionCreator");
+        address creatorAddress = 0x8BB4C975Ff3c250e0ceEA271728547f3802B36Fd;
         DistributionCreator creator = DistributionCreator(creatorAddress);
 
         uint256 inputsLength = inputs.length;
@@ -485,7 +483,7 @@ contract CreateCampaigns is DistributionCreatorScript {
 contract OverrideCampaign is DistributionCreatorScript {
     function run() external broadcast {
         uint256 chainId = block.chainid;
-        address creatorAddress = readAddress(chainId, "DistributionCreator");
+        address creatorAddress = 0x8BB4C975Ff3c250e0ceEA271728547f3802B36Fd;
         // MODIFY THESE VALUES TO SET YOUR DESIRED CAMPAIGN PARAMETERS
         bytes32 campaignId = 0xf93a5b762bd5a2a3e6cf6dcb83cb54f70ab2de457e0dc4cbb4da29ba8b54e4ad;
         address targetToken = address(0x1337BedC9D22ecbe766dF105c9623922A27963EC);
@@ -517,7 +515,7 @@ contract OverrideCampaign is DistributionCreatorScript {
 
     function _run(CampaignParameters memory campaign) internal {
         uint256 chainId = block.chainid;
-        address creatorAddress = readAddress(chainId, "DistributionCreator");
+        address creatorAddress = 0x8BB4C975Ff3c250e0ceEA271728547f3802B36Fd;
         IERC20(campaign.rewardToken).approve(creatorAddress, campaign.amount);
         DistributionCreator(creatorAddress).overrideCampaign(campaign.campaignId, campaign);
 
@@ -528,7 +526,7 @@ contract OverrideCampaign is DistributionCreatorScript {
 contract ReallocateCampaign is DistributionCreatorScript {
     function run() external broadcast {
         uint256 chainId = block.chainid;
-        address creatorAddress = readAddress(chainId, "DistributionCreator");
+        address creatorAddress = 0x8BB4C975Ff3c250e0ceEA271728547f3802B36Fd;
         // MODIFY THESE VALUES TO SET YOUR DESIRED CAMPAIGN PARAMETERS
         bytes32 campaignId = 0x490af89ce201bb272809983117aa95ce4a6cfcbb178343076519fc80ec2ff408;
         address[] memory froms = new address[](2);
@@ -546,7 +544,7 @@ contract ReallocateCampaign is DistributionCreatorScript {
 
     function _run(bytes32 campaignId, address[] memory froms, address to) internal {
         uint256 chainId = block.chainid;
-        address creatorAddress = readAddress(chainId, "DistributionCreator");
+        address creatorAddress = 0x8BB4C975Ff3c250e0ceEA271728547f3802B36Fd;
         DistributionCreator(creatorAddress).reallocateCampaignRewards(campaignId, froms, to);
     }
 }
@@ -554,7 +552,7 @@ contract ReallocateCampaign is DistributionCreatorScript {
 contract ReallocateCampaigns is DistributionCreatorScript {
     function run() external broadcast {
         uint256 chainId = block.chainid;
-        address creatorAddress = readAddress(chainId, "DistributionCreator");
+        address creatorAddress = 0x8BB4C975Ff3c250e0ceEA271728547f3802B36Fd;
         // MODIFY THESE VALUES TO SET YOUR DESIRED CAMPAIGN PARAMETERS
 
         // MAINNET
@@ -605,7 +603,7 @@ contract ReallocateCampaigns is DistributionCreatorScript {
 
     function _run(bytes32 campaignId, address[] memory froms, address to) internal {
         uint256 chainId = block.chainid;
-        address creatorAddress = readAddress(chainId, "DistributionCreator");
+        address creatorAddress = 0x8BB4C975Ff3c250e0ceEA271728547f3802B36Fd;
         DistributionCreator(creatorAddress).reallocateCampaignRewards(campaignId, froms, to);
     }
 }
@@ -621,7 +619,7 @@ contract CreateCampaignTest is DistributionCreatorScript {
         uint256 amount = 100 ether;
         /// END
 
-        address creatorAddress = readAddress(chainId, "DistributionCreator");
+        address creatorAddress = 0x8BB4C975Ff3c250e0ceEA271728547f3802B36Fd;
         DistributionCreator distributionCreator = DistributionCreator(creatorAddress);
 
         vm.startBroadcast(broadcaster);
@@ -668,27 +666,24 @@ contract CreateCampaignTest is DistributionCreatorScript {
 contract UpgradeAndBuildUpgradeToPayload is DistributionCreatorScript {
     function run() external broadcast {
         uint256 chainId = block.chainid;
-        address distributionCreator = readAddress(chainId, "DistributionCreator");
+        address distributionCreator = 0x8BB4C975Ff3c250e0ceEA271728547f3802B36Fd;
 
         address distributionCreatorImpl = address(new DistributionCreator());
 
         bytes memory payload = abi.encodeWithSelector(ITransparentUpgradeableProxy.upgradeTo.selector, distributionCreatorImpl);
 
-        try this.externalReadAddress(chainId, "Multisig") returns (address safe) {
-            _serializeJson(
-                chainId,
-                distributionCreator, // target address (the proxy)
-                0, // value
-                payload, // direct upgrade call
-                Operation.Call, // standard call (not delegate)
-                hex"", // signature
-                safe // safe address
-            );
-        } catch {}
-    }
+        // TODO: Set safe address if needed
+        address safe = address(0);
 
-    function externalReadAddress(uint256 chainId, string memory key) external view returns (address) {
-        return readAddress(chainId, key);
+        _serializeJson(
+            chainId,
+            distributionCreator, // target address (the proxy)
+            0, // value
+            payload, // direct upgrade call
+            Operation.Call, // standard call (not delegate)
+            hex"", // signature
+            safe // safe address
+        );
     }
 }
 
@@ -709,7 +704,7 @@ contract SetRewardTokenMinAmountsDistributor is DistributionCreatorScript {
 
     function _run(address[] memory tokens, uint256[] memory minAmounts) internal {
         uint256 chainId = block.chainid;
-        address creatorAddress = readAddress(chainId, "DistributionCreator");
+        address creatorAddress = 0x8BB4C975Ff3c250e0ceEA271728547f3802B36Fd;
 
         DistributionCreator(creatorAddress).setRewardTokenMinAmounts(tokens, minAmounts);
     }
@@ -721,10 +716,6 @@ contract SetFeesMultichain is DistributionCreatorScript {
         string network;
         uint256 chainId;
         string reason;
-    }
-
-    function externalReadAddress(uint256 chainId, string memory key) public view returns (address) {
-        return readAddress(chainId, key);
     }
 
     function run() external {
@@ -756,7 +747,7 @@ contract SetFeesMultichain is DistributionCreatorScript {
             // // Create fork for this network
             vm.createSelectFork(network);
             uint256 chainId = block.chainid;
-            address creatorAddress = readAddress(chainId, "Merkl.DistributionCreator");
+            address creatorAddress = 0x8BB4C975Ff3c250e0ceEA271728547f3802B36Fd;
 
             // Create contract instances to reuse existing logic
             // SetFees setFeesContract = new SetFees();
@@ -766,9 +757,8 @@ contract SetFeesMultichain is DistributionCreatorScript {
             // TODO: Instead of broadcasting, we should just write the transaction to the json file
             bytes memory setFeesPayload = abi.encodeWithSelector(DistributionCreator.setFees.selector, defaultFees);
 
-            // address safe = readAddress(chainId, "AngleLabs");
             // console.log("Safe address: %s", safe);
-            address safe = readAddress(chainId, "AngleLabs");
+            address safe = address(0);
             _serializeJson(
                 chainId,
                 creatorAddress, // target address (the DistributionCreator proxy)

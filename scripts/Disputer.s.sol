@@ -3,7 +3,6 @@ pragma solidity ^0.8.17;
 
 import { console } from "forge-std/console.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import { JsonReader } from "@utils/JsonReader.sol";
 
 import { BaseScript } from "./utils/Base.s.sol";
 import { Disputer } from "../contracts/Disputer.sol";
@@ -13,7 +12,7 @@ import { TokensUtils } from "./utils/TokensUtils.sol";
 import { CreateXConstants } from "./utils/CreateXConstants.sol";
 
 // Base contract with shared constants and utilities
-contract DisputerScript is BaseScript, JsonReader {
+contract DisputerScript is BaseScript {
     address[] public DISPUTER_WHITELIST = [
         0xeA05F9001FbDeA6d4280879f283Ff9D0b282060e,
         0x0dd2Ea40A3561C309C03B96108e78d06E8A1a99B,
@@ -28,15 +27,12 @@ contract Deploy is DisputerScript {
         console.log("DEPLOYER_ADDRESS:", broadcaster);
 
         // Read configuration from JSON
-        address angleLabs = readAddress(chainId, "Multisig");
-        address distributor = readAddress(chainId, "Distributor");
+        // TODO: replace
+        address angleLabs = address(0);
+        address distributor = 0x3Ef3D8bA38EBe18DB133cEc108f4D14CE00Dd9Ae;
 
         address disputer = address(
-            new Disputer{ salt: vm.envBytes32("DEPLOY_SALT") }(
-                broadcaster,
-                DISPUTER_WHITELIST,
-                Distributor(distributor)
-            )
+            new Disputer{ salt: vm.envBytes32("DEPLOY_SALT") }(broadcaster, DISPUTER_WHITELIST, Distributor(distributor))
         );
         Disputer(disputer).transferOwnership(angleLabs);
 
@@ -58,7 +54,8 @@ contract SetDistributor is DisputerScript {
 
     function _run(Distributor _newDistributor) internal broadcast {
         uint256 chainId = block.chainid;
-        address disputerAddress = readAddress(chainId, "Disputer");
+        // TODO: replace
+        address disputerAddress = address(0);
 
         Disputer(disputerAddress).setDistributor(_newDistributor);
 
@@ -80,7 +77,8 @@ contract AddToWhitelist is DisputerScript {
 
     function _run(address _account) internal broadcast {
         uint256 chainId = block.chainid;
-        address disputerAddress = readAddress(chainId, "Disputer");
+        // TODO: replace
+        address disputerAddress = address(0);
 
         Disputer(disputerAddress).addToWhitelist(_account);
 
@@ -102,7 +100,8 @@ contract RemoveFromWhitelist is DisputerScript {
 
     function _run(address _account) internal broadcast {
         uint256 chainId = block.chainid;
-        address disputerAddress = readAddress(chainId, "Disputer");
+        // TODO: replace
+        address disputerAddress = address(0);
 
         Disputer(disputerAddress).removeFromWhitelist(_account);
         console.log("Address removed from whitelist:", _account);
@@ -156,7 +155,8 @@ contract FundDisputer is DisputerScript {
 
     function _run(uint256 _amountToFund) internal broadcast {
         uint256 chainId = block.chainid;
-        address disputerAddress = readAddress(chainId, "Disputer");
+        // TODO: replace
+        address disputerAddress = address(0);
 
         IERC20 disputeToken = Disputer(disputerAddress).distributor().disputeToken();
         console.log("Transferring %s to %s", _amountToFund, disputerAddress);
@@ -179,7 +179,8 @@ contract WithdrawFunds is DisputerScript {
 
     function _run(address asset, address to, uint256 _amountToWithdraw) internal broadcast {
         uint256 chainId = block.chainid;
-        address disputerAddress = readAddress(chainId, "Disputer");
+        // TODO: replace
+        address disputerAddress = address(0);
         Disputer disputer = Disputer(disputerAddress);
 
         if (asset == address(0)) {
@@ -208,7 +209,8 @@ contract ToggleDispute is DisputerScript {
 
     function _run(string memory _reason) internal broadcast {
         uint256 chainId = block.chainid;
-        address disputerAddress = readAddress(chainId, "Disputer");
+        // TODO: replace
+        address disputerAddress = address(0);
         Disputer(disputerAddress).toggleDispute(_reason);
         console.log("Toggled dispute for:", _reason);
     }
@@ -217,7 +219,7 @@ contract ToggleDispute is DisputerScript {
 contract DeployWithCreate is DisputerScript, TokensUtils, CreateXConstants {
     function run(address disputeToken) external broadcast {
         uint256 chainId = block.chainid;
-        address distributor = readAddress(chainId, "Distributor");
+        address distributor = 0x3Ef3D8bA38EBe18DB133cEc108f4D14CE00Dd9Ae;
 
         deployDisputer(distributor, disputeToken);
     }
