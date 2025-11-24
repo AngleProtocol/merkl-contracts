@@ -1499,10 +1499,7 @@ contract UpgradeDistributionCreatorTest is Test {
         assertEq(distributionCreator.feeRebate(testAddr), 0);
         assertEq(distributionCreator.isWhitelistedToken(0xA61BeB4A3d02decb01039e378237032B351125B4), 1);
         assertEq(distributionCreator._nonces(testAddr), 4);
-        assertEq(
-            distributionCreator.userSignatures(testAddr),
-            0x08dabc24dcfcb230453d08bce47c730ed6f1cce205bc153680488959b503644e
-        );
+        assertEq(distributionCreator.userSignatures(testAddr), 0x08dabc24dcfcb230453d08bce47c730ed6f1cce205bc153680488959b503644e);
         assertEq(distributionCreator.userSignatureWhitelist(testAddr), 0);
 
         // Verify reward tokens
@@ -1533,10 +1530,7 @@ contract UpgradeDistributionCreatorTest is Test {
 
         // Verify revert on invalid campaign override timestamp
         vm.expectRevert();
-        distributionCreator.campaignOverridesTimestamp(
-            0x4e2bf13f682a244a80e0f25e1545fc8ad3a181d60658d22a3d347ee493e2a740,
-            0
-        );
+        distributionCreator.campaignOverridesTimestamp(0x4e2bf13f682a244a80e0f25e1545fc8ad3a181d60658d22a3d347ee493e2a740, 0);
     }
 
     function test_UpgradeTo_Revert_WhenNonGovernor() public {
@@ -1624,11 +1618,7 @@ contract UpgradeDistributionCreatorTest is Test {
         froms[0] = 0x15775b23340C0f50E0428D674478B0e9D3D0a759;
         froms[1] = 0xe4BB74804edf5280c9203f034036f7CB15196078;
 
-        vm.warp(
-            distributionCreator.campaign(testCampaignId).startTimestamp +
-                distributionCreator.campaign(testCampaignId).duration +
-                1
-        );
+        vm.warp(distributionCreator.campaign(testCampaignId).startTimestamp + distributionCreator.campaign(testCampaignId).duration + 1);
 
         // Perform reallocation
         vm.prank(deployer);
@@ -1703,10 +1693,7 @@ contract UpgradeDistributionCreatorTest is Test {
     function test_OverrideCampaign_Success_WhenCreator() public {
         vm.startPrank(distributionCreator.campaign(testCampaignId).creator);
 
-        IERC20(address(rewardToken)).approve(
-            address(distributionCreator),
-            distributionCreator.campaign(testCampaignId).amount
-        );
+        IERC20(address(rewardToken)).approve(address(distributionCreator), distributionCreator.campaign(testCampaignId).amount);
         CampaignParameters memory newCampaign = CampaignParameters({
             campaignId: testCampaignId,
             creator: distributionCreator.campaign(testCampaignId).creator,
@@ -1726,10 +1713,7 @@ contract UpgradeDistributionCreatorTest is Test {
         vm.startPrank(distributionCreator.campaign(testCampaignId).creator);
 
         vm.warp(distributionCreator.campaign(testCampaignId).startTimestamp - 2);
-        IERC20(address(rewardToken)).approve(
-            address(distributionCreator),
-            distributionCreator.campaign(testCampaignId).amount
-        );
+        IERC20(address(rewardToken)).approve(address(distributionCreator), distributionCreator.campaign(testCampaignId).amount);
         CampaignParameters memory newCampaign = CampaignParameters({
             campaignId: testCampaignId,
             creator: distributionCreator.campaign(testCampaignId).creator,
@@ -1749,10 +1733,7 @@ contract UpgradeDistributionCreatorTest is Test {
         vm.startPrank(distributionCreator.campaign(testCampaignId).creator);
 
         vm.warp(distributionCreator.campaign(testCampaignId).startTimestamp + 1);
-        IERC20(address(rewardToken)).approve(
-            address(distributionCreator),
-            distributionCreator.campaign(testCampaignId).amount
-        );
+        IERC20(address(rewardToken)).approve(address(distributionCreator), distributionCreator.campaign(testCampaignId).amount);
         CampaignParameters memory newCampaign = CampaignParameters({
             campaignId: testCampaignId,
             creator: distributionCreator.campaign(testCampaignId).creator,
