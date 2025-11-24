@@ -3,13 +3,12 @@ pragma solidity ^0.8.17;
 
 import { console } from "forge-std/console.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import { JsonReader } from "@utils/JsonReader.sol";
 
 import { BaseScript } from "./utils/Base.s.sol";
 import { MockToken } from "../contracts/mock/MockToken.sol";
 
 // Base contract with shared utilities
-contract MockTokenScript is BaseScript, JsonReader {}
+contract MockTokenScript is BaseScript {}
 
 // Deploy script
 contract Deploy is MockTokenScript {

@@ -7,7 +7,6 @@ import { ProxyAdmin } from "@openzeppelin/contracts/proxy/transparent/ProxyAdmin
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { console } from "forge-std/console.sol";
-import { JsonReader } from "@utils/JsonReader.sol";
 
 import { CreateXConstants } from "./utils/CreateXConstants.sol";
 import { TokensUtils } from "./utils/TokensUtils.sol";
@@ -30,7 +29,7 @@ import { MockToken } from "../contracts/mock/MockToken.sol";
 //     "0x0000000000000000000000000000000000000000" "0x0000000000000000000000000000000000000000" \
 //     --rpc-url $RPC_URL \
 //     -vvvv
-contract MainDeployScript is Script, JsonReader, TokensUtils, CreateXConstants {
+contract MainDeployScript is Script, TokensUtils, CreateXConstants {
     uint256 private DEPLOYER_PRIVATE_KEY;
     uint256 private MERKL_DEPLOYER_PRIVATE_KEY;
 
@@ -61,18 +60,9 @@ contract MainDeployScript is Script, JsonReader, TokensUtils, CreateXConstants {
 
     // NOTE: This function is used to automatically set the ANGLE_LABS and DISPUTE_TOKEN addresses from the sdk registry
     function run() external {
-        // Setup
-        try this.readAddress(block.chainid, "EUR.AgToken") returns (address eura) {
-            DISPUTE_TOKEN = eura;
-        } catch {
-            DISPUTE_TOKEN = address(0);
-        }
+        DISPUTE_TOKEN = address(0);
 
-        try this.readAddress(block.chainid, "Multisig") returns (address _angleLabs) {
-            ANGLE_LABS = _angleLabs;
-        } catch {
-            ANGLE_LABS = TEMP_GOVERNOR;
-        }
+        ANGLE_LABS = TEMP_GOVERNOR;
 
         _run(ANGLE_LABS, DISPUTE_TOKEN);
     }
@@ -84,21 +74,13 @@ contract MainDeployScript is Script, JsonReader, TokensUtils, CreateXConstants {
         if (disputeToken != address(0)) {
             DISPUTE_TOKEN = disputeToken;
         } else {
-            try this.readAddress(block.chainid, "EUR.AgToken") returns (address eura) {
-                DISPUTE_TOKEN = eura;
-            } catch {
-                DISPUTE_TOKEN = address(0);
-            }
+            DISPUTE_TOKEN = address(0);
         }
 
         if (angleLabs != address(0)) {
             ANGLE_LABS = angleLabs;
         } else {
-            try this.readAddress(block.chainid, "Multisig") returns (address _angleLabs) {
-                ANGLE_LABS = _angleLabs;
-            } catch {
-                ANGLE_LABS = TEMP_GOVERNOR;
-            }
+            ANGLE_LABS = TEMP_GOVERNOR;
         }
 
         _run(ANGLE_LABS, DISPUTE_TOKEN);
@@ -122,8 +104,7 @@ contract MainDeployScript is Script, JsonReader, TokensUtils, CreateXConstants {
         console.log("DISPUTE TOKEN:", DISPUTE_TOKEN);
 
         if (DEPLOYER_ADDRESS == ANGLE_LABS) revert("ANGLE_LABS cannot be the deployer address");
-        if (DEPLOYER_ADDRESS == EXPECTED_MERKL_DEPLOYER_ADDRESS)
-            revert("DEPLOYER_ADDRESS cannot be the merkl deployer address"); // prevent from using the merkl deployer private key as deployer private key
+        if (DEPLOYER_ADDRESS == EXPECTED_MERKL_DEPLOYER_ADDRESS) revert("DEPLOYER_ADDRESS cannot be the merkl deployer address"); // prevent from using the merkl deployer private key as deployer private key
         if (MERKL_DEPLOYER_ADDRESS != EXPECTED_MERKL_DEPLOYER_ADDRESS)
             revert("MERKL_DEPLOYER_ADDRESS is not the expected merkl deployer address"); // guarantee that MERKL_DEPLOYER_ADDRESS is the merkl deployer address
 
@@ -234,11 +215,7 @@ contract MainDeployScript is Script, JsonReader, TokensUtils, CreateXConstants {
         bytes memory initData = abi.encodeCall(AccessControlManager.initialize, (DEPLOYER_ADDRESS, ANGLE_LABS));
 
         // Deploy proxy
-        TransparentUpgradeableProxy proxy = new TransparentUpgradeableProxy(
-            address(implementation),
-            address(proxyAdmin),
-            initData
-        );
+        TransparentUpgradeableProxy proxy = new TransparentUpgradeableProxy(address(implementation), address(proxyAdmin), initData);
         console.log("AccessControlManager Proxy:", address(proxy));
 
         AccessControlManager(address(proxy)).addGovernor(ANGLE_LABS);
@@ -262,10 +239,7 @@ contract MainDeployScript is Script, JsonReader, TokensUtils, CreateXConstants {
         return DeploymentAddresses(address(proxy), address(implementation));
     }
 
-    function deployDistributionCreator(
-        address accessControlManager,
-        address distributor
-    ) public returns (DeploymentAddresses memory) {
+    function deployDistributionCreator(address accessControlManager, address distributor) public returns (DeploymentAddresses memory) {
         console.log("\n=== Deploying DistributionCreator ===");
 
         // Deploy implementation
@@ -309,9 +283,7 @@ contract MainDeployScript is Script, JsonReader, TokensUtils, CreateXConstants {
             address CREATE2_DEPLOYER = 0x4e59b44847b379578588920cA78FbF26c0B4956C;
             if (CREATE2_DEPLOYER.code.length != 0) {
                 // Deploy using the standard Deterministic CREATE2 deployer and a deterministic salt
-                disputer = address(
-                    new Disputer{ salt: salt }(DEPLOYER_ADDRESS, DISPUTER_WHITELIST, Distributor(distributor))
-                );
+                disputer = address(new Disputer{ salt: salt }(DEPLOYER_ADDRESS, DISPUTER_WHITELIST, Distributor(distributor)));
             } else {
                 // Classic deployment if CREATE2 deployer is not deployed
                 disputer = address(new Disputer(DEPLOYER_ADDRESS, DISPUTER_WHITELIST, Distributor(distributor)));

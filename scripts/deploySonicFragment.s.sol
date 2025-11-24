@@ -9,8 +9,6 @@ import { console } from "forge-std/console.sol";
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import { ITransparentUpgradeableProxy } from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import { JsonReader } from "@utils/JsonReader.sol";
-import { ContractType } from "@utils/Constants.sol";
 
 import { SonicFragment } from "../contracts/partners/tokenWrappers/SonicFragment.sol";
 import { DistributionCreator } from "../contracts/DistributionCreator.sol";
@@ -32,14 +30,7 @@ contract DeploySonicFragment is BaseScript {
         string memory symbol = "testGEM-S1";
 
         // Deploy implementation
-        SonicFragment implementation = new SonicFragment(
-            address(manager),
-            recipient,
-            sToken,
-            totalSupply,
-            name,
-            symbol
-        );
+        SonicFragment implementation = new SonicFragment(address(manager), recipient, sToken, totalSupply, name, symbol);
         console.log("SonicFragment deployed at:", address(implementation));
     }
 }

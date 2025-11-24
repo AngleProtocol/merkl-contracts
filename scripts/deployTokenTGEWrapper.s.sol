@@ -8,8 +8,6 @@ import { BaseScript } from "./utils/Base.s.sol";
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import { ITransparentUpgradeableProxy } from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
 import { IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
-import { JsonReader } from "@utils/JsonReader.sol";
-import { ContractType } from "@utils/Constants.sol";
 
 import { TokenTGEWrapper } from "../contracts/partners/tokenWrappers/TokenTGEWrapper.sol";
 import { DistributionCreator } from "../contracts/DistributionCreator.sol";

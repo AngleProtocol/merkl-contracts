@@ -1,6 +1,6 @@
 {
   "name": "merkl-contracts",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "",
   "scripts": {
     "ci:coverage": "forge coverage --ir-minimum --report lcov && yarn lcov:clean",
@@ -37,8 +37,7 @@
     "solhint": "^3.5.1",
     "solhint-plugin-prettier": "^0.0.5",
     "solidity-coverage": "^0.8.2",
-    "forge-std": "github:foundry-rs/forge-std#v1.9.4",
-    "utils": "github:AngleProtocol/utils"
+    "forge-std": "github:foundry-rs/forge-std#v1.9.4"
   },
   "dependencies": {},
   "resolutions": {
