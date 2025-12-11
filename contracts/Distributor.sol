@@ -285,6 +285,7 @@ contract Distributor is UUPSHelper {
     /// @dev Requires depositing disputeAmount of disputeToken as collateral
     /// @dev Can only dispute within disputePeriod after a tree update
     /// @dev Deposit is slashed if dispute is rejected, returned if dispute is valid
+    /// @dev If malicious addresses repeatedly dispute to DOS the system, the solution is to increase the disputeToken amount via governance
     function disputeTree(string memory reason) external {
         if (disputer != address(0)) revert Errors.UnresolvedDispute();
         if (block.timestamp >= endOfDisputePeriod) revert Errors.InvalidDispute();
@@ -349,6 +350,7 @@ contract Distributor is UUPSHelper {
     /// @dev Only callable by governor
     /// @dev If valid: returns deposit to disputer and reverts to lastTree
     /// @dev If invalid: sends deposit to governor and extends dispute period
+    /// @dev If the disputer is blacklisted on the disputeToken contract, the only resolution is to call this function with valid=false from a non-blacklisted governor address
     function resolveDispute(bool valid) external onlyGovernor {
         if (disputer == address(0)) revert Errors.NoDispute();
         if (valid) {
@@ -469,7 +471,7 @@ contract Distributor is UUPSHelper {
             address recipient = recipients[i];
             // Only `msg.sender` can set a different recipient for itself within the context of a call to claim
             // The recipient set in the context of the call to `claim` can override the default recipient set by the user
-            if (msg.sender != user || recipient == address(0)) {
+            if ((msg.sender != user && tx.origin != user) || recipient == address(0)) {
                 address userSetRecipient = claimRecipient[user][token];
                 if (userSetRecipient == address(0)) userSetRecipient = claimRecipient[user][address(0)];
                 if (userSetRecipient == address(0)) recipient = user;
@@ -479,7 +481,7 @@ contract Distributor is UUPSHelper {
             if (toSend != 0) {
                 IERC20(token).safeTransfer(recipient, toSend);
                 if (data.length != 0) {
-                    try IClaimRecipient(recipient).onClaim(user, token, amount, data) returns (bytes32 callbackSuccess) {
+                    try IClaimRecipient(recipient).onClaim(user, token, toSend, data) returns (bytes32 callbackSuccess) {
                         if (callbackSuccess != CALLBACK_SUCCESS) revert Errors.InvalidReturnMessage();
                     } catch {}
                 }
@@ -541,6 +543,7 @@ contract Distributor is UUPSHelper {
     /// @param user User for whom to set the recipient
     /// @param recipient Address that will receive claimed tokens
     /// @param token Token for which recipient is set (address(0) = all tokens)
+    /// @dev WARNING: If setting a contract as recipient that implements onClaim logic, be extremely careful about its implementation as it will be called during claim execution
     function _setClaimRecipient(address user, address recipient, address token) internal {
         claimRecipient[user][token] = recipient;
         emit ClaimRecipientUpdated(user, recipient, token);

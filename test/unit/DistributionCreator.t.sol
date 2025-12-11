@@ -1371,27 +1371,6 @@ contract Test_DistributionCreator_setFees is DistributionCreatorTest {
     }
 }
 
-contract Test_DistributionCreator_setNewDistributor is DistributionCreatorTest {
-    function test_RevertWhen_NotGovernor() public {
-        vm.expectRevert(Errors.NotGovernor.selector);
-        vm.prank(alice);
-        creator.setNewDistributor(address(bob));
-    }
-
-    function test_RevertWhen_InvalidParam() public {
-        vm.expectRevert(Errors.InvalidParam.selector);
-        vm.prank(governor);
-        creator.setNewDistributor(address(0));
-    }
-
-    function test_Success() public {
-        vm.prank(governor);
-        creator.setNewDistributor(address(bob));
-
-        assertEq(address(creator.distributor()), address(bob));
-    }
-}
-
 contract Test_DistributionCreator_setUserFeeRebate is DistributionCreatorTest {
     function test_RevertWhen_NotGovernorOrGuardian() public {
         vm.expectRevert(Errors.NotGovernorOrGuardian.selector);

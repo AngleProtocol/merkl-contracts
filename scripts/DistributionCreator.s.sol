@@ -63,27 +63,6 @@ contract DeployImplementation is DistributionCreatorScript {
     }
 }
 
-// SetNewDistributor script
-contract SetNewDistributor is DistributionCreatorScript {
-    function run() external {
-        // MODIFY THIS VALUE TO SET YOUR DESIRED DISTRIBUTOR ADDRESS
-        address distributor = address(0);
-        _run(distributor);
-    }
-
-    function run(address distributor) external {
-        _run(distributor);
-    }
-
-    function _run(address _distributor) internal broadcast {
-        uint256 chainId = block.chainid;
-        address creatorAddress = 0x8BB4C975Ff3c250e0ceEA271728547f3802B36Fd;
-
-        DistributionCreator(creatorAddress).setNewDistributor(_distributor);
-
-        console.log("New distributor set to:", _distributor);
-    }
-}
 
 // SetFees script
 contract SetFees is DistributionCreatorScript {
