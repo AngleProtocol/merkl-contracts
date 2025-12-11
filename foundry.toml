@@ -102,6 +102,7 @@ ethereal="${ETHEREAL_NODE_URI}"
 monad="${MONAD_NODE_URI}"
 megaeth="${MEGAETH_NODE_URI}"
 stable="${STABLE_NODE_URI}"
+plume="${PLUME_NODE_URI}"
 
 [etherscan]
 localhost = { url = "http://localhost:4000", key = "none" }
@@ -162,4 +163,5 @@ ethereal = {chainId = 5064014, key = "none", url = "${VERIFIER_URL_5064014}" }
 monad = {chaindId = 143, key = "${MONAD_ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_143}" }
 megaeth = {chainId = 4326, key = "${MEGAETH_ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_4326}" }
 stable = {chaindId = 988, key = "${ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_988}" }
+plume = {chaindId = 98866, key = "${PLUME_ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_98866}" }
  

@@ -16,33 +16,33 @@ import { IAccessControlManager } from "../contracts/interfaces/IAccessControlMan
 import { MockToken } from "../contracts/mock/MockToken.sol";
 
 contract DeployPullTokenWrapper is BaseScript {
-    // forge script scripts/deployPullTokenWrapper.s.sol --rpc-url stable --sender 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701 --broadcast --verify
+    // forge script scripts/deployPullTokenWrapper.s.sol --rpc-url mainnet --sender 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701 --broadcast --verify
     function run() public {
         uint256 deployerPrivateKey = vm.envUint("DEPLOYER_PRIVATE_KEY");
         vm.startBroadcast(deployerPrivateKey);
         address distributionCreator = 0x8BB4C975Ff3c250e0ceEA271728547f3802B36Fd;
         // ------------------------------------------------------------------------
         // TO EDIT
-        address underlying = 0x0000000000000000000000000000000000001003;
-        address holder = 0xb67b9d2b188AD91ebcb5ba34b3E3fFB2c013d940;
+        address underlying = 0xAA6e91C82942aeAE040303Bf96c15a6dBcB82CA0;
+        address holder = 0xdef1FA4CEfe67365ba046a7C630D6B885298E210;
 
         // Need to choose the implementation type and if implementation needs to be deployed
 
-        address implementation = address(new PullTokenWrapperAllow()); 
+        // address implementation = address(new PullTokenWrapperAllow()); 
         // address implementation = address(new PullTokenWrapperWithdraw());
         
         // Ethereum implementation of PullTokenWrapperAllow
         // address implementation = 0x979a04fd2f3A6a2B3945A715e24b974323E93567;
         // Ethereum implementation of PullTokenWrapperWithdraw
-        // address implementation = 0x721d37cf37e230E120a09adbBB7aAB0CF729AcA1
+        address implementation = 0x721d37cf37e230E120a09adbBB7aAB0CF729AcA1;
 
         // Keeping the same name and symbol as the original underlying token so it's invisible for users
         // string memory name = string(abi.encodePacked(IERC20Metadata(underlying).name(), " (wrapped)"));
         // string memory symbol = IERC20Metadata(underlying).symbol();
 
         // Names to override if deploying a PullTokenWrapperWithdraw implementation
-        string memory name = "STABLE (wrapped)";
-        string memory symbol = "STABLE";
+        string memory name = "EURC (wrapped)";
+        string memory symbol = "EURC";
 
         // ------------------------------------------------------------------------
 
