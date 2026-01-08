@@ -109,28 +109,6 @@ contract SetCampaignFees is DistributionCreatorScript {
     }
 }
 
-// RecoverFees script
-contract RecoverFees is DistributionCreatorScript {
-    function run() external {
-        // MODIFY THESE VALUES TO SET YOUR DESIRED TOKENS AND RECIPIENT
-        IERC20[] memory tokens = new IERC20[](0);
-        address to = address(0);
-        _run(tokens, to);
-    }
-
-    function run(IERC20[] calldata tokens, address to) external {
-        _run(tokens, to);
-    }
-
-    function _run(IERC20[] memory _tokens, address _to) internal broadcast {
-        uint256 chainId = block.chainid;
-        address creatorAddress = 0x8BB4C975Ff3c250e0ceEA271728547f3802B36Fd;
-
-        DistributionCreator(creatorAddress).recoverFees(_tokens, _to);
-
-        console.log("Fees recovered to:", _to);
-    }
-}
 
 // SetUserFeeRebate script
 contract SetUserFeeRebate is DistributionCreatorScript {

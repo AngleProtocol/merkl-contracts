@@ -125,6 +125,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     event FeeRecipientUpdated(address indexed _feeRecipient);
     event FeesSet(uint256 _fees);
     event CampaignOperatorToggled(address indexed user, address indexed operator, bool isWhitelisted);
+    event CampaignAmountIncreased(bytes32 indexed _campaignId, uint256 amount, uint256 amountMinusFees);
     event CampaignOverride(bytes32 _campaignId, CampaignParameters campaign);
     event CampaignReallocation(bytes32 _campaignId, address[] indexed from, address indexed to);
     event CampaignSpecificFeesSet(uint32 campaignType, uint256 _fees);
@@ -248,7 +249,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
             newCampaign.amount != _campaign.amount || // Campaign amount cannot be changed
             _campaign.duration + _campaign.startTimestamp <= block.timestamp || // Campaign must not have ended otherwise no point in overriding
             (newCampaign.amount * HOUR) / newCampaign.duration < rewardTokenMinAmounts[newCampaign.rewardToken] || 
-            (newCampaign.startTimestamp != _campaign.startTimestamp && block.timestamp > _campaign.startTimestamp) || // Allow to update startTimestamp only before campaign start
+            (newCampaign.startTimestamp != _campaign.startTimestamp && block.timestamp > _campaign.startTimestamp) // Allow to update startTimestamp only before campaign start
         ) revert Errors.InvalidOverride();
 
         newCampaign.campaignId = _campaignId;
@@ -258,6 +259,43 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         // There could be duplicate timestamps in the array if multiple overrides happen in the same block
         campaignOverridesTimestamp[_campaignId].push(block.timestamp);
         emit CampaignOverride(_campaignId, newCampaign);
+    }
+
+    /// @notice Increases the reward amount of an existing campaign
+    /// @param _campaignId ID of the campaign to increase funding for
+    /// @param amount Additional amount of reward tokens to add (before fees)
+    /// @dev Fees are computed and deducted from the additional amount
+    /// @dev Only callable by the campaign creator or an authorized operator
+    /// @dev The campaign must not have ended yet
+    /// @dev The updated campaign parameters are stored in campaignOverrides
+    function increaseCampaignAmount(bytes32 _campaignId, uint256 amount) external nonReentrant {
+        // Get base campaign parameters
+        CampaignParameters memory baseCampaign = campaign(_campaignId);
+        _isValidOperator(baseCampaign.creator);
+
+        // Use latest parameters (from override if exists, otherwise from base campaign)
+        CampaignParameters memory latestCampaign = campaignOverrides[_campaignId];
+        if (latestCampaign.campaignId == bytes32(0)) {
+            latestCampaign = baseCampaign;
+        }
+
+        // Check campaign hasn't ended yet
+        if (block.timestamp >= latestCampaign.startTimestamp + latestCampaign.duration) {
+            revert Errors.CampaignAlreadyEnded();
+        }
+
+        // Compute fees on the additional amount
+        uint256 amountMinusFees = _computeFees(latestCampaign.campaignType, amount);
+
+        // Pull tokens and send to distributor
+        _pullTokens(baseCampaign.creator, baseCampaign.rewardToken, amount, amountMinusFees);
+
+        // Update campaign amount in the override
+        latestCampaign.amount += amountMinusFees;
+        campaignOverrides[_campaignId] = latestCampaign;
+        campaignOverridesTimestamp[_campaignId].push(block.timestamp);
+
+        emit CampaignAmountIncreased(_campaignId, amount, amountMinusFees);
     }
 
     /// @notice Reallocates unclaimed rewards from specific addresses to a new recipient after campaign ends
@@ -439,16 +477,26 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
                                                  GOVERNANCE FUNCTIONS                                               
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
+    /// @notice Updates the Distributor contract address that receives and distributes rewards
+    /// @param _distributor New Distributor contract address
+    /// @dev Only callable by governor
+    /// @dev This function is not meant to be used and mostly kept here to help with testing
+    function setNewDistributor(address _distributor) external onlyGovernor {
+        if (_distributor == address(0)) revert Errors.InvalidParam();
+        distributor = _distributor;
+        emit DistributorUpdated(_distributor);
+    }
+
     /// @notice Recovers tokens from the contract
     /// @param token Token address to recover
-    /// @param amount Amount of tokens to recover
     /// @param to Address that will receive the recovered tokens
+    /// @param amount Amount of tokens to recover
     /// @dev Only callable by governor
     /// @dev WARNING: Be extremely careful not to withdraw tokens that have been predeposited by users via increaseTokenBalance
     /// @dev Withdrawing predeposited user tokens will break the accounting system and cause loss of funds for users
     /// @dev This function should only be used to recover tokens accidentally sent to the contract or accumulated protocol fees
     /// @dev Always verify that the amount being recovered does not exceed fees and does not include user predeposits
-    function recover(address token, uint256 amount, address to) external onlyGovernor {
+    function recover(address token, address to, uint256 amount) external onlyGovernor {
         if (to == address(0)) revert Errors.ZeroAddress();
         IERC20(token).safeTransfer(to, amount);
     }

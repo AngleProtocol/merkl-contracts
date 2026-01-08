@@ -1371,6 +1371,27 @@ contract Test_DistributionCreator_setFees is DistributionCreatorTest {
     }
 }
 
+contract Test_DistributionCreator_setNewDistributor is DistributionCreatorTest {
+    function test_RevertWhen_NotGovernor() public {
+        vm.expectRevert(Errors.NotGovernor.selector);
+        vm.prank(alice);
+        creator.setNewDistributor(address(bob));
+    }
+
+    function test_RevertWhen_InvalidParam() public {
+        vm.expectRevert(Errors.InvalidParam.selector);
+        vm.prank(governor);
+        creator.setNewDistributor(address(0));
+    }
+
+    function test_Success() public {
+        vm.prank(governor);
+        creator.setNewDistributor(address(bob));
+
+        assertEq(address(creator.distributor()), address(bob));
+    }
+}
+
 contract Test_DistributionCreator_setUserFeeRebate is DistributionCreatorTest {
     function test_RevertWhen_NotGovernorOrGuardian() public {
         vm.expectRevert(Errors.NotGovernorOrGuardian.selector);
@@ -1403,24 +1424,19 @@ contract Test_DistributionCreator_setFeeRecipient is DistributionCreatorTest {
     }
 }
 
-contract Test_DistributionCreator_recoverFees is DistributionCreatorTest {
+contract Test_DistributionCreator_recover is DistributionCreatorTest {
     function test_RevertWhen_NotGovernor() public {
-        IERC20[] memory tokens = new IERC20[](1);
-        tokens[0] = angle;
 
         vm.expectRevert(Errors.NotGovernor.selector);
         vm.prank(alice);
-        creator.recoverFees(tokens, address(bob));
+        creator.recover(address(angle), address(bob),10);
     }
 
     function test_Success() public {
-        IERC20[] memory tokens = new IERC20[](1);
-        tokens[0] = angle;
-
         uint256 balance = angle.balanceOf(address(bob));
 
         vm.prank(governor);
-        creator.recoverFees(tokens, address(bob));
+        creator.recover(address(angle), address(bob),11e9);
 
         assertEq(angle.balanceOf(address(bob)), balance + 11e9);
     }
@@ -1513,9 +1529,7 @@ contract Test_DistributionCreator_adjustTokenBalance is DistributionCreatorTest 
         assertEq(angle.balanceOf(address(bob)), balance3);
         assertEq(angle.balanceOf(address(creator)), creatorBalance);
 
-        IERC20[] memory tokens = new IERC20[](1);
-        tokens[0] = angle;
-        creator.recoverFees(tokens, address(bob));
+        creator.recover(address(angle), address(bob),angle.balanceOf(address(creator)));
         vm.expectRevert();
         creator.decreaseTokenBalance(address(alice), address(angle), address(alice), 1e10 / 2);
         vm.stopPrank();
