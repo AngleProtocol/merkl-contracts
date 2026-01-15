@@ -60,6 +60,7 @@ contract StandardMiddleman is Ownable {
     /// @param _distributionCreator Address of the Merkl DistributionCreator contract (can be address(0) to use default)
     constructor(address _owner, address _distributionCreator) {
         transferOwnership(_owner);
+        DistributionCreator(_distributionCreator).acceptConditions();
         distributionCreator = _distributionCreator;
     }
 
@@ -122,6 +123,7 @@ contract StandardMiddleman is Ownable {
     /// @dev Set to address(0) to use the default Merkl deployment address
     /// @param _distributionCreator The new DistributionCreator contract address
     function setDistributionCreator(address _distributionCreator) external onlyOwner {
+        DistributionCreator(_distributionCreator).acceptConditions();
         distributionCreator = _distributionCreator;
         emit DistributionCreatorSet(_distributionCreator);
     }
