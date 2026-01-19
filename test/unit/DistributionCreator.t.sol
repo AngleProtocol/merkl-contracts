@@ -2458,17 +2458,16 @@ contract Test_DistributionCreator_setFeeRecipient is DistributionCreatorTest {
 
 contract Test_DistributionCreator_recover is DistributionCreatorTest {
     function test_RevertWhen_NotGovernor() public {
-
         vm.expectRevert(Errors.NotGovernor.selector);
         vm.prank(alice);
-        creator.recover(address(angle), address(bob),10);
+        creator.recover(address(angle), address(bob), 10);
     }
 
     function test_Success() public {
         uint256 balance = angle.balanceOf(address(bob));
 
         vm.prank(governor);
-        creator.recover(address(angle), address(bob),11e9);
+        creator.recover(address(angle), address(bob), 11e9);
 
         assertEq(angle.balanceOf(address(bob)), balance + 11e9);
     }
@@ -2561,7 +2560,7 @@ contract Test_DistributionCreator_adjustTokenBalance is DistributionCreatorTest 
         assertEq(angle.balanceOf(address(bob)), balance3);
         assertEq(angle.balanceOf(address(creator)), creatorBalance);
 
-        creator.recover(address(angle), address(bob),angle.balanceOf(address(creator)));
+        creator.recover(address(angle), address(bob), angle.balanceOf(address(creator)));
         vm.expectRevert();
         creator.decreaseTokenBalance(address(alice), address(angle), address(alice), 1e10 / 2);
         vm.stopPrank();
@@ -2657,7 +2656,7 @@ contract Test_DistributionCreator_adjustTokenAllowance is DistributionCreatorTes
         vm.startPrank(alice);
         creator.increaseTokenAllowance(address(alice), address(bob), address(angle), 1e9);
         assertEq(creator.creatorAllowance(address(alice), address(bob), address(angle)), 1e9);
-        
+
         // Decreasing by more than current allowance should clamp to 0 (not revert)
         creator.decreaseTokenAllowance(address(alice), address(bob), address(angle), 1e10);
         assertEq(creator.creatorAllowance(address(alice), address(bob), address(angle)), 0);
@@ -2864,7 +2863,7 @@ contract Test_DistributionCreator_increaseCampaignAmount is DistributionCreatorT
 
     function test_Success_AmountIncreasedCorrectly() public {
         uint256 increaseAmount = 2e9;
-        
+
         // Get initial campaign amount (after fees from creation)
         CampaignParameters memory campaignBefore = creator.getLatestCampaignParams(testCampaignId);
         uint256 amountBefore = campaignBefore.amount;
@@ -2878,7 +2877,7 @@ contract Test_DistributionCreator_increaseCampaignAmount is DistributionCreatorT
 
         // Get updated campaign amount
         CampaignParameters memory campaignAfter = creator.getLatestCampaignParams(testCampaignId);
-        
+
         // Verify amount increased correctly
         assertEq(campaignAfter.amount, amountBefore + expectedIncrease);
     }
@@ -2895,7 +2894,7 @@ contract Test_DistributionCreator_increaseCampaignAmount is DistributionCreatorT
         // First increase
         vm.prank(alice);
         creator.increaseCampaignAmount(testCampaignId, increaseAmount1);
-        
+
         CampaignParameters memory campaign1 = creator.getLatestCampaignParams(testCampaignId);
         uint256 amount1 = campaign1.amount;
         assertGt(amount1, amount0);
@@ -2903,7 +2902,7 @@ contract Test_DistributionCreator_increaseCampaignAmount is DistributionCreatorT
         // Second increase
         vm.prank(alice);
         creator.increaseCampaignAmount(testCampaignId, increaseAmount2);
-        
+
         CampaignParameters memory campaign2 = creator.getLatestCampaignParams(testCampaignId);
         uint256 amount2 = campaign2.amount;
         assertGt(amount2, amount1);
@@ -2911,13 +2910,13 @@ contract Test_DistributionCreator_increaseCampaignAmount is DistributionCreatorT
         // Third increase
         vm.prank(alice);
         creator.increaseCampaignAmount(testCampaignId, increaseAmount3);
-        
+
         CampaignParameters memory campaign3 = creator.getLatestCampaignParams(testCampaignId);
         uint256 amount3 = campaign3.amount;
         assertGt(amount3, amount2);
 
         // Verify total increase is correct (accounting for fees)
-        uint256 totalIncrease = (increaseAmount1 * 9 / 10) + (increaseAmount2 * 9 / 10) + (increaseAmount3 * 9 / 10);
+        uint256 totalIncrease = ((increaseAmount1 * 9) / 10) + ((increaseAmount2 * 9) / 10) + ((increaseAmount3 * 9) / 10);
         assertEq(amount3, amount0 + totalIncrease);
     }
 
@@ -2937,7 +2936,7 @@ contract Test_DistributionCreator_increaseCampaignAmount is DistributionCreatorT
 
         // Get updated amount
         CampaignParameters memory campaignAfter = creator.getLatestCampaignParams(testCampaignId);
-        
+
         // With no fees, full amount should be added
         assertEq(campaignAfter.amount, amountBefore + increaseAmount);
     }
@@ -2954,14 +2953,14 @@ contract Test_DistributionCreator_increaseCampaignAmount is DistributionCreatorT
         uint256 amountBefore = campaignBefore.amount;
 
         // Expected increase after 20% fees
-        uint256 expectedIncrease = increaseAmount * 8 / 10;
+        uint256 expectedIncrease = (increaseAmount * 8) / 10;
 
         vm.prank(alice);
         creator.increaseCampaignAmount(testCampaignId, increaseAmount);
 
         // Get updated amount
         CampaignParameters memory campaignAfter = creator.getLatestCampaignParams(testCampaignId);
-        
+
         assertEq(campaignAfter.amount, amountBefore + expectedIncrease);
     }
 
@@ -2969,7 +2968,7 @@ contract Test_DistributionCreator_increaseCampaignAmount is DistributionCreatorT
 
     function test_Success_TokensTransferredCorrectly() public {
         uint256 increaseAmount = 2e9;
-        
+
         address distributor = creator.distributor();
         uint256 aliceBalanceBefore = angle.balanceOf(alice);
         uint256 distributorBalanceBefore = angle.balanceOf(distributor);
@@ -2985,7 +2984,7 @@ contract Test_DistributionCreator_increaseCampaignAmount is DistributionCreatorT
         // Verify token transfers
         assertEq(angle.balanceOf(alice), aliceBalanceBefore - increaseAmount);
         assertEq(angle.balanceOf(distributor), distributorBalanceBefore + expectedToDistributor);
-        
+
         // Fee recipient is not set (defaults to address(0) in setUp)
         // In this case fees stay in the creator contract
         assertEq(angle.balanceOf(address(creator)), creatorContractBalanceBefore + expectedFees);
@@ -3037,10 +3036,10 @@ contract Test_DistributionCreator_increaseCampaignAmount is DistributionCreatorT
 
         // Verify predeposited balance decreased
         assertEq(creator.creatorBalance(alice, address(angle)), creatorBalanceBefore - increaseAmount);
-        
+
         // Alice's wallet balance should not change (using predeposit)
         assertEq(angle.balanceOf(alice), aliceBalanceBefore);
-        
+
         // Distributor should receive the amount minus fees
         assertEq(angle.balanceOf(distributor), distributorBalanceBefore + expectedToDistributor);
     }
@@ -3067,16 +3066,16 @@ contract Test_DistributionCreator_increaseCampaignAmount is DistributionCreatorT
 
         // Verify allowance decreased
         assertEq(creator.creatorAllowance(alice, bob, address(angle)), allowanceBefore - increaseAmount);
-        
+
         // Verify predeposited balance decreased
         assertEq(creator.creatorBalance(alice, address(angle)), creatorBalanceBefore - increaseAmount);
-        
+
         // Alice's wallet balance should not change
         assertEq(angle.balanceOf(alice), aliceBalanceBefore);
-        
+
         // Bob's wallet balance should not change (unless Bob is the distributor)
         // In the test setup, Bob IS the distributor, so we check distributor balance instead
-        uint256 expectedToDistributor = increaseAmount * 9 / 10;
+        uint256 expectedToDistributor = (increaseAmount * 9) / 10;
         assertEq(angle.balanceOf(distributor), distributorBalanceBefore + expectedToDistributor);
     }
 
@@ -3094,7 +3093,7 @@ contract Test_DistributionCreator_increaseCampaignAmount is DistributionCreatorT
         // After increase, getLatestCampaignParams should return updated amount
         CampaignParameters memory latestAfter = creator.getLatestCampaignParams(testCampaignId);
         assertGt(latestAfter.amount, campaignBefore.amount);
-        
+
         // Override should maintain other campaign parameters
         assertEq(latestAfter.creator, campaignBefore.creator);
         assertEq(latestAfter.rewardToken, campaignBefore.rewardToken);
@@ -3170,7 +3169,7 @@ contract Test_DistributionCreator_increaseCampaignAmount is DistributionCreatorT
         uint256 amount2 = campaign2.amount;
 
         // Verify second increase worked correctly on top of first
-        uint256 expectedIncrease = increaseAmount2 * 9 / 10; // minus 10% fees
+        uint256 expectedIncrease = (increaseAmount2 * 9) / 10; // minus 10% fees
         assertEq(amount2, amount1 + expectedIncrease);
 
         // Verify other parameters unchanged
@@ -3191,13 +3190,13 @@ contract Test_DistributionCreator_increaseCampaignAmount is DistributionCreatorT
 
         // Warp to just before end - should still work
         vm.warp(originalStartTimestamp + originalDuration - 1);
-        
+
         vm.prank(alice);
         creator.increaseCampaignAmount(testCampaignId, increaseAmount);
 
         // Warp to exactly at end - should revert
         vm.warp(originalStartTimestamp + originalDuration);
-        
+
         vm.prank(alice);
         vm.expectRevert(Errors.CampaignAlreadyEnded.selector);
         creator.increaseCampaignAmount(testCampaignId, increaseAmount);
@@ -3207,7 +3206,7 @@ contract Test_DistributionCreator_increaseCampaignAmount is DistributionCreatorT
 
     function test_Success_EventEmitted() public {
         uint256 increaseAmount = 2e9;
-        uint256 expectedAmountMinusFees = increaseAmount * 9 / 10;
+        uint256 expectedAmountMinusFees = (increaseAmount * 9) / 10;
 
         vm.expectEmit(true, false, false, true, address(creator));
         emit CampaignAmountIncreased(testCampaignId, increaseAmount, expectedAmountMinusFees);

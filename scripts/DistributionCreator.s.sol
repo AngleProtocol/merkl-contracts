@@ -63,7 +63,6 @@ contract DeployImplementation is DistributionCreatorScript {
     }
 }
 
-
 // SetFees script
 contract SetFees is DistributionCreatorScript {
     function run() external {
@@ -108,7 +107,6 @@ contract SetCampaignFees is DistributionCreatorScript {
         console.log("Campaign fees updated for type %s to: %s", _campaignType, _fees);
     }
 }
-
 
 // SetUserFeeRebate script
 contract SetUserFeeRebate is DistributionCreatorScript {

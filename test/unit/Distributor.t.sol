@@ -975,7 +975,7 @@ contract Test_Distributor_claimWithRecipient is DistributorTest {
         // Create merkle roots for two sequential claims
         // First tree: alice can claim 0.4e18
         bytes32 leaf04 = keccak256(abi.encode(alice, address(angle), uint256(0.4e18)));
-        
+
         vm.prank(governor);
         distributor.updateTree(
             MerkleTree({
@@ -1016,11 +1016,11 @@ contract Test_Distributor_claimWithRecipient is DistributorTest {
 
         // Update tree: alice can now claim 1e18 total
         bytes32 leaf1 = keccak256(abi.encode(alice, address(angle), uint256(1e18)));
-        
+
         vm.prank(governor);
         distributor.updateTree(
             MerkleTree({
-                merkleRoot: leaf1, // Single leaf tree  
+                merkleRoot: leaf1, // Single leaf tree
                 ipfsHash: keccak256("IPFS_HASH2")
             })
         );

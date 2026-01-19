@@ -30,7 +30,7 @@ contract NotifyRewardStandardMiddleman is BaseScript {
 
         // Fetch contract state for logging
         // defaultParams() returns tuple components, we only need rewardToken (index 2)
-        (,, address rewardToken,,,,,) = middleman.defaultParams();
+        (, , address rewardToken, , , , , ) = middleman.defaultParams();
         address distributionCreator = address(middleman.merklDistributionCreator());
 
         console.log("=== StandardMiddleman NotifyReward ===");
@@ -45,7 +45,6 @@ contract NotifyRewardStandardMiddleman is BaseScript {
         uint256 executorStatus = middleman.executors(executor);
         console.log("Executor status:", executorStatus);
         require(executorStatus != 0, "Executor not whitelisted");
-
 
         // Check current middleman token balance
         uint256 middlemanBalance = IERC20(rewardToken).balanceOf(middlemanAddress);

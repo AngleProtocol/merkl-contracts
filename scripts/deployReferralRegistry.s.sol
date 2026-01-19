@@ -20,17 +20,12 @@ contract DeployReferralRegistry is BaseScript {
         IAccessControlManager accessControlManager = distributionCreator.accessControlManager();
 
         // Deploy implementation
-        
+
         address implementation = address(new ReferralRegistry());
         console.log("ReferralRegistry Implementation:", implementation);
 
         // Encode initialization data
-        bytes memory initData = abi.encodeWithSelector(
-            ReferralRegistry.initialize.selector,
-            accessControlManager,
-            feeSetup,
-            feeRecipient
-        );
+        bytes memory initData = abi.encodeWithSelector(ReferralRegistry.initialize.selector, accessControlManager, feeSetup, feeRecipient);
 
         // Deploy proxy with initialization data (atomically initializes in constructor)
         ERC1967Proxy proxy = new ERC1967Proxy(implementation, initData);

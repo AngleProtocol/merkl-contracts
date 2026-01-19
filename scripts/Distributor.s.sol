@@ -73,7 +73,6 @@ contract DisputeTree is DistributorScript {
         _run(reason);
     }
 
-
     function _run(string memory reason) internal {
         uint256 chainId = block.chainid;
         address distributorAddress = 0x3Ef3D8bA38EBe18DB133cEc108f4D14CE00Dd9Ae;

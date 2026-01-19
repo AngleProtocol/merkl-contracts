@@ -243,9 +243,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         newCampaign.creator = _campaign.creator; // Creator address must remain unchanged
         newCampaign.amount = _campaign.amount; // Total reward amount is immutable (use increaseCampaignAmount to add funds)
         newCampaign.rewardToken = _campaign.rewardToken; // Reward token cannot be changed
-        if (
-            newCampaign.amount * HOUR  < rewardTokenMinAmounts[newCampaign.rewardToken] * newCampaign.duration
-        ) revert Errors.InvalidOverride();
+        if (newCampaign.amount * HOUR < rewardTokenMinAmounts[newCampaign.rewardToken] * newCampaign.duration) revert Errors.InvalidOverride();
 
         campaignOverrides[_campaignId] = newCampaign;
         // There could be duplicate timestamps in the array if multiple overrides happen in the same block
@@ -504,7 +502,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     function setMessage(string memory _message) external onlyGovernorOrGuardian {
         message = _message;
         bytes32 _messageHash;
-        if(bytes(_message).length != 0) _messageHash = ECDSA.toEthSignedMessageHash(bytes(_message));
+        if (bytes(_message).length != 0) _messageHash = ECDSA.toEthSignedMessageHash(bytes(_message));
         messageHash = _messageHash;
         emit MessageUpdated(_messageHash);
     }

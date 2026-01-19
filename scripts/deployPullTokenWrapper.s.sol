@@ -28,9 +28,9 @@ contract DeployPullTokenWrapper is BaseScript {
 
         // Need to choose the implementation type and if implementation needs to be deployed
 
-        // address implementation = address(new PullTokenWrapperAllow()); 
+        // address implementation = address(new PullTokenWrapperAllow());
         // address implementation = address(new PullTokenWrapperWithdraw());
-        
+
         // Ethereum implementation of PullTokenWrapperAllow
         address implementation = 0x979a04fd2f3A6a2B3945A715e24b974323E93567;
         // Ethereum implementation of PullTokenWrapperWithdraw
