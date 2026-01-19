@@ -30,6 +30,13 @@ contract MockClaimRecipientWrongReturn is IClaimRecipient {
     }
 }
 
+/// @notice Mock contract that reverts in onClaim
+contract MockClaimRecipientReverts is IClaimRecipient {
+    function onClaim(address, address, uint256, bytes memory) external pure returns (bytes32) {
+        revert("Random revert in onClaim");
+    }
+}
+
 /// @notice Mock contract without the IClaimRecipient interface
 contract MockNonClaimRecipient {
     // No onClaim function
