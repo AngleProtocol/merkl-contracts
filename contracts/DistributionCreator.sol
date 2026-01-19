@@ -127,8 +127,9 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     event CampaignOperatorToggled(address indexed user, address indexed operator, bool isWhitelisted);
     event CampaignAmountIncreased(bytes32 indexed _campaignId, uint256 amount, uint256 amountMinusFees);
     event CampaignOverride(bytes32 _campaignId, CampaignParameters campaign);
-    event CampaignReallocation(bytes32 _campaignId, address[] indexed from, address indexed to);
+    event CampaignReallocation(bytes32 _campaignId, address[] from, address indexed to);
     event CampaignSpecificFeesSet(uint32 campaignType, uint256 _fees);
+    event ConditionsAccepted(address indexed user, bytes32 conditionsHash);
     event MessageUpdated(bytes32 _messageHash);
     event NewCampaign(CampaignParameters campaign);
     event RewardTokenMinimumAmountUpdated(address indexed token, uint256 amount);
@@ -199,7 +200,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @return campaignId Unique identifier for the newly created campaign
     /// @dev Campaigns with invalid formatting may not be processed by the reward engine, potentially losing rewards
     /// @dev Reward tokens must be whitelisted and amounts must exceed the token-specific minimum threshold
-    /// @dev Reverts if the sender has not accepted the terms and conditions via acceptConditions() or signature
+    /// @dev Reverts if the sender has not accepted the terms and conditions via acceptConditions()
     function createCampaign(CampaignParameters memory newCampaign) external nonReentrant hasSigned returns (bytes32) {
         return _createCampaign(newCampaign);
     }
@@ -224,37 +225,28 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @dev If the messageHash is not set, it means that there are no conditions to accept
     function acceptConditions() external {
         userSignatures[msg.sender] = messageHash;
+        emit ConditionsAccepted(msg.sender, messageHash);
     }
 
     /// @notice Updates parameters of an existing campaign while preserving core immutable fields
     /// @param _campaignId ID of the campaign to override
     /// @param newCampaign New campaign parameters (some fields will be ignored or validated)
     /// @dev Cannot change rewardToken, amount, or creator address
-    /// @dev Can only update startTimestamp if the campaign has not yet started
-    /// @dev New end time (startTimestamp + duration) must be in the future
     /// @dev The Merkl engine validates overrides and rejects invalid modifications, including attempts to circumvent campaign-specific fee rates
     /// @dev The rejection of invalid modifications leads to the campaign being parsed as invalid and the leftover reward tokens allocated to the campaign creator address
     /// @dev Invalid overrides may result in the campaign not being processed while fees are still deducted
     function overrideCampaign(bytes32 _campaignId, CampaignParameters memory newCampaign) external {
-        CampaignParameters memory _campaign = campaign(_campaignId);
-        _isValidOperator(_campaign.creator);
-
-        CampaignParameters memory overriddenCampaign = campaignOverrides[_campaignId];
-        if (overriddenCampaign.campaignId != bytes32(0)) {
-            _campaign = overriddenCampaign;
-        }
-
+        CampaignParameters memory _campaign = _getLatestCampaignParams(_campaignId);
+        _isSenderValidOperatorForCampaign(_campaign.creator);
+        // Preserve immutable campaign fields that cannot be modified through overrides
+        newCampaign.campaignId = _campaignId;
+        newCampaign.creator = _campaign.creator; // Creator address must remain unchanged
+        newCampaign.amount = _campaign.amount; // Total reward amount is immutable (use increaseCampaignAmount to add funds)
+        newCampaign.rewardToken = _campaign.rewardToken; // Reward token cannot be changed
         if (
-            newCampaign.rewardToken != _campaign.rewardToken || // Reward token must remain the same
-            newCampaign.amount != _campaign.amount || // Campaign amount cannot be changed
-            _campaign.duration + _campaign.startTimestamp <= block.timestamp || // Campaign must not have ended otherwise no point in overriding
-            (newCampaign.amount * HOUR) / newCampaign.duration < rewardTokenMinAmounts[newCampaign.rewardToken] || 
-            (newCampaign.startTimestamp != _campaign.startTimestamp && block.timestamp > _campaign.startTimestamp) // Allow to update startTimestamp only before campaign start
+            newCampaign.amount * HOUR  < rewardTokenMinAmounts[newCampaign.rewardToken] * newCampaign.duration
         ) revert Errors.InvalidOverride();
 
-        newCampaign.campaignId = _campaignId;
-        // The manager address cannot be changed
-        newCampaign.creator = _campaign.creator;
         campaignOverrides[_campaignId] = newCampaign;
         // There could be duplicate timestamps in the array if multiple overrides happen in the same block
         campaignOverridesTimestamp[_campaignId].push(block.timestamp);
@@ -269,30 +261,22 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @dev The campaign must not have ended yet
     /// @dev The updated campaign parameters are stored in campaignOverrides
     function increaseCampaignAmount(bytes32 _campaignId, uint256 amount) external nonReentrant {
-        // Get base campaign parameters
-        CampaignParameters memory baseCampaign = campaign(_campaignId);
-        _isValidOperator(baseCampaign.creator);
-
-        // Use latest parameters (from override if exists, otherwise from base campaign)
-        CampaignParameters memory latestCampaign = campaignOverrides[_campaignId];
-        if (latestCampaign.campaignId == bytes32(0)) {
-            latestCampaign = baseCampaign;
-        }
-
+        CampaignParameters memory _campaign = _getLatestCampaignParams(_campaignId);
+        _isSenderValidOperatorForCampaign(_campaign.creator);
         // Check campaign hasn't ended yet
-        if (block.timestamp >= latestCampaign.startTimestamp + latestCampaign.duration) {
+        if (block.timestamp >= _campaign.startTimestamp + _campaign.duration) {
             revert Errors.CampaignAlreadyEnded();
         }
 
         // Compute fees on the additional amount
-        uint256 amountMinusFees = _computeFees(latestCampaign.campaignType, amount);
+        uint256 amountMinusFees = _computeFees(_campaign.campaignType, amount);
 
         // Pull tokens and send to distributor
-        _pullTokens(baseCampaign.creator, baseCampaign.rewardToken, amount, amountMinusFees);
+        _pullTokens(_campaign.creator, _campaign.rewardToken, amount, amountMinusFees);
 
         // Update campaign amount in the override
-        latestCampaign.amount += amountMinusFees;
-        campaignOverrides[_campaignId] = latestCampaign;
+        _campaign.amount += amountMinusFees;
+        campaignOverrides[_campaignId] = _campaign;
         campaignOverridesTimestamp[_campaignId].push(block.timestamp);
 
         emit CampaignAmountIncreased(_campaignId, amount, amountMinusFees);
@@ -305,18 +289,11 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @dev Can only be called after the campaign has ended (startTimestamp + duration has passed)
     /// @dev Reallocation validity is determined by the Merkl engine; invalid reallocations are ignored
     function reallocateCampaignRewards(bytes32 _campaignId, address[] memory froms, address to) external {
-        if (to == address(0)) revert Errors.ZeroAddress();
-        CampaignParameters memory _campaign = campaign(_campaignId);
-        _isValidOperator(_campaign.creator);
-        
+        CampaignParameters memory _campaign = _getLatestCampaignParams(_campaignId);
+        _isSenderValidOperatorForCampaign(_campaign.creator);
         // Check campaign end time using the overridden parameters if they exist
-        uint32 endTimestamp = _campaign.startTimestamp + _campaign.duration;
-        CampaignParameters memory overriddenCampaign = campaignOverrides[_campaignId];
-        if (overriddenCampaign.campaignId != bytes32(0)) {
-            endTimestamp = overriddenCampaign.startTimestamp + overriddenCampaign.duration;
-        }
-        
-        if (block.timestamp < endTimestamp) revert Errors.InvalidReallocation();
+        if (block.timestamp < _campaign.startTimestamp + _campaign.duration) revert Errors.InvalidReallocation();
+        if (to == address(0)) revert Errors.ZeroAddress();
 
         uint256 fromsLength = froms.length;
         for (uint256 i; i < fromsLength; ) {
@@ -412,6 +389,16 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @dev Returns original parameters even if the campaign has been overridden
     function campaign(bytes32 _campaignId) public view returns (CampaignParameters memory) {
         return campaignList[campaignLookup(_campaignId)];
+    }
+
+    /// @notice Returns the most up-to-date campaign parameters, including any overrides
+    /// @param _campaignId ID of the campaign to retrieve
+    /// @return Campaign parameters with overrides applied if they exist, otherwise original parameters
+    /// @dev If an override exists (non-zero campaignId), returns the override; otherwise returns original campaign
+    /// @dev Even if an override is invalid, we return the latest override data. This is safe because invalid
+    /// overrides result in the campaign being parsed as invalid by the Merkl engine
+    function getLatestCampaignParams(bytes32 _campaignId) public view returns (CampaignParameters memory) {
+        return _getLatestCampaignParams(_campaignId);
     }
 
     /// @notice Computes the unique campaign ID for a given set of campaign parameters
@@ -516,7 +503,8 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @dev The message may be a link to the full terms hosted offchain
     function setMessage(string memory _message) external onlyGovernorOrGuardian {
         message = _message;
-        bytes32 _messageHash = ECDSA.toEthSignedMessageHash(bytes(_message));
+        bytes32 _messageHash;
+        if(bytes(_message).length != 0) _messageHash = ECDSA.toEthSignedMessageHash(bytes(_message));
         messageHash = _messageHash;
         emit MessageUpdated(_messageHash);
     }
@@ -598,12 +586,14 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @dev Reverts if campaign already exists or validation fails
     function _createCampaign(CampaignParameters memory newCampaign) internal returns (bytes32) {
         uint256 rewardTokenMinAmount = rewardTokenMinAmounts[newCampaign.rewardToken];
-        // if the campaign doesn't last at least one hour
-        if (newCampaign.duration < HOUR) revert Errors.CampaignDurationBelowHour();
+        // if the campaign doesn't last at least one second
+        if (newCampaign.duration < 1) revert Errors.CampaignDurationNull();
         // if the reward token is not whitelisted as an incentive token
         if (rewardTokenMinAmount == 0) revert Errors.CampaignRewardTokenNotWhitelisted();
         // if the amount distributed is too small with respect to what is allowed
-        if ((newCampaign.amount * HOUR) / newCampaign.duration < rewardTokenMinAmount) revert Errors.CampaignRewardTooLow();
+        // This check is performed before fees are deducted for better UX: campaign creators don't need
+        // to account for Merkl fees when determining if their campaign amount meets the minimum threshold
+        if (newCampaign.amount * HOUR < rewardTokenMinAmount * newCampaign.duration) revert Errors.CampaignRewardTooLow();
         // Computing fees and pulling tokens
         uint256 campaignAmountMinusFees = _computeFees(newCampaign.campaignType, newCampaign.amount);
         if (newCampaign.creator == address(0)) newCampaign.creator = msg.sender;
@@ -619,10 +609,10 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         return newCampaign.campaignId;
     }
 
-    /// @notice Validates that the caller is authorized to manage campaigns for the specified manager
+    /// @notice Validates that the msg.sender is authorized to manage campaigns for the specified manager
     /// @param manager Address of the campaign manager
     /// @dev Reverts if msg.sender is not the manager and not an authorized operator
-    function _isValidOperator(address manager) internal view {
+    function _isSenderValidOperatorForCampaign(address manager) internal view {
         if (manager != msg.sender && campaignOperators[manager][msg.sender] == 0) {
             revert Errors.OperatorNotAllowed();
         }
@@ -669,6 +659,9 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
                 if (senderAllowance >= campaignAmount) {
                     _updateAllowance(creator, msg.sender, rewardToken, senderAllowance - campaignAmount);
                 } else {
+                    // WARNING: If the creator's allowance for msg.sender is insufficient or revoked,
+                    // tokens are pulled directly from msg.sender's address. Operators should monitor
+                    // the creator's allowance and balance to avoid unexpected token transfers.
                     if (fees > 0) IERC20(rewardToken).safeTransferFrom(msg.sender, _feeRecipient, fees);
                     IERC20(rewardToken).safeTransferFrom(msg.sender, distributor, campaignAmountMinusFees);
                     return;
@@ -700,6 +693,15 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         if (_fees != 0) {
             distributionAmountMinusFees = (distributionAmount * (BASE_9 - _fees)) / BASE_9;
         }
+    }
+
+    /// @notice Internal version of the `getLatestCampaignParams` function
+    function _getLatestCampaignParams(bytes32 _campaignId) internal view returns (CampaignParameters memory _campaign) {
+        CampaignParameters memory overriddenCampaign = campaignOverrides[_campaignId];
+        if (overriddenCampaign.campaignId != bytes32(0)) {
+            return overriddenCampaign;
+        }
+        return campaign(_campaignId);
     }
 
     /// @notice Builds a paginated list of whitelisted reward tokens with their minimum amounts

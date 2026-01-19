@@ -6,7 +6,7 @@ library Errors {
     error CampaignAlreadyEnded();
     error CampaignDoesNotExist();
     error CampaignAlreadyExists();
-    error CampaignDurationBelowHour();
+    error CampaignDurationNull();
     error CampaignRewardTokenNotWhitelisted();
     error CampaignRewardTooLow();
     error CampaignShouldStartInFuture();

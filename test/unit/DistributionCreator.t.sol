@@ -141,7 +141,7 @@ contract Test_DistributionCreator_CreateDistribution is DistributionCreatorTest 
             rewardId: keccak256("TEST"),
             additionalData: hex""
         });
-        vm.expectRevert(Errors.CampaignDurationBelowHour.selector);
+        vm.expectRevert(Errors.CampaignDurationNull.selector);
 
         vm.prank(alice);
         creator.createDistribution(distribution);
@@ -272,7 +272,7 @@ contract Test_DistributionCreator_CreateCampaign is DistributionCreatorTest {
             startTimestamp: uint32(block.timestamp + 1),
             duration: 0
         });
-        vm.expectRevert(Errors.CampaignDurationBelowHour.selector);
+        vm.expectRevert(Errors.CampaignDurationNull.selector);
 
         vm.prank(alice);
         creator.createCampaign(campaign);
