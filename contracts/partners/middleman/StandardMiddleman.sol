@@ -132,6 +132,7 @@ contract StandardMiddleman is Ownable {
     /// @dev Use this to create retroactive campaigns that start in the past
     /// @param _startTimestampOffset The offset in seconds to subtract from block.timestamp
     function setStartTimestampOffset(uint96 _startTimestampOffset) external onlyOwner {
+        if (_startTimestampOffset > block.timestamp) revert Errors.InvalidParams();
         startTimestampOffset = _startTimestampOffset;
         emit StartTimestampOffsetSet(_startTimestampOffset);
     }
