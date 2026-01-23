@@ -46,7 +46,7 @@ contract MainDeployScript is Script, TokensUtils, CreateXConstants {
         0xF4c94b2FdC2efA4ad4b831f312E7eF74890705DA
     ];
 
-    uint256 public FUND_AMOUNT = 0.001 ether;
+    uint256 public FUND_AMOUNT = 0.000005 ether;
 
     address public ANGLE_LABS;
     address public DEPLOYER_ADDRESS;

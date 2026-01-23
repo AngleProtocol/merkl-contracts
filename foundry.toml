@@ -101,6 +101,7 @@ saga="${SAGA_NODE_URI}"
 ethereal="${ETHEREAL_NODE_URI}"
 monad="${MONAD_NODE_URI}"
 megaeth="${MEGAETH_NODE_URI}"
+citrea="${CITREA_NODE_URI}"
 
 [etherscan]
 localhost = { url = "http://localhost:4000", key = "none" }
@@ -160,3 +161,4 @@ saga = {chainId = 5464, key = "${SAGA_ETHERSCAN_API_KEY}", url = "${VERIFIER_URL
 ethereal = {chainId = 5064014, key = "none", url = "${VERIFIER_URL_5064014}" } 
 monad = {chaindId = 143, key = "${MONAD_ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_143}" }
 megaeth = {chainId = 4326, key = "${MEGAETH_ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_4326}" }
+citrea = {chainId = 4114, key = "${CITREA_ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_4114}" }
