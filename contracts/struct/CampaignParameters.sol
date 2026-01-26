@@ -25,8 +25,6 @@ struct CampaignParameters {
     /// @notice Unix timestamp when reward distribution begins
     uint32 startTimestamp;
     /// @notice Total duration of the campaign in seconds
-    /// @dev Must be a multiple of EPOCH_DURATION (3600 seconds / 1 hour)
-    /// @dev Must be at least EPOCH_DURATION (1 hour minimum)
     uint32 duration;
     /// @notice Encoded campaign-specific parameters
     /// @dev Encoding structure depends on campaignType

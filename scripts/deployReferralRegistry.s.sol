@@ -20,18 +20,19 @@ contract DeployReferralRegistry is BaseScript {
         IAccessControlManager accessControlManager = distributionCreator.accessControlManager();
 
         // Deploy implementation
-        /*
+
         address implementation = address(new ReferralRegistry());
         console.log("ReferralRegistry Implementation:", implementation);
 
-        // Deploy proxy
-        ERC1967Proxy proxy = new ERC1967Proxy(implementation, "");
+        // Encode initialization data
+        bytes memory initData = abi.encodeWithSelector(ReferralRegistry.initialize.selector, accessControlManager, feeSetup, feeRecipient);
+
+        // Deploy proxy with initialization data (atomically initializes in constructor)
+        ERC1967Proxy proxy = new ERC1967Proxy(implementation, initData);
         console.log("ReferralRegistry Proxy:", address(proxy));
 
-        // Initialize
-        ReferralRegistry(payable(address(proxy))).initialize(accessControlManager, feeSetup, feeRecipient);
+        /*
 
-*/
         string memory key = "avant-referral";
 
         ReferralRegistry(payable(0x3FB2121208b40c7878089A78cc58f9b4D9D8b9F4)).addReferralKey(
@@ -42,6 +43,7 @@ contract DeployReferralRegistry is BaseScript {
             false,
             address(0)
         );
+        */
 
         vm.stopBroadcast();
     }

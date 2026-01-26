@@ -141,7 +141,7 @@ contract Test_DistributionCreator_CreateDistribution is DistributionCreatorTest 
             rewardId: keccak256("TEST"),
             additionalData: hex""
         });
-        vm.expectRevert(Errors.CampaignDurationBelowHour.selector);
+        vm.expectRevert(Errors.CampaignDurationNull.selector);
 
         vm.prank(alice);
         creator.createDistribution(distribution);
@@ -272,7 +272,7 @@ contract Test_DistributionCreator_CreateCampaign is DistributionCreatorTest {
             startTimestamp: uint32(block.timestamp + 1),
             duration: 0
         });
-        vm.expectRevert(Errors.CampaignDurationBelowHour.selector);
+        vm.expectRevert(Errors.CampaignDurationNull.selector);
 
         vm.prank(alice);
         creator.createCampaign(campaign);
@@ -1326,6 +1326,8 @@ contract Test_DistributionCreator_setCampaignFees is DistributionCreatorTest {
 }
 
 contract Test_DistributionCreator_acceptConditions is DistributionCreatorTest {
+    event ConditionsAccepted(address indexed user, bytes32 conditionsHash);
+
     function test_Success() public {
         assertEq(creator.userSignatureWhitelist(bob), 0);
 
@@ -1347,6 +1349,1036 @@ contract Test_DistributionCreator_acceptConditions is DistributionCreatorTest {
         vm.prank(bob);
         creator.acceptConditions();
         assertEq(creator.userSignatures(bob), expectedMessage);
+    }
+
+    function test_Success_EmitsConditionsAcceptedEvent() public {
+        // Set a message
+        string memory message = "I accept the terms and conditions";
+        vm.prank(governor);
+        creator.setMessage(message);
+
+        bytes32 expectedHash = ECDSA.toEthSignedMessageHash(bytes(message));
+
+        // Expect the event
+        vm.expectEmit(true, false, false, true);
+        emit ConditionsAccepted(alice, expectedHash);
+
+        // Accept conditions as alice
+        vm.prank(alice);
+        creator.acceptConditions();
+    }
+
+    function test_Success_EmitsEventWithZeroHash() public {
+        // When no message is set, event should emit with zero hash
+        assertEq(creator.messageHash(), bytes32(0));
+
+        vm.expectEmit(true, false, false, true);
+        emit ConditionsAccepted(alice, bytes32(0));
+
+        vm.prank(alice);
+        creator.acceptConditions();
+    }
+
+    function test_Success_MultipleUsersCanAccept() public {
+        string memory message = "Terms v1";
+        vm.prank(governor);
+        creator.setMessage(message);
+
+        bytes32 expectedHash = ECDSA.toEthSignedMessageHash(bytes(message));
+
+        // Multiple users accept
+        vm.prank(alice);
+        creator.acceptConditions();
+
+        vm.prank(bob);
+        creator.acceptConditions();
+
+        vm.prank(charlie);
+        creator.acceptConditions();
+
+        // Verify all signatures
+        assertEq(creator.userSignatures(alice), expectedHash);
+        assertEq(creator.userSignatures(bob), expectedHash);
+        assertEq(creator.userSignatures(charlie), expectedHash);
+    }
+
+    function test_Success_UserMustReacceptAfterMessageChange() public {
+        // Set initial message
+        string memory message1 = "Terms v1";
+        vm.prank(governor);
+        creator.setMessage(message1);
+
+        bytes32 hash1 = ECDSA.toEthSignedMessageHash(bytes(message1));
+
+        // Alice accepts
+        vm.prank(alice);
+        creator.acceptConditions();
+        assertEq(creator.userSignatures(alice), hash1);
+
+        // Governor changes the message
+        string memory message2 = "Terms v2";
+        vm.prank(governor);
+        creator.setMessage(message2);
+
+        bytes32 hash2 = ECDSA.toEthSignedMessageHash(bytes(message2));
+
+        // Alice's signature is now outdated (doesn't match current messageHash)
+        assertEq(creator.userSignatures(alice), hash1);
+        assertEq(creator.messageHash(), hash2);
+        assertTrue(creator.userSignatures(alice) != creator.messageHash());
+
+        // Alice accepts new conditions
+        vm.prank(alice);
+        creator.acceptConditions();
+
+        // Now signature matches
+        assertEq(creator.userSignatures(alice), hash2);
+        assertEq(creator.userSignatures(alice), creator.messageHash());
+    }
+
+    function test_Success_AcceptConditionsUpdatesExistingSignature() public {
+        // Set message and accept
+        string memory message1 = "Terms v1";
+        vm.prank(governor);
+        creator.setMessage(message1);
+
+        bytes32 hash1 = ECDSA.toEthSignedMessageHash(bytes(message1));
+
+        vm.prank(alice);
+        creator.acceptConditions();
+        assertEq(creator.userSignatures(alice), hash1);
+
+        // Change message
+        string memory message2 = "Terms v2";
+        vm.prank(governor);
+        creator.setMessage(message2);
+
+        bytes32 hash2 = ECDSA.toEthSignedMessageHash(bytes(message2));
+
+        // Expect event with new hash
+        vm.expectEmit(true, false, false, true);
+        emit ConditionsAccepted(alice, hash2);
+
+        // Accept again - should update signature
+        vm.prank(alice);
+        creator.acceptConditions();
+
+        assertEq(creator.userSignatures(alice), hash2);
+    }
+}
+
+contract Test_DistributionCreator_getLatestCampaignParams is DistributionCreatorTest {
+    bytes32 testCampaignId;
+    uint256 originalAmount;
+    uint32 originalStartTimestamp;
+    uint32 originalDuration;
+    uint32 originalCampaignType;
+    bytes originalCampaignData;
+
+    function setUp() public override {
+        super.setUp();
+
+        // Create a campaign
+        originalAmount = 100 ether;
+        originalStartTimestamp = uint32(block.timestamp + 600);
+        originalDuration = 3600 * 24;
+        originalCampaignType = 1;
+        originalCampaignData = abi.encode(
+            0xbEEfa1aBfEbE621DF50ceaEF9f54FdB73648c92C,
+            new address[](0),
+            new address[](0),
+            "",
+            new bytes[](0),
+            new bytes[](0),
+            hex""
+        );
+
+        vm.prank(alice);
+        testCampaignId = creator.createCampaign(
+            CampaignParameters({
+                campaignId: bytes32(0),
+                creator: alice,
+                rewardToken: address(angle),
+                amount: originalAmount,
+                campaignType: originalCampaignType,
+                startTimestamp: originalStartTimestamp,
+                duration: originalDuration,
+                campaignData: originalCampaignData
+            })
+        );
+    }
+
+    function test_Success_ReturnsOriginalWhenNoOverride() public {
+        // Get latest params - should be original since no override exists
+        CampaignParameters memory params = creator.getLatestCampaignParams(testCampaignId);
+
+        // Verify it returns the original campaign data
+        assertEq(params.campaignId, testCampaignId);
+        assertEq(params.creator, alice);
+        assertEq(params.rewardToken, address(angle));
+        // Amount is after fees (90% of original due to 10% default fee)
+        uint256 expectedAmountAfterFees = (originalAmount * (1e9 - creator.defaultFees())) / 1e9;
+        assertEq(params.amount, expectedAmountAfterFees);
+        assertEq(params.campaignType, originalCampaignType);
+        assertEq(params.startTimestamp, originalStartTimestamp);
+        assertEq(params.duration, originalDuration);
+    }
+
+    function test_Success_ReturnsOverrideWhenOverrideExists() public {
+        // Create an override with different campaignType, startTimestamp, and duration
+        uint32 newCampaignType = 5;
+        uint32 newStartTimestamp = originalStartTimestamp + 1000;
+        uint32 newDuration = 3600 * 12; // 12 hours instead of 24
+        bytes memory newCampaignData = abi.encode(
+            0x04C0599Ae5A44757c0af6F9eC3b93da8976c150A,
+            2,
+            0xa42001D6d2237d2c74108FE360403C4b796B7170,
+            new address[](0),
+            new address[](0),
+            hex""
+        );
+
+        vm.prank(alice);
+        creator.overrideCampaign(
+            testCampaignId,
+            CampaignParameters({
+                campaignId: testCampaignId,
+                creator: alice,
+                rewardToken: address(angle),
+                amount: originalAmount, // This will be preserved anyway
+                campaignType: newCampaignType,
+                startTimestamp: newStartTimestamp,
+                duration: newDuration,
+                campaignData: newCampaignData
+            })
+        );
+
+        // Get latest params - should return override
+        CampaignParameters memory params = creator.getLatestCampaignParams(testCampaignId);
+
+        // Verify it returns the overridden values
+        assertEq(params.campaignId, testCampaignId);
+        assertEq(params.creator, alice); // Preserved from original
+        assertEq(params.rewardToken, address(angle)); // Preserved from original
+        // Amount is preserved from original (after fees)
+        uint256 expectedAmountAfterFees = (originalAmount * (1e9 - creator.defaultFees())) / 1e9;
+        assertEq(params.amount, expectedAmountAfterFees);
+        // These are the overridden values
+        assertEq(params.campaignType, newCampaignType);
+        assertEq(params.startTimestamp, newStartTimestamp);
+        assertEq(params.duration, newDuration);
+        assertEq(params.campaignData, newCampaignData);
+    }
+
+    function test_Success_OriginalCampaignUnchangedAfterOverride() public {
+        // Get original campaign
+        CampaignParameters memory originalParams = creator.campaign(testCampaignId);
+
+        // Create an override
+        uint32 newCampaignType = 5;
+        uint32 newStartTimestamp = originalStartTimestamp + 1000;
+
+        vm.prank(alice);
+        creator.overrideCampaign(
+            testCampaignId,
+            CampaignParameters({
+                campaignId: testCampaignId,
+                creator: alice,
+                rewardToken: address(angle),
+                amount: originalAmount,
+                campaignType: newCampaignType,
+                startTimestamp: newStartTimestamp,
+                duration: originalDuration,
+                campaignData: originalCampaignData
+            })
+        );
+
+        // Verify campaign() still returns original (unchanged)
+        CampaignParameters memory stillOriginal = creator.campaign(testCampaignId);
+        assertEq(stillOriginal.campaignType, originalParams.campaignType);
+        assertEq(stillOriginal.startTimestamp, originalParams.startTimestamp);
+
+        // But getLatestCampaignParams returns override
+        CampaignParameters memory latest = creator.getLatestCampaignParams(testCampaignId);
+        assertEq(latest.campaignType, newCampaignType);
+        assertEq(latest.startTimestamp, newStartTimestamp);
+    }
+
+    function test_Success_MultipleOverridesReturnsLatest() public {
+        // First override
+        uint32 firstOverrideCampaignType = 2;
+        vm.prank(alice);
+        creator.overrideCampaign(
+            testCampaignId,
+            CampaignParameters({
+                campaignId: testCampaignId,
+                creator: alice,
+                rewardToken: address(angle),
+                amount: originalAmount,
+                campaignType: firstOverrideCampaignType,
+                startTimestamp: originalStartTimestamp,
+                duration: originalDuration,
+                campaignData: originalCampaignData
+            })
+        );
+
+        // Verify first override
+        CampaignParameters memory afterFirst = creator.getLatestCampaignParams(testCampaignId);
+        assertEq(afterFirst.campaignType, firstOverrideCampaignType);
+
+        // Second override
+        uint32 secondOverrideCampaignType = 7;
+        uint32 newDuration = 3600 * 6; // 6 hours
+
+        vm.prank(alice);
+        creator.overrideCampaign(
+            testCampaignId,
+            CampaignParameters({
+                campaignId: testCampaignId,
+                creator: alice,
+                rewardToken: address(angle),
+                amount: originalAmount,
+                campaignType: secondOverrideCampaignType,
+                startTimestamp: originalStartTimestamp,
+                duration: newDuration,
+                campaignData: originalCampaignData
+            })
+        );
+
+        // Verify second override is returned (latest)
+        CampaignParameters memory afterSecond = creator.getLatestCampaignParams(testCampaignId);
+        assertEq(afterSecond.campaignType, secondOverrideCampaignType);
+        assertEq(afterSecond.duration, newDuration);
+    }
+
+    function test_Success_ReturnsCorrectDataForDifferentCampaigns() public {
+        // Create a second campaign
+        uint32 secondCampaignStartTimestamp = uint32(block.timestamp + 1200);
+        uint32 secondCampaignDuration = 3600 * 48;
+        uint32 secondCampaignType = 3;
+
+        vm.prank(alice);
+        bytes32 secondCampaignId = creator.createCampaign(
+            CampaignParameters({
+                campaignId: bytes32(0),
+                creator: alice,
+                rewardToken: address(angle),
+                amount: 50 ether,
+                campaignType: secondCampaignType,
+                startTimestamp: secondCampaignStartTimestamp,
+                duration: secondCampaignDuration,
+                campaignData: originalCampaignData
+            })
+        );
+
+        // Override only the first campaign
+        uint32 overriddenCampaignType = 9;
+        vm.prank(alice);
+        creator.overrideCampaign(
+            testCampaignId,
+            CampaignParameters({
+                campaignId: testCampaignId,
+                creator: alice,
+                rewardToken: address(angle),
+                amount: originalAmount,
+                campaignType: overriddenCampaignType,
+                startTimestamp: originalStartTimestamp,
+                duration: originalDuration,
+                campaignData: originalCampaignData
+            })
+        );
+
+        // First campaign should return override
+        CampaignParameters memory firstLatest = creator.getLatestCampaignParams(testCampaignId);
+        assertEq(firstLatest.campaignType, overriddenCampaignType);
+
+        // Second campaign should return original (no override)
+        CampaignParameters memory secondLatest = creator.getLatestCampaignParams(secondCampaignId);
+        assertEq(secondLatest.campaignType, secondCampaignType);
+        assertEq(secondLatest.startTimestamp, secondCampaignStartTimestamp);
+        assertEq(secondLatest.duration, secondCampaignDuration);
+    }
+
+    function test_Success_PreservesImmutableFieldsInOverride() public {
+        // Try to override with different creator, rewardToken, and amount
+        // These should be preserved from original
+        address fakeCreator = address(0xdead);
+        address fakeToken = address(0xbeef);
+        uint256 fakeAmount = 999 ether;
+
+        vm.prank(alice);
+        creator.overrideCampaign(
+            testCampaignId,
+            CampaignParameters({
+                campaignId: testCampaignId,
+                creator: fakeCreator, // Should be ignored
+                rewardToken: fakeToken, // Should be ignored
+                amount: fakeAmount, // Should be ignored
+                campaignType: 5,
+                startTimestamp: originalStartTimestamp,
+                duration: originalDuration,
+                campaignData: originalCampaignData
+            })
+        );
+
+        CampaignParameters memory params = creator.getLatestCampaignParams(testCampaignId);
+
+        // Immutable fields should be preserved
+        assertEq(params.creator, alice);
+        assertEq(params.rewardToken, address(angle));
+        uint256 expectedAmountAfterFees = (originalAmount * (1e9 - creator.defaultFees())) / 1e9;
+        assertEq(params.amount, expectedAmountAfterFees);
+
+        // Mutable field should be overridden
+        assertEq(params.campaignType, 5);
+    }
+}
+
+contract Test_DistributionCreator_getCampaignListReallocationAt is DistributionCreatorTest {
+    bytes32 testCampaignId;
+    uint256 originalAmount;
+    uint32 originalStartTimestamp;
+    uint32 originalDuration;
+    bytes originalCampaignData;
+
+    function setUp() public override {
+        super.setUp();
+
+        // Create a campaign
+        originalAmount = 100 ether;
+        originalStartTimestamp = uint32(block.timestamp + 600);
+        originalDuration = 3600 * 24;
+        originalCampaignData = abi.encode(
+            0xbEEfa1aBfEbE621DF50ceaEF9f54FdB73648c92C,
+            new address[](0),
+            new address[](0),
+            "",
+            new bytes[](0),
+            new bytes[](0),
+            hex""
+        );
+
+        vm.prank(alice);
+        testCampaignId = creator.createCampaign(
+            CampaignParameters({
+                campaignId: bytes32(0),
+                creator: alice,
+                rewardToken: address(angle),
+                amount: originalAmount,
+                campaignType: 1,
+                startTimestamp: originalStartTimestamp,
+                duration: originalDuration,
+                campaignData: originalCampaignData
+            })
+        );
+    }
+
+    function test_Success_ReturnsEmptyWhenNoReallocation() public {
+        // Warp to after campaign ends
+        vm.warp(originalStartTimestamp + originalDuration + 1);
+
+        // Get the full reallocation list - should be empty
+        address[] memory list = creator.getCampaignListReallocation(testCampaignId);
+        assertEq(list.length, 0);
+    }
+
+    function test_Success_ReturnsSingleReallocation() public {
+        // Warp to after campaign ends
+        vm.warp(originalStartTimestamp + originalDuration + 1);
+
+        address[] memory froms = new address[](1);
+        froms[0] = address(0x1111);
+        address to = address(0x2222);
+
+        vm.prank(alice);
+        creator.reallocateCampaignRewards(testCampaignId, froms, to);
+
+        // Verify using getCampaignListReallocationAt
+        assertEq(creator.getCampaignListReallocationAt(testCampaignId, 0), froms[0]);
+
+        // Verify using getCampaignListReallocation
+        address[] memory list = creator.getCampaignListReallocation(testCampaignId);
+        assertEq(list.length, 1);
+        assertEq(list[0], froms[0]);
+    }
+
+    function test_Success_ReturnsMultipleReallocationsInOrder() public {
+        // Warp to after campaign ends
+        vm.warp(originalStartTimestamp + originalDuration + 1);
+
+        address[] memory froms = new address[](3);
+        froms[0] = address(0x1111);
+        froms[1] = address(0x2222);
+        froms[2] = address(0x3333);
+        address to = address(0x4444);
+
+        vm.prank(alice);
+        creator.reallocateCampaignRewards(testCampaignId, froms, to);
+
+        // Verify each index returns correct address
+        assertEq(creator.getCampaignListReallocationAt(testCampaignId, 0), froms[0]);
+        assertEq(creator.getCampaignListReallocationAt(testCampaignId, 1), froms[1]);
+        assertEq(creator.getCampaignListReallocationAt(testCampaignId, 2), froms[2]);
+
+        // Verify full list
+        address[] memory list = creator.getCampaignListReallocation(testCampaignId);
+        assertEq(list.length, 3);
+        assertEq(list[0], froms[0]);
+        assertEq(list[1], froms[1]);
+        assertEq(list[2], froms[2]);
+    }
+
+    function test_Success_MultipleReallocationCallsAccumulate() public {
+        // Warp to after campaign ends
+        vm.warp(originalStartTimestamp + originalDuration + 1);
+
+        // First reallocation call
+        address[] memory froms1 = new address[](2);
+        froms1[0] = address(0x1111);
+        froms1[1] = address(0x2222);
+        address to1 = address(0xAAAA);
+
+        vm.prank(alice);
+        creator.reallocateCampaignRewards(testCampaignId, froms1, to1);
+
+        // Second reallocation call with different addresses
+        address[] memory froms2 = new address[](2);
+        froms2[0] = address(0x3333);
+        froms2[1] = address(0x4444);
+        address to2 = address(0xBBBB);
+
+        vm.prank(alice);
+        creator.reallocateCampaignRewards(testCampaignId, froms2, to2);
+
+        // Verify all 4 addresses are in the list in order
+        assertEq(creator.getCampaignListReallocationAt(testCampaignId, 0), froms1[0]);
+        assertEq(creator.getCampaignListReallocationAt(testCampaignId, 1), froms1[1]);
+        assertEq(creator.getCampaignListReallocationAt(testCampaignId, 2), froms2[0]);
+        assertEq(creator.getCampaignListReallocationAt(testCampaignId, 3), froms2[1]);
+
+        // Verify full list length
+        address[] memory list = creator.getCampaignListReallocation(testCampaignId);
+        assertEq(list.length, 4);
+    }
+
+    function test_Success_DifferentCampaignsHaveSeparateLists() public {
+        // Create a second campaign
+        vm.prank(alice);
+        bytes32 secondCampaignId = creator.createCampaign(
+            CampaignParameters({
+                campaignId: bytes32(0),
+                creator: alice,
+                rewardToken: address(angle),
+                amount: 50 ether,
+                campaignType: 2,
+                startTimestamp: originalStartTimestamp,
+                duration: originalDuration,
+                campaignData: originalCampaignData
+            })
+        );
+
+        // Warp to after both campaigns end
+        vm.warp(originalStartTimestamp + originalDuration + 1);
+
+        // Reallocate for first campaign
+        address[] memory froms1 = new address[](2);
+        froms1[0] = address(0x1111);
+        froms1[1] = address(0x2222);
+
+        vm.prank(alice);
+        creator.reallocateCampaignRewards(testCampaignId, froms1, address(0xAAAA));
+
+        // Reallocate for second campaign with different addresses
+        address[] memory froms2 = new address[](1);
+        froms2[0] = address(0x5555);
+
+        vm.prank(alice);
+        creator.reallocateCampaignRewards(secondCampaignId, froms2, address(0xBBBB));
+
+        // Verify first campaign has its own list
+        address[] memory list1 = creator.getCampaignListReallocation(testCampaignId);
+        assertEq(list1.length, 2);
+        assertEq(creator.getCampaignListReallocationAt(testCampaignId, 0), froms1[0]);
+        assertEq(creator.getCampaignListReallocationAt(testCampaignId, 1), froms1[1]);
+
+        // Verify second campaign has its own separate list
+        address[] memory list2 = creator.getCampaignListReallocation(secondCampaignId);
+        assertEq(list2.length, 1);
+        assertEq(creator.getCampaignListReallocationAt(secondCampaignId, 0), froms2[0]);
+    }
+
+    function test_Success_ReallocationToSameRecipientMultipleTimes() public {
+        // Warp to after campaign ends
+        vm.warp(originalStartTimestamp + originalDuration + 1);
+
+        address to = address(0xAAAA);
+
+        // Multiple calls reallocating to the same recipient
+        address[] memory froms1 = new address[](1);
+        froms1[0] = address(0x1111);
+
+        address[] memory froms2 = new address[](1);
+        froms2[0] = address(0x2222);
+
+        vm.prank(alice);
+        creator.reallocateCampaignRewards(testCampaignId, froms1, to);
+
+        vm.prank(alice);
+        creator.reallocateCampaignRewards(testCampaignId, froms2, to);
+
+        // Verify both source addresses are in the list
+        assertEq(creator.getCampaignListReallocationAt(testCampaignId, 0), froms1[0]);
+        assertEq(creator.getCampaignListReallocationAt(testCampaignId, 1), froms2[0]);
+
+        // Verify the reallocation mapping points to the same recipient
+        assertEq(creator.campaignReallocation(testCampaignId, froms1[0]), to);
+        assertEq(creator.campaignReallocation(testCampaignId, froms2[0]), to);
+    }
+
+    function test_Success_ReallocationToDifferentRecipients() public {
+        // Warp to after campaign ends
+        vm.warp(originalStartTimestamp + originalDuration + 1);
+
+        // Reallocate different addresses to different recipients
+        address[] memory froms1 = new address[](1);
+        froms1[0] = address(0x1111);
+        address to1 = address(0xAAAA);
+
+        address[] memory froms2 = new address[](1);
+        froms2[0] = address(0x2222);
+        address to2 = address(0xBBBB);
+
+        vm.prank(alice);
+        creator.reallocateCampaignRewards(testCampaignId, froms1, to1);
+
+        vm.prank(alice);
+        creator.reallocateCampaignRewards(testCampaignId, froms2, to2);
+
+        // Verify list contains both source addresses
+        address[] memory list = creator.getCampaignListReallocation(testCampaignId);
+        assertEq(list.length, 2);
+        assertEq(creator.getCampaignListReallocationAt(testCampaignId, 0), froms1[0]);
+        assertEq(creator.getCampaignListReallocationAt(testCampaignId, 1), froms2[0]);
+
+        // Verify each source maps to correct recipient
+        assertEq(creator.campaignReallocation(testCampaignId, froms1[0]), to1);
+        assertEq(creator.campaignReallocation(testCampaignId, froms2[0]), to2);
+    }
+
+    function test_RevertWhen_CampaignNotEnded() public {
+        // Don't warp - campaign hasn't ended yet
+        address[] memory froms = new address[](1);
+        froms[0] = address(0x1111);
+
+        vm.prank(alice);
+        vm.expectRevert(Errors.InvalidReallocation.selector);
+        creator.reallocateCampaignRewards(testCampaignId, froms, address(0x2222));
+    }
+
+    function test_RevertWhen_NotCreatorOrOperator() public {
+        // Warp to after campaign ends
+        vm.warp(originalStartTimestamp + originalDuration + 1);
+
+        address[] memory froms = new address[](1);
+        froms[0] = address(0x1111);
+
+        // Bob is not the creator or an operator
+        vm.prank(bob);
+        vm.expectRevert(Errors.OperatorNotAllowed.selector);
+        creator.reallocateCampaignRewards(testCampaignId, froms, address(0x2222));
+    }
+
+    function test_RevertWhen_ToAddressIsZero() public {
+        // Warp to after campaign ends
+        vm.warp(originalStartTimestamp + originalDuration + 1);
+
+        address[] memory froms = new address[](1);
+        froms[0] = address(0x1111);
+
+        vm.prank(alice);
+        vm.expectRevert(Errors.ZeroAddress.selector);
+        creator.reallocateCampaignRewards(testCampaignId, froms, address(0));
+    }
+
+    function test_Success_UsesOverriddenDurationForEndTimeCheck() public {
+        // Original campaign: startTimestamp + 24 hours duration
+        // We'll override to have a shorter duration (12 hours)
+        uint32 shorterDuration = 3600 * 12; // 12 hours
+
+        vm.prank(alice);
+        creator.overrideCampaign(
+            testCampaignId,
+            CampaignParameters({
+                campaignId: testCampaignId,
+                creator: alice,
+                rewardToken: address(angle),
+                amount: originalAmount,
+                campaignType: 1,
+                startTimestamp: originalStartTimestamp,
+                duration: shorterDuration,
+                campaignData: originalCampaignData
+            })
+        );
+
+        // Warp to after the OVERRIDDEN end time (12 hours) but before ORIGINAL end time (24 hours)
+        vm.warp(originalStartTimestamp + shorterDuration + 1);
+
+        // This should SUCCEED because reallocation uses overridden duration
+        address[] memory froms = new address[](1);
+        froms[0] = address(0x1111);
+
+        vm.prank(alice);
+        creator.reallocateCampaignRewards(testCampaignId, froms, address(0x2222));
+
+        // Verify reallocation was successful
+        assertEq(creator.campaignReallocation(testCampaignId, froms[0]), address(0x2222));
+    }
+
+    function test_RevertWhen_OverriddenDurationNotYetEnded() public {
+        // Original campaign: startTimestamp + 24 hours duration
+        // We'll override to have a LONGER duration (48 hours)
+        uint32 longerDuration = 3600 * 48; // 48 hours
+
+        vm.prank(alice);
+        creator.overrideCampaign(
+            testCampaignId,
+            CampaignParameters({
+                campaignId: testCampaignId,
+                creator: alice,
+                rewardToken: address(angle),
+                amount: originalAmount,
+                campaignType: 1,
+                startTimestamp: originalStartTimestamp,
+                duration: longerDuration,
+                campaignData: originalCampaignData
+            })
+        );
+
+        // Warp to after the ORIGINAL end time (24 hours) but before OVERRIDDEN end time (48 hours)
+        vm.warp(originalStartTimestamp + originalDuration + 1);
+
+        // This should FAIL because reallocation uses overridden duration (48 hours)
+        address[] memory froms = new address[](1);
+        froms[0] = address(0x1111);
+
+        vm.prank(alice);
+        vm.expectRevert(Errors.InvalidReallocation.selector);
+        creator.reallocateCampaignRewards(testCampaignId, froms, address(0x2222));
+    }
+
+    function test_Success_UsesOverriddenStartTimestampForEndTimeCheck() public {
+        // Override with a later start timestamp
+        uint32 laterStartTimestamp = originalStartTimestamp + 3600; // 1 hour later
+
+        vm.prank(alice);
+        creator.overrideCampaign(
+            testCampaignId,
+            CampaignParameters({
+                campaignId: testCampaignId,
+                creator: alice,
+                rewardToken: address(angle),
+                amount: originalAmount,
+                campaignType: 1,
+                startTimestamp: laterStartTimestamp,
+                duration: originalDuration,
+                campaignData: originalCampaignData
+            })
+        );
+
+        // Warp to after the OVERRIDDEN end time (laterStart + 24h)
+        vm.warp(laterStartTimestamp + originalDuration + 1);
+
+        // This should SUCCEED
+        address[] memory froms = new address[](1);
+        froms[0] = address(0x1111);
+
+        vm.prank(alice);
+        creator.reallocateCampaignRewards(testCampaignId, froms, address(0x2222));
+
+        assertEq(creator.campaignReallocation(testCampaignId, froms[0]), address(0x2222));
+    }
+
+    function test_RevertWhen_OverriddenStartTimestampNotYetEnded() public {
+        // Override with a later start timestamp
+        uint32 laterStartTimestamp = originalStartTimestamp + 3600 * 12; // 12 hours later
+
+        vm.prank(alice);
+        creator.overrideCampaign(
+            testCampaignId,
+            CampaignParameters({
+                campaignId: testCampaignId,
+                creator: alice,
+                rewardToken: address(angle),
+                amount: originalAmount,
+                campaignType: 1,
+                startTimestamp: laterStartTimestamp,
+                duration: originalDuration,
+                campaignData: originalCampaignData
+            })
+        );
+
+        // Warp to after ORIGINAL end time but before OVERRIDDEN end time
+        // Original ends at: originalStartTimestamp + 24h
+        // Overridden ends at: (originalStartTimestamp + 12h) + 24h = originalStartTimestamp + 36h
+        vm.warp(originalStartTimestamp + originalDuration + 1);
+
+        // This should FAIL because we're before the overridden end time
+        address[] memory froms = new address[](1);
+        froms[0] = address(0x1111);
+
+        vm.prank(alice);
+        vm.expectRevert(Errors.InvalidReallocation.selector);
+        creator.reallocateCampaignRewards(testCampaignId, froms, address(0x2222));
+    }
+
+    function test_Success_UsesOverriddenBothStartAndDuration() public {
+        // Override with both different start and duration
+        uint32 newStartTimestamp = originalStartTimestamp + 3600; // 1 hour later
+        uint32 newDuration = 3600 * 6; // 6 hours (shorter)
+
+        vm.prank(alice);
+        creator.overrideCampaign(
+            testCampaignId,
+            CampaignParameters({
+                campaignId: testCampaignId,
+                creator: alice,
+                rewardToken: address(angle),
+                amount: originalAmount,
+                campaignType: 1,
+                startTimestamp: newStartTimestamp,
+                duration: newDuration,
+                campaignData: originalCampaignData
+            })
+        );
+
+        // Overridden end time: newStartTimestamp + 6h = originalStartTimestamp + 7h
+        // Original end time: originalStartTimestamp + 24h
+        // Warp to after overridden end but before original end
+        vm.warp(newStartTimestamp + newDuration + 1);
+
+        address[] memory froms = new address[](1);
+        froms[0] = address(0x1111);
+
+        vm.prank(alice);
+        creator.reallocateCampaignRewards(testCampaignId, froms, address(0x2222));
+
+        assertEq(creator.campaignReallocation(testCampaignId, froms[0]), address(0x2222));
+    }
+
+    function test_Success_MultipleOverridesUsesLatestForTimestampCheck() public {
+        // First override: shorter duration (12 hours)
+        uint32 firstDuration = 3600 * 12;
+
+        vm.prank(alice);
+        creator.overrideCampaign(
+            testCampaignId,
+            CampaignParameters({
+                campaignId: testCampaignId,
+                creator: alice,
+                rewardToken: address(angle),
+                amount: originalAmount,
+                campaignType: 1,
+                startTimestamp: originalStartTimestamp,
+                duration: firstDuration,
+                campaignData: originalCampaignData
+            })
+        );
+
+        // Second override: even shorter duration (6 hours)
+        uint32 secondDuration = 3600 * 6;
+
+        vm.prank(alice);
+        creator.overrideCampaign(
+            testCampaignId,
+            CampaignParameters({
+                campaignId: testCampaignId,
+                creator: alice,
+                rewardToken: address(angle),
+                amount: originalAmount,
+                campaignType: 1,
+                startTimestamp: originalStartTimestamp,
+                duration: secondDuration,
+                campaignData: originalCampaignData
+            })
+        );
+
+        // Warp to after the LATEST (second) override end time
+        vm.warp(originalStartTimestamp + secondDuration + 1);
+
+        address[] memory froms = new address[](1);
+        froms[0] = address(0x1111);
+
+        vm.prank(alice);
+        creator.reallocateCampaignRewards(testCampaignId, froms, address(0x2222));
+
+        assertEq(creator.campaignReallocation(testCampaignId, froms[0]), address(0x2222));
+    }
+
+    function test_Success_OperatorCanReallocateAfterOverriddenEnd() public {
+        // Set bob as operator for alice
+        vm.prank(alice);
+        creator.toggleCampaignOperator(alice, bob);
+
+        // Override with shorter duration
+        uint32 shorterDuration = 3600 * 12;
+
+        vm.prank(alice);
+        creator.overrideCampaign(
+            testCampaignId,
+            CampaignParameters({
+                campaignId: testCampaignId,
+                creator: alice,
+                rewardToken: address(angle),
+                amount: originalAmount,
+                campaignType: 1,
+                startTimestamp: originalStartTimestamp,
+                duration: shorterDuration,
+                campaignData: originalCampaignData
+            })
+        );
+
+        // Warp to after overridden end time
+        vm.warp(originalStartTimestamp + shorterDuration + 1);
+
+        address[] memory froms = new address[](1);
+        froms[0] = address(0x1111);
+
+        // Bob (operator) can reallocate
+        vm.prank(bob);
+        creator.reallocateCampaignRewards(testCampaignId, froms, address(0x2222));
+
+        assertEq(creator.campaignReallocation(testCampaignId, froms[0]), address(0x2222));
+    }
+
+    function test_RevertWhen_GovernorNotOperator() public {
+        // Override with shorter duration
+        uint32 shorterDuration = 3600 * 12;
+
+        vm.prank(alice);
+        creator.overrideCampaign(
+            testCampaignId,
+            CampaignParameters({
+                campaignId: testCampaignId,
+                creator: alice,
+                rewardToken: address(angle),
+                amount: originalAmount,
+                campaignType: 1,
+                startTimestamp: originalStartTimestamp,
+                duration: shorterDuration,
+                campaignData: originalCampaignData
+            })
+        );
+
+        // Warp to after overridden end time
+        vm.warp(originalStartTimestamp + shorterDuration + 1);
+
+        address[] memory froms = new address[](1);
+        froms[0] = address(0x1111);
+
+        // Governor CANNOT reallocate unless they are set as an operator
+        // (reallocateCampaignRewards requires creator or operator, not governor)
+        vm.prank(governor);
+        vm.expectRevert(Errors.OperatorNotAllowed.selector);
+        creator.reallocateCampaignRewards(testCampaignId, froms, address(0x2222));
+    }
+
+    function test_RevertWhen_OperatorTriesBeforeOverriddenEnd() public {
+        // Set bob as operator for alice
+        vm.prank(alice);
+        creator.toggleCampaignOperator(alice, bob);
+
+        // Override with longer duration
+        uint32 longerDuration = 3600 * 48;
+
+        vm.prank(alice);
+        creator.overrideCampaign(
+            testCampaignId,
+            CampaignParameters({
+                campaignId: testCampaignId,
+                creator: alice,
+                rewardToken: address(angle),
+                amount: originalAmount,
+                campaignType: 1,
+                startTimestamp: originalStartTimestamp,
+                duration: longerDuration,
+                campaignData: originalCampaignData
+            })
+        );
+
+        // Warp to after original end but before overridden end
+        vm.warp(originalStartTimestamp + originalDuration + 1);
+
+        address[] memory froms = new address[](1);
+        froms[0] = address(0x1111);
+
+        // Bob (operator) cannot reallocate - campaign not ended per override
+        vm.prank(bob);
+        vm.expectRevert(Errors.InvalidReallocation.selector);
+        creator.reallocateCampaignRewards(testCampaignId, froms, address(0x2222));
+    }
+
+    function test_Success_ReallocateSameAddressOverwritesPreviousRecipient() public {
+        // Warp to after campaign ends
+        vm.warp(originalStartTimestamp + originalDuration + 1);
+
+        address[] memory froms = new address[](1);
+        froms[0] = address(0x1111);
+
+        // First reallocation to recipient A
+        vm.prank(alice);
+        creator.reallocateCampaignRewards(testCampaignId, froms, address(0xAAAA));
+        assertEq(creator.campaignReallocation(testCampaignId, froms[0]), address(0xAAAA));
+
+        // Second reallocation of same address to recipient B
+        vm.prank(alice);
+        creator.reallocateCampaignRewards(testCampaignId, froms, address(0xBBBB));
+
+        // Should overwrite to new recipient
+        assertEq(creator.campaignReallocation(testCampaignId, froms[0]), address(0xBBBB));
+
+        // But the list should have the address twice (it just pushes)
+        address[] memory list = creator.getCampaignListReallocation(testCampaignId);
+        assertEq(list.length, 2);
+        assertEq(list[0], froms[0]);
+        assertEq(list[1], froms[0]);
+    }
+
+    function test_Success_EmptyFromsArrayDoesNothing() public {
+        // Warp to after campaign ends
+        vm.warp(originalStartTimestamp + originalDuration + 1);
+
+        address[] memory froms = new address[](0);
+
+        vm.prank(alice);
+        creator.reallocateCampaignRewards(testCampaignId, froms, address(0x2222));
+
+        // List should still be empty
+        address[] memory list = creator.getCampaignListReallocation(testCampaignId);
+        assertEq(list.length, 0);
+    }
+
+    function test_Success_LargeNumberOfReallocations() public {
+        // Warp to after campaign ends
+        vm.warp(originalStartTimestamp + originalDuration + 1);
+
+        uint256 numAddresses = 50;
+        address[] memory froms = new address[](numAddresses);
+        for (uint256 i = 0; i < numAddresses; i++) {
+            froms[i] = address(uint160(0x1000 + i));
+        }
+
+        vm.prank(alice);
+        creator.reallocateCampaignRewards(testCampaignId, froms, address(0x2222));
+
+        // Verify all addresses are in the list
+        address[] memory list = creator.getCampaignListReallocation(testCampaignId);
+        assertEq(list.length, numAddresses);
+
+        // Verify each address via getCampaignListReallocationAt
+        for (uint256 i = 0; i < numAddresses; i++) {
+            assertEq(creator.getCampaignListReallocationAt(testCampaignId, i), froms[i]);
+            assertEq(creator.campaignReallocation(testCampaignId, froms[i]), address(0x2222));
+        }
     }
 }
 
@@ -1424,24 +2456,18 @@ contract Test_DistributionCreator_setFeeRecipient is DistributionCreatorTest {
     }
 }
 
-contract Test_DistributionCreator_recoverFees is DistributionCreatorTest {
+contract Test_DistributionCreator_recover is DistributionCreatorTest {
     function test_RevertWhen_NotGovernor() public {
-        IERC20[] memory tokens = new IERC20[](1);
-        tokens[0] = angle;
-
         vm.expectRevert(Errors.NotGovernor.selector);
         vm.prank(alice);
-        creator.recoverFees(tokens, address(bob));
+        creator.recover(address(angle), address(bob), 10);
     }
 
     function test_Success() public {
-        IERC20[] memory tokens = new IERC20[](1);
-        tokens[0] = angle;
-
         uint256 balance = angle.balanceOf(address(bob));
 
         vm.prank(governor);
-        creator.recoverFees(tokens, address(bob));
+        creator.recover(address(angle), address(bob), 11e9);
 
         assertEq(angle.balanceOf(address(bob)), balance + 11e9);
     }
@@ -1534,9 +2560,7 @@ contract Test_DistributionCreator_adjustTokenBalance is DistributionCreatorTest 
         assertEq(angle.balanceOf(address(bob)), balance3);
         assertEq(angle.balanceOf(address(creator)), creatorBalance);
 
-        IERC20[] memory tokens = new IERC20[](1);
-        tokens[0] = angle;
-        creator.recoverFees(tokens, address(bob));
+        creator.recover(address(angle), address(bob), angle.balanceOf(address(creator)));
         vm.expectRevert();
         creator.decreaseTokenBalance(address(alice), address(angle), address(alice), 1e10 / 2);
         vm.stopPrank();
@@ -1564,6 +2588,13 @@ contract Test_DistributionCreator_adjustTokenBalance is DistributionCreatorTest 
         assertEq(angle.balanceOf(address(creator)), creatorBalance + 1e9);
         vm.expectRevert();
         creator.decreaseTokenBalance(address(alice), address(angle), address(alice), 1e10);
+        vm.stopPrank();
+    }
+
+    function test_RevertWhenUserAddressIsZero() public {
+        vm.startPrank(alice);
+        vm.expectRevert(Errors.ZeroAddress.selector);
+        creator.increaseTokenBalance(address(0), address(angle), 1e9);
         vm.stopPrank();
     }
 }
@@ -1621,15 +2652,18 @@ contract Test_DistributionCreator_adjustTokenAllowance is DistributionCreatorTes
         vm.stopPrank();
     }
 
-    function test_RevertWhenNotEnoughAllowance() public {
+    function test_DecreaseAllowanceClampsToZero() public {
         vm.startPrank(alice);
         creator.increaseTokenAllowance(address(alice), address(bob), address(angle), 1e9);
         assertEq(creator.creatorAllowance(address(alice), address(bob), address(angle)), 1e9);
-        vm.expectRevert();
-        creator.decreaseTokenAllowance(address(alice), address(bob), address(angle), 1e10);
 
-        vm.expectRevert();
+        // Decreasing by more than current allowance should clamp to 0 (not revert)
+        creator.decreaseTokenAllowance(address(alice), address(bob), address(angle), 1e10);
+        assertEq(creator.creatorAllowance(address(alice), address(bob), address(angle)), 0);
+
+        // Decreasing from 0 should stay at 0 (not revert)
         creator.decreaseTokenAllowance(address(alice), address(dylan), address(angle), 1);
+        assertEq(creator.creatorAllowance(address(alice), address(dylan), address(angle)), 0);
 
         vm.stopPrank();
     }

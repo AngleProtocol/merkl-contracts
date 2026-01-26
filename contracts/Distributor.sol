@@ -143,12 +143,6 @@ contract Distributor is UUPSHelper {
         _;
     }
 
-    /// @notice Restricts function access to addresses with governor or guardian role
-    modifier onlyGuardian() {
-        _onlyGuardian();
-        _;
-    }
-
     /// @notice Ensures the contract is still upgradeable and caller has governor role
     /// @dev Reverts if upgradeability has been revoked or caller is not a governor
     modifier onlyUpgradeableInstance() {
@@ -285,6 +279,7 @@ contract Distributor is UUPSHelper {
     /// @dev Requires depositing disputeAmount of disputeToken as collateral
     /// @dev Can only dispute within disputePeriod after a tree update
     /// @dev Deposit is slashed if dispute is rejected, returned if dispute is valid
+    /// @dev If malicious addresses repeatedly dispute to DOS the system, the solution is to increase the disputeToken amount via governance
     function disputeTree(string memory reason) external {
         if (disputer != address(0)) revert Errors.UnresolvedDispute();
         if (block.timestamp >= endOfDisputePeriod) revert Errors.InvalidDispute();
@@ -349,6 +344,7 @@ contract Distributor is UUPSHelper {
     /// @dev Only callable by governor
     /// @dev If valid: returns deposit to disputer and reverts to lastTree
     /// @dev If invalid: sends deposit to governor and extends dispute period
+    /// @dev If the disputer is blacklisted on the disputeToken contract, the only resolution is to call this function with valid=false from a non-blacklisted governor address
     function resolveDispute(bool valid) external onlyGovernor {
         if (disputer == address(0)) revert Errors.NoDispute();
         if (valid) {
@@ -479,9 +475,8 @@ contract Distributor is UUPSHelper {
             if (toSend != 0) {
                 IERC20(token).safeTransfer(recipient, toSend);
                 if (data.length != 0) {
-                    try IClaimRecipient(recipient).onClaim(user, token, amount, data) returns (bytes32 callbackSuccess) {
-                        if (callbackSuccess != CALLBACK_SUCCESS) revert Errors.InvalidReturnMessage();
-                    } catch {}
+                    bytes32 callbackSuccess = IClaimRecipient(recipient).onClaim(user, token, toSend, data);
+                    if (callbackSuccess != CALLBACK_SUCCESS) revert Errors.InvalidReturnMessage();
                 }
             }
             unchecked {
@@ -541,9 +536,10 @@ contract Distributor is UUPSHelper {
     /// @param user User for whom to set the recipient
     /// @param recipient Address that will receive claimed tokens
     /// @param token Token for which recipient is set (address(0) = all tokens)
+    /// @dev WARNING: If setting a contract as recipient that implements onClaim logic, be extremely careful about its implementation as it will be called during claim execution
     function _setClaimRecipient(address user, address recipient, address token) internal {
         claimRecipient[user][token] = recipient;
-        emit ClaimRecipientUpdated(user, recipient, token);
+        emit ClaimRecipientUpdated(user, token, recipient);
     }
 
     /// @notice Ensures the caller has governor role

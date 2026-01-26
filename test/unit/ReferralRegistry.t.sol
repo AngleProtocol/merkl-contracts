@@ -9,7 +9,6 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 
-
 contract ReferralRegistryTest is Test {
     ReferralRegistry referralRegistry;
     ReferralRegistry referralRegistryImple;
@@ -35,7 +34,7 @@ contract ReferralRegistryTest is Test {
         accessControlManager = IAccessControlManager(address(new MockAccessControlManager()));
         referralRegistryImple = new ReferralRegistry();
         paymentToken = address(new MockERC20());
-        referralRegistry =  ReferralRegistry(payable(deployUUPS(address(referralRegistryImple), hex"")));
+        referralRegistry = ReferralRegistry(payable(deployUUPS(address(referralRegistryImple), hex"")));
         referralRegistry.initialize(accessControlManager, feeSetup, feeRecipient);
     }
 
@@ -55,7 +54,7 @@ contract ReferralRegistryTest is Test {
     function testAddReferralKey() public {
         vm.prank(owner);
         uint256 fee = referralRegistry.costReferralProgram();
-        referralRegistry.addReferralKey{value: fee}(referralKey, cost, requiresRefererToBeSet, owner, requiresAuthorization, paymentToken);
+        referralRegistry.addReferralKey{ value: fee }(referralKey, cost, requiresRefererToBeSet, owner, requiresAuthorization, paymentToken);
 
         ReferralRegistry.ReferralProgram memory program = referralRegistry.getReferralProgram(referralKey);
         assertEq(program.owner, owner);
@@ -69,7 +68,7 @@ contract ReferralRegistryTest is Test {
         vm.prank(owner);
         uint256 fee = referralRegistry.costReferralProgram();
 
-        referralRegistry.addReferralKey{value: fee}(referralKey, cost, requiresRefererToBeSet, owner, requiresAuthorization, paymentToken);
+        referralRegistry.addReferralKey{ value: fee }(referralKey, cost, requiresRefererToBeSet, owner, requiresAuthorization, paymentToken);
 
         uint256 newCost = 2000;
         bool newRequiresRefererToBeSet = true;
@@ -90,7 +89,7 @@ contract ReferralRegistryTest is Test {
         vm.prank(owner);
         uint256 fee = referralRegistry.costReferralProgram();
 
-        referralRegistry.addReferralKey{value: fee}(referralKey, cost, requiresRefererToBeSet, owner, requiresAuthorization, paymentToken);
+        referralRegistry.addReferralKey{ value: fee }(referralKey, cost, requiresRefererToBeSet, owner, requiresAuthorization, paymentToken);
 
         string memory referrerCode = "referrerCode";
         vm.startPrank(referrer);
@@ -111,7 +110,7 @@ contract ReferralRegistryTest is Test {
         vm.prank(owner);
         uint256 fee = referralRegistry.costReferralProgram();
 
-        referralRegistry.addReferralKey{value: fee}(referralKey, cost, requiresRefererToBeSet, owner, requiresAuthorization, paymentToken);
+        referralRegistry.addReferralKey{ value: fee }(referralKey, cost, requiresRefererToBeSet, owner, requiresAuthorization, paymentToken);
 
         string memory referrerCode = "referrerCode";
         vm.startPrank(referrer);
@@ -129,7 +128,7 @@ contract ReferralRegistryTest is Test {
         vm.prank(owner);
         uint256 fee = referralRegistry.costReferralProgram();
 
-        referralRegistry.addReferralKey{value: fee}(referralKey, cost, requiresRefererToBeSet, owner, requiresAuthorization, paymentToken);
+        referralRegistry.addReferralKey{ value: fee }(referralKey, cost, requiresRefererToBeSet, owner, requiresAuthorization, paymentToken);
 
         string memory referrerCode = "referrerCode";
         vm.startPrank(referrer);
@@ -147,7 +146,7 @@ contract ReferralRegistryTest is Test {
         vm.prank(owner);
         uint256 fee = referralRegistry.costReferralProgram();
 
-        referralRegistry.addReferralKey{value: fee}(referralKey, cost, requiresRefererToBeSet, owner, requiresAuthorization, paymentToken);
+        referralRegistry.addReferralKey{ value: fee }(referralKey, cost, requiresRefererToBeSet, owner, requiresAuthorization, paymentToken);
 
         string memory referrerCode1 = "referrerCode1";
         string memory referrerCode2 = "referrerCode2";
@@ -186,11 +185,10 @@ contract ReferralRegistryTest is Test {
         assertEq(referredUsers2[0], user);
     }
 
-
     function testAcknowledgeReferrerByKeyWithoutCost() public {
         vm.prank(owner);
         uint256 fee = referralRegistry.costReferralProgram();
-        referralRegistry.addReferralKey{value: fee}(referralKey, 0, false, owner, false, address(0));
+        referralRegistry.addReferralKey{ value: fee }(referralKey, 0, false, owner, false, address(0));
 
         string memory referrerCode = "referrerCode";
         vm.startPrank(referrer);

@@ -1,0 +1,65 @@
+// SPDX-License-Identifier: BUSL-1.1
+pragma solidity ^0.8.17;
+
+import { console } from "forge-std/console.sol";
+
+import { BaseScript } from "./utils/Base.s.sol";
+
+import { StandardMiddleman } from "../contracts/partners/middleman/StandardMiddleman.sol";
+import { CampaignParameters } from "../contracts/DistributionCreator.sol";
+
+contract DeployStandardMiddleman is BaseScript {
+    // forge script scripts/deployStandardMiddleman.s.sol --rpc-url linea --sender 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701 --broadcast --verify
+    function run() public {
+        uint256 deployerPrivateKey = vm.envUint("DEPLOYER_PRIVATE_KEY");
+        vm.startBroadcast(deployerPrivateKey);
+
+        // ------------------------------------------------------------------------
+        // DEPLOYMENT PARAMETERS
+        address owner = 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701;
+        address distributionCreator = 0x8BB4C975Ff3c250e0ceEA271728547f3802B36Fd;
+
+        // Executors
+        address executor1 = 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701;
+        address executor2 = 0x46606dc5183E6720077D5453D194f1593Fa5979A;
+        address executor3 = 0x70Be95681FA7a5c134c9C117C931D1Ec2AA4f415;
+
+        // Default campaign parameters - TO EDIT
+        // You can generate these using the Merkl campaign creation frontend
+        CampaignParameters memory defaultParams = CampaignParameters({
+            campaignId: bytes32(0),
+            creator: address(0),
+            rewardToken: address(0x03C2d2014795EE8cA78B62738433B457AB19F4b3), // TO EDIT: Set reward token address
+            amount: 0,
+            campaignType: 18, // TO EDIT: Set campaign type
+            startTimestamp: 0,
+            duration: 3600 * 24, // TO EDIT: Set duration in seconds
+            campaignData: hex"000000000000000000000000aca92e438df0b2401ff60da7e4337b687a2435da00000000000000000000000000000000000000000000000000000000000000e0000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000001200000000000000000000000000000000000000000000000000000000000000140000000000000000000000000000000000000000000000000000000000000024000000000000000000000000000000000000000000000000000000000000003c000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000e000000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000001367656e6572696354696d65576569676874656400000000000000000000000000000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000016000000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000000d44555443485f41554354494f4e0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000c0000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" // TO EDIT: Set campaign data (encoded parameters)
+        });
+        // ------------------------------------------------------------------------
+
+        // Deploy StandardMiddleman
+        StandardMiddleman middleman = new StandardMiddleman(owner, distributionCreator);
+        console.log("StandardMiddleman deployed at:", address(middleman));
+
+        // Add executors
+        middleman.setExecutor(executor1, 1);
+        console.log("Executor added:", executor1);
+
+        middleman.setExecutor(executor2, 1);
+        console.log("Executor added:", executor2);
+
+        middleman.setExecutor(executor3, 1);
+        console.log("Executor added:", executor3);
+
+        // Set default parameters if configured
+        if (defaultParams.campaignData.length > 0) {
+            middleman.setDefaultParameters(defaultParams);
+            console.log("Default parameters set");
+        } else {
+            console.log("Warning: Default parameters not set - configure campaignData before use");
+        }
+
+        vm.stopBroadcast();
+    }
+}

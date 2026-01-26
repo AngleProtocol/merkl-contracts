@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0
+/* solhint-disable */
 // Copyright (C) 2015, 2016, 2017 Dapphub
 
 // This program is free software: you can redistribute it and/or modify

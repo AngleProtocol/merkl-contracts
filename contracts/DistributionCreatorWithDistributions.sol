@@ -51,9 +51,7 @@ contract DistributionCreatorWithDistributions is DistributionCreator {
     /// @dev Extracts whitelist (wrapperType == 0) and blacklist (wrapperType == 3) from position wrappers
     /// @dev Uses assembly to resize arrays after filtering wrapper types
     /// @dev Campaign type is set to 2 for converted legacy distributions
-    function _convertDistribution(
-        DistributionParameters memory distributionToConvert
-    ) internal view returns (CampaignParameters memory) {
+    function _convertDistribution(DistributionParameters memory distributionToConvert) internal view returns (CampaignParameters memory) {
         uint256 wrapperLength = distributionToConvert.wrapperTypes.length;
         address[] memory whitelist = new address[](wrapperLength);
         address[] memory blacklist = new address[](wrapperLength);
