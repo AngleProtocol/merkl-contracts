@@ -465,7 +465,7 @@ contract Distributor is UUPSHelper {
             address recipient = recipients[i];
             // Only `msg.sender` can set a different recipient for itself within the context of a call to claim
             // The recipient set in the context of the call to `claim` can override the default recipient set by the user
-            if ((msg.sender != user && tx.origin != user) || recipient == address(0)) {
+            if (msg.sender != user || recipient == address(0)) {
                 address userSetRecipient = claimRecipient[user][token];
                 if (userSetRecipient == address(0)) userSetRecipient = claimRecipient[user][address(0)];
                 if (userSetRecipient == address(0)) recipient = user;

@@ -1103,8 +1103,8 @@ contract DistributionCreatorOverrideTest is Fixture {
         assertEq(updatedCampaign.amount, amountAfterFees, "amount should be preserved");
     }
 
-    /// @notice Tests that startTimestamp can be successfully changed via override
-    function testUnit_OverrideCampaignData_StartTimestampUpdated() public {
+    /// @notice Tests that startTimestamp can be successfully changed via override before campaign starts
+    function testUnit_OverrideCampaignData_StartTimestampUpdatedBeforeStart() public {
         IERC20 rewardToken = IERC20(address(angle));
         amount = 100 ether;
         amountAfterFees = 90 ether;
@@ -1132,7 +1132,8 @@ contract DistributionCreatorOverrideTest is Fixture {
             })
         );
 
-        vm.warp(block.timestamp + 1000);
+        // Warp to a time before campaign starts (startTimestamp is block.timestamp + 600)
+        vm.warp(block.timestamp + 100);
         vm.roll(4);
 
         // Silo distrib
@@ -1147,9 +1148,9 @@ contract DistributionCreatorOverrideTest is Fixture {
             hex""
         );
 
-        uint32 newStartTimestamp = startTimestamp + 1;
+        uint32 newStartTimestamp = startTimestamp + 100;
 
-        // Override with a different startTimestamp
+        // Override with a different startTimestamp before campaign starts
         vm.prank(alice);
         creator.overrideCampaign(
             campaignId,
@@ -1168,6 +1169,71 @@ contract DistributionCreatorOverrideTest is Fixture {
         // Verify the startTimestamp was updated
         CampaignParameters memory updatedCampaign = creator.getLatestCampaignParams(campaignId);
         assertEq(updatedCampaign.startTimestamp, newStartTimestamp, "startTimestamp should be updated");
+    }
+
+    /// @notice Tests that startTimestamp cannot be changed via override after campaign has started
+    function testUnit_OverrideCampaignData_RevertWhen_StartTimestampUpdatedAfterStart() public {
+        IERC20 rewardToken = IERC20(address(angle));
+        amount = 100 ether;
+        amountAfterFees = 90 ether;
+        startTimestamp = uint32(block.timestamp + 600);
+
+        vm.prank(alice);
+        campaignId = creator.createCampaign(
+            CampaignParameters({
+                campaignId: bytes32(0),
+                creator: alice,
+                rewardToken: address(rewardToken),
+                amount: amount,
+                campaignType: 1,
+                startTimestamp: startTimestamp,
+                duration: 3600 * 24,
+                campaignData: abi.encode(
+                    0xbEEfa1aBfEbE621DF50ceaEF9f54FdB73648c92C,
+                    new address[](0),
+                    new address[](0),
+                    "",
+                    new bytes[](0),
+                    new bytes[](0),
+                    hex""
+                )
+            })
+        );
+
+        // Warp to a time after campaign has started (startTimestamp is block.timestamp + 600)
+        vm.warp(block.timestamp + 1000);
+        vm.roll(4);
+
+        // Silo distrib
+        address[] memory whitelist = new address[](1);
+        whitelist[0] = 0x8095806d8753C0443C118D1C5e5eEC472e30BFeC;
+        campaignData = abi.encode(
+            0x04C0599Ae5A44757c0af6F9eC3b93da8976c150A,
+            2,
+            0xa42001D6d2237d2c74108FE360403C4b796B7170,
+            whitelist,
+            new address[](0),
+            hex""
+        );
+
+        uint32 newStartTimestamp = startTimestamp + 100;
+
+        // Attempt to override with a different startTimestamp after campaign has started should revert
+        vm.expectRevert(Errors.InvalidOverride.selector);
+        vm.prank(alice);
+        creator.overrideCampaign(
+            campaignId,
+            CampaignParameters({
+                campaignId: campaignId,
+                creator: alice,
+                rewardToken: address(rewardToken),
+                amount: amount,
+                campaignType: 5,
+                startTimestamp: newStartTimestamp,
+                duration: 3600 * 24,
+                campaignData: campaignData
+            })
+        );
     }
 
     /// @notice Tests that override reverts when new duration makes reward amount per hour too small

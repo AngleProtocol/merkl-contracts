@@ -125,7 +125,6 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     event FeeRecipientUpdated(address indexed _feeRecipient);
     event FeesSet(uint256 _fees);
     event CampaignOperatorToggled(address indexed user, address indexed operator, bool isWhitelisted);
-    event CampaignAmountIncreased(bytes32 indexed _campaignId, uint256 amount, uint256 amountMinusFees);
     event CampaignOverride(bytes32 _campaignId, CampaignParameters campaign);
     event CampaignReallocation(bytes32 _campaignId, address[] from, address indexed to);
     event CampaignSpecificFeesSet(uint32 campaignType, uint256 _fees);
@@ -243,7 +242,10 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         newCampaign.creator = _campaign.creator; // Creator address must remain unchanged
         newCampaign.amount = _campaign.amount; // Total reward amount is immutable
         newCampaign.rewardToken = _campaign.rewardToken; // Reward token cannot be changed
-        if (newCampaign.amount * HOUR < rewardTokenMinAmounts[newCampaign.rewardToken] * newCampaign.duration) revert Errors.InvalidOverride();
+        if (
+            (newCampaign.startTimestamp != _campaign.startTimestamp && block.timestamp > _campaign.startTimestamp) || // Allow to update startTimestamp before campaign start
+            newCampaign.amount * HOUR < rewardTokenMinAmounts[newCampaign.rewardToken] * newCampaign.duration
+        ) revert Errors.InvalidOverride();
 
         campaignOverrides[_campaignId] = newCampaign;
         // There could be duplicate timestamps in the array if multiple overrides happen in the same block
@@ -505,7 +507,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @param userFeeRebate Rebate amount in base 10^9
     /// @dev Only callable by governor or guardian
     function setUserFeeRebate(address user, uint256 userFeeRebate) external onlyGovernorOrGuardian {
-        if (userFeeRebate > BASE_9) userFeeRebate = BASE_9;
+        if (userFeeRebate > BASE_9) revert Errors.InvalidParam();
         feeRebate[user] = userFeeRebate;
         emit FeeRebateUpdated(user, userFeeRebate);
     }
