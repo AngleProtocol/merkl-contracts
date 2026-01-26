@@ -241,7 +241,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         // Preserve immutable campaign fields that cannot be modified through overrides
         newCampaign.campaignId = _campaignId;
         newCampaign.creator = _campaign.creator; // Creator address must remain unchanged
-        newCampaign.amount = _campaign.amount; // Total reward amount is immutable (use increaseCampaignAmount to add funds)
+        newCampaign.amount = _campaign.amount; // Total reward amount is immutable
         newCampaign.rewardToken = _campaign.rewardToken; // Reward token cannot be changed
         if (newCampaign.amount * HOUR < rewardTokenMinAmounts[newCampaign.rewardToken] * newCampaign.duration) revert Errors.InvalidOverride();
 
@@ -249,35 +249,6 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         // There could be duplicate timestamps in the array if multiple overrides happen in the same block
         campaignOverridesTimestamp[_campaignId].push(block.timestamp);
         emit CampaignOverride(_campaignId, newCampaign);
-    }
-
-    /// @notice Increases the reward amount of an existing campaign
-    /// @param _campaignId ID of the campaign to increase funding for
-    /// @param amount Additional amount of reward tokens to add (before fees)
-    /// @dev Fees are computed and deducted from the additional amount
-    /// @dev Only callable by the campaign creator or an authorized operator
-    /// @dev The campaign must not have ended yet
-    /// @dev The updated campaign parameters are stored in campaignOverrides
-    function increaseCampaignAmount(bytes32 _campaignId, uint256 amount) external nonReentrant {
-        CampaignParameters memory _campaign = _getLatestCampaignParams(_campaignId);
-        _isSenderValidOperatorForCampaign(_campaign.creator);
-        // Check campaign hasn't ended yet
-        if (block.timestamp >= _campaign.startTimestamp + _campaign.duration) {
-            revert Errors.CampaignAlreadyEnded();
-        }
-
-        // Compute fees on the additional amount
-        uint256 amountMinusFees = _computeFees(_campaign.campaignType, amount);
-
-        // Pull tokens and send to distributor
-        _pullTokens(_campaign.creator, _campaign.rewardToken, amount, amountMinusFees);
-
-        // Update campaign amount in the override
-        _campaign.amount += amountMinusFees;
-        campaignOverrides[_campaignId] = _campaign;
-        campaignOverridesTimestamp[_campaignId].push(block.timestamp);
-
-        emit CampaignAmountIncreased(_campaignId, amount, amountMinusFees);
     }
 
     /// @notice Reallocates unclaimed rewards from specific addresses to a new recipient after campaign ends
