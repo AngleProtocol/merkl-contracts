@@ -1,0 +1,10 @@
+{
+  "_note": "Upgrade implementation deployment",
+  "chainId": 252,
+  "chainName": "fraxtal",
+  "deployer": "0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701",
+  "distributionCreatorImplementation": "0x09f143d3Af1Af9af6AB6BCe1B53fc5a8dc1baA79",
+  "distributorImplementation": "0xE3B03b4c1D4d1C33CAB32cc304C66C2cBdFD40b7",
+  "status": "SUCCESS",
+  "timestamp": 1769505457
+}

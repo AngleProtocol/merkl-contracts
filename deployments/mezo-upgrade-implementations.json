@@ -1,0 +1,10 @@
+{
+  "_note": "Upgrade implementation deployment",
+  "chainId": 31612,
+  "chainName": "mezo",
+  "deployer": "0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701",
+  "distributionCreatorImplementation": "0xE3B03b4c1D4d1C33CAB32cc304C66C2cBdFD40b7",
+  "distributorImplementation": "0xb8021254f00C1aFb67b861f274cea175FB97c2Af",
+  "status": "SUCCESS",
+  "timestamp": 1769506559
+}

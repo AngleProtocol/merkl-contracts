@@ -163,4 +163,4 @@ taiko = {chainId = 167000, key = "${ETHERSCAN_API_KEY}", url = "https://api.ethe
 scroll = {chainId = 534352, key = "${ETHERSCAN_API_KEY}", url = "https://api.etherscan.io/v2/api?chainid=534352" }
 katana = {chainId = 747474, key = "${ETHERSCAN_API_KEY}", url = "https://api.etherscan.io/v2/api?chainid=747474" }
 skale = {chainId = 2046399126, key = "none", url = "https://internal-hubs.explorer.mainnet.skalenodes.com:10001/api" }
-ethereal = {chainId = 5064014, key = "none", url = "${VERIFIER_URL_5064014}" }
+ethereal = {chainId = 5064014, key = "none", url = "https://explorer.ethereal.trade/api" }

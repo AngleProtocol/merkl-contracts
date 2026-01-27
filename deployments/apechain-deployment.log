@@ -1,0 +1,78 @@
+Warning: This is a nightly build of Foundry. It is recommended to use the latest stable version. To mute this warning set `FOUNDRY_DISABLE_NIGHTLY_WARNING` in your environment. 
+
+No files changed, compilation skipped
+Script ran successfully.
+
+== Logs ==
+  ==========================================================
+  Deploying Upgrade Implementations
+  ==========================================================
+  Chain ID: 33139
+  Deployer: 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701
+  
+  Deploying DistributionCreator implementation...
+  DistributionCreator Implementation: 0xA87D4F27F49D335ab1deEe6b9c43404414Bee214
+  Deploying Distributor implementation...
+  Distributor Implementation: 0xE23F6bEf0Abdd3C23B609e86d9fa5b3bF81CD25E
+  Deployment data saved to: ./deployments/apechain-upgrade-implementations.json
+  
+  ==========================================================
+  Deployment Complete!
+  ==========================================================
+  Deployment file saved to: ./deployments/apechain-upgrade-implementations.json
+  
+  Next steps:
+  1. Verify the implementations on block explorer if not auto-verified
+  2. Use these addresses to create Gnosis Safe upgrade transactions
+  ==========================================================
+
+SKIPPING ON CHAIN SIMULATION.
+
+
+==========================
+
+ONCHAIN EXECUTION COMPLETE & SUCCESSFUL.
+##
+Start verification for (2) contracts
+Start verifying contract `0xA87D4F27F49D335ab1deEe6b9c43404414Bee214` deployed on apechain
+EVM version: cancun
+Compiler version: 0.8.25
+Optimizations:    100
+
+Submitting verification for [contracts/DistributionCreator.sol:DistributionCreator] 0xA87D4F27F49D335ab1deEe6b9c43404414Bee214.
+Submitted contract for verification:
+	Response: `OK`
+	GUID: `t2g1m8s5kzvuw9wdbd2cjhtmzkr1berwdwwfb22fzimft9r5v6`
+	URL: https://apescan.io/address/0xa87d4f27f49d335ab1deee6b9c43404414bee214
+Contract verification status:
+Response: `NOTOK`
+Details: `Pending in queue`
+Warning: Verification is still pending...; waiting 15 seconds before trying again (7 tries remaining)
+Contract verification status:
+Response: `OK`
+Details: `Pass - Verified`
+Contract successfully verified
+Start verifying contract `0xE23F6bEf0Abdd3C23B609e86d9fa5b3bF81CD25E` deployed on apechain
+EVM version: cancun
+Compiler version: 0.8.25
+Optimizations:    100
+
+Submitting verification for [contracts/Distributor.sol:Distributor] 0xE23F6bEf0Abdd3C23B609e86d9fa5b3bF81CD25E.
+Submitted contract for verification:
+	Response: `OK`
+	GUID: `rkqapl9u22irw7aagzfeszblc2vekqjkwwpg63zi7i1zxznffs`
+	URL: https://apescan.io/address/0xe23f6bef0abdd3c23b609e86d9fa5b3bf81cd25e
+Contract verification status:
+Response: `NOTOK`
+Details: `Pending in queue`
+Warning: Verification is still pending...; waiting 15 seconds before trying again (7 tries remaining)
+Contract verification status:
+Response: `OK`
+Details: `Pass - Verified`
+Contract successfully verified
+All (2) contracts were verified!
+
+Transactions saved to: /Users/pabloveyrat/Documents/Angle/Dev/merkl-contracts/broadcast/deployUpgradeImplementationsSingle.s.sol/33139/run-latest.json
+
+Sensitive values saved to: /Users/pabloveyrat/Documents/Angle/Dev/merkl-contracts/cache-forge/deployUpgradeImplementationsSingle.s.sol/33139/run-latest.json
+

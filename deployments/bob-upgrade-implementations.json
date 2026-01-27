@@ -1,0 +1,10 @@
+{
+  "_note": "Upgrade implementation deployment",
+  "chainId": 60808,
+  "chainName": "bob",
+  "deployer": "0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701",
+  "distributionCreatorImplementation": "0xb8021254f00C1aFb67b861f274cea175FB97c2Af",
+  "distributorImplementation": "0x4b19d0db3de20f038417474C5CA4D222c50872b7",
+  "status": "SUCCESS",
+  "timestamp": 1769508205
+}

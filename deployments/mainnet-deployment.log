@@ -1,0 +1,86 @@
+Warning: This is a nightly build of Foundry. It is recommended to use the latest stable version. To mute this warning set `FOUNDRY_DISABLE_NIGHTLY_WARNING` in your environment. 
+
+Compiling 2 files with Solc 0.8.25
+Solc 0.8.25 finished in 1.36s
+Compiler run successful!
+Script ran successfully.
+
+== Logs ==
+  ==========================================================
+  Deploying Upgrade Implementations
+  ==========================================================
+  Chain ID: 1
+  Deployer: 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701
+  
+  Deploying DistributionCreator implementation...
+  DistributionCreator Implementation: 0x642882C80CD313578D0C56aD8aCb5EA96a65fDD2
+  Deploying Distributor implementation...
+  Distributor Implementation: 0x33CC998Fd4AF3b6be42BaC9a67fe97e9e275d2aE
+  Deployment data saved to: ./deployments/mainnet-upgrade-implementations.json
+  
+  ==========================================================
+  Deployment Complete!
+  ==========================================================
+  Deployment file saved to: ./deployments/mainnet-upgrade-implementations.json
+  
+  Next steps:
+  1. Verify the implementations on block explorer if not auto-verified
+  2. Use these addresses to create Gnosis Safe upgrade transactions
+  ==========================================================
+
+SKIPPING ON CHAIN SIMULATION.
+
+
+==========================
+
+ONCHAIN EXECUTION COMPLETE & SUCCESSFUL.
+##
+Start verification for (2) contracts
+Start verifying contract `0x642882C80CD313578D0C56aD8aCb5EA96a65fDD2` deployed on mainnet
+EVM version: cancun
+Compiler version: 0.8.25
+Optimizations:    100
+
+Submitting verification for [contracts/DistributionCreator.sol:DistributionCreator] 0x642882C80CD313578D0C56aD8aCb5EA96a65fDD2.
+Warning: Could not detect deployment: Unable to locate ContractCode at 0x642882c80cd313578d0c56ad8acb5ea96a65fdd2; waiting 5 seconds before trying again (4 tries remaining)
+
+Submitting verification for [contracts/DistributionCreator.sol:DistributionCreator] 0x642882C80CD313578D0C56aD8aCb5EA96a65fDD2.
+Warning: Could not detect deployment: Unable to locate ContractCode at 0x642882c80cd313578d0c56ad8acb5ea96a65fdd2; waiting 5 seconds before trying again (3 tries remaining)
+
+Submitting verification for [contracts/DistributionCreator.sol:DistributionCreator] 0x642882C80CD313578D0C56aD8aCb5EA96a65fDD2.
+Submitted contract for verification:
+	Response: `OK`
+	GUID: `nmcimv1dicg8wzhgavqn2iux1mhldywrsrgxp1fbtzjztkevmv`
+	URL: https://etherscan.io/address/0x642882c80cd313578d0c56ad8acb5ea96a65fdd2
+Contract verification status:
+Response: `NOTOK`
+Details: `Pending in queue`
+Warning: Verification is still pending...; waiting 15 seconds before trying again (7 tries remaining)
+Contract verification status:
+Response: `OK`
+Details: `Pass - Verified`
+Contract successfully verified
+Start verifying contract `0x33CC998Fd4AF3b6be42BaC9a67fe97e9e275d2aE` deployed on mainnet
+EVM version: cancun
+Compiler version: 0.8.25
+Optimizations:    100
+
+Submitting verification for [contracts/Distributor.sol:Distributor] 0x33CC998Fd4AF3b6be42BaC9a67fe97e9e275d2aE.
+Submitted contract for verification:
+	Response: `OK`
+	GUID: `yfy1cevzsyzamszleqg9dsnafmbdirrlulpsjyrtsx569ytqhh`
+	URL: https://etherscan.io/address/0x33cc998fd4af3b6be42bac9a67fe97e9e275d2ae
+Contract verification status:
+Response: `NOTOK`
+Details: `Pending in queue`
+Warning: Verification is still pending...; waiting 15 seconds before trying again (7 tries remaining)
+Contract verification status:
+Response: `OK`
+Details: `Pass - Verified`
+Contract successfully verified
+All (2) contracts were verified!
+
+Transactions saved to: /Users/pabloveyrat/Documents/Angle/Dev/merkl-contracts/broadcast/deployUpgradeImplementationsSingle.s.sol/1/run-latest.json
+
+Sensitive values saved to: /Users/pabloveyrat/Documents/Angle/Dev/merkl-contracts/cache-forge/deployUpgradeImplementationsSingle.s.sol/1/run-latest.json
+

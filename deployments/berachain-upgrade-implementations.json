@@ -1,0 +1,10 @@
+{
+  "_note": "Upgrade implementation deployment",
+  "chainId": 80094,
+  "chainName": "berachain",
+  "deployer": "0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701",
+  "distributionCreatorImplementation": "0x3C2c70b5D037aC6043eA7E6A9c62AF685AF1F1E8",
+  "distributorImplementation": "0x3ba1fbC4c3aEA775d335b31fb53778f46FD3a330",
+  "status": "SUCCESS",
+  "timestamp": 1769508261
+}

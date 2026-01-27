@@ -1,0 +1,10 @@
+{
+  "_note": "Upgrade implementation deployment",
+  "chainId": 9745,
+  "chainName": "plasma",
+  "deployer": "0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701",
+  "distributionCreatorImplementation": "0xD53f905D140dA38FB6505756A5D1eD14599BcdE5",
+  "distributorImplementation": "0x68C4d918eeBfeB4094D029Cb4833Dfa5F61E200d",
+  "status": "SUCCESS",
+  "timestamp": 1769506428
+}

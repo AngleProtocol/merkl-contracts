@@ -1,0 +1,10 @@
+{
+  "_note": "Upgrade implementation deployment",
+  "chainId": 2046399126,
+  "chainName": "skale",
+  "deployer": "0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701",
+  "distributionCreatorImplementation": "0x25C91C795803DB39C191cA4f04E41EdA85740E71",
+  "distributorImplementation": "0x152Ce4c126b91EdE48c5C13E3aF299465800E9E8",
+  "status": "SUCCESS",
+  "timestamp": 1769508529
+}

@@ -1,0 +1,10 @@
+{
+  "_note": "Upgrade implementation deployment",
+  "chainId": 1284,
+  "chainName": "moonbeam",
+  "deployer": "0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701",
+  "distributionCreatorImplementation": "0x1C6F6e2b226D99af2C34d875a03E055492914442",
+  "distributorImplementation": "0x0b5A95f9446D9918aB479B94cd584467A3827dA4",
+  "status": "SUCCESS",
+  "timestamp": 1769512842
+}

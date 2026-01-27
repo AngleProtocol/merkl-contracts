@@ -1,0 +1,148 @@
+Warning: This is a nightly build of Foundry. It is recommended to use the latest stable version. To mute this warning set `FOUNDRY_DISABLE_NIGHTLY_WARNING` in your environment. 
+
+No files changed, compilation skipped
+Script ran successfully.
+
+== Logs ==
+  ==========================================================
+  Deploying Upgrade Implementations
+  ==========================================================
+  Chain ID: 4114
+  Deployer: 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701
+  
+  Deploying DistributionCreator implementation...
+  DistributionCreator Implementation: 0xa25c30044142d2fA243E7Fd3a6a9713117b3c396
+  Deploying Distributor implementation...
+  Distributor Implementation: 0xa007847CC770BE33C2844EC211E46Acf58dDcc19
+  Deployment data saved to: ./deployments/citrea-upgrade-implementations.json
+  
+  ==========================================================
+  Deployment Complete!
+  ==========================================================
+  Deployment file saved to: ./deployments/citrea-upgrade-implementations.json
+  
+  Next steps:
+  1. Verify the implementations on block explorer if not auto-verified
+  2. Use these addresses to create Gnosis Safe upgrade transactions
+  ==========================================================
+
+SKIPPING ON CHAIN SIMULATION.
+
+
+==========================
+
+ONCHAIN EXECUTION COMPLETE & SUCCESSFUL.
+##
+Start verification for (2) contracts
+Start verifying contract `0xa25c30044142d2fA243E7Fd3a6a9713117b3c396` deployed on 4114
+EVM version: cancun
+Compiler version: 0.8.25
+Optimizations:    100
+Attempting to verify on Sourcify. Pass the --etherscan-api-key <API_KEY> to verify on Etherscan, or use the --verifier flag to verify on another provider.
+
+Submitting verification for [DistributionCreator] "0xa25c30044142d2fA243E7Fd3a6a9713117b3c396".
+Warning: Sourcify verification request for address (0xa25c30044142d2fA243E7Fd3a6a9713117b3c396) failed with status code 404 Not Found
+Details: {
+  "customCode": "unsupported_chain",
+  "message": "Chain 4114 not found",
+  "errorId": "441de4cc-dfea-41fe-9e5e-0121e4cefeae"
+}; waiting 5 seconds before trying again (4 tries remaining)
+
+Submitting verification for [DistributionCreator] "0xa25c30044142d2fA243E7Fd3a6a9713117b3c396".
+Warning: Sourcify verification request for address (0xa25c30044142d2fA243E7Fd3a6a9713117b3c396) failed with status code 404 Not Found
+Details: {
+  "customCode": "unsupported_chain",
+  "message": "Chain 4114 not found",
+  "errorId": "f6ec4dc2-6f1a-4987-9a25-e7125666d4b6"
+}; waiting 5 seconds before trying again (3 tries remaining)
+
+Submitting verification for [DistributionCreator] "0xa25c30044142d2fA243E7Fd3a6a9713117b3c396".
+Warning: Sourcify verification request for address (0xa25c30044142d2fA243E7Fd3a6a9713117b3c396) failed with status code 404 Not Found
+Details: {
+  "customCode": "unsupported_chain",
+  "message": "Chain 4114 not found",
+  "errorId": "0c0f7c5a-736b-4353-9e44-a564a1ac7fb0"
+}; waiting 5 seconds before trying again (2 tries remaining)
+
+Submitting verification for [DistributionCreator] "0xa25c30044142d2fA243E7Fd3a6a9713117b3c396".
+Warning: Sourcify verification request for address (0xa25c30044142d2fA243E7Fd3a6a9713117b3c396) failed with status code 404 Not Found
+Details: {
+  "customCode": "unsupported_chain",
+  "message": "Chain 4114 not found",
+  "errorId": "ff0b0f78-9bf5-448b-9248-0968db68c541"
+}; waiting 5 seconds before trying again (1 tries remaining)
+
+Submitting verification for [DistributionCreator] "0xa25c30044142d2fA243E7Fd3a6a9713117b3c396".
+Warning: Sourcify verification request for address (0xa25c30044142d2fA243E7Fd3a6a9713117b3c396) failed with status code 404 Not Found
+Details: {
+  "customCode": "unsupported_chain",
+  "message": "Chain 4114 not found",
+  "errorId": "d51e046a-6bf2-459c-93e7-4dc6e2993c5f"
+}; waiting 5 seconds before trying again (0 tries remaining)
+
+Submitting verification for [DistributionCreator] "0xa25c30044142d2fA243E7Fd3a6a9713117b3c396".
+Error: Failed to verify contract: Sourcify verification request for address (0xa25c30044142d2fA243E7Fd3a6a9713117b3c396) failed with status code 404 Not Found
+Details: {
+  "customCode": "unsupported_chain",
+  "message": "Chain 4114 not found",
+  "errorId": "90703f09-4705-42c5-ad9d-5e44ac66c40a"
+}
+Start verifying contract `0xa007847CC770BE33C2844EC211E46Acf58dDcc19` deployed on 4114
+EVM version: cancun
+Compiler version: 0.8.25
+Optimizations:    100
+Attempting to verify on Sourcify. Pass the --etherscan-api-key <API_KEY> to verify on Etherscan, or use the --verifier flag to verify on another provider.
+
+Submitting verification for [Distributor] "0xa007847CC770BE33C2844EC211E46Acf58dDcc19".
+Warning: Sourcify verification request for address (0xa007847CC770BE33C2844EC211E46Acf58dDcc19) failed with status code 404 Not Found
+Details: {
+  "customCode": "unsupported_chain",
+  "message": "Chain 4114 not found",
+  "errorId": "a3c40327-1a33-4df3-8c94-1384c1890791"
+}; waiting 5 seconds before trying again (4 tries remaining)
+
+Submitting verification for [Distributor] "0xa007847CC770BE33C2844EC211E46Acf58dDcc19".
+Warning: Sourcify verification request for address (0xa007847CC770BE33C2844EC211E46Acf58dDcc19) failed with status code 404 Not Found
+Details: {
+  "customCode": "unsupported_chain",
+  "message": "Chain 4114 not found",
+  "errorId": "fb6fd4c8-76a4-4515-bfac-2c3b03acb36c"
+}; waiting 5 seconds before trying again (3 tries remaining)
+
+Submitting verification for [Distributor] "0xa007847CC770BE33C2844EC211E46Acf58dDcc19".
+Warning: Sourcify verification request for address (0xa007847CC770BE33C2844EC211E46Acf58dDcc19) failed with status code 404 Not Found
+Details: {
+  "customCode": "unsupported_chain",
+  "message": "Chain 4114 not found",
+  "errorId": "a8f23e9c-90dc-4db2-b0a4-c7bf7542cc39"
+}; waiting 5 seconds before trying again (2 tries remaining)
+
+Submitting verification for [Distributor] "0xa007847CC770BE33C2844EC211E46Acf58dDcc19".
+Warning: Sourcify verification request for address (0xa007847CC770BE33C2844EC211E46Acf58dDcc19) failed with status code 404 Not Found
+Details: {
+  "customCode": "unsupported_chain",
+  "message": "Chain 4114 not found",
+  "errorId": "77f82f1c-69e6-4334-bf39-644c2b348ae3"
+}; waiting 5 seconds before trying again (1 tries remaining)
+
+Submitting verification for [Distributor] "0xa007847CC770BE33C2844EC211E46Acf58dDcc19".
+Warning: Sourcify verification request for address (0xa007847CC770BE33C2844EC211E46Acf58dDcc19) failed with status code 404 Not Found
+Details: {
+  "customCode": "unsupported_chain",
+  "message": "Chain 4114 not found",
+  "errorId": "bbbed8ec-165c-4958-b63e-348314164a58"
+}; waiting 5 seconds before trying again (0 tries remaining)
+
+Submitting verification for [Distributor] "0xa007847CC770BE33C2844EC211E46Acf58dDcc19".
+Error: Failed to verify contract: Sourcify verification request for address (0xa007847CC770BE33C2844EC211E46Acf58dDcc19) failed with status code 404 Not Found
+Details: {
+  "customCode": "unsupported_chain",
+  "message": "Chain 4114 not found",
+  "errorId": "75c9e66a-cfcd-4eda-8e14-e72f32b2718b"
+}
+
+Transactions saved to: /Users/pabloveyrat/Documents/Angle/Dev/merkl-contracts/broadcast/deployUpgradeImplementationsSingle.s.sol/4114/run-latest.json
+
+Sensitive values saved to: /Users/pabloveyrat/Documents/Angle/Dev/merkl-contracts/cache-forge/deployUpgradeImplementationsSingle.s.sol/4114/run-latest.json
+
+Error: Not all (0 / 2) contracts were verified!

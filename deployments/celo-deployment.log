@@ -1,0 +1,78 @@
+Warning: This is a nightly build of Foundry. It is recommended to use the latest stable version. To mute this warning set `FOUNDRY_DISABLE_NIGHTLY_WARNING` in your environment. 
+
+No files changed, compilation skipped
+Script ran successfully.
+
+== Logs ==
+  ==========================================================
+  Deploying Upgrade Implementations
+  ==========================================================
+  Chain ID: 42220
+  Deployer: 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701
+  
+  Deploying DistributionCreator implementation...
+  DistributionCreator Implementation: 0x71921e692Dfd379c6f05bEeDd58d46b1B6211F1D
+  Deploying Distributor implementation...
+  Distributor Implementation: 0x1c8b4C7a2bDBB1d58f29a0346d52Ef943cbf80A8
+  Deployment data saved to: ./deployments/celo-upgrade-implementations.json
+  
+  ==========================================================
+  Deployment Complete!
+  ==========================================================
+  Deployment file saved to: ./deployments/celo-upgrade-implementations.json
+  
+  Next steps:
+  1. Verify the implementations on block explorer if not auto-verified
+  2. Use these addresses to create Gnosis Safe upgrade transactions
+  ==========================================================
+
+SKIPPING ON CHAIN SIMULATION.
+
+
+==========================
+
+ONCHAIN EXECUTION COMPLETE & SUCCESSFUL.
+##
+Start verification for (2) contracts
+Start verifying contract `0x71921e692Dfd379c6f05bEeDd58d46b1B6211F1D` deployed on celo
+EVM version: cancun
+Compiler version: 0.8.25
+Optimizations:    100
+
+Submitting verification for [contracts/DistributionCreator.sol:DistributionCreator] 0x71921e692Dfd379c6f05bEeDd58d46b1B6211F1D.
+Submitted contract for verification:
+	Response: `OK`
+	GUID: `hnq2svthkury685eq83zscjsfbbgdr1wgynmi84nzcpq7inflz`
+	URL: https://celoscan.io/address/0x71921e692dfd379c6f05beedd58d46b1b6211f1d
+Contract verification status:
+Response: `NOTOK`
+Details: `Pending in queue`
+Warning: Verification is still pending...; waiting 15 seconds before trying again (7 tries remaining)
+Contract verification status:
+Response: `OK`
+Details: `Pass - Verified`
+Contract successfully verified
+Start verifying contract `0x1c8b4C7a2bDBB1d58f29a0346d52Ef943cbf80A8` deployed on celo
+EVM version: cancun
+Compiler version: 0.8.25
+Optimizations:    100
+
+Submitting verification for [contracts/Distributor.sol:Distributor] 0x1c8b4C7a2bDBB1d58f29a0346d52Ef943cbf80A8.
+Submitted contract for verification:
+	Response: `OK`
+	GUID: `mfu1x65ymgjdwuuwhzlixh4g1eejknewwdvktf1ghbln3viuwd`
+	URL: https://celoscan.io/address/0x1c8b4c7a2bdbb1d58f29a0346d52ef943cbf80a8
+Contract verification status:
+Response: `NOTOK`
+Details: `Pending in queue`
+Warning: Verification is still pending...; waiting 15 seconds before trying again (7 tries remaining)
+Contract verification status:
+Response: `OK`
+Details: `Pass - Verified`
+Contract successfully verified
+All (2) contracts were verified!
+
+Transactions saved to: /Users/pabloveyrat/Documents/Angle/Dev/merkl-contracts/broadcast/deployUpgradeImplementationsSingle.s.sol/42220/run-latest.json
+
+Sensitive values saved to: /Users/pabloveyrat/Documents/Angle/Dev/merkl-contracts/cache-forge/deployUpgradeImplementationsSingle.s.sol/42220/run-latest.json
+

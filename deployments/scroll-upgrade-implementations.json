@@ -1,0 +1,10 @@
+{
+  "_note": "Upgrade implementation deployment",
+  "chainId": 534352,
+  "chainName": "scroll",
+  "deployer": "0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701",
+  "distributionCreatorImplementation": "0xfF9c33EdFbaB41eF66d60190926375227759b9a1",
+  "distributorImplementation": "0x00096F5e2f6942Eab8f3db1b74AcF83ff48f55dD",
+  "status": "SUCCESS",
+  "timestamp": 1769511569
+}

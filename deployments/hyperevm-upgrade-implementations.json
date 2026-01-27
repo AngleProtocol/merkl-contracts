@@ -1,0 +1,10 @@
+{
+  "_note": "Upgrade implementation deployment",
+  "chainId": 999,
+  "chainName": "hyperevm",
+  "deployer": "0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701",
+  "distributionCreatorImplementation": "0x9314625E61Fbcd3b325679C7910d8a3747b6FE2E",
+  "distributorImplementation": "0x4063fc291f4ff732E8fbA39CD6576659A982718F",
+  "status": "SUCCESS",
+  "timestamp": 1769505838
+}

@@ -1,0 +1,82 @@
+Warning: This is a nightly build of Foundry. It is recommended to use the latest stable version. To mute this warning set `FOUNDRY_DISABLE_NIGHTLY_WARNING` in your environment. 
+
+No files changed, compilation skipped
+Warning: EIP-3855 is not supported in one or more of the RPCs used.
+Unsupported Chain IDs: 999.
+Contracts deployed with a Solidity version equal or higher than 0.8.20 might not work properly.
+For more information, please see https://eips.ethereum.org/EIPS/eip-3855
+Script ran successfully.
+
+== Logs ==
+  ==========================================================
+  Deploying Upgrade Implementations
+  ==========================================================
+  Chain ID: 999
+  Deployer: 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701
+  
+  Deploying DistributionCreator implementation...
+  DistributionCreator Implementation: 0x9314625E61Fbcd3b325679C7910d8a3747b6FE2E
+  Deploying Distributor implementation...
+  Distributor Implementation: 0x4063fc291f4ff732E8fbA39CD6576659A982718F
+  Deployment data saved to: ./deployments/hyperevm-upgrade-implementations.json
+  
+  ==========================================================
+  Deployment Complete!
+  ==========================================================
+  Deployment file saved to: ./deployments/hyperevm-upgrade-implementations.json
+  
+  Next steps:
+  1. Verify the implementations on block explorer if not auto-verified
+  2. Use these addresses to create Gnosis Safe upgrade transactions
+  ==========================================================
+
+SKIPPING ON CHAIN SIMULATION.
+
+
+==========================
+
+ONCHAIN EXECUTION COMPLETE & SUCCESSFUL.
+##
+Start verification for (2) contracts
+Start verifying contract `0x9314625E61Fbcd3b325679C7910d8a3747b6FE2E` deployed on hyperliquid
+EVM version: cancun
+Compiler version: 0.8.25
+Optimizations:    100
+
+Submitting verification for [contracts/DistributionCreator.sol:DistributionCreator] 0x9314625E61Fbcd3b325679C7910d8a3747b6FE2E.
+Submitted contract for verification:
+	Response: `OK`
+	GUID: `j4ua3tjbbtuhea5tysihrh3x72bqnbcsefdp9khu8jk99y35h2`
+	URL: https://hyperevmscan.io/address/0x9314625e61fbcd3b325679c7910d8a3747b6fe2e
+Contract verification status:
+Response: `NOTOK`
+Details: `Pending in queue`
+Warning: Verification is still pending...; waiting 15 seconds before trying again (7 tries remaining)
+Contract verification status:
+Response: `OK`
+Details: `Pass - Verified`
+Contract successfully verified
+Start verifying contract `0x4063fc291f4ff732E8fbA39CD6576659A982718F` deployed on hyperliquid
+EVM version: cancun
+Compiler version: 0.8.25
+Optimizations:    100
+
+Submitting verification for [contracts/Distributor.sol:Distributor] 0x4063fc291f4ff732E8fbA39CD6576659A982718F.
+Submitted contract for verification:
+	Response: `OK`
+	GUID: `tgaqdd2xt2sjn1rb4znhiebpaxxtn9zximhkipdamcsg3pvjiy`
+	URL: https://hyperevmscan.io/address/0x4063fc291f4ff732e8fba39cd6576659a982718f
+Contract verification status:
+Response: `NOTOK`
+Details: `Pending in queue`
+Warning: Verification is still pending...; waiting 15 seconds before trying again (7 tries remaining)
+Contract verification status:
+Response: `OK`
+Details: `Pass - Verified`
+Contract successfully verified
+All (2) contracts were verified!
+
+Transactions saved to: /Users/pabloveyrat/Documents/Angle/Dev/merkl-contracts/broadcast/deployUpgradeImplementationsSingle.s.sol/999/run-latest.json
+
+Sensitive values saved to: /Users/pabloveyrat/Documents/Angle/Dev/merkl-contracts/cache-forge/deployUpgradeImplementationsSingle.s.sol/999/run-latest.json
+

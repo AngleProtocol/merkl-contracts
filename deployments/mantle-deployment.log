@@ -1,0 +1,41 @@
+Warning: This is a nightly build of Foundry. It is recommended to use the latest stable version. To mute this warning set `FOUNDRY_DISABLE_NIGHTLY_WARNING` in your environment. 
+
+No files changed, compilation skipped
+Script ran successfully.
+
+== Logs ==
+  ==========================================================
+  Deploying Upgrade Implementations
+  ==========================================================
+  Chain ID: 5000
+  Deployer: 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701
+  
+  Deploying DistributionCreator implementation...
+  DistributionCreator Implementation: 0xE23F6bEf0Abdd3C23B609e86d9fa5b3bF81CD25E
+  Deploying Distributor implementation...
+  Distributor Implementation: 0x60b5bA66e999DD79D8110383d49E3D7B1874B71C
+  Deployment data saved to: ./deployments/mantle-upgrade-implementations.json
+  
+  ==========================================================
+  Deployment Complete!
+  ==========================================================
+  Deployment file saved to: ./deployments/mantle-upgrade-implementations.json
+  
+  Next steps:
+  1. Verify the implementations on block explorer if not auto-verified
+  2. Use these addresses to create Gnosis Safe upgrade transactions
+  ==========================================================
+
+SKIPPING ON CHAIN SIMULATION.
+
+Transactions saved to: /Users/pabloveyrat/Documents/Angle/Dev/merkl-contracts/broadcast/deployUpgradeImplementationsSingle.s.sol/5000/run-latest.json
+
+Sensitive values saved to: /Users/pabloveyrat/Documents/Angle/Dev/merkl-contracts/cache-forge/deployUpgradeImplementationsSingle.s.sol/5000/run-latest.json
+
+Error: Failed to send transaction after 4 attempts Err(Failed to estimate gas for tx
+
+Context:
+- server returned an error response: error code -32000: contract creation code storage out of gas)
+
+Context:
+- Failed to build transaction: AnyTxType(2) transaction can't be built due to missing keys: ["gas_limit"]

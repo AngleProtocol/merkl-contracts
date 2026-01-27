@@ -1,0 +1,10 @@
+{
+  "_note": "Upgrade implementation deployment",
+  "chainId": 56,
+  "chainName": "bsc",
+  "deployer": "0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701",
+  "distributionCreatorImplementation": "0x46A9E9434DAC9baA1f95A5129F04aef6c8C57829",
+  "distributorImplementation": "0x4195FAABA1cbaD584fE2fEc711d788cdB9a6A9a7",
+  "status": "SUCCESS",
+  "timestamp": 1769505091
+}

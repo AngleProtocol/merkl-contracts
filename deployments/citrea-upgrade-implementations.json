@@ -1,0 +1,10 @@
+{
+  "_note": "Upgrade implementation deployment",
+  "chainId": 4114,
+  "chainName": "citrea",
+  "deployer": "0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701",
+  "distributionCreatorImplementation": "0xa25c30044142d2fA243E7Fd3a6a9713117b3c396",
+  "distributorImplementation": "0xa007847CC770BE33C2844EC211E46Acf58dDcc19",
+  "status": "SUCCESS",
+  "timestamp": 1769512913
+}

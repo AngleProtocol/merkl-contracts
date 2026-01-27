@@ -1,0 +1,10 @@
+{
+  "_note": "Upgrade implementation deployment",
+  "chainId": 130,
+  "chainName": "unichain",
+  "deployer": "0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701",
+  "distributionCreatorImplementation": "0xE9a46Da191D04ddE07421bc873e2c94eB187dd19",
+  "distributorImplementation": "0x05F0c7Ca7B90e3786603108D42cA8DFd28d72075",
+  "status": "SUCCESS",
+  "timestamp": 1769505156
+}

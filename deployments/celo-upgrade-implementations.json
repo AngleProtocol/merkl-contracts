@@ -1,0 +1,10 @@
+{
+  "_note": "Upgrade implementation deployment",
+  "chainId": 42220,
+  "chainName": "celo",
+  "deployer": "0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701",
+  "distributionCreatorImplementation": "0x71921e692Dfd379c6f05bEeDd58d46b1B6211F1D",
+  "distributorImplementation": "0x1c8b4C7a2bDBB1d58f29a0346d52Ef943cbf80A8",
+  "status": "SUCCESS",
+  "timestamp": 1769506727
+}

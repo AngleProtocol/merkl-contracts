@@ -1,0 +1,10 @@
+{
+  "_note": "Upgrade implementation deployment",
+  "chainId": 13371,
+  "chainName": "immutable",
+  "deployer": "0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701",
+  "distributionCreatorImplementation": "0xDcC1bcC6eCD1E63cBA178C289bC1dA9f757a2eF4",
+  "distributorImplementation": "0x3bFfD2ee930c506E91453B74e7c0214da60146B9",
+  "status": "SUCCESS",
+  "timestamp": 1769506455
+}

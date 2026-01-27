@@ -1,0 +1,78 @@
+Warning: This is a nightly build of Foundry. It is recommended to use the latest stable version. To mute this warning set `FOUNDRY_DISABLE_NIGHTLY_WARNING` in your environment. 
+
+No files changed, compilation skipped
+Script ran successfully.
+
+== Logs ==
+  ==========================================================
+  Deploying Upgrade Implementations
+  ==========================================================
+  Chain ID: 80094
+  Deployer: 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701
+  
+  Deploying DistributionCreator implementation...
+  DistributionCreator Implementation: 0x3C2c70b5D037aC6043eA7E6A9c62AF685AF1F1E8
+  Deploying Distributor implementation...
+  Distributor Implementation: 0x3ba1fbC4c3aEA775d335b31fb53778f46FD3a330
+  Deployment data saved to: ./deployments/berachain-upgrade-implementations.json
+  
+  ==========================================================
+  Deployment Complete!
+  ==========================================================
+  Deployment file saved to: ./deployments/berachain-upgrade-implementations.json
+  
+  Next steps:
+  1. Verify the implementations on block explorer if not auto-verified
+  2. Use these addresses to create Gnosis Safe upgrade transactions
+  ==========================================================
+
+SKIPPING ON CHAIN SIMULATION.
+
+
+==========================
+
+ONCHAIN EXECUTION COMPLETE & SUCCESSFUL.
+##
+Start verification for (2) contracts
+Start verifying contract `0x3C2c70b5D037aC6043eA7E6A9c62AF685AF1F1E8` deployed on berachain
+EVM version: cancun
+Compiler version: 0.8.25
+Optimizations:    100
+
+Submitting verification for [contracts/DistributionCreator.sol:DistributionCreator] 0x3C2c70b5D037aC6043eA7E6A9c62AF685AF1F1E8.
+Submitted contract for verification:
+	Response: `OK`
+	GUID: `z3m6qccsem5fn55idtethaexcq6rxxhel4u7kckvyfvhsne4qn`
+	URL: https://berascan.com/address/0x3c2c70b5d037ac6043ea7e6a9c62af685af1f1e8
+Contract verification status:
+Response: `NOTOK`
+Details: `Pending in queue`
+Warning: Verification is still pending...; waiting 15 seconds before trying again (7 tries remaining)
+Contract verification status:
+Response: `OK`
+Details: `Pass - Verified`
+Contract successfully verified
+Start verifying contract `0x3ba1fbC4c3aEA775d335b31fb53778f46FD3a330` deployed on berachain
+EVM version: cancun
+Compiler version: 0.8.25
+Optimizations:    100
+
+Submitting verification for [contracts/Distributor.sol:Distributor] 0x3ba1fbC4c3aEA775d335b31fb53778f46FD3a330.
+Submitted contract for verification:
+	Response: `OK`
+	GUID: `jtcu4ppgu1xlmi4rwjbxxb8iv2fyepc22imq2szviu8kqlucd1`
+	URL: https://berascan.com/address/0x3ba1fbc4c3aea775d335b31fb53778f46fd3a330
+Contract verification status:
+Response: `NOTOK`
+Details: `Pending in queue`
+Warning: Verification is still pending...; waiting 15 seconds before trying again (7 tries remaining)
+Contract verification status:
+Response: `OK`
+Details: `Pass - Verified`
+Contract successfully verified
+All (2) contracts were verified!
+
+Transactions saved to: /Users/pabloveyrat/Documents/Angle/Dev/merkl-contracts/broadcast/deployUpgradeImplementationsSingle.s.sol/80094/run-latest.json
+
+Sensitive values saved to: /Users/pabloveyrat/Documents/Angle/Dev/merkl-contracts/cache-forge/deployUpgradeImplementationsSingle.s.sol/80094/run-latest.json
+

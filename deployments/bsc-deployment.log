@@ -1,0 +1,78 @@
+Warning: This is a nightly build of Foundry. It is recommended to use the latest stable version. To mute this warning set `FOUNDRY_DISABLE_NIGHTLY_WARNING` in your environment. 
+
+No files changed, compilation skipped
+Script ran successfully.
+
+== Logs ==
+  ==========================================================
+  Deploying Upgrade Implementations
+  ==========================================================
+  Chain ID: 56
+  Deployer: 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701
+  
+  Deploying DistributionCreator implementation...
+  DistributionCreator Implementation: 0x46A9E9434DAC9baA1f95A5129F04aef6c8C57829
+  Deploying Distributor implementation...
+  Distributor Implementation: 0x4195FAABA1cbaD584fE2fEc711d788cdB9a6A9a7
+  Deployment data saved to: ./deployments/bsc-upgrade-implementations.json
+  
+  ==========================================================
+  Deployment Complete!
+  ==========================================================
+  Deployment file saved to: ./deployments/bsc-upgrade-implementations.json
+  
+  Next steps:
+  1. Verify the implementations on block explorer if not auto-verified
+  2. Use these addresses to create Gnosis Safe upgrade transactions
+  ==========================================================
+
+SKIPPING ON CHAIN SIMULATION.
+
+
+==========================
+
+ONCHAIN EXECUTION COMPLETE & SUCCESSFUL.
+##
+Start verification for (2) contracts
+Start verifying contract `0x46A9E9434DAC9baA1f95A5129F04aef6c8C57829` deployed on bsc
+EVM version: cancun
+Compiler version: 0.8.25
+Optimizations:    100
+
+Submitting verification for [contracts/DistributionCreator.sol:DistributionCreator] 0x46A9E9434DAC9baA1f95A5129F04aef6c8C57829.
+Submitted contract for verification:
+	Response: `OK`
+	GUID: `iysnkdet8ubwqfcpkwfn8my6hi37rhfw4ezywfp8vggiqpksff`
+	URL: https://bscscan.com/address/0x46a9e9434dac9baa1f95a5129f04aef6c8c57829
+Contract verification status:
+Response: `NOTOK`
+Details: `Pending in queue`
+Warning: Verification is still pending...; waiting 15 seconds before trying again (7 tries remaining)
+Contract verification status:
+Response: `OK`
+Details: `Pass - Verified`
+Contract successfully verified
+Start verifying contract `0x4195FAABA1cbaD584fE2fEc711d788cdB9a6A9a7` deployed on bsc
+EVM version: cancun
+Compiler version: 0.8.25
+Optimizations:    100
+
+Submitting verification for [contracts/Distributor.sol:Distributor] 0x4195FAABA1cbaD584fE2fEc711d788cdB9a6A9a7.
+Submitted contract for verification:
+	Response: `OK`
+	GUID: `dqsuwxskehfngu3zrywda6fefkcu7fhhu1yhek7bxa2v6nhbxc`
+	URL: https://bscscan.com/address/0x4195faaba1cbad584fe2fec711d788cdb9a6a9a7
+Contract verification status:
+Response: `NOTOK`
+Details: `Pending in queue`
+Warning: Verification is still pending...; waiting 15 seconds before trying again (7 tries remaining)
+Contract verification status:
+Response: `OK`
+Details: `Pass - Verified`
+Contract successfully verified
+All (2) contracts were verified!
+
+Transactions saved to: /Users/pabloveyrat/Documents/Angle/Dev/merkl-contracts/broadcast/deployUpgradeImplementationsSingle.s.sol/56/run-latest.json
+
+Sensitive values saved to: /Users/pabloveyrat/Documents/Angle/Dev/merkl-contracts/cache-forge/deployUpgradeImplementationsSingle.s.sol/56/run-latest.json
+

@@ -1,0 +1,78 @@
+Warning: This is a nightly build of Foundry. It is recommended to use the latest stable version. To mute this warning set `FOUNDRY_DISABLE_NIGHTLY_WARNING` in your environment. 
+
+No files changed, compilation skipped
+Script ran successfully.
+
+== Logs ==
+  ==========================================================
+  Deploying Upgrade Implementations
+  ==========================================================
+  Chain ID: 130
+  Deployer: 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701
+  
+  Deploying DistributionCreator implementation...
+  DistributionCreator Implementation: 0xE9a46Da191D04ddE07421bc873e2c94eB187dd19
+  Deploying Distributor implementation...
+  Distributor Implementation: 0x05F0c7Ca7B90e3786603108D42cA8DFd28d72075
+  Deployment data saved to: ./deployments/unichain-upgrade-implementations.json
+  
+  ==========================================================
+  Deployment Complete!
+  ==========================================================
+  Deployment file saved to: ./deployments/unichain-upgrade-implementations.json
+  
+  Next steps:
+  1. Verify the implementations on block explorer if not auto-verified
+  2. Use these addresses to create Gnosis Safe upgrade transactions
+  ==========================================================
+
+SKIPPING ON CHAIN SIMULATION.
+
+
+==========================
+
+ONCHAIN EXECUTION COMPLETE & SUCCESSFUL.
+##
+Start verification for (2) contracts
+Start verifying contract `0xE9a46Da191D04ddE07421bc873e2c94eB187dd19` deployed on unichain
+EVM version: cancun
+Compiler version: 0.8.25
+Optimizations:    100
+
+Submitting verification for [contracts/DistributionCreator.sol:DistributionCreator] 0xE9a46Da191D04ddE07421bc873e2c94eB187dd19.
+Submitted contract for verification:
+	Response: `OK`
+	GUID: `hubxryugwqsxgvzp1ukdum1xvzz55shipppbvcuqjhf9und8ul`
+	URL: https://uniscan.xyz/address/0xe9a46da191d04dde07421bc873e2c94eb187dd19
+Contract verification status:
+Response: `NOTOK`
+Details: `Pending in queue`
+Warning: Verification is still pending...; waiting 15 seconds before trying again (7 tries remaining)
+Contract verification status:
+Response: `OK`
+Details: `Pass - Verified`
+Contract successfully verified
+Start verifying contract `0x05F0c7Ca7B90e3786603108D42cA8DFd28d72075` deployed on unichain
+EVM version: cancun
+Compiler version: 0.8.25
+Optimizations:    100
+
+Submitting verification for [contracts/Distributor.sol:Distributor] 0x05F0c7Ca7B90e3786603108D42cA8DFd28d72075.
+Submitted contract for verification:
+	Response: `OK`
+	GUID: `utnshwtecszpbvy98syxipauud8suyvsbjxqvx8u9sb2rv69bk`
+	URL: https://uniscan.xyz/address/0x05f0c7ca7b90e3786603108d42ca8dfd28d72075
+Contract verification status:
+Response: `NOTOK`
+Details: `Pending in queue`
+Warning: Verification is still pending...; waiting 15 seconds before trying again (7 tries remaining)
+Contract verification status:
+Response: `OK`
+Details: `Pass - Verified`
+Contract successfully verified
+All (2) contracts were verified!
+
+Transactions saved to: /Users/pabloveyrat/Documents/Angle/Dev/merkl-contracts/broadcast/deployUpgradeImplementationsSingle.s.sol/130/run-latest.json
+
+Sensitive values saved to: /Users/pabloveyrat/Documents/Angle/Dev/merkl-contracts/cache-forge/deployUpgradeImplementationsSingle.s.sol/130/run-latest.json
+

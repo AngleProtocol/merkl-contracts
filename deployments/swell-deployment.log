@@ -1,0 +1,148 @@
+Warning: This is a nightly build of Foundry. It is recommended to use the latest stable version. To mute this warning set `FOUNDRY_DISABLE_NIGHTLY_WARNING` in your environment. 
+
+No files changed, compilation skipped
+Script ran successfully.
+
+== Logs ==
+  ==========================================================
+  Deploying Upgrade Implementations
+  ==========================================================
+  Chain ID: 1923
+  Deployer: 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701
+  
+  Deploying DistributionCreator implementation...
+  DistributionCreator Implementation: 0x0E7Dd56f7D2CAdc066B992cec58253190f002c25
+  Deploying Distributor implementation...
+  Distributor Implementation: 0xC816653BdaD0C62F1EA3bFaF8BC954381274561A
+  Deployment data saved to: ./deployments/swell-upgrade-implementations.json
+  
+  ==========================================================
+  Deployment Complete!
+  ==========================================================
+  Deployment file saved to: ./deployments/swell-upgrade-implementations.json
+  
+  Next steps:
+  1. Verify the implementations on block explorer if not auto-verified
+  2. Use these addresses to create Gnosis Safe upgrade transactions
+  ==========================================================
+
+SKIPPING ON CHAIN SIMULATION.
+
+
+==========================
+
+ONCHAIN EXECUTION COMPLETE & SUCCESSFUL.
+##
+Start verification for (2) contracts
+Start verifying contract `0x0E7Dd56f7D2CAdc066B992cec58253190f002c25` deployed on 1923
+EVM version: cancun
+Compiler version: 0.8.25
+Optimizations:    100
+Attempting to verify on Sourcify. Pass the --etherscan-api-key <API_KEY> to verify on Etherscan, or use the --verifier flag to verify on another provider.
+
+Submitting verification for [DistributionCreator] "0x0E7Dd56f7D2CAdc066B992cec58253190f002c25".
+Warning: Sourcify verification request for address (0x0E7Dd56f7D2CAdc066B992cec58253190f002c25) failed with status code 404 Not Found
+Details: {
+  "customCode": "unsupported_chain",
+  "message": "Chain 1923 not found",
+  "errorId": "5e50a27c-e170-4390-8953-5b0bde6a00a5"
+}; waiting 5 seconds before trying again (4 tries remaining)
+
+Submitting verification for [DistributionCreator] "0x0E7Dd56f7D2CAdc066B992cec58253190f002c25".
+Warning: Sourcify verification request for address (0x0E7Dd56f7D2CAdc066B992cec58253190f002c25) failed with status code 404 Not Found
+Details: {
+  "customCode": "unsupported_chain",
+  "message": "Chain 1923 not found",
+  "errorId": "c4c6ee66-2e36-4c12-8536-9ae74fac2c44"
+}; waiting 5 seconds before trying again (3 tries remaining)
+
+Submitting verification for [DistributionCreator] "0x0E7Dd56f7D2CAdc066B992cec58253190f002c25".
+Warning: Sourcify verification request for address (0x0E7Dd56f7D2CAdc066B992cec58253190f002c25) failed with status code 404 Not Found
+Details: {
+  "customCode": "unsupported_chain",
+  "message": "Chain 1923 not found",
+  "errorId": "8ae29ee7-71ac-44d7-b9aa-d6993c09fb26"
+}; waiting 5 seconds before trying again (2 tries remaining)
+
+Submitting verification for [DistributionCreator] "0x0E7Dd56f7D2CAdc066B992cec58253190f002c25".
+Warning: Sourcify verification request for address (0x0E7Dd56f7D2CAdc066B992cec58253190f002c25) failed with status code 404 Not Found
+Details: {
+  "customCode": "unsupported_chain",
+  "message": "Chain 1923 not found",
+  "errorId": "0a7fafe8-7b71-42ae-920a-5946f6db5e59"
+}; waiting 5 seconds before trying again (1 tries remaining)
+
+Submitting verification for [DistributionCreator] "0x0E7Dd56f7D2CAdc066B992cec58253190f002c25".
+Warning: Sourcify verification request for address (0x0E7Dd56f7D2CAdc066B992cec58253190f002c25) failed with status code 404 Not Found
+Details: {
+  "customCode": "unsupported_chain",
+  "message": "Chain 1923 not found",
+  "errorId": "a5c7b628-8f7f-4105-8840-1240f2afbabe"
+}; waiting 5 seconds before trying again (0 tries remaining)
+
+Submitting verification for [DistributionCreator] "0x0E7Dd56f7D2CAdc066B992cec58253190f002c25".
+Error: Failed to verify contract: Sourcify verification request for address (0x0E7Dd56f7D2CAdc066B992cec58253190f002c25) failed with status code 404 Not Found
+Details: {
+  "customCode": "unsupported_chain",
+  "message": "Chain 1923 not found",
+  "errorId": "1488415d-61ff-44d5-ada0-7ace675bb2e7"
+}
+Start verifying contract `0xC816653BdaD0C62F1EA3bFaF8BC954381274561A` deployed on 1923
+EVM version: cancun
+Compiler version: 0.8.25
+Optimizations:    100
+Attempting to verify on Sourcify. Pass the --etherscan-api-key <API_KEY> to verify on Etherscan, or use the --verifier flag to verify on another provider.
+
+Submitting verification for [Distributor] "0xC816653BdaD0C62F1EA3bFaF8BC954381274561A".
+Warning: Sourcify verification request for address (0xC816653BdaD0C62F1EA3bFaF8BC954381274561A) failed with status code 404 Not Found
+Details: {
+  "customCode": "unsupported_chain",
+  "message": "Chain 1923 not found",
+  "errorId": "4b4814bb-2508-4564-8f19-6a191e13d89b"
+}; waiting 5 seconds before trying again (4 tries remaining)
+
+Submitting verification for [Distributor] "0xC816653BdaD0C62F1EA3bFaF8BC954381274561A".
+Warning: Sourcify verification request for address (0xC816653BdaD0C62F1EA3bFaF8BC954381274561A) failed with status code 404 Not Found
+Details: {
+  "customCode": "unsupported_chain",
+  "message": "Chain 1923 not found",
+  "errorId": "4649d045-afdf-4367-ad4d-7b1a57569235"
+}; waiting 5 seconds before trying again (3 tries remaining)
+
+Submitting verification for [Distributor] "0xC816653BdaD0C62F1EA3bFaF8BC954381274561A".
+Warning: Sourcify verification request for address (0xC816653BdaD0C62F1EA3bFaF8BC954381274561A) failed with status code 404 Not Found
+Details: {
+  "customCode": "unsupported_chain",
+  "message": "Chain 1923 not found",
+  "errorId": "38edc455-0a0b-46c9-ad0f-15e14b6ffd87"
+}; waiting 5 seconds before trying again (2 tries remaining)
+
+Submitting verification for [Distributor] "0xC816653BdaD0C62F1EA3bFaF8BC954381274561A".
+Warning: Sourcify verification request for address (0xC816653BdaD0C62F1EA3bFaF8BC954381274561A) failed with status code 404 Not Found
+Details: {
+  "customCode": "unsupported_chain",
+  "message": "Chain 1923 not found",
+  "errorId": "18a0739c-ad5f-4d4e-b66e-813617145ee2"
+}; waiting 5 seconds before trying again (1 tries remaining)
+
+Submitting verification for [Distributor] "0xC816653BdaD0C62F1EA3bFaF8BC954381274561A".
+Warning: Sourcify verification request for address (0xC816653BdaD0C62F1EA3bFaF8BC954381274561A) failed with status code 404 Not Found
+Details: {
+  "customCode": "unsupported_chain",
+  "message": "Chain 1923 not found",
+  "errorId": "f39a202a-4055-4ae3-8cfa-141e19ffc545"
+}; waiting 5 seconds before trying again (0 tries remaining)
+
+Submitting verification for [Distributor] "0xC816653BdaD0C62F1EA3bFaF8BC954381274561A".
+Error: Failed to verify contract: Sourcify verification request for address (0xC816653BdaD0C62F1EA3bFaF8BC954381274561A) failed with status code 404 Not Found
+Details: {
+  "customCode": "unsupported_chain",
+  "message": "Chain 1923 not found",
+  "errorId": "e473882a-de74-44ae-9637-c7f790e50468"
+}
+
+Transactions saved to: /Users/pabloveyrat/Documents/Angle/Dev/merkl-contracts/broadcast/deployUpgradeImplementationsSingle.s.sol/1923/run-latest.json
+
+Sensitive values saved to: /Users/pabloveyrat/Documents/Angle/Dev/merkl-contracts/cache-forge/deployUpgradeImplementationsSingle.s.sol/1923/run-latest.json
+
+Error: Not all (0 / 2) contracts were verified!

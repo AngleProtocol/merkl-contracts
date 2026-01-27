@@ -1,0 +1,10 @@
+{
+  "_note": "Upgrade implementation deployment",
+  "chainId": 747,
+  "chainName": "flow",
+  "deployer": "0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701",
+  "distributionCreatorImplementation": "0xB5864f3041011311f05E159CC5DF9ae550E07C74",
+  "distributorImplementation": "0xD696E6b94cE79Fe9AAC288C0Fc761643219510B6",
+  "status": "SUCCESS",
+  "timestamp": 1769505716
+}

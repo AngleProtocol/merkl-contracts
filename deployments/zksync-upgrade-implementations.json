@@ -1,0 +1,10 @@
+{
+  "_note": "Upgrade implementation deployment",
+  "chainId": 324,
+  "chainName": "zksync",
+  "deployer": "0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701",
+  "distributionCreatorImplementation": "0x147f4163756DB2EEE9092bb848603A9e7054c52D",
+  "distributorImplementation": "0x96B1c3dD1D967198Ad30AD97B2E262B4619CAec1",
+  "status": "SUCCESS",
+  "timestamp": 1769505498
+}

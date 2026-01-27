@@ -1,0 +1,10 @@
+{
+  "_note": "Upgrade implementation deployment",
+  "chainId": 167000,
+  "chainName": "taiko",
+  "deployer": "0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701",
+  "distributionCreatorImplementation": "0x22b0aC22D5d58F05873E470bCa5DB7Ceb5C47f5E",
+  "distributorImplementation": "0x9a0F97FAC6154d9233A0FDFcE4Dc27dCB48b95ff",
+  "status": "SUCCESS",
+  "timestamp": 1769508421
+}

@@ -1,0 +1,82 @@
+Warning: This is a nightly build of Foundry. It is recommended to use the latest stable version. To mute this warning set `FOUNDRY_DISABLE_NIGHTLY_WARNING` in your environment. 
+
+No files changed, compilation skipped
+Warning: EIP-3855 is not supported in one or more of the RPCs used.
+Unsupported Chain IDs: 146.
+Contracts deployed with a Solidity version equal or higher than 0.8.20 might not work properly.
+For more information, please see https://eips.ethereum.org/EIPS/eip-3855
+Script ran successfully.
+
+== Logs ==
+  ==========================================================
+  Deploying Upgrade Implementations
+  ==========================================================
+  Chain ID: 146
+  Deployer: 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701
+  
+  Deploying DistributionCreator implementation...
+  DistributionCreator Implementation: 0x2bB1f7149751ac5707012AB963E0F4609FE8E17B
+  Deploying Distributor implementation...
+  Distributor Implementation: 0x5e96a2650bA385585Ce70e6997F018cF6854A758
+  Deployment data saved to: ./deployments/sonic-upgrade-implementations.json
+  
+  ==========================================================
+  Deployment Complete!
+  ==========================================================
+  Deployment file saved to: ./deployments/sonic-upgrade-implementations.json
+  
+  Next steps:
+  1. Verify the implementations on block explorer if not auto-verified
+  2. Use these addresses to create Gnosis Safe upgrade transactions
+  ==========================================================
+
+SKIPPING ON CHAIN SIMULATION.
+
+
+==========================
+
+ONCHAIN EXECUTION COMPLETE & SUCCESSFUL.
+##
+Start verification for (2) contracts
+Start verifying contract `0x2bB1f7149751ac5707012AB963E0F4609FE8E17B` deployed on sonic
+EVM version: cancun
+Compiler version: 0.8.25
+Optimizations:    100
+
+Submitting verification for [contracts/DistributionCreator.sol:DistributionCreator] 0x2bB1f7149751ac5707012AB963E0F4609FE8E17B.
+Submitted contract for verification:
+	Response: `OK`
+	GUID: `rdxkiqmdskaxphihml5bzmupkt389tmli8ikr2a4ic9ubyxvzh`
+	URL: https://sonicscan.org/address/0x2bb1f7149751ac5707012ab963e0f4609fe8e17b
+Contract verification status:
+Response: `NOTOK`
+Details: `Pending in queue`
+Warning: Verification is still pending...; waiting 15 seconds before trying again (7 tries remaining)
+Contract verification status:
+Response: `OK`
+Details: `Pass - Verified`
+Contract successfully verified
+Start verifying contract `0x5e96a2650bA385585Ce70e6997F018cF6854A758` deployed on sonic
+EVM version: cancun
+Compiler version: 0.8.25
+Optimizations:    100
+
+Submitting verification for [contracts/Distributor.sol:Distributor] 0x5e96a2650bA385585Ce70e6997F018cF6854A758.
+Submitted contract for verification:
+	Response: `OK`
+	GUID: `rvqm8ek81qne5yppehzxsjb1hne1eln78stqmwz41h2bge7b5d`
+	URL: https://sonicscan.org/address/0x5e96a2650ba385585ce70e6997f018cf6854a758
+Contract verification status:
+Response: `NOTOK`
+Details: `Pending in queue`
+Warning: Verification is still pending...; waiting 15 seconds before trying again (7 tries remaining)
+Contract verification status:
+Response: `OK`
+Details: `Pass - Verified`
+Contract successfully verified
+All (2) contracts were verified!
+
+Transactions saved to: /Users/pabloveyrat/Documents/Angle/Dev/merkl-contracts/broadcast/deployUpgradeImplementationsSingle.s.sol/146/run-latest.json
+
+Sensitive values saved to: /Users/pabloveyrat/Documents/Angle/Dev/merkl-contracts/cache-forge/deployUpgradeImplementationsSingle.s.sol/146/run-latest.json
+

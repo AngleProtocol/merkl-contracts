@@ -1,0 +1,148 @@
+Warning: This is a nightly build of Foundry. It is recommended to use the latest stable version. To mute this warning set `FOUNDRY_DISABLE_NIGHTLY_WARNING` in your environment. 
+
+No files changed, compilation skipped
+Script ran successfully.
+
+== Logs ==
+  ==========================================================
+  Deploying Upgrade Implementations
+  ==========================================================
+  Chain ID: 6900
+  Deployer: 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701
+  
+  Deploying DistributionCreator implementation...
+  DistributionCreator Implementation: 0x17D12099431662725281ccE5041809d3D991Caf7
+  Deploying Distributor implementation...
+  Distributor Implementation: 0x707a696bbd913bcC979ad1d41a969Ab6ddEe6E27
+  Deployment data saved to: ./deployments/nibiru-upgrade-implementations.json
+  
+  ==========================================================
+  Deployment Complete!
+  ==========================================================
+  Deployment file saved to: ./deployments/nibiru-upgrade-implementations.json
+  
+  Next steps:
+  1. Verify the implementations on block explorer if not auto-verified
+  2. Use these addresses to create Gnosis Safe upgrade transactions
+  ==========================================================
+
+SKIPPING ON CHAIN SIMULATION.
+
+
+==========================
+
+ONCHAIN EXECUTION COMPLETE & SUCCESSFUL.
+##
+Start verification for (2) contracts
+Start verifying contract `0x17D12099431662725281ccE5041809d3D991Caf7` deployed on 6900
+EVM version: cancun
+Compiler version: 0.8.25
+Optimizations:    100
+Attempting to verify on Sourcify. Pass the --etherscan-api-key <API_KEY> to verify on Etherscan, or use the --verifier flag to verify on another provider.
+
+Submitting verification for [DistributionCreator] "0x17D12099431662725281ccE5041809d3D991Caf7".
+Warning: Sourcify verification request for address (0x17D12099431662725281ccE5041809d3D991Caf7) failed with status code 404 Not Found
+Details: {
+  "customCode": "unsupported_chain",
+  "message": "Chain 6900 not found",
+  "errorId": "217c78d0-2898-4478-93d3-d95cf9423373"
+}; waiting 5 seconds before trying again (4 tries remaining)
+
+Submitting verification for [DistributionCreator] "0x17D12099431662725281ccE5041809d3D991Caf7".
+Warning: Sourcify verification request for address (0x17D12099431662725281ccE5041809d3D991Caf7) failed with status code 404 Not Found
+Details: {
+  "customCode": "unsupported_chain",
+  "message": "Chain 6900 not found",
+  "errorId": "5319eec4-13fb-4fcc-bebe-f31deb379ec8"
+}; waiting 5 seconds before trying again (3 tries remaining)
+
+Submitting verification for [DistributionCreator] "0x17D12099431662725281ccE5041809d3D991Caf7".
+Warning: Sourcify verification request for address (0x17D12099431662725281ccE5041809d3D991Caf7) failed with status code 404 Not Found
+Details: {
+  "customCode": "unsupported_chain",
+  "message": "Chain 6900 not found",
+  "errorId": "075189b7-835b-42aa-86db-c0230567cd78"
+}; waiting 5 seconds before trying again (2 tries remaining)
+
+Submitting verification for [DistributionCreator] "0x17D12099431662725281ccE5041809d3D991Caf7".
+Warning: Sourcify verification request for address (0x17D12099431662725281ccE5041809d3D991Caf7) failed with status code 404 Not Found
+Details: {
+  "customCode": "unsupported_chain",
+  "message": "Chain 6900 not found",
+  "errorId": "29eb4b09-d01a-400a-b858-034dc260631a"
+}; waiting 5 seconds before trying again (1 tries remaining)
+
+Submitting verification for [DistributionCreator] "0x17D12099431662725281ccE5041809d3D991Caf7".
+Warning: Sourcify verification request for address (0x17D12099431662725281ccE5041809d3D991Caf7) failed with status code 404 Not Found
+Details: {
+  "customCode": "unsupported_chain",
+  "message": "Chain 6900 not found",
+  "errorId": "9fba31ea-fca7-4016-bf78-9c276a5fda2f"
+}; waiting 5 seconds before trying again (0 tries remaining)
+
+Submitting verification for [DistributionCreator] "0x17D12099431662725281ccE5041809d3D991Caf7".
+Error: Failed to verify contract: Sourcify verification request for address (0x17D12099431662725281ccE5041809d3D991Caf7) failed with status code 404 Not Found
+Details: {
+  "customCode": "unsupported_chain",
+  "message": "Chain 6900 not found",
+  "errorId": "2949a239-2b0b-4f60-90d1-c9d0dad24295"
+}
+Start verifying contract `0x707a696bbd913bcC979ad1d41a969Ab6ddEe6E27` deployed on 6900
+EVM version: cancun
+Compiler version: 0.8.25
+Optimizations:    100
+Attempting to verify on Sourcify. Pass the --etherscan-api-key <API_KEY> to verify on Etherscan, or use the --verifier flag to verify on another provider.
+
+Submitting verification for [Distributor] "0x707a696bbd913bcC979ad1d41a969Ab6ddEe6E27".
+Warning: Sourcify verification request for address (0x707a696bbd913bcC979ad1d41a969Ab6ddEe6E27) failed with status code 404 Not Found
+Details: {
+  "customCode": "unsupported_chain",
+  "message": "Chain 6900 not found",
+  "errorId": "6f870cdc-82b3-4ed4-9b60-d5c7e8c306bd"
+}; waiting 5 seconds before trying again (4 tries remaining)
+
+Submitting verification for [Distributor] "0x707a696bbd913bcC979ad1d41a969Ab6ddEe6E27".
+Warning: Sourcify verification request for address (0x707a696bbd913bcC979ad1d41a969Ab6ddEe6E27) failed with status code 404 Not Found
+Details: {
+  "customCode": "unsupported_chain",
+  "message": "Chain 6900 not found",
+  "errorId": "e397c90b-3884-4f52-bb2a-80e609f35a3b"
+}; waiting 5 seconds before trying again (3 tries remaining)
+
+Submitting verification for [Distributor] "0x707a696bbd913bcC979ad1d41a969Ab6ddEe6E27".
+Warning: Sourcify verification request for address (0x707a696bbd913bcC979ad1d41a969Ab6ddEe6E27) failed with status code 404 Not Found
+Details: {
+  "customCode": "unsupported_chain",
+  "message": "Chain 6900 not found",
+  "errorId": "c2d97ac3-1ea0-481d-8301-c8f629c5db99"
+}; waiting 5 seconds before trying again (2 tries remaining)
+
+Submitting verification for [Distributor] "0x707a696bbd913bcC979ad1d41a969Ab6ddEe6E27".
+Warning: Sourcify verification request for address (0x707a696bbd913bcC979ad1d41a969Ab6ddEe6E27) failed with status code 404 Not Found
+Details: {
+  "customCode": "unsupported_chain",
+  "message": "Chain 6900 not found",
+  "errorId": "1ca44e35-f5da-40c5-b696-ccdecb682441"
+}; waiting 5 seconds before trying again (1 tries remaining)
+
+Submitting verification for [Distributor] "0x707a696bbd913bcC979ad1d41a969Ab6ddEe6E27".
+Warning: Sourcify verification request for address (0x707a696bbd913bcC979ad1d41a969Ab6ddEe6E27) failed with status code 404 Not Found
+Details: {
+  "customCode": "unsupported_chain",
+  "message": "Chain 6900 not found",
+  "errorId": "b6b448e1-45a2-45fa-9efd-4c6169b969be"
+}; waiting 5 seconds before trying again (0 tries remaining)
+
+Submitting verification for [Distributor] "0x707a696bbd913bcC979ad1d41a969Ab6ddEe6E27".
+Error: Failed to verify contract: Sourcify verification request for address (0x707a696bbd913bcC979ad1d41a969Ab6ddEe6E27) failed with status code 404 Not Found
+Details: {
+  "customCode": "unsupported_chain",
+  "message": "Chain 6900 not found",
+  "errorId": "c1da4e17-2d51-4825-87be-1820651dae89"
+}
+
+Transactions saved to: /Users/pabloveyrat/Documents/Angle/Dev/merkl-contracts/broadcast/deployUpgradeImplementationsSingle.s.sol/6900/run-latest.json
+
+Sensitive values saved to: /Users/pabloveyrat/Documents/Angle/Dev/merkl-contracts/cache-forge/deployUpgradeImplementationsSingle.s.sol/6900/run-latest.json
+
+Error: Not all (0 / 2) contracts were verified!

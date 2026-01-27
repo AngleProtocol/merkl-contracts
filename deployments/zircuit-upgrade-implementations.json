@@ -1,0 +1,10 @@
+{
+  "_note": "Upgrade implementation deployment",
+  "chainId": 48900,
+  "chainName": "zircuit",
+  "deployer": "0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701",
+  "distributionCreatorImplementation": "0x04A7d169C5b14d2e29A3bA8b5071dDA5E365c199",
+  "distributorImplementation": "0xAF6EB566c9FA21F8a61EBD01499852aced86933b",
+  "status": "SUCCESS",
+  "timestamp": 1769508071
+}

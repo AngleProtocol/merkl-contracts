@@ -1,0 +1,10 @@
+{
+  "_note": "Upgrade implementation deployment",
+  "chainId": 137,
+  "chainName": "polygon",
+  "deployer": "0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701",
+  "distributionCreatorImplementation": "0x6CF5A6F2794B4d5827a5364652a53aE80509545c",
+  "distributorImplementation": "0x48978D35F6751582e0F5b5d7e38151db1278c800",
+  "status": "SUCCESS",
+  "timestamp": 1769505199
+}

@@ -1,0 +1,10 @@
+{
+  "_note": "Upgrade implementation deployment",
+  "chainId": 34443,
+  "chainName": "mode",
+  "deployer": "0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701",
+  "distributionCreatorImplementation": "0x271040bA3d54869C22560Ef4C8e3Cd90c8Bac023",
+  "distributorImplementation": "0x3F14AE66149FC804D66270c08804b93bba3a49b4",
+  "status": "SUCCESS",
+  "timestamp": 1769506625
+}

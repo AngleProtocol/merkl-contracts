@@ -1,0 +1,78 @@
+Warning: This is a nightly build of Foundry. It is recommended to use the latest stable version. To mute this warning set `FOUNDRY_DISABLE_NIGHTLY_WARNING` in your environment. 
+
+No files changed, compilation skipped
+Script ran successfully.
+
+== Logs ==
+  ==========================================================
+  Deploying Upgrade Implementations
+  ==========================================================
+  Chain ID: 81457
+  Deployer: 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701
+  
+  Deploying DistributionCreator implementation...
+  DistributionCreator Implementation: 0x992B93D148D6ae3B54aE9630F73f16813f1D95a1
+  Deploying Distributor implementation...
+  Distributor Implementation: 0x9c3C929884a5579f258e22408F2601c5e60e144A
+  Deployment data saved to: ./deployments/blast-upgrade-implementations.json
+  
+  ==========================================================
+  Deployment Complete!
+  ==========================================================
+  Deployment file saved to: ./deployments/blast-upgrade-implementations.json
+  
+  Next steps:
+  1. Verify the implementations on block explorer if not auto-verified
+  2. Use these addresses to create Gnosis Safe upgrade transactions
+  ==========================================================
+
+SKIPPING ON CHAIN SIMULATION.
+
+
+==========================
+
+ONCHAIN EXECUTION COMPLETE & SUCCESSFUL.
+##
+Start verification for (2) contracts
+Start verifying contract `0x992B93D148D6ae3B54aE9630F73f16813f1D95a1` deployed on blast
+EVM version: cancun
+Compiler version: 0.8.25
+Optimizations:    100
+
+Submitting verification for [contracts/DistributionCreator.sol:DistributionCreator] 0x992B93D148D6ae3B54aE9630F73f16813f1D95a1.
+Submitted contract for verification:
+	Response: `OK`
+	GUID: `guducvjqahfht7asv5jjbuuw5dcz5yqq6ycskptvaw8z5szrfl`
+	URL: https://blastscan.io/address/0x992b93d148d6ae3b54ae9630f73f16813f1d95a1
+Contract verification status:
+Response: `NOTOK`
+Details: `Pending in queue`
+Warning: Verification is still pending...; waiting 15 seconds before trying again (7 tries remaining)
+Contract verification status:
+Response: `OK`
+Details: `Pass - Verified`
+Contract successfully verified
+Start verifying contract `0x9c3C929884a5579f258e22408F2601c5e60e144A` deployed on blast
+EVM version: cancun
+Compiler version: 0.8.25
+Optimizations:    100
+
+Submitting verification for [contracts/Distributor.sol:Distributor] 0x9c3C929884a5579f258e22408F2601c5e60e144A.
+Submitted contract for verification:
+	Response: `OK`
+	GUID: `7k1bpn19qqjllbsrcuviy7bnzemvqcekijr4pujqrbzwcqbwgf`
+	URL: https://blastscan.io/address/0x9c3c929884a5579f258e22408f2601c5e60e144a
+Contract verification status:
+Response: `NOTOK`
+Details: `Pending in queue`
+Warning: Verification is still pending...; waiting 15 seconds before trying again (7 tries remaining)
+Contract verification status:
+Response: `OK`
+Details: `Pass - Verified`
+Contract successfully verified
+All (2) contracts were verified!
+
+Transactions saved to: /Users/pabloveyrat/Documents/Angle/Dev/merkl-contracts/broadcast/deployUpgradeImplementationsSingle.s.sol/81457/run-latest.json
+
+Sensitive values saved to: /Users/pabloveyrat/Documents/Angle/Dev/merkl-contracts/cache-forge/deployUpgradeImplementationsSingle.s.sol/81457/run-latest.json
+

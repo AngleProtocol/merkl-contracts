@@ -1,0 +1,76 @@
+Warning: This is a nightly build of Foundry. It is recommended to use the latest stable version. To mute this warning set `FOUNDRY_DISABLE_NIGHTLY_WARNING` in your environment. 
+
+No files changed, compilation skipped
+Warning: EIP-3855 is not supported in one or more of the RPCs used.
+Unsupported Chain IDs: 9745.
+Contracts deployed with a Solidity version equal or higher than 0.8.20 might not work properly.
+For more information, please see https://eips.ethereum.org/EIPS/eip-3855
+Script ran successfully.
+
+== Logs ==
+  ==========================================================
+  Deploying Upgrade Implementations
+  ==========================================================
+  Chain ID: 9745
+  Deployer: 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701
+  
+  Deploying DistributionCreator implementation...
+  DistributionCreator Implementation: 0xD53f905D140dA38FB6505756A5D1eD14599BcdE5
+  Deploying Distributor implementation...
+  Distributor Implementation: 0x68C4d918eeBfeB4094D029Cb4833Dfa5F61E200d
+  Deployment data saved to: ./deployments/plasma-upgrade-implementations.json
+  
+  ==========================================================
+  Deployment Complete!
+  ==========================================================
+  Deployment file saved to: ./deployments/plasma-upgrade-implementations.json
+  
+  Next steps:
+  1. Verify the implementations on block explorer if not auto-verified
+  2. Use these addresses to create Gnosis Safe upgrade transactions
+  ==========================================================
+
+SKIPPING ON CHAIN SIMULATION.
+
+
+==========================
+
+ONCHAIN EXECUTION COMPLETE & SUCCESSFUL.
+##
+Start verification for (2) contracts
+Start verifying contract `0xD53f905D140dA38FB6505756A5D1eD14599BcdE5` deployed on plasma
+EVM version: cancun
+Compiler version: 0.8.25
+Optimizations:    100
+
+Submitting verification for [contracts/DistributionCreator.sol:DistributionCreator] 0xD53f905D140dA38FB6505756A5D1eD14599BcdE5.
+Submitted contract for verification:
+	Response: `OK`
+	GUID: `c7eb4463-842f-5955-987e-25910cea2b38`
+	URL: https://plasmascan.to/address/0xd53f905d140da38fb6505756a5d1ed14599bcde5
+Contract verification status:
+Response: `NOTOK`
+Details: `Error: contract does not exist 9745 0xD53f905D140dA38FB6505756A5D1eD14599BcdE5`
+Start verifying contract `0x68C4d918eeBfeB4094D029Cb4833Dfa5F61E200d` deployed on plasma
+EVM version: cancun
+Compiler version: 0.8.25
+Optimizations:    100
+
+Submitting verification for [contracts/Distributor.sol:Distributor] 0x68C4d918eeBfeB4094D029Cb4833Dfa5F61E200d.
+Submitted contract for verification:
+	Response: `OK`
+	GUID: `cd7063a9-d2ae-5781-8828-025b5a68578d`
+	URL: https://plasmascan.to/address/0x68c4d918eebfeb4094d029cb4833dfa5f61e200d
+Contract verification status:
+Response: `NOTOK`
+Details: `Pending in queue`
+Warning: Verification is still pending...; waiting 15 seconds before trying again (7 tries remaining)
+Contract verification status:
+Response: `NOTOK`
+Details: `Error: contract does not exist 9745 0x68C4d918eeBfeB4094D029Cb4833Dfa5F61E200d`
+All (2) contracts were verified!
+
+Transactions saved to: /Users/pabloveyrat/Documents/Angle/Dev/merkl-contracts/broadcast/deployUpgradeImplementationsSingle.s.sol/9745/run-latest.json
+
+Sensitive values saved to: /Users/pabloveyrat/Documents/Angle/Dev/merkl-contracts/cache-forge/deployUpgradeImplementationsSingle.s.sol/9745/run-latest.json
+

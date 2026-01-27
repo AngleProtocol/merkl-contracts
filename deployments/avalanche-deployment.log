@@ -1,0 +1,78 @@
+Warning: This is a nightly build of Foundry. It is recommended to use the latest stable version. To mute this warning set `FOUNDRY_DISABLE_NIGHTLY_WARNING` in your environment. 
+
+No files changed, compilation skipped
+Script ran successfully.
+
+== Logs ==
+  ==========================================================
+  Deploying Upgrade Implementations
+  ==========================================================
+  Chain ID: 43114
+  Deployer: 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701
+  
+  Deploying DistributionCreator implementation...
+  DistributionCreator Implementation: 0x72BC7e2BbBdb1aC8f7ABDe4a3Ae4Ead595C1F424
+  Deploying Distributor implementation...
+  Distributor Implementation: 0x0D3FBEd505A8F7819c86c6E16E275E8F27996160
+  Deployment data saved to: ./deployments/avalanche-upgrade-implementations.json
+  
+  ==========================================================
+  Deployment Complete!
+  ==========================================================
+  Deployment file saved to: ./deployments/avalanche-upgrade-implementations.json
+  
+  Next steps:
+  1. Verify the implementations on block explorer if not auto-verified
+  2. Use these addresses to create Gnosis Safe upgrade transactions
+  ==========================================================
+
+SKIPPING ON CHAIN SIMULATION.
+
+
+==========================
+
+ONCHAIN EXECUTION COMPLETE & SUCCESSFUL.
+##
+Start verification for (2) contracts
+Start verifying contract `0x72BC7e2BbBdb1aC8f7ABDe4a3Ae4Ead595C1F424` deployed on avalanche
+EVM version: cancun
+Compiler version: 0.8.25
+Optimizations:    100
+
+Submitting verification for [contracts/DistributionCreator.sol:DistributionCreator] 0x72BC7e2BbBdb1aC8f7ABDe4a3Ae4Ead595C1F424.
+Submitted contract for verification:
+	Response: `OK`
+	GUID: `qsnjki2ztnqgp2uxcfqigdvnjcwszm52b8wiekmcaw2byssfd6`
+	URL: https://snowscan.xyz/address/0x72bc7e2bbbdb1ac8f7abde4a3ae4ead595c1f424
+Contract verification status:
+Response: `NOTOK`
+Details: `Pending in queue`
+Warning: Verification is still pending...; waiting 15 seconds before trying again (7 tries remaining)
+Contract verification status:
+Response: `OK`
+Details: `Pass - Verified`
+Contract successfully verified
+Start verifying contract `0x0D3FBEd505A8F7819c86c6E16E275E8F27996160` deployed on avalanche
+EVM version: cancun
+Compiler version: 0.8.25
+Optimizations:    100
+
+Submitting verification for [contracts/Distributor.sol:Distributor] 0x0D3FBEd505A8F7819c86c6E16E275E8F27996160.
+Submitted contract for verification:
+	Response: `OK`
+	GUID: `t3dxgdvazymbryin6fxkisjnylckgtkgetu3pdtsdfknpa4uia`
+	URL: https://snowscan.xyz/address/0x0d3fbed505a8f7819c86c6e16e275e8f27996160
+Contract verification status:
+Response: `NOTOK`
+Details: `Pending in queue`
+Warning: Verification is still pending...; waiting 15 seconds before trying again (7 tries remaining)
+Contract verification status:
+Response: `OK`
+Details: `Pass - Verified`
+Contract successfully verified
+All (2) contracts were verified!
+
+Transactions saved to: /Users/pabloveyrat/Documents/Angle/Dev/merkl-contracts/broadcast/deployUpgradeImplementationsSingle.s.sol/43114/run-latest.json
+
+Sensitive values saved to: /Users/pabloveyrat/Documents/Angle/Dev/merkl-contracts/cache-forge/deployUpgradeImplementationsSingle.s.sol/43114/run-latest.json
+

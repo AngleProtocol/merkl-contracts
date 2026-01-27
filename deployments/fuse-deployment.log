@@ -1,0 +1,5 @@
+Warning: This is a nightly build of Foundry. It is recommended to use the latest stable version. To mute this warning set `FOUNDRY_DISABLE_NIGHTLY_WARNING` in your environment. 
+
+No files changed, compilation skipped
+Error: Failed to deploy script:
+EVM error; header validation error: `prevrandao` not set
