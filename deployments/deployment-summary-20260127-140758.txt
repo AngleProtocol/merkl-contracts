@@ -1,0 +1,61 @@
+Deployment Summary - mar. 27 janv. 2026 14:07:58 CET
+===========================================
+
+⏭ SKIPPED: mainnet - Already deployed (JSON exists)
+⏭ SKIPPED: optimism - Already deployed (JSON exists)
+✅ SUCCESS: rootstock
+✅ SUCCESS: xdc
+⏭ SKIPPED: bsc - Already deployed (JSON exists)
+✅ SUCCESS: gnosis
+✅ SUCCESS: fuse
+⏭ SKIPPED: unichain - Already deployed (JSON exists)
+⏭ SKIPPED: polygon - Already deployed (JSON exists)
+⏭ SKIPPED: monad - Already deployed (JSON exists)
+⏭ SKIPPED: sonic - Already deployed (JSON exists)
+⏭ SKIPPED: redbelly - Already deployed (JSON exists)
+⏭ SKIPPED: manta - Already deployed (JSON exists)
+⏭ SKIPPED: xlayer - Already deployed (JSON exists)
+✅ SUCCESS: tac
+⏭ SKIPPED: fraxtal - Already deployed (JSON exists)
+⏭ SKIPPED: zksync - Already deployed (JSON exists)
+⏭ SKIPPED: worldchain - Already deployed (JSON exists)
+✅ SUCCESS: astar
+⏭ SKIPPED: flow - Already deployed (JSON exists)
+⏭ SKIPPED: stable - Already deployed (JSON exists)
+⏭ SKIPPED: hyperevm - Already deployed (JSON exists)
+⏭ SKIPPED: lisk - Already deployed (JSON exists)
+⏭ SKIPPED: moonbeam - Already deployed (JSON exists)
+⏭ SKIPPED: sei - Already deployed (JSON exists)
+⏭ SKIPPED: soneium - Already deployed (JSON exists)
+⏭ SKIPPED: swell - Already deployed (JSON exists)
+⏭ SKIPPED: ronin - Already deployed (JSON exists)
+⏭ SKIPPED: citrea - Already deployed (JSON exists)
+⏭ SKIPPED: megaeth - Already deployed (JSON exists)
+✅ SUCCESS: mantle
+✅ SUCCESS: saga
+⏭ SKIPPED: nibiru - Already deployed (JSON exists)
+⏭ SKIPPED: base - Already deployed (JSON exists)
+⏭ SKIPPED: plasma - Already deployed (JSON exists)
+⏭ SKIPPED: immutable - Already deployed (JSON exists)
+✅ SUCCESS: 0g
+⏭ SKIPPED: corn - Already deployed (JSON exists)
+✅ SUCCESS: mezo
+⏭ SKIPPED: apechain - Already deployed (JSON exists)
+⏭ SKIPPED: mode - Already deployed (JSON exists)
+⏭ SKIPPED: arbitrum - Already deployed (JSON exists)
+⏭ SKIPPED: celo - Already deployed (JSON exists)
+⏭ SKIPPED: etherlink - Already deployed (JSON exists)
+⏭ SKIPPED: hemi - Already deployed (JSON exists)
+⏭ SKIPPED: avalanche - Already deployed (JSON exists)
+⏭ SKIPPED: zircuit - Already deployed (JSON exists)
+⏭ SKIPPED: ink - Already deployed (JSON exists)
+✅ SUCCESS: linea
+⏭ SKIPPED: bob - Already deployed (JSON exists)
+⏭ SKIPPED: berachain - Already deployed (JSON exists)
+⏭ SKIPPED: blast - Already deployed (JSON exists)
+⏭ SKIPPED: plume - Already deployed (JSON exists)
+⏭ SKIPPED: taiko - Already deployed (JSON exists)
+⏭ SKIPPED: scroll - Already deployed (JSON exists)
+⏭ SKIPPED: katana - Already deployed (JSON exists)
+✅ SUCCESS: skale
+⏭ SKIPPED: ethereal - Already deployed (JSON exists)

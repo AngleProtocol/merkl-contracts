@@ -28,14 +28,51 @@ Script ran successfully.
 
 SKIPPING ON CHAIN SIMULATION.
 
+
+==========================
+
+ONCHAIN EXECUTION COMPLETE & SUCCESSFUL.
+##
+Start verification for (2) contracts
+Start verifying contract `0xE23F6bEf0Abdd3C23B609e86d9fa5b3bF81CD25E` deployed on mantle
+EVM version: cancun
+Compiler version: 0.8.25
+Optimizations:    100
+
+Submitting verification for [contracts/DistributionCreator.sol:DistributionCreator] 0xE23F6bEf0Abdd3C23B609e86d9fa5b3bF81CD25E.
+Submitted contract for verification:
+	Response: `OK`
+	GUID: `ayny9hjr24patyjiqpfab8lymecvjwmeefb1bs5ebmkn8zmazh`
+	URL: https://mantlescan.xyz/address/0xe23f6bef0abdd3c23b609e86d9fa5b3bf81cd25e
+Contract verification status:
+Response: `NOTOK`
+Details: `Pending in queue`
+Warning: Verification is still pending...; waiting 15 seconds before trying again (7 tries remaining)
+Contract verification status:
+Response: `OK`
+Details: `Pass - Verified`
+Contract successfully verified
+Start verifying contract `0x60b5bA66e999DD79D8110383d49E3D7B1874B71C` deployed on mantle
+EVM version: cancun
+Compiler version: 0.8.25
+Optimizations:    100
+
+Submitting verification for [contracts/Distributor.sol:Distributor] 0x60b5bA66e999DD79D8110383d49E3D7B1874B71C.
+Submitted contract for verification:
+	Response: `OK`
+	GUID: `suzft3lpbvwp8yhbvmnjhykbzpnqqdr3xs3t5ymyemgz9memfx`
+	URL: https://mantlescan.xyz/address/0x60b5ba66e999dd79d8110383d49e3d7b1874b71c
+Contract verification status:
+Response: `NOTOK`
+Details: `Pending in queue`
+Warning: Verification is still pending...; waiting 15 seconds before trying again (7 tries remaining)
+Contract verification status:
+Response: `OK`
+Details: `Pass - Verified`
+Contract successfully verified
+All (2) contracts were verified!
+
 Transactions saved to: /Users/pabloveyrat/Documents/Angle/Dev/merkl-contracts/broadcast/deployUpgradeImplementationsSingle.s.sol/5000/run-latest.json
 
 Sensitive values saved to: /Users/pabloveyrat/Documents/Angle/Dev/merkl-contracts/cache-forge/deployUpgradeImplementationsSingle.s.sol/5000/run-latest.json
 
-Error: Failed to send transaction after 4 attempts Err(Failed to estimate gas for tx
-
-Context:
-- server returned an error response: error code -32000: contract creation code storage out of gas)
-
-Context:
-- Failed to build transaction: AnyTxType(2) transaction can't be built due to missing keys: ["gas_limit"]

@@ -38,4 +38,4 @@ Context:
 - server returned an error response: error code -32000: rpc error: code = Unknown desc = invalid opcode: PUSH0)
 
 Context:
-- Failed to build transaction: AnyTxType(2) transaction can't be built due to missing keys: ["gas_limit"]
+- Failed to build transaction: AnyTxType(0) transaction can't be built due to missing keys: ["gas_limit"]

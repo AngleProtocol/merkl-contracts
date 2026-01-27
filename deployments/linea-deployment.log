@@ -15,9 +15,9 @@ Script ran successfully.
   Deployer: 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701
   
   Deploying DistributionCreator implementation...
-  DistributionCreator Implementation: 0xa4d44BCc739D0743cf34912A27C24312815b20BB
+  DistributionCreator Implementation: 0xF7F57b43b100b0f6D90C47282B1F6BCaCf4808C0
   Deploying Distributor implementation...
-  Distributor Implementation: 0xF7F57b43b100b0f6D90C47282B1F6BCaCf4808C0
+  Distributor Implementation: 0x3220Bc58D5e70B07a5df5616F91B9E6A8E33c041
   Deployment data saved to: ./deployments/linea-upgrade-implementations.json
   
   ==========================================================
@@ -32,14 +32,51 @@ Script ran successfully.
 
 SKIPPING ON CHAIN SIMULATION.
 
+
+==========================
+
+ONCHAIN EXECUTION COMPLETE & SUCCESSFUL.
+##
+Start verification for (2) contracts
+Start verifying contract `0xF7F57b43b100b0f6D90C47282B1F6BCaCf4808C0` deployed on linea
+EVM version: cancun
+Compiler version: 0.8.25
+Optimizations:    100
+
+Submitting verification for [contracts/DistributionCreator.sol:DistributionCreator] 0xF7F57b43b100b0f6D90C47282B1F6BCaCf4808C0.
+Submitted contract for verification:
+	Response: `OK`
+	GUID: `sstwq1hu271twegdxwzxyhkeu3ccmgg5mwtvhuu3yivngzhkh4`
+	URL: https://lineascan.build/address/0xf7f57b43b100b0f6d90c47282b1f6bcacf4808c0
+Contract verification status:
+Response: `NOTOK`
+Details: `Pending in queue`
+Warning: Verification is still pending...; waiting 15 seconds before trying again (7 tries remaining)
+Contract verification status:
+Response: `OK`
+Details: `Pass - Verified`
+Contract successfully verified
+Start verifying contract `0x3220Bc58D5e70B07a5df5616F91B9E6A8E33c041` deployed on linea
+EVM version: cancun
+Compiler version: 0.8.25
+Optimizations:    100
+
+Submitting verification for [contracts/Distributor.sol:Distributor] 0x3220Bc58D5e70B07a5df5616F91B9E6A8E33c041.
+Submitted contract for verification:
+	Response: `OK`
+	GUID: `dfr5u98eanp6hkrw71kkv41xqgmppmksuj4sdh2jptt6et1awk`
+	URL: https://lineascan.build/address/0x3220bc58d5e70b07a5df5616f91b9e6a8e33c041
+Contract verification status:
+Response: `NOTOK`
+Details: `Pending in queue`
+Warning: Verification is still pending...; waiting 15 seconds before trying again (7 tries remaining)
+Contract verification status:
+Response: `OK`
+Details: `Pass - Verified`
+Contract successfully verified
+All (2) contracts were verified!
+
 Transactions saved to: /Users/pabloveyrat/Documents/Angle/Dev/merkl-contracts/broadcast/deployUpgradeImplementationsSingle.s.sol/59144/run-latest.json
 
 Sensitive values saved to: /Users/pabloveyrat/Documents/Angle/Dev/merkl-contracts/cache-forge/deployUpgradeImplementationsSingle.s.sol/59144/run-latest.json
 
-Error: Failed to send transaction after 4 attempts Err(Failed to estimate gas for tx
-
-Context:
-- server returned an error response: error code -32000: contract creation code storage out of gas)
-
-Context:
-- Failed to build transaction: AnyTxType(2) transaction can't be built due to missing keys: ["gas_limit"]

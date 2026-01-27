@@ -3,8 +3,8 @@
   "chainId": 59144,
   "chainName": "linea",
   "deployer": "0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701",
-  "distributionCreatorImplementation": "0xa4d44BCc739D0743cf34912A27C24312815b20BB",
-  "distributorImplementation": "0xF7F57b43b100b0f6D90C47282B1F6BCaCf4808C0",
+  "distributionCreatorImplementation": "0xF7F57b43b100b0f6D90C47282B1F6BCaCf4808C0",
+  "distributorImplementation": "0x3220Bc58D5e70B07a5df5616F91B9E6A8E33c041",
   "status": "SUCCESS",
-  "timestamp": 1769508180
+  "timestamp": 1769519576
 }

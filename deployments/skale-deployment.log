@@ -32,7 +32,4 @@ Transactions saved to: /Users/pabloveyrat/Documents/Angle/Dev/merkl-contracts/br
 
 Sensitive values saved to: /Users/pabloveyrat/Documents/Angle/Dev/merkl-contracts/cache-forge/deployUpgradeImplementationsSingle.s.sol/2046399126/run-latest.json
 
-Error: Failed to estimate EIP1559 fees. This chain might not support EIP1559, try adding --legacy to your command.
-
-Context:
-- server returned an error response: error code -32602: INVALID_PARAMS: Invalid method parameters (invalid name and/or type) recognised, data: null
+Error: Transaction Failure: 0xa83b90dcb07ab3b96fadd94d79ae0379fac7db92964438bd406c1b972f901672

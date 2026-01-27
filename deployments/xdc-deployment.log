@@ -32,11 +32,51 @@ Script ran successfully.
 
 SKIPPING ON CHAIN SIMULATION.
 
+
+==========================
+
+ONCHAIN EXECUTION COMPLETE & SUCCESSFUL.
+##
+Start verification for (2) contracts
+Start verifying contract `0x0E7Dd56f7D2CAdc066B992cec58253190f002c25` deployed on xdc-mainnet
+EVM version: cancun
+Compiler version: 0.8.25
+Optimizations:    100
+
+Submitting verification for [contracts/DistributionCreator.sol:DistributionCreator] 0x0E7Dd56f7D2CAdc066B992cec58253190f002c25.
+Submitted contract for verification:
+	Response: `OK`
+	GUID: `resvbk2hsp7durm4kkjmtg3jctc6pd4cwt7puiwkq9vcmypdgs`
+	URL: https://xdcscan.com/address/0x0e7dd56f7d2cadc066b992cec58253190f002c25
+Contract verification status:
+Response: `NOTOK`
+Details: `Pending in queue`
+Warning: Verification is still pending...; waiting 15 seconds before trying again (7 tries remaining)
+Contract verification status:
+Response: `OK`
+Details: `Pass - Verified`
+Contract successfully verified
+Start verifying contract `0xC816653BdaD0C62F1EA3bFaF8BC954381274561A` deployed on xdc-mainnet
+EVM version: cancun
+Compiler version: 0.8.25
+Optimizations:    100
+
+Submitting verification for [contracts/Distributor.sol:Distributor] 0xC816653BdaD0C62F1EA3bFaF8BC954381274561A.
+Submitted contract for verification:
+	Response: `OK`
+	GUID: `6swvr9c8ih9vtejvg1kxatnywkmsye5ppn7c72bxdm1fcugghq`
+	URL: https://xdcscan.com/address/0xc816653bdad0c62f1ea3bfaf8bc954381274561a
+Contract verification status:
+Response: `NOTOK`
+Details: `Pending in queue`
+Warning: Verification is still pending...; waiting 15 seconds before trying again (7 tries remaining)
+Contract verification status:
+Response: `OK`
+Details: `Pass - Verified`
+Contract successfully verified
+All (2) contracts were verified!
+
 Transactions saved to: /Users/pabloveyrat/Documents/Angle/Dev/merkl-contracts/broadcast/deployUpgradeImplementationsSingle.s.sol/50/run-latest.json
 
 Sensitive values saved to: /Users/pabloveyrat/Documents/Angle/Dev/merkl-contracts/cache-forge/deployUpgradeImplementationsSingle.s.sol/50/run-latest.json
 
-Error: Failed to estimate EIP1559 fees. This chain might not support EIP1559, try adding --legacy to your command.
-
-Context:
-- unsupported feature: eip1559
