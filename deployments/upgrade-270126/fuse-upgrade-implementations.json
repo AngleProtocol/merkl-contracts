@@ -1,0 +1,10 @@
+{
+  "_note": "Upgrade implementation deployment",
+  "chainId": 122,
+  "chainName": "fuse",
+  "deployer": "0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701",
+  "distributionCreatorImplementation": "0x22BC0D37C5bf9ccFCbf4dd2C792CCE0C87fD2B09",
+  "distributorImplementation": "0x84A693dAbd13B1f6f6F60A384534E6D7066A11A2",
+  "status": "SUCCESS",
+  "timestamp": 1769521675
+}

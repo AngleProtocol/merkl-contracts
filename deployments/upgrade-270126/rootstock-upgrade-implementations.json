@@ -1,0 +1,10 @@
+{
+  "_note": "Upgrade implementation deployment",
+  "chainId": 30,
+  "chainName": "rootstock",
+  "deployer": "0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701",
+  "distributionCreatorImplementation": "0x63dC02BB25E7BF7Eaa0E42E71D785a388AcD740b",
+  "distributorImplementation": "0x5029f49585D57ed770D2194841B5A0bE06BFc2ED",
+  "status": "SUCCESS",
+  "timestamp": 1769520979
+}

@@ -56,22 +56,48 @@ The deployment process consists of:
 3. Saving deployment addresses to JSON files per chain
 4. Using these addresses to create Gnosis Safe upgrade transactions
 
+## 🧾 Deployment Summary (27 Jan 2026)
+
+Upgrade deployments were completed on 27 Jan 2026 and logs are stored in [deployments/upgrade-270126](deployments/upgrade-270126).
+
+### ✅ Successfully Upgraded
+
+All supported chains were upgraded **except**:
+
+- saga
+- zksync
+- skale
+
+### ⚠️ Verification Issues
+
+Contracts could not be verified on the following chains:
+
+- megaeth
+- mantle
+- moonbeam (1/2)
+- ronin
+- xlayer
+- 0g
+- astar
+- mezo
+
 ## 📁 Files
 
 - `scripts/deployUpgradeImplementationsSingle.s.sol` - Foundry script for single chain deployment
 - `helpers/deployUpgradeImplementations.sh` - Bash script for automated multi-chain deployment
 - `helpers/generateUpgradeSummary.sh` - Script to generate summary reports from deployments
 - `deployments/*.json` - Generated JSON files with deployment addresses per chain
-- `deployments/upgrade-summary.csv` - CSV summary of all deployments
-- `deployments/upgrade-summary.md` - Markdown summary with Gnosis Safe templates
 
 ## ⚙️ Prerequisites
 
 1. **Environment Variables**: Ensure your `.env` file is fine
 
 2. **Dependencies**: Make sure you have:
+
    - Foundry installed and updated (`foundryup`)
    - Sufficient balance on deployer address for gas on each chain
+
+3. Make sure that you have updated the `./helpers/deployUpgradeImplementations.sh` file and that it has all the correct chains
 
 ## 🎯 Deployment Methods
 

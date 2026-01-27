@@ -18,7 +18,7 @@
 // Based on WETH9 by Dapphub.
 // Modified by OP Labs.
 
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.18;
 
 /// @title WETH98
 /// @notice WETH98 is a version of WETH9 upgraded for Solidity 0.8.x.
