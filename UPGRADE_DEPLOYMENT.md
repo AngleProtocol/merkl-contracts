@@ -67,21 +67,7 @@ The deployment process consists of:
 
 ## ⚙️ Prerequisites
 
-1. **Environment Variables**: Ensure your `.env` file contains:
-
-   ```bash
-   DEPLOYER_PRIVATE_KEY=your_private_key_here
-
-   # RPC URLs for each chain
-   MAINNET_NODE_URI=https://...
-   POLYGON_NODE_URI=https://...
-   # ... and so on for all chains
-
-   # Etherscan API keys for verification
-   MAINNET_ETHERSCAN_API_KEY=...
-   POLYGON_ETHERSCAN_API_KEY=...
-   # ... and so on
-   ```
+1. **Environment Variables**: Ensure your `.env` file is fine
 
 2. **Dependencies**: Make sure you have:
    - Foundry installed and updated (`foundryup`)
