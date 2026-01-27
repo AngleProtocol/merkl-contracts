@@ -10,7 +10,8 @@ gas_reports = ["*"]
 optimizer_runs = 100
 fs_permissions = [
   { access = "read", path = "./node_modules/@merkl/registry/dist/src/registry.json" }, 
-  { access = "write", path = "./transactions" }, 
+  { access = "write", path = "./transactions" },
+  { access = "write", path = "./deployments" },
 ]
 solc = "0.8.25"
 

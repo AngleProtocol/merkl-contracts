@@ -1,0 +1,10 @@
+{
+  "_note": "Upgrade implementation deployment",
+  "chainId": 8453,
+  "chainName": "base",
+  "deployer": "0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701",
+  "distributionCreatorImplementation": "0x7f9154A1C81Cf0739bC2CE402Ee444Da341d0725",
+  "distributorImplementation": "0x64455A45d85D872Bfd7F833E367686108d13D6E6",
+  "status": "SUCCESS",
+  "timestamp": 1769504383
+}
