@@ -53,17 +53,17 @@ function get_verify_string() {
     
     local verifier_type_var="VERIFIER_TYPE_${chain_id}"
     local verifier_type=$(eval "echo \$$verifier_type_var")
-    
+
     if [ ! -z "${verifier_type}" ]; then
         verify_string="--verify --verifier ${verifier_type}"
-        
+
         # Add verifier URL if present
         local verifier_url_var="VERIFIER_URL_${chain_id}"
         local verifier_url=$(eval "echo \$$verifier_url_var")
         if [ ! -z "${verifier_url}" ]; then
             verify_string="${verify_string} --verifier-url ${verifier_url}"
         fi
-        
+
         # Add API key if present
         local verifier_api_key_var="VERIFIER_API_KEY_${chain_id}"
         local verifier_api_key=$(eval "echo \$$verifier_api_key_var")
@@ -73,9 +73,14 @@ function get_verify_string() {
             else
                 verify_string="${verify_string} --verifier-api-key ${verifier_api_key}"
             fi
+        elif [ "${verifier_type}" == "etherscan" ]; then
+            # Use global ETHERSCAN_API_KEY if no chain-specific key is set
+            if [ ! -z "$ETHERSCAN_API_KEY" ]; then
+                verify_string="${verify_string} --etherscan-api-key $ETHERSCAN_API_KEY"
+            fi
         fi
     fi
-    
+
     echo "$verify_string"
 }
 

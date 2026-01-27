@@ -48,10 +48,7 @@ contract DeployUpgradeImplementationsSingle is UpgradeDeploymentBase {
         console.log("==========================================================");
         console.log("Deployment Complete!");
         console.log("==========================================================");
-        console.log(
-            "Deployment file saved to:",
-            string.concat("./deployments/", chainName, "-upgrade-implementations.json")
-        );
+        console.log("Deployment file saved to:", string.concat("./deployments/", chainName, "-upgrade-implementations.json"));
         console.log("");
         console.log("Next steps:");
         console.log("1. Verify the implementations on block explorer if not auto-verified");

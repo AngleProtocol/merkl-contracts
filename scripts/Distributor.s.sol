@@ -68,11 +68,8 @@ contract UpdateTree is DistributorScript {
 contract DisputeTree is DistributorScript {
     function run() external broadcast {
         // MODIFY THIS VALUE TO SET YOUR DESIRED REASON
+        // forge script scripts/Distributor.s.sol:DisputeTree --rpc-url saga --sender 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701 --broadcast
         string memory reason = "reason";
-        _run(reason);
-    }
-
-    function run(string calldata reason) external broadcast {
         _run(reason);
     }
 

@@ -1,0 +1,96 @@
+// SPDX-License-Identifier: GPL-3.0
+
+pragma solidity ^0.8.17;
+
+import { ERC20Upgradeable } from "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
+import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import { IERC20, IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
+
+import { DistributionCreator } from "../../DistributionCreator.sol";
+import { UUPSHelper } from "../../utils/UUPSHelper.sol";
+import { IAccessControlManager } from "../../interfaces/IAccessControlManager.sol";
+import { Errors } from "../../utils/Errors.sol";
+
+interface IVestingContract {
+    function allocateReward(address beneficiary, uint256 grossAmount) external;
+}
+
+/// @title AlturaWrapper
+/// @notice Wrapper for a reward token on Merkl that allocates rewards through a vesting contract
+/// @dev During claims, this wrapper calls the vesting contract to allocate rewards to beneficiaries
+/// @dev No actual token transfers occur - the vesting contract handles reward distribution
+contract AlturaWrapper is UUPSHelper, ERC20Upgradeable {
+    using SafeERC20 for IERC20;
+
+    // ================================= VARIABLES =================================
+
+    /// @notice `AccessControlManager` contract handling access control
+    IAccessControlManager public accessControlManager;
+
+    // Could be put as immutable in a non upgradeable contract
+    address public vestingContract;
+    address public holder;
+    address public feeRecipient;
+    address public distributor;
+    address public distributionCreator;
+
+    // ================================= MODIFIERS =================================
+
+    /// @notice Checks whether the `msg.sender` has the governor role or the guardian role
+    modifier onlyHolderOrGovernor() {
+        if (msg.sender != holder && !accessControlManager.isGovernor(msg.sender)) revert Errors.NotAllowed();
+        _;
+    }
+
+    // ================================= FUNCTIONS =================================
+
+    function initialize(
+        address _vestingContract,
+        address _distributionCreator,
+        address _holder,
+        string memory _name,
+        string memory _symbol
+    ) public initializer {
+        __ERC20_init(string.concat(_name), string.concat(_symbol));
+        __UUPSUpgradeable_init();
+        if (_holder == address(0) || _vestingContract == address(0)) revert Errors.ZeroAddress();
+        distributor = DistributionCreator(_distributionCreator).distributor();
+        accessControlManager = DistributionCreator(_distributionCreator).accessControlManager();
+        vestingContract = _vestingContract;
+        distributionCreator = _distributionCreator;
+        holder = _holder;
+        _setFeeRecipient();
+    }
+
+    function _beforeTokenTransfer(address from, address to, uint256 amount) internal override {
+        // During claim transactions, allocate rewards through the vesting contract
+        if (from == distributor || to == feeRecipient) {
+            IVestingContract(vestingContract).allocateReward(to, amount);
+        }
+    }
+
+    function _afterTokenTransfer(address, address to, uint256 amount) internal override {
+        // No leftover tokens can be kept except on the holder address
+        if (to != address(distributor) && to != holder && to != address(0)) _burn(to, amount);
+    }
+
+    function setHolder(address _newHolder) external onlyHolderOrGovernor {
+        holder = _newHolder;
+    }
+
+    function mint(uint256 amount) external onlyHolderOrGovernor {
+        _mint(holder, amount);
+    }
+
+    function setFeeRecipient() external {
+        _setFeeRecipient();
+    }
+
+    function _setFeeRecipient() internal {
+        address _feeRecipient = DistributionCreator(distributionCreator).feeRecipient();
+        feeRecipient = _feeRecipient;
+    }
+
+    /// @inheritdoc UUPSHelper
+    function _authorizeUpgrade(address) internal view override onlyGovernorUpgrader(accessControlManager) {}
+}

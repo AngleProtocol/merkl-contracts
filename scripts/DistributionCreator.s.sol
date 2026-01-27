@@ -9,9 +9,11 @@ import { IERC20Metadata } from "@openzeppelin/contracts/interfaces/IERC20Metadat
 
 import { BaseScript } from "./utils/Base.s.sol";
 import { DistributionCreator } from "../contracts/DistributionCreator.sol";
+import { Distributor } from "../contracts/Distributor.sol";
 import { IAccessControlManager } from "../contracts/interfaces/IAccessControlManager.sol";
 import { CampaignParameters } from "../contracts/struct/CampaignParameters.sol";
 import { MockToken } from "../contracts/mock/MockToken.sol";
+import { AccessControlEnumerableUpgradeable } from "@openzeppelin/contracts-upgradeable/access/AccessControlEnumerableUpgradeable.sol";
 
 // Base contract with shared utilities
 contract DistributionCreatorScript is BaseScript {
@@ -61,28 +63,6 @@ contract DeployImplementation is DistributionCreatorScript {
     }
 }
 
-// SetNewDistributor script
-contract SetNewDistributor is DistributionCreatorScript {
-    function run() external {
-        // MODIFY THIS VALUE TO SET YOUR DESIRED DISTRIBUTOR ADDRESS
-        address distributor = address(0);
-        _run(distributor);
-    }
-
-    function run(address distributor) external {
-        _run(distributor);
-    }
-
-    function _run(address _distributor) internal broadcast {
-        uint256 chainId = block.chainid;
-        address creatorAddress = 0x8BB4C975Ff3c250e0ceEA271728547f3802B36Fd;
-
-        DistributionCreator(creatorAddress).setNewDistributor(_distributor);
-
-        console.log("New distributor set to:", _distributor);
-    }
-}
-
 // SetFees script
 contract SetFees is DistributionCreatorScript {
     function run() external {
@@ -128,39 +108,16 @@ contract SetCampaignFees is DistributionCreatorScript {
     }
 }
 
-// RecoverFees script
-contract RecoverFees is DistributionCreatorScript {
-    function run() external {
-        // MODIFY THESE VALUES TO SET YOUR DESIRED TOKENS AND RECIPIENT
-        IERC20[] memory tokens = new IERC20[](0);
-        address to = address(0);
-        _run(tokens, to);
-    }
-
-    function run(IERC20[] calldata tokens, address to) external {
-        _run(tokens, to);
-    }
-
-    function _run(IERC20[] memory _tokens, address _to) internal broadcast {
-        uint256 chainId = block.chainid;
-        address creatorAddress = 0x8BB4C975Ff3c250e0ceEA271728547f3802B36Fd;
-
-        DistributionCreator(creatorAddress).recoverFees(_tokens, _to);
-
-        console.log("Fees recovered to:", _to);
-    }
-}
-
 // SetUserFeeRebate script
 contract SetUserFeeRebate is DistributionCreatorScript {
-    // forge script scripts/DistributionCreator.s.sol:SetUserFeeRebate --rpc-url bsc --sender 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701 --broadcast --legacy
+    // forge script scripts/DistributionCreator.s.sol:SetUserFeeRebate --rpc-url stable --sender 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701 --broadcast
     function run() external {
         // MODIFY THESE VALUES TO SET YOUR DESIRED USER AND REBATE
         // 1_000_000_000 = 100%
         // 250_000_000 = 25%
         // 330_000_000  = 3
-        address user = address(0x19674E9Af1A04DAf183F8E1A23E0afc2bc79A939);
-        uint256 rebate = 1_000_000_000; // 100% 500000000
+        address user = address(0xb67b9d2b188AD91ebcb5ba34b3E3fFB2c013d940);
+        uint256 rebate = 1_000_000_000; // 100%
         _run(user, rebate);
     }
 
@@ -175,14 +132,16 @@ contract SetUserFeeRebate is DistributionCreatorScript {
 
 // SetRewardTokenMinAmounts script
 contract SetRewardTokenMinAmounts is DistributionCreatorScript {
-    // forge script scripts/DistributionCreator.s.sol:SetRewardTokenMinAmounts --rpc-url xdc --sender 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701 --broadcast --legacy
+    // forge script scripts/DistributionCreator.s.sol:SetRewardTokenMinAmounts --rpc-url stable --sender 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701 --broadcast
     function run() external {
         console.log("DEPLOYER_ADDRESS:", broadcaster);
         // MODIFY THESE VALUES TO SET YOUR DESIRED TOKENS AND AMOUNTS
-        address[] memory tokens = new address[](1);
-        uint256[] memory amounts = new uint256[](1);
-        tokens[0] = 0xc3ef7ed4F97450Ae8dA2473068375788BdeB5c5c;
-        amounts[0] = 1 ether / 10; // 0.1 tokens with 18 decimals
+        address[] memory tokens = new address[](2);
+        uint256[] memory amounts = new uint256[](2);
+        tokens[0] = 0xA87D4F27F49D335ab1deEe6b9c43404414Bee214;
+        tokens[1] = 0x09f143d3Af1Af9af6AB6BCe1B53fc5a8dc1baA79;
+        amounts[0] = 0.1 ether; // 1 token with 18 decimals
+        amounts[1] = 0.1 ether; // 1 token with 18 decimals
         _run(tokens, amounts);
     }
 

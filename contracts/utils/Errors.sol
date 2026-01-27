@@ -3,9 +3,10 @@
 pragma solidity ^0.8.17;
 
 library Errors {
+    error CampaignAlreadyEnded();
     error CampaignDoesNotExist();
     error CampaignAlreadyExists();
-    error CampaignDurationBelowHour();
+    error CampaignDurationNull();
     error CampaignRewardTokenNotWhitelisted();
     error CampaignRewardTooLow();
     error CampaignShouldStartInFuture();

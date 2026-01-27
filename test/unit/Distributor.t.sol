@@ -8,7 +8,7 @@ import { Distributor, MerkleTree } from "../../contracts/Distributor.sol";
 import { Fixture } from "../Fixture.t.sol";
 import { IAccessControlManager } from "../../contracts/interfaces/IAccessControlManager.sol";
 import { Errors } from "../../contracts/utils/Errors.sol";
-import { MockClaimRecipient, MockClaimRecipientWrongReturn, MockNonClaimRecipient } from "../../contracts/mock/MockClaimRecipient.sol";
+import { MockClaimRecipient, MockClaimRecipientWrongReturn, MockClaimRecipientReverts, MockNonClaimRecipient } from "../../contracts/mock/MockClaimRecipient.sol";
 
 contract DistributorTest is Fixture {
     Distributor public distributor;
@@ -828,7 +828,7 @@ contract Test_Distributor_claimWithRecipient is DistributorTest {
         assertEq(angle.balanceOf(address(mockRecipient)), recipientBalance);
     }
 
-    function test_Success_CallbackWithNonImplementingContractDoesNotRevert() public {
+    function test_RevertWhen_CallbackWithNonImplementingContract() public {
         // Deploy mock non-recipient contract
         MockNonClaimRecipient mockRecipient = new MockNonClaimRecipient();
 
@@ -864,14 +864,10 @@ contract Test_Distributor_claimWithRecipient is DistributorTest {
         recipients[0] = address(0);
         datas[0] = customData;
 
-        uint256 recipientBalance = angle.balanceOf(address(mockRecipient));
-
-        // Alice claims with data - should NOT revert (catch block handles it)
+        // Alice claims with data - should revert when callback is invoked on non-implementing contract
         vm.prank(alice);
+        vm.expectRevert();
         distributor.claimWithRecipient(users, tokens, amounts, proofs, recipients, datas);
-
-        // Verify rewards were still transferred despite callback failure
-        assertEq(angle.balanceOf(address(mockRecipient)), recipientBalance + 1e18);
     }
 
     function test_Success_NoCallbackWhenNoData() public {
@@ -921,6 +917,197 @@ contract Test_Distributor_claimWithRecipient is DistributorTest {
 
         // Verify callback was NOT triggered (no data)
         assertEq(mockRecipient.callCount(), 0);
+    }
+
+    function test_RevertWhen_CallbackReverts() public {
+        // Deploy mock claim recipient that reverts
+        MockClaimRecipientReverts mockRecipient = new MockClaimRecipientReverts();
+
+        // Setup merkle tree
+        vm.prank(governor);
+        distributor.updateTree(
+            MerkleTree({
+                merkleRoot: bytes32(0x0b70a97c062cb747158b89e27df5bbda859ba072232efcbe92e383e9d74b8555),
+                ipfsHash: keccak256("IPFS_HASH")
+            })
+        );
+
+        angle.mint(address(distributor), 1e18);
+        vm.warp(distributor.endOfDisputePeriod() + 1);
+
+        // Alice sets mock recipient as default
+        vm.prank(alice);
+        distributor.setClaimRecipient(address(mockRecipient), address(angle));
+
+        // Setup claim data with custom data
+        bytes memory customData = abi.encode("test", 12345);
+        bytes32[][] memory proofs = new bytes32[][](1);
+        address[] memory users = new address[](1);
+        address[] memory tokens = new address[](1);
+        uint256[] memory amounts = new uint256[](1);
+        address[] memory recipients = new address[](1);
+        bytes[] memory datas = new bytes[](1);
+        proofs[0] = new bytes32[](1);
+        proofs[0][0] = bytes32(0x6f46ee2909b99367a0d9932a11f1bdb85c9354480c9de277d21086f9a8925c0a);
+        users[0] = alice;
+        tokens[0] = address(angle);
+        amounts[0] = 1e18;
+        recipients[0] = address(0);
+        datas[0] = customData;
+
+        uint256 recipientBalance = angle.balanceOf(address(mockRecipient));
+        uint256 distributorBalance = angle.balanceOf(address(distributor));
+
+        // Alice claims with data - should revert due to callback revert
+        vm.prank(alice);
+        vm.expectRevert("Random revert in onClaim");
+        distributor.claimWithRecipient(users, tokens, amounts, proofs, recipients, datas);
+
+        // Verify no rewards were transferred due to revert
+        assertEq(angle.balanceOf(address(mockRecipient)), recipientBalance);
+        assertEq(angle.balanceOf(address(distributor)), distributorBalance);
+    }
+
+    function test_Success_CallbackReceivesToSendAmount() public {
+        // Deploy mock claim recipient
+        MockClaimRecipient mockRecipient = new MockClaimRecipient();
+
+        // Create merkle roots for two sequential claims
+        // First tree: alice can claim 0.4e18
+        bytes32 leaf04 = keccak256(abi.encode(alice, address(angle), uint256(0.4e18)));
+
+        vm.prank(governor);
+        distributor.updateTree(
+            MerkleTree({
+                merkleRoot: leaf04, // Single leaf tree
+                ipfsHash: keccak256("IPFS_HASH")
+            })
+        );
+
+        angle.mint(address(distributor), 1e18);
+        vm.warp(distributor.endOfDisputePeriod() + 1);
+
+        // Alice sets mock recipient as default
+        vm.prank(alice);
+        distributor.setClaimRecipient(address(mockRecipient), address(angle));
+
+        // First claim: 0.4e18 without callback (empty proof for single-leaf tree)
+        {
+            bytes32[][] memory proofs = new bytes32[][](1);
+            address[] memory users = new address[](1);
+            address[] memory tokens = new address[](1);
+            uint256[] memory amounts = new uint256[](1);
+            address[] memory recipients = new address[](1);
+            bytes[] memory datas = new bytes[](1);
+            proofs[0] = new bytes32[](0); // Empty proof
+            users[0] = alice;
+            tokens[0] = address(angle);
+            amounts[0] = 0.4e18;
+            recipients[0] = address(0);
+            datas[0] = ""; // No callback
+
+            vm.prank(alice);
+            distributor.claimWithRecipient(users, tokens, amounts, proofs, recipients, datas);
+        }
+
+        // Verify first claim
+        assertEq(angle.balanceOf(address(mockRecipient)), 0.4e18);
+        assertEq(mockRecipient.callCount(), 0); // No callback on first claim
+
+        // Update tree: alice can now claim 1e18 total
+        bytes32 leaf1 = keccak256(abi.encode(alice, address(angle), uint256(1e18)));
+
+        vm.prank(governor);
+        distributor.updateTree(
+            MerkleTree({
+                merkleRoot: leaf1, // Single leaf tree
+                ipfsHash: keccak256("IPFS_HASH2")
+            })
+        );
+        vm.warp(distributor.endOfDisputePeriod() + 1);
+
+        // Second claim: 1e18 total (should send 0.6e18) with callback
+        {
+            bytes memory customData = abi.encode("test", 12345);
+            bytes32[][] memory proofs = new bytes32[][](1);
+            address[] memory users = new address[](1);
+            address[] memory tokens = new address[](1);
+            uint256[] memory amounts = new uint256[](1);
+            address[] memory recipients = new address[](1);
+            bytes[] memory datas = new bytes[](1);
+            proofs[0] = new bytes32[](0); // Empty proof
+            users[0] = alice;
+            tokens[0] = address(angle);
+            amounts[0] = 1e18;
+            recipients[0] = address(0);
+            datas[0] = customData;
+
+            vm.prank(alice);
+            distributor.claimWithRecipient(users, tokens, amounts, proofs, recipients, datas);
+
+            // Verify callback was triggered with toSend amount (0.6e18 = 1e18 - 0.4e18)
+            assertEq(mockRecipient.callCount(), 1);
+            assertEq(mockRecipient.lastUser(), alice);
+            assertEq(mockRecipient.lastToken(), address(angle));
+            assertEq(mockRecipient.lastAmount(), 0.6e18); // toSend = 1e18 - 0.4e18
+            assertEq(mockRecipient.lastData(), customData);
+        }
+
+        // Verify total balance
+        assertEq(angle.balanceOf(address(mockRecipient)), 1e18);
+    }
+}
+
+contract Test_Distributor_setClaimRecipient is DistributorTest {
+    function test_Success_EmitsEvent() public {
+        address recipient = bob;
+        address token = address(angle);
+
+        // Expect the ClaimRecipientUpdated event to be emitted
+        vm.expectEmit(true, true, true, true);
+        emit Distributor.ClaimRecipientUpdated(alice, token, recipient);
+
+        vm.prank(alice);
+        distributor.setClaimRecipient(recipient, token);
+
+        // Verify the recipient was set correctly
+        assertEq(distributor.claimRecipient(alice, token), recipient);
+    }
+
+    function test_Success_EmitsEventWithZeroAddressToken() public {
+        address recipient = bob;
+        address token = address(0);
+
+        // Expect the ClaimRecipientUpdated event to be emitted
+        vm.expectEmit(true, true, true, true);
+        emit Distributor.ClaimRecipientUpdated(alice, token, recipient);
+
+        vm.prank(alice);
+        distributor.setClaimRecipient(recipient, token);
+
+        // Verify the recipient was set correctly for all tokens
+        assertEq(distributor.claimRecipient(alice, token), recipient);
+    }
+
+    function test_Success_EmitsEventWhenUpdatingRecipient() public {
+        address firstRecipient = bob;
+        address secondRecipient = address(0x999);
+        address token = address(angle);
+
+        // Set first recipient
+        vm.prank(alice);
+        distributor.setClaimRecipient(firstRecipient, token);
+        assertEq(distributor.claimRecipient(alice, token), firstRecipient);
+
+        // Expect the ClaimRecipientUpdated event when updating to second recipient
+        vm.expectEmit(true, true, true, true);
+        emit Distributor.ClaimRecipientUpdated(alice, token, secondRecipient);
+
+        vm.prank(alice);
+        distributor.setClaimRecipient(secondRecipient, token);
+
+        // Verify the recipient was updated correctly
+        assertEq(distributor.claimRecipient(alice, token), secondRecipient);
     }
 }
 

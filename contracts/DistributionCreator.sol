@@ -126,8 +126,9 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     event FeesSet(uint256 _fees);
     event CampaignOperatorToggled(address indexed user, address indexed operator, bool isWhitelisted);
     event CampaignOverride(bytes32 _campaignId, CampaignParameters campaign);
-    event CampaignReallocation(bytes32 _campaignId, address[] indexed from, address indexed to);
+    event CampaignReallocation(bytes32 _campaignId, address[] from, address indexed to);
     event CampaignSpecificFeesSet(uint32 campaignType, uint256 _fees);
+    event ConditionsAccepted(address indexed user, bytes32 conditionsHash);
     event MessageUpdated(bytes32 _messageHash);
     event NewCampaign(CampaignParameters campaign);
     event RewardTokenMinimumAmountUpdated(address indexed token, uint256 amount);
@@ -198,7 +199,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @return campaignId Unique identifier for the newly created campaign
     /// @dev Campaigns with invalid formatting may not be processed by the reward engine, potentially losing rewards
     /// @dev Reward tokens must be whitelisted and amounts must exceed the token-specific minimum threshold
-    /// @dev Reverts if the sender has not accepted the terms and conditions via acceptConditions() or signature
+    /// @dev Reverts if the sender has not accepted the terms and conditions via acceptConditions()
     function createCampaign(CampaignParameters memory newCampaign) external nonReentrant hasSigned returns (bytes32) {
         return _createCampaign(newCampaign);
     }
@@ -223,31 +224,31 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @dev If the messageHash is not set, it means that there are no conditions to accept
     function acceptConditions() external {
         userSignatures[msg.sender] = messageHash;
+        emit ConditionsAccepted(msg.sender, messageHash);
     }
 
     /// @notice Updates parameters of an existing campaign while preserving core immutable fields
     /// @param _campaignId ID of the campaign to override
     /// @param newCampaign New campaign parameters (some fields will be ignored or validated)
     /// @dev Cannot change rewardToken, amount, or creator address
-    /// @dev Can only update startTimestamp if the campaign has not yet started
-    /// @dev New end time (startTimestamp + duration) must be in the future
-    /// @dev The Merkl engine validates override correctness; invalid overrides are ignored
-    /// @dev In the case of an invalid override, the campaign may not be processed and fees may still be taken by the Merkl engine
+    /// @dev The Merkl engine validates overrides and rejects invalid modifications, including attempts to circumvent campaign-specific fee rates
+    /// @dev The rejection of invalid modifications leads to the campaign being parsed as invalid and the leftover reward tokens allocated to the campaign creator address
+    /// @dev Invalid overrides may result in the campaign not being processed while fees are still deducted
     function overrideCampaign(bytes32 _campaignId, CampaignParameters memory newCampaign) external {
-        CampaignParameters memory _campaign = campaign(_campaignId);
-        _isValidOperator(_campaign.creator);
+        CampaignParameters memory _campaign = _getLatestCampaignParams(_campaignId);
+        _isSenderValidOperatorForCampaign(_campaign.creator);
+        // Preserve immutable campaign fields that cannot be modified through overrides
+        newCampaign.campaignId = _campaignId;
+        newCampaign.creator = _campaign.creator; // Creator address must remain unchanged
+        newCampaign.amount = _campaign.amount; // Total reward amount is immutable
+        newCampaign.rewardToken = _campaign.rewardToken; // Reward token cannot be changed
         if (
-            newCampaign.rewardToken != _campaign.rewardToken ||
-            newCampaign.amount != _campaign.amount ||
             (newCampaign.startTimestamp != _campaign.startTimestamp && block.timestamp > _campaign.startTimestamp) || // Allow to update startTimestamp before campaign start
-            // End timestamp should be in the future
-            newCampaign.duration + _campaign.startTimestamp <= block.timestamp
+            newCampaign.amount * HOUR < rewardTokenMinAmounts[newCampaign.rewardToken] * newCampaign.duration
         ) revert Errors.InvalidOverride();
 
-        newCampaign.campaignId = _campaignId;
-        // The manager address cannot be changed
-        newCampaign.creator = _campaign.creator;
         campaignOverrides[_campaignId] = newCampaign;
+        // There could be duplicate timestamps in the array if multiple overrides happen in the same block
         campaignOverridesTimestamp[_campaignId].push(block.timestamp);
         emit CampaignOverride(_campaignId, newCampaign);
     }
@@ -259,9 +260,11 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @dev Can only be called after the campaign has ended (startTimestamp + duration has passed)
     /// @dev Reallocation validity is determined by the Merkl engine; invalid reallocations are ignored
     function reallocateCampaignRewards(bytes32 _campaignId, address[] memory froms, address to) external {
-        CampaignParameters memory _campaign = campaign(_campaignId);
-        _isValidOperator(_campaign.creator);
+        CampaignParameters memory _campaign = _getLatestCampaignParams(_campaignId);
+        _isSenderValidOperatorForCampaign(_campaign.creator);
+        // Check campaign end time using the overridden parameters if they exist
         if (block.timestamp < _campaign.startTimestamp + _campaign.duration) revert Errors.InvalidReallocation();
+        if (to == address(0)) revert Errors.ZeroAddress();
 
         uint256 fromsLength = froms.length;
         for (uint256 i; i < fromsLength; ) {
@@ -278,10 +281,11 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @param user Address whose balance will be increased
     /// @param rewardToken Token to deposit
     /// @param amount Amount to deposit
-    /// @dev When called by a governor, the user must have sent tokens to the contract beforehand
+    /// @dev When called by a governor, the user MUST have sent tokens to the contract beforehand
     /// @dev Can be used to deposit on behalf of another user
     /// @dev WARNING: Do not use with any non strictly standard ERC20 (like rebasing tokens) as they will cause accounting issues
     function increaseTokenBalance(address user, address rewardToken, uint256 amount) external {
+        if (user == address(0)) revert Errors.ZeroAddress();
         if (!accessControlManager.isGovernor(msg.sender)) IERC20(rewardToken).safeTransferFrom(msg.sender, address(this), amount);
         _updateBalance(user, rewardToken, creatorBalance[user][rewardToken] + amount);
     }
@@ -314,7 +318,15 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @param amount Amount to decrease the allowance by
     /// @dev Only callable by the user themselves or a governor
     function decreaseTokenAllowance(address user, address operator, address rewardToken, uint256 amount) external onlyUserOrGovernor(user) {
-        _updateAllowance(user, operator, rewardToken, creatorAllowance[user][operator][rewardToken] - amount);
+        uint256 currentAllowance = creatorAllowance[user][operator][rewardToken];
+        uint256 newAllowance;
+        if (amount >= currentAllowance) {
+            newAllowance = 0;
+        } else {
+            newAllowance = currentAllowance - amount;
+        }
+
+        _updateAllowance(user, operator, rewardToken, newAllowance);
     }
 
     /// @notice Toggles an operator's authorization to create and manage campaigns on behalf of a user
@@ -348,6 +360,16 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @dev Returns original parameters even if the campaign has been overridden
     function campaign(bytes32 _campaignId) public view returns (CampaignParameters memory) {
         return campaignList[campaignLookup(_campaignId)];
+    }
+
+    /// @notice Returns the most up-to-date campaign parameters, including any overrides
+    /// @param _campaignId ID of the campaign to retrieve
+    /// @return Campaign parameters with overrides applied if they exist, otherwise original parameters
+    /// @dev If an override exists (non-zero campaignId), returns the override; otherwise returns original campaign
+    /// @dev Even if an override is invalid, we return the latest override data. This is safe because invalid
+    /// overrides result in the campaign being parsed as invalid by the Merkl engine
+    function getLatestCampaignParams(bytes32 _campaignId) public view returns (CampaignParameters memory) {
+        return _getLatestCampaignParams(_campaignId);
     }
 
     /// @notice Computes the unique campaign ID for a given set of campaign parameters
@@ -402,6 +424,13 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         return campaignListReallocation[_campaignId];
     }
 
+    /// @notice Returns the address at a specific index in the campaign reallocation list
+    /// @param _campaignId ID of the campaign
+    /// @param index Index in the reallocation list
+    /// @return Address at the specified index that had rewards reallocated away
+    function getCampaignListReallocationAt(bytes32 _campaignId, uint256 index) external view returns (address) {
+        return campaignListReallocation[_campaignId][index];
+    }
     /*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                                                  GOVERNANCE FUNCTIONS                                               
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
@@ -409,25 +438,25 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @notice Updates the Distributor contract address that receives and distributes rewards
     /// @param _distributor New Distributor contract address
     /// @dev Only callable by governor
+    /// @dev This function is not meant to be used and mostly kept here to help with testing
     function setNewDistributor(address _distributor) external onlyGovernor {
         if (_distributor == address(0)) revert Errors.InvalidParam();
         distributor = _distributor;
         emit DistributorUpdated(_distributor);
     }
 
-    /// @notice Withdraws accumulated protocol fees to a specified address
-    /// @param tokens Array of token addresses to withdraw fees from
-    /// @param to Address that will receive the withdrawn fees
+    /// @notice Recovers tokens from the contract
+    /// @param token Token address to recover
+    /// @param to Address that will receive the recovered tokens
+    /// @param amount Amount of tokens to recover
     /// @dev Only callable by governor
-    /// @dev Transfers the entire balance of each token held by the contract
-    function recoverFees(IERC20[] calldata tokens, address to) external onlyGovernor {
-        uint256 tokensLength = tokens.length;
-        for (uint256 i; i < tokensLength; ) {
-            tokens[i].safeTransfer(to, tokens[i].balanceOf(address(this)));
-            unchecked {
-                ++i;
-            }
-        }
+    /// @dev WARNING: Be extremely careful not to withdraw tokens that have been predeposited by users via increaseTokenBalance
+    /// @dev Withdrawing predeposited user tokens will break the accounting system and cause loss of funds for users
+    /// @dev This function should only be used to recover tokens accidentally sent to the contract or accumulated protocol fees
+    /// @dev Always verify that the amount being recovered does not exceed fees and does not include user predeposits
+    function recover(address token, address to, uint256 amount) external onlyGovernor {
+        if (to == address(0)) revert Errors.ZeroAddress();
+        IERC20(token).safeTransfer(to, amount);
     }
 
     /// @notice Updates the address that receives protocol fees from campaign creation
@@ -445,7 +474,8 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @dev The message may be a link to the full terms hosted offchain
     function setMessage(string memory _message) external onlyGovernorOrGuardian {
         message = _message;
-        bytes32 _messageHash = ECDSA.toEthSignedMessageHash(bytes(_message));
+        bytes32 _messageHash;
+        if (bytes(_message).length != 0) _messageHash = ECDSA.toEthSignedMessageHash(bytes(_message));
         messageHash = _messageHash;
         emit MessageUpdated(_messageHash);
     }
@@ -477,6 +507,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @param userFeeRebate Rebate amount in base 10^9
     /// @dev Only callable by governor or guardian
     function setUserFeeRebate(address user, uint256 userFeeRebate) external onlyGovernorOrGuardian {
+        if (userFeeRebate > BASE_9) revert Errors.InvalidParam();
         feeRebate[user] = userFeeRebate;
         emit FeeRebateUpdated(user, userFeeRebate);
     }
@@ -497,6 +528,7 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @dev Only callable by governor or guardian
     /// @dev Setting amount to 0 effectively removes the token from the whitelist
     /// @dev Prevents duplicate entries when adding previously removed tokens
+    /// @dev WARNING: Non-standard tokens (e.g., tokens with fee-on-transfer, rebasing tokens) must not be whitelisted as they break the Merkl accounting logic
     function setRewardTokenMinAmounts(address[] calldata tokens, uint256[] calldata amounts) external onlyGovernorOrGuardian {
         uint256 tokensLength = tokens.length;
         if (tokensLength != amounts.length) revert Errors.InvalidLengths();
@@ -525,12 +557,14 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @dev Reverts if campaign already exists or validation fails
     function _createCampaign(CampaignParameters memory newCampaign) internal returns (bytes32) {
         uint256 rewardTokenMinAmount = rewardTokenMinAmounts[newCampaign.rewardToken];
-        // if the campaign doesn't last at least one hour
-        if (newCampaign.duration < HOUR) revert Errors.CampaignDurationBelowHour();
+        // if the campaign doesn't last at least one second
+        if (newCampaign.duration < 1) revert Errors.CampaignDurationNull();
         // if the reward token is not whitelisted as an incentive token
         if (rewardTokenMinAmount == 0) revert Errors.CampaignRewardTokenNotWhitelisted();
         // if the amount distributed is too small with respect to what is allowed
-        if ((newCampaign.amount * HOUR) / newCampaign.duration < rewardTokenMinAmount) revert Errors.CampaignRewardTooLow();
+        // This check is performed before fees are deducted for better UX: campaign creators don't need
+        // to account for Merkl fees when determining if their campaign amount meets the minimum threshold
+        if (newCampaign.amount * HOUR < rewardTokenMinAmount * newCampaign.duration) revert Errors.CampaignRewardTooLow();
         // Computing fees and pulling tokens
         uint256 campaignAmountMinusFees = _computeFees(newCampaign.campaignType, newCampaign.amount);
         if (newCampaign.creator == address(0)) newCampaign.creator = msg.sender;
@@ -546,10 +580,10 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         return newCampaign.campaignId;
     }
 
-    /// @notice Validates that the caller is authorized to manage campaigns for the specified manager
+    /// @notice Validates that the msg.sender is authorized to manage campaigns for the specified manager
     /// @param manager Address of the campaign manager
     /// @dev Reverts if msg.sender is not the manager and not an authorized operator
-    function _isValidOperator(address manager) internal view {
+    function _isSenderValidOperatorForCampaign(address manager) internal view {
         if (manager != msg.sender && campaignOperators[manager][msg.sender] == 0) {
             revert Errors.OperatorNotAllowed();
         }
@@ -596,6 +630,9 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
                 if (senderAllowance >= campaignAmount) {
                     _updateAllowance(creator, msg.sender, rewardToken, senderAllowance - campaignAmount);
                 } else {
+                    // WARNING: If the creator's allowance for msg.sender is insufficient or revoked,
+                    // tokens are pulled directly from msg.sender's address. Operators should monitor
+                    // the creator's allowance and balance to avoid unexpected token transfers.
                     if (fees > 0) IERC20(rewardToken).safeTransferFrom(msg.sender, _feeRecipient, fees);
                     IERC20(rewardToken).safeTransferFrom(msg.sender, distributor, campaignAmountMinusFees);
                     return;
@@ -627,6 +664,15 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         if (_fees != 0) {
             distributionAmountMinusFees = (distributionAmount * (BASE_9 - _fees)) / BASE_9;
         }
+    }
+
+    /// @notice Internal version of the `getLatestCampaignParams` function
+    function _getLatestCampaignParams(bytes32 _campaignId) internal view returns (CampaignParameters memory _campaign) {
+        CampaignParameters memory overriddenCampaign = campaignOverrides[_campaignId];
+        if (overriddenCampaign.campaignId != bytes32(0)) {
+            return overriddenCampaign;
+        }
+        return campaign(_campaignId);
     }
 
     /// @notice Builds a paginated list of whitelisted reward tokens with their minimum amounts
