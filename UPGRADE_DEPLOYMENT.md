@@ -62,11 +62,17 @@ Upgrade deployments were completed on 27 Jan 2026 and logs are stored in [deploy
 
 ### ✅ Successfully Upgraded
 
-All supported chains were upgraded **except**:
+All contracts were deployed on all chains except on:
 
 - saga
 - zksync
 - skale
+
+Among the chains for which the contracts were deployed, the chains where the contracts were not upgraded are:
+
+- fuse
+- redbelly
+- megaeth
 
 ### ⚠️ Verification Issues
 
@@ -74,6 +80,7 @@ Contracts could not be verified on the following chains:
 
 - megaeth
 - mantle
+- plasma
 - moonbeam (1/2)
 - ronin
 - xlayer
