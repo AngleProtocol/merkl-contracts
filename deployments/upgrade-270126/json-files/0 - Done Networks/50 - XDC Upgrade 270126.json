@@ -1,0 +1,37 @@
+{
+  "version": "1.0",
+  "chainId": "50",
+  "createdAt": 1769526383173,
+  "meta": {
+    "name": "Transactions Batch",
+    "description": "",
+    "txBuilderVersion": "1.18.3",
+    "createdFromSafeAddress": "0x529619a10129396a2F642cae32099C1eA7FA2834",
+    "createdFromOwnerAddress": "",
+    "checksum": "0x4328ce8390506daad99197a3a354f6ea7f613118eba85385f6d340dcb439d011"
+  },
+  "transactions": [
+    {
+      "to": "0x6aecf4335276D505CEE3323621122A642531eAB4",
+      "value": "0",
+      "data": null,
+      "contractMethod": {
+        "inputs": [{ "internalType": "address", "name": "newImplementation", "type": "address" }],
+        "name": "upgradeTo",
+        "payable": false
+      },
+      "contractInputsValues": { "newImplementation": "0x0E7Dd56f7D2CAdc066B992cec58253190f002c25" }
+    },
+    {
+      "to": "0xDd8098dA94cF3aEA5253545162F1Feb371278F5a",
+      "value": "0",
+      "data": null,
+      "contractMethod": {
+        "inputs": [{ "internalType": "address", "name": "newImplementation", "type": "address" }],
+        "name": "upgradeTo",
+        "payable": false
+      },
+      "contractInputsValues": { "newImplementation": "0xC816653BdaD0C62F1EA3bFaF8BC954381274561A" }
+    }
+  ]
+}
