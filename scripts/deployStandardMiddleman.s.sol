@@ -29,7 +29,7 @@ contract DeployStandardMiddleman is BaseScript {
         CampaignParameters memory defaultParams = CampaignParameters({
             campaignId: bytes32(0),
             creator: address(0),
-            rewardToken: address(0xaca92e438df0b2401ff60da7e4337b687a2435da), // TO EDIT: Set reward token address
+            rewardToken: address(0xacA92E438df0B2401fF60dA7E4337B687a2435DA), // TO EDIT: Set reward token address
             amount: 0,
             campaignType: 134, // TO EDIT: Set campaign type
             startTimestamp: 0,
