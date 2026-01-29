@@ -3,8 +3,8 @@
   "chainId": 30,
   "chainName": "rootstock",
   "deployer": "0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701",
-  "distributionCreatorImplementation": "0x63dC02BB25E7BF7Eaa0E42E71D785a388AcD740b",
-  "distributorImplementation": "0x5029f49585D57ed770D2194841B5A0bE06BFc2ED",
+  "distributionCreatorImplementation": "0x52b02b73c39998d869c2149a05DB03A8681f6AED",
+  "distributorImplementation": "0xfF9c33EdFbaB41eF66d60190926375227759b9a1",
   "status": "SUCCESS",
-  "timestamp": 1769520979
+  "timestamp": 1769703597
 }
