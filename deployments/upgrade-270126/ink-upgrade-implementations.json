@@ -1,0 +1,10 @@
+{
+  "_note": "Upgrade implementation deployment",
+  "chainId": 57073,
+  "chainName": "ink",
+  "deployer": "0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701",
+  "distributionCreatorImplementation": "0x6E9C1F88a960fE63387eb4b71BC525a9313d8461",
+  "distributorImplementation": "0xf1b77aB6cdF2F9690054A0205A423f0a5b6ECa02",
+  "status": "SUCCESS",
+  "timestamp": 1769508118
+}

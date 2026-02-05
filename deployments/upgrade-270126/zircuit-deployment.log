@@ -1,0 +1,63 @@
+Warning: This is a nightly build of Foundry. It is recommended to use the latest stable version. To mute this warning set `FOUNDRY_DISABLE_NIGHTLY_WARNING` in your environment. 
+
+No files changed, compilation skipped
+Script ran successfully.
+
+== Logs ==
+  ==========================================================
+  Deploying Upgrade Implementations
+  ==========================================================
+  Chain ID: 48900
+  Deployer: 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701
+  
+  Deploying DistributionCreator implementation...
+  DistributionCreator Implementation: 0x04A7d169C5b14d2e29A3bA8b5071dDA5E365c199
+  Deploying Distributor implementation...
+  Distributor Implementation: 0xAF6EB566c9FA21F8a61EBD01499852aced86933b
+  Deployment data saved to: ./deployments/zircuit-upgrade-implementations.json
+  
+  ==========================================================
+  Deployment Complete!
+  ==========================================================
+  Deployment file saved to: ./deployments/zircuit-upgrade-implementations.json
+  
+  Next steps:
+  1. Verify the implementations on block explorer if not auto-verified
+  2. Use these addresses to create Gnosis Safe upgrade transactions
+  ==========================================================
+
+SKIPPING ON CHAIN SIMULATION.
+
+
+==========================
+
+ONCHAIN EXECUTION COMPLETE & SUCCESSFUL.
+##
+Start verification for (2) contracts
+Start verifying contract `0x04A7d169C5b14d2e29A3bA8b5071dDA5E365c199` deployed on 48900
+EVM version: cancun
+Compiler version: 0.8.25
+Optimizations:    100
+Attempting to verify on Sourcify. Pass the --etherscan-api-key <API_KEY> to verify on Etherscan, or use the --verifier flag to verify on another provider.
+
+Submitting verification for [DistributionCreator] "0x04A7d169C5b14d2e29A3bA8b5071dDA5E365c199".
+Submitted contract for verification:
+	Verification Job ID: `dfd2dc7f-36f1-4056-8da8-4c57473d1e7d`
+	URL: https://sourcify.dev/server/v2/verify/dfd2dc7f-36f1-4056-8da8-4c57473d1e7d
+Warning: Verification is still pending...; waiting 15 seconds before trying again (7 tries remaining)
+Contract successfully verified:
+Status: `exact_match`
+Start verifying contract `0xAF6EB566c9FA21F8a61EBD01499852aced86933b` deployed on 48900
+EVM version: cancun
+Compiler version: 0.8.25
+Optimizations:    100
+Attempting to verify on Sourcify. Pass the --etherscan-api-key <API_KEY> to verify on Etherscan, or use the --verifier flag to verify on another provider.
+
+Submitting verification for [Distributor] "0xAF6EB566c9FA21F8a61EBD01499852aced86933b".
+Contract source code already fully verified
+All (2) contracts were verified!
+
+Transactions saved to: /Users/pabloveyrat/Documents/Angle/Dev/merkl-contracts/broadcast/deployUpgradeImplementationsSingle.s.sol/48900/run-latest.json
+
+Sensitive values saved to: /Users/pabloveyrat/Documents/Angle/Dev/merkl-contracts/cache-forge/deployUpgradeImplementationsSingle.s.sol/48900/run-latest.json
+

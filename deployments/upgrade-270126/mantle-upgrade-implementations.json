@@ -1,0 +1,10 @@
+{
+  "_note": "Upgrade implementation deployment",
+  "chainId": 5000,
+  "chainName": "mantle",
+  "deployer": "0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701",
+  "distributionCreatorImplementation": "0xE23F6bEf0Abdd3C23B609e86d9fa5b3bF81CD25E",
+  "distributorImplementation": "0x60b5bA66e999DD79D8110383d49E3D7B1874B71C",
+  "status": "SUCCESS",
+  "timestamp": 1769519424
+}

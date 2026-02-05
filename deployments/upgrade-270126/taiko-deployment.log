@@ -1,0 +1,78 @@
+Warning: This is a nightly build of Foundry. It is recommended to use the latest stable version. To mute this warning set `FOUNDRY_DISABLE_NIGHTLY_WARNING` in your environment. 
+
+No files changed, compilation skipped
+Script ran successfully.
+
+== Logs ==
+  ==========================================================
+  Deploying Upgrade Implementations
+  ==========================================================
+  Chain ID: 167000
+  Deployer: 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701
+  
+  Deploying DistributionCreator implementation...
+  DistributionCreator Implementation: 0x22b0aC22D5d58F05873E470bCa5DB7Ceb5C47f5E
+  Deploying Distributor implementation...
+  Distributor Implementation: 0x9a0F97FAC6154d9233A0FDFcE4Dc27dCB48b95ff
+  Deployment data saved to: ./deployments/taiko-upgrade-implementations.json
+  
+  ==========================================================
+  Deployment Complete!
+  ==========================================================
+  Deployment file saved to: ./deployments/taiko-upgrade-implementations.json
+  
+  Next steps:
+  1. Verify the implementations on block explorer if not auto-verified
+  2. Use these addresses to create Gnosis Safe upgrade transactions
+  ==========================================================
+
+SKIPPING ON CHAIN SIMULATION.
+
+
+==========================
+
+ONCHAIN EXECUTION COMPLETE & SUCCESSFUL.
+##
+Start verification for (2) contracts
+Start verifying contract `0x22b0aC22D5d58F05873E470bCa5DB7Ceb5C47f5E` deployed on taiko
+EVM version: cancun
+Compiler version: 0.8.25
+Optimizations:    100
+
+Submitting verification for [contracts/DistributionCreator.sol:DistributionCreator] 0x22b0aC22D5d58F05873E470bCa5DB7Ceb5C47f5E.
+Submitted contract for verification:
+	Response: `OK`
+	GUID: `kdiifgeigbe9iduczx2hdubs7bhnp2ttpeqes39yrqgswmj24q`
+	URL: https://taikoscan.io/address/0x22b0ac22d5d58f05873e470bca5db7ceb5c47f5e
+Contract verification status:
+Response: `NOTOK`
+Details: `Pending in queue`
+Warning: Verification is still pending...; waiting 15 seconds before trying again (7 tries remaining)
+Contract verification status:
+Response: `OK`
+Details: `Pass - Verified`
+Contract successfully verified
+Start verifying contract `0x9a0F97FAC6154d9233A0FDFcE4Dc27dCB48b95ff` deployed on taiko
+EVM version: cancun
+Compiler version: 0.8.25
+Optimizations:    100
+
+Submitting verification for [contracts/Distributor.sol:Distributor] 0x9a0F97FAC6154d9233A0FDFcE4Dc27dCB48b95ff.
+Submitted contract for verification:
+	Response: `OK`
+	GUID: `s2dmaqcrbwzhweick5pfkwnwsnejvlrgizaspt41cssfzam29k`
+	URL: https://taikoscan.io/address/0x9a0f97fac6154d9233a0fdfce4dc27dcb48b95ff
+Contract verification status:
+Response: `NOTOK`
+Details: `Pending in queue`
+Warning: Verification is still pending...; waiting 15 seconds before trying again (7 tries remaining)
+Contract verification status:
+Response: `OK`
+Details: `Pass - Verified`
+Contract successfully verified
+All (2) contracts were verified!
+
+Transactions saved to: /Users/pabloveyrat/Documents/Angle/Dev/merkl-contracts/broadcast/deployUpgradeImplementationsSingle.s.sol/167000/run-latest.json
+
+Sensitive values saved to: /Users/pabloveyrat/Documents/Angle/Dev/merkl-contracts/cache-forge/deployUpgradeImplementationsSingle.s.sol/167000/run-latest.json
+

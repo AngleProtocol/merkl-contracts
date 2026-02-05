@@ -32,17 +32,30 @@ contract DeployPullTokenWrapperTransfer is BaseScript {
         PullTokenWrapperTransfer implementation = new PullTokenWrapperTransfer();
         console.log("PullTokenWrapperTransfer Implementation:", address(implementation));
 
-        // Deploy proxy
-        ERC1967Proxy proxy = new ERC1967Proxy(address(implementation), "");
+        // Encode initialization data
+        bytes memory initData = abi.encodeWithSelector(
+            PullTokenWrapperTransfer.initialize.selector,
+            underlying,
+            distributionCreator,
+            minter,
+            name,
+            symbol
+        );
+
+        // Deploy proxy with initialization data (atomically initializes in constructor)
+        ERC1967Proxy proxy = new ERC1967Proxy(address(implementation), initData);
         console.log("PullTokenWrapperTransfer Proxy:", address(proxy));
 
-        // Initialize
-        PullTokenWrapperTransfer(address(proxy)).initialize(underlying, distributionCreator, minter, name, symbol);
+        // Read and log the implementation address from the proxy to avoid hijack attacks
+        // ERC1967 implementation slot: keccak256("eip1967.proxy.implementation") - 1
+        bytes32 implSlot = bytes32(uint256(keccak256("eip1967.proxy.implementation")) - 1);
+        address storedImplementation = address(uint160(uint256(vm.load(address(proxy), implSlot))));
+        console.log("Proxy Implementation (verified):", storedImplementation);
 
-        address[] memory tokens;
+        address[] memory tokens = new address[](1);
         tokens[0] = address(proxy);
 
-        uint256[] memory amounts;
+        uint256[] memory amounts = new uint256[](1);
         amounts[0] = 1e18;
         DistributionCreator(distributionCreator).setRewardTokenMinAmounts(tokens, amounts); // Set the minimum amount for the token wrapper
 

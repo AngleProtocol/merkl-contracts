@@ -1,0 +1,10 @@
+{
+  "_note": "Upgrade implementation deployment",
+  "chainId": 98866,
+  "chainName": "plume",
+  "deployer": "0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701",
+  "distributionCreatorImplementation": "0xAB067d0832D40619EF445B7fAE510f5Da606Ab0A",
+  "distributorImplementation": "0x37eB0572eb61db3B819570Cf65114ff6dB6C06A2",
+  "status": "SUCCESS",
+  "timestamp": 1769508361
+}

@@ -1,0 +1,148 @@
+Warning: This is a nightly build of Foundry. It is recommended to use the latest stable version. To mute this warning set `FOUNDRY_DISABLE_NIGHTLY_WARNING` in your environment. 
+
+No files changed, compilation skipped
+Script ran successfully.
+
+== Logs ==
+  ==========================================================
+  Deploying Upgrade Implementations
+  ==========================================================
+  Chain ID: 196
+  Deployer: 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701
+  
+  Deploying DistributionCreator implementation...
+  DistributionCreator Implementation: 0xA87D4F27F49D335ab1deEe6b9c43404414Bee214
+  Deploying Distributor implementation...
+  Distributor Implementation: 0xE23F6bEf0Abdd3C23B609e86d9fa5b3bF81CD25E
+  Deployment data saved to: ./deployments/xlayer-upgrade-implementations.json
+  
+  ==========================================================
+  Deployment Complete!
+  ==========================================================
+  Deployment file saved to: ./deployments/xlayer-upgrade-implementations.json
+  
+  Next steps:
+  1. Verify the implementations on block explorer if not auto-verified
+  2. Use these addresses to create Gnosis Safe upgrade transactions
+  ==========================================================
+
+SKIPPING ON CHAIN SIMULATION.
+
+
+==========================
+
+ONCHAIN EXECUTION COMPLETE & SUCCESSFUL.
+##
+Start verification for (2) contracts
+Start verifying contract `0xA87D4F27F49D335ab1deEe6b9c43404414Bee214` deployed on 196
+EVM version: cancun
+Compiler version: 0.8.25
+Optimizations:    100
+Attempting to verify on Sourcify. Pass the --etherscan-api-key <API_KEY> to verify on Etherscan, or use the --verifier flag to verify on another provider.
+
+Submitting verification for [DistributionCreator] "0xA87D4F27F49D335ab1deEe6b9c43404414Bee214".
+Warning: Sourcify verification request for address (0xA87D4F27F49D335ab1deEe6b9c43404414Bee214) failed with status code 404 Not Found
+Details: {
+  "customCode": "unsupported_chain",
+  "message": "Chain 196 not found",
+  "errorId": "02e34152-710b-4f4c-8b4d-4bcbe0c4e361"
+}; waiting 5 seconds before trying again (4 tries remaining)
+
+Submitting verification for [DistributionCreator] "0xA87D4F27F49D335ab1deEe6b9c43404414Bee214".
+Warning: Sourcify verification request for address (0xA87D4F27F49D335ab1deEe6b9c43404414Bee214) failed with status code 404 Not Found
+Details: {
+  "customCode": "unsupported_chain",
+  "message": "Chain 196 not found",
+  "errorId": "116dcaf8-c0d6-4e32-a667-b9e100503753"
+}; waiting 5 seconds before trying again (3 tries remaining)
+
+Submitting verification for [DistributionCreator] "0xA87D4F27F49D335ab1deEe6b9c43404414Bee214".
+Warning: Sourcify verification request for address (0xA87D4F27F49D335ab1deEe6b9c43404414Bee214) failed with status code 404 Not Found
+Details: {
+  "customCode": "unsupported_chain",
+  "message": "Chain 196 not found",
+  "errorId": "187422e6-1c38-4b18-8178-a385d1890d2b"
+}; waiting 5 seconds before trying again (2 tries remaining)
+
+Submitting verification for [DistributionCreator] "0xA87D4F27F49D335ab1deEe6b9c43404414Bee214".
+Warning: Sourcify verification request for address (0xA87D4F27F49D335ab1deEe6b9c43404414Bee214) failed with status code 404 Not Found
+Details: {
+  "customCode": "unsupported_chain",
+  "message": "Chain 196 not found",
+  "errorId": "7fa40bf3-4155-4ab5-9c01-674612687c65"
+}; waiting 5 seconds before trying again (1 tries remaining)
+
+Submitting verification for [DistributionCreator] "0xA87D4F27F49D335ab1deEe6b9c43404414Bee214".
+Warning: Sourcify verification request for address (0xA87D4F27F49D335ab1deEe6b9c43404414Bee214) failed with status code 404 Not Found
+Details: {
+  "customCode": "unsupported_chain",
+  "message": "Chain 196 not found",
+  "errorId": "d8a02d21-1ce1-4507-bb73-5ab6d8753200"
+}; waiting 5 seconds before trying again (0 tries remaining)
+
+Submitting verification for [DistributionCreator] "0xA87D4F27F49D335ab1deEe6b9c43404414Bee214".
+Error: Failed to verify contract: Sourcify verification request for address (0xA87D4F27F49D335ab1deEe6b9c43404414Bee214) failed with status code 404 Not Found
+Details: {
+  "customCode": "unsupported_chain",
+  "message": "Chain 196 not found",
+  "errorId": "e5db4859-06f9-4e0d-a799-4317e9d34de5"
+}
+Start verifying contract `0xE23F6bEf0Abdd3C23B609e86d9fa5b3bF81CD25E` deployed on 196
+EVM version: cancun
+Compiler version: 0.8.25
+Optimizations:    100
+Attempting to verify on Sourcify. Pass the --etherscan-api-key <API_KEY> to verify on Etherscan, or use the --verifier flag to verify on another provider.
+
+Submitting verification for [Distributor] "0xE23F6bEf0Abdd3C23B609e86d9fa5b3bF81CD25E".
+Warning: Sourcify verification request for address (0xE23F6bEf0Abdd3C23B609e86d9fa5b3bF81CD25E) failed with status code 404 Not Found
+Details: {
+  "customCode": "unsupported_chain",
+  "message": "Chain 196 not found",
+  "errorId": "6b208bd4-f03d-4061-991e-e9ca26bdf3f5"
+}; waiting 5 seconds before trying again (4 tries remaining)
+
+Submitting verification for [Distributor] "0xE23F6bEf0Abdd3C23B609e86d9fa5b3bF81CD25E".
+Warning: Sourcify verification request for address (0xE23F6bEf0Abdd3C23B609e86d9fa5b3bF81CD25E) failed with status code 404 Not Found
+Details: {
+  "customCode": "unsupported_chain",
+  "message": "Chain 196 not found",
+  "errorId": "0732a2d3-5de3-4bf6-a257-feebfbe3ad2c"
+}; waiting 5 seconds before trying again (3 tries remaining)
+
+Submitting verification for [Distributor] "0xE23F6bEf0Abdd3C23B609e86d9fa5b3bF81CD25E".
+Warning: Sourcify verification request for address (0xE23F6bEf0Abdd3C23B609e86d9fa5b3bF81CD25E) failed with status code 404 Not Found
+Details: {
+  "customCode": "unsupported_chain",
+  "message": "Chain 196 not found",
+  "errorId": "af3dab73-ceed-4b7e-a07c-d7cbc18f3851"
+}; waiting 5 seconds before trying again (2 tries remaining)
+
+Submitting verification for [Distributor] "0xE23F6bEf0Abdd3C23B609e86d9fa5b3bF81CD25E".
+Warning: Sourcify verification request for address (0xE23F6bEf0Abdd3C23B609e86d9fa5b3bF81CD25E) failed with status code 404 Not Found
+Details: {
+  "customCode": "unsupported_chain",
+  "message": "Chain 196 not found",
+  "errorId": "127a8273-12b3-43d3-bfa4-46826fc945c1"
+}; waiting 5 seconds before trying again (1 tries remaining)
+
+Submitting verification for [Distributor] "0xE23F6bEf0Abdd3C23B609e86d9fa5b3bF81CD25E".
+Warning: Sourcify verification request for address (0xE23F6bEf0Abdd3C23B609e86d9fa5b3bF81CD25E) failed with status code 404 Not Found
+Details: {
+  "customCode": "unsupported_chain",
+  "message": "Chain 196 not found",
+  "errorId": "5ef86d9e-ba67-4287-9719-40f7aaece29c"
+}; waiting 5 seconds before trying again (0 tries remaining)
+
+Submitting verification for [Distributor] "0xE23F6bEf0Abdd3C23B609e86d9fa5b3bF81CD25E".
+Error: Failed to verify contract: Sourcify verification request for address (0xE23F6bEf0Abdd3C23B609e86d9fa5b3bF81CD25E) failed with status code 404 Not Found
+Details: {
+  "customCode": "unsupported_chain",
+  "message": "Chain 196 not found",
+  "errorId": "84f45863-f482-4494-a0b6-56cdb58e2de9"
+}
+
+Transactions saved to: /Users/pabloveyrat/Documents/Angle/Dev/merkl-contracts/broadcast/deployUpgradeImplementationsSingle.s.sol/196/run-latest.json
+
+Sensitive values saved to: /Users/pabloveyrat/Documents/Angle/Dev/merkl-contracts/cache-forge/deployUpgradeImplementationsSingle.s.sol/196/run-latest.json
+
+Error: Not all (0 / 2) contracts were verified!

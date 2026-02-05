@@ -1,0 +1,10 @@
+{
+  "_note": "Upgrade implementation deployment",
+  "chainId": 143,
+  "chainName": "monad",
+  "deployer": "0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701",
+  "distributionCreatorImplementation": "0x1d643967Ede81B728c5C0d9fAd05D9dC606E4F58",
+  "distributorImplementation": "0x3F0fA7847b1B2E4515a93e05B29f115D9BB51D85",
+  "status": "SUCCESS",
+  "timestamp": 1769505256
+}

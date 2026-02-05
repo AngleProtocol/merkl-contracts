@@ -1,0 +1,10 @@
+{
+  "_note": "Upgrade implementation deployment",
+  "chainId": 1135,
+  "chainName": "lisk",
+  "deployer": "0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701",
+  "distributionCreatorImplementation": "0xB46439fF16f1EDb43B047cEFDF24603a6Ff85263",
+  "distributorImplementation": "0xcbdE17a6229B60a3ce6a2E1C8C85A3Eb952EAF25",
+  "status": "SUCCESS",
+  "timestamp": 1769505995
+}

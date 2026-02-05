@@ -1,0 +1,82 @@
+Warning: This is a nightly build of Foundry. It is recommended to use the latest stable version. To mute this warning set `FOUNDRY_DISABLE_NIGHTLY_WARNING` in your environment. 
+
+No files changed, compilation skipped
+Warning: EIP-3855 is not supported in one or more of the RPCs used.
+Unsupported Chain IDs: 747474.
+Contracts deployed with a Solidity version equal or higher than 0.8.20 might not work properly.
+For more information, please see https://eips.ethereum.org/EIPS/eip-3855
+Script ran successfully.
+
+== Logs ==
+  ==========================================================
+  Deploying Upgrade Implementations
+  ==========================================================
+  Chain ID: 747474
+  Deployer: 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701
+  
+  Deploying DistributionCreator implementation...
+  DistributionCreator Implementation: 0x147f4163756DB2EEE9092bb848603A9e7054c52D
+  Deploying Distributor implementation...
+  Distributor Implementation: 0x96B1c3dD1D967198Ad30AD97B2E262B4619CAec1
+  Deployment data saved to: ./deployments/katana-upgrade-implementations.json
+  
+  ==========================================================
+  Deployment Complete!
+  ==========================================================
+  Deployment file saved to: ./deployments/katana-upgrade-implementations.json
+  
+  Next steps:
+  1. Verify the implementations on block explorer if not auto-verified
+  2. Use these addresses to create Gnosis Safe upgrade transactions
+  ==========================================================
+
+SKIPPING ON CHAIN SIMULATION.
+
+
+==========================
+
+ONCHAIN EXECUTION COMPLETE & SUCCESSFUL.
+##
+Start verification for (2) contracts
+Start verifying contract `0x147f4163756DB2EEE9092bb848603A9e7054c52D` deployed on katana
+EVM version: cancun
+Compiler version: 0.8.25
+Optimizations:    100
+
+Submitting verification for [contracts/DistributionCreator.sol:DistributionCreator] 0x147f4163756DB2EEE9092bb848603A9e7054c52D.
+Submitted contract for verification:
+	Response: `OK`
+	GUID: `stgypvwryjd5v7dqpkexwkznzaj6evmsntv9jqhpr2iepzzrmg`
+	URL: https://katanascan.com/address/0x147f4163756db2eee9092bb848603a9e7054c52d
+Contract verification status:
+Response: `NOTOK`
+Details: `Pending in queue`
+Warning: Verification is still pending...; waiting 15 seconds before trying again (7 tries remaining)
+Contract verification status:
+Response: `OK`
+Details: `Pass - Verified`
+Contract successfully verified
+Start verifying contract `0x96B1c3dD1D967198Ad30AD97B2E262B4619CAec1` deployed on katana
+EVM version: cancun
+Compiler version: 0.8.25
+Optimizations:    100
+
+Submitting verification for [contracts/Distributor.sol:Distributor] 0x96B1c3dD1D967198Ad30AD97B2E262B4619CAec1.
+Submitted contract for verification:
+	Response: `OK`
+	GUID: `acw99xtjzfbplcykicc5vz3r6u2kzzbujpmkwekpf1q3d2gggu`
+	URL: https://katanascan.com/address/0x96b1c3dd1d967198ad30ad97b2e262b4619caec1
+Contract verification status:
+Response: `NOTOK`
+Details: `Pending in queue`
+Warning: Verification is still pending...; waiting 15 seconds before trying again (7 tries remaining)
+Contract verification status:
+Response: `OK`
+Details: `Pass - Verified`
+Contract successfully verified
+All (2) contracts were verified!
+
+Transactions saved to: /Users/pabloveyrat/Documents/Angle/Dev/merkl-contracts/broadcast/deployUpgradeImplementationsSingle.s.sol/747474/run-latest.json
+
+Sensitive values saved to: /Users/pabloveyrat/Documents/Angle/Dev/merkl-contracts/cache-forge/deployUpgradeImplementationsSingle.s.sol/747474/run-latest.json
+

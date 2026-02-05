@@ -1,0 +1,10 @@
+{
+  "_note": "Upgrade implementation deployment",
+  "chainId": 146,
+  "chainName": "sonic",
+  "deployer": "0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701",
+  "distributionCreatorImplementation": "0x2bB1f7149751ac5707012AB963E0F4609FE8E17B",
+  "distributorImplementation": "0x5e96a2650bA385585Ce70e6997F018cF6854A758",
+  "status": "SUCCESS",
+  "timestamp": 1769505307
+}

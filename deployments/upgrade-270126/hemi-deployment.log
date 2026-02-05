@@ -1,0 +1,148 @@
+Warning: This is a nightly build of Foundry. It is recommended to use the latest stable version. To mute this warning set `FOUNDRY_DISABLE_NIGHTLY_WARNING` in your environment. 
+
+No files changed, compilation skipped
+Script ran successfully.
+
+== Logs ==
+  ==========================================================
+  Deploying Upgrade Implementations
+  ==========================================================
+  Chain ID: 43111
+  Deployer: 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701
+  
+  Deploying DistributionCreator implementation...
+  DistributionCreator Implementation: 0x3ba1fbC4c3aEA775d335b31fb53778f46FD3a330
+  Deploying Distributor implementation...
+  Distributor Implementation: 0x1a23b27aC7775B6220dC4F816b5c6A629E371f19
+  Deployment data saved to: ./deployments/hemi-upgrade-implementations.json
+  
+  ==========================================================
+  Deployment Complete!
+  ==========================================================
+  Deployment file saved to: ./deployments/hemi-upgrade-implementations.json
+  
+  Next steps:
+  1. Verify the implementations on block explorer if not auto-verified
+  2. Use these addresses to create Gnosis Safe upgrade transactions
+  ==========================================================
+
+SKIPPING ON CHAIN SIMULATION.
+
+
+==========================
+
+ONCHAIN EXECUTION COMPLETE & SUCCESSFUL.
+##
+Start verification for (2) contracts
+Start verifying contract `0x3ba1fbC4c3aEA775d335b31fb53778f46FD3a330` deployed on 43111
+EVM version: cancun
+Compiler version: 0.8.25
+Optimizations:    100
+Attempting to verify on Sourcify. Pass the --etherscan-api-key <API_KEY> to verify on Etherscan, or use the --verifier flag to verify on another provider.
+
+Submitting verification for [DistributionCreator] "0x3ba1fbC4c3aEA775d335b31fb53778f46FD3a330".
+Warning: Sourcify verification request for address (0x3ba1fbC4c3aEA775d335b31fb53778f46FD3a330) failed with status code 404 Not Found
+Details: {
+  "customCode": "unsupported_chain",
+  "message": "Chain 43111 not found",
+  "errorId": "caf38eef-0bbc-48ba-bd90-46b324138b7a"
+}; waiting 5 seconds before trying again (4 tries remaining)
+
+Submitting verification for [DistributionCreator] "0x3ba1fbC4c3aEA775d335b31fb53778f46FD3a330".
+Warning: Sourcify verification request for address (0x3ba1fbC4c3aEA775d335b31fb53778f46FD3a330) failed with status code 404 Not Found
+Details: {
+  "customCode": "unsupported_chain",
+  "message": "Chain 43111 not found",
+  "errorId": "ebdffb1e-03cc-4cb7-aa68-64b34dafb93e"
+}; waiting 5 seconds before trying again (3 tries remaining)
+
+Submitting verification for [DistributionCreator] "0x3ba1fbC4c3aEA775d335b31fb53778f46FD3a330".
+Warning: Sourcify verification request for address (0x3ba1fbC4c3aEA775d335b31fb53778f46FD3a330) failed with status code 404 Not Found
+Details: {
+  "customCode": "unsupported_chain",
+  "message": "Chain 43111 not found",
+  "errorId": "4472885f-1aba-43b6-8ca1-ef99f469cd5b"
+}; waiting 5 seconds before trying again (2 tries remaining)
+
+Submitting verification for [DistributionCreator] "0x3ba1fbC4c3aEA775d335b31fb53778f46FD3a330".
+Warning: Sourcify verification request for address (0x3ba1fbC4c3aEA775d335b31fb53778f46FD3a330) failed with status code 404 Not Found
+Details: {
+  "customCode": "unsupported_chain",
+  "message": "Chain 43111 not found",
+  "errorId": "1ebd29c7-69a1-489d-b1fc-b47e786688db"
+}; waiting 5 seconds before trying again (1 tries remaining)
+
+Submitting verification for [DistributionCreator] "0x3ba1fbC4c3aEA775d335b31fb53778f46FD3a330".
+Warning: Sourcify verification request for address (0x3ba1fbC4c3aEA775d335b31fb53778f46FD3a330) failed with status code 404 Not Found
+Details: {
+  "customCode": "unsupported_chain",
+  "message": "Chain 43111 not found",
+  "errorId": "a7257c64-b8c5-47f4-a2a3-74b7069d31f1"
+}; waiting 5 seconds before trying again (0 tries remaining)
+
+Submitting verification for [DistributionCreator] "0x3ba1fbC4c3aEA775d335b31fb53778f46FD3a330".
+Error: Failed to verify contract: Sourcify verification request for address (0x3ba1fbC4c3aEA775d335b31fb53778f46FD3a330) failed with status code 404 Not Found
+Details: {
+  "customCode": "unsupported_chain",
+  "message": "Chain 43111 not found",
+  "errorId": "66d075f0-40ee-4b3a-9d4c-2219e4996e10"
+}
+Start verifying contract `0x1a23b27aC7775B6220dC4F816b5c6A629E371f19` deployed on 43111
+EVM version: cancun
+Compiler version: 0.8.25
+Optimizations:    100
+Attempting to verify on Sourcify. Pass the --etherscan-api-key <API_KEY> to verify on Etherscan, or use the --verifier flag to verify on another provider.
+
+Submitting verification for [Distributor] "0x1a23b27aC7775B6220dC4F816b5c6A629E371f19".
+Warning: Sourcify verification request for address (0x1a23b27aC7775B6220dC4F816b5c6A629E371f19) failed with status code 404 Not Found
+Details: {
+  "customCode": "unsupported_chain",
+  "message": "Chain 43111 not found",
+  "errorId": "528cf46b-26d0-4123-90d6-8613867a8303"
+}; waiting 5 seconds before trying again (4 tries remaining)
+
+Submitting verification for [Distributor] "0x1a23b27aC7775B6220dC4F816b5c6A629E371f19".
+Warning: Sourcify verification request for address (0x1a23b27aC7775B6220dC4F816b5c6A629E371f19) failed with status code 404 Not Found
+Details: {
+  "customCode": "unsupported_chain",
+  "message": "Chain 43111 not found",
+  "errorId": "cb45a20b-58d7-4d5c-bb72-1d92bdffd732"
+}; waiting 5 seconds before trying again (3 tries remaining)
+
+Submitting verification for [Distributor] "0x1a23b27aC7775B6220dC4F816b5c6A629E371f19".
+Warning: Sourcify verification request for address (0x1a23b27aC7775B6220dC4F816b5c6A629E371f19) failed with status code 404 Not Found
+Details: {
+  "customCode": "unsupported_chain",
+  "message": "Chain 43111 not found",
+  "errorId": "bd2b0d1e-6766-4439-8067-5a81f9a41ebf"
+}; waiting 5 seconds before trying again (2 tries remaining)
+
+Submitting verification for [Distributor] "0x1a23b27aC7775B6220dC4F816b5c6A629E371f19".
+Warning: Sourcify verification request for address (0x1a23b27aC7775B6220dC4F816b5c6A629E371f19) failed with status code 404 Not Found
+Details: {
+  "customCode": "unsupported_chain",
+  "message": "Chain 43111 not found",
+  "errorId": "8a20fc53-b581-446b-87bc-a2200eea340a"
+}; waiting 5 seconds before trying again (1 tries remaining)
+
+Submitting verification for [Distributor] "0x1a23b27aC7775B6220dC4F816b5c6A629E371f19".
+Warning: Sourcify verification request for address (0x1a23b27aC7775B6220dC4F816b5c6A629E371f19) failed with status code 404 Not Found
+Details: {
+  "customCode": "unsupported_chain",
+  "message": "Chain 43111 not found",
+  "errorId": "8c812285-36e0-4e3e-b620-0e53cc592738"
+}; waiting 5 seconds before trying again (0 tries remaining)
+
+Submitting verification for [Distributor] "0x1a23b27aC7775B6220dC4F816b5c6A629E371f19".
+Error: Failed to verify contract: Sourcify verification request for address (0x1a23b27aC7775B6220dC4F816b5c6A629E371f19) failed with status code 404 Not Found
+Details: {
+  "customCode": "unsupported_chain",
+  "message": "Chain 43111 not found",
+  "errorId": "eb28cb96-bb58-4e7d-811b-0e2197c71833"
+}
+
+Transactions saved to: /Users/pabloveyrat/Documents/Angle/Dev/merkl-contracts/broadcast/deployUpgradeImplementationsSingle.s.sol/43111/run-latest.json
+
+Sensitive values saved to: /Users/pabloveyrat/Documents/Angle/Dev/merkl-contracts/cache-forge/deployUpgradeImplementationsSingle.s.sol/43111/run-latest.json
+
+Error: Not all (0 / 2) contracts were verified!

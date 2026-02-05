@@ -49,6 +49,13 @@ contract Deploy is DistributionCreatorScript {
 
         // Initialize
         DistributionCreator(address(proxy)).initialize(IAccessControlManager(accessControlManager), distributor, defaultFees);
+
+        // Read and log the implementation address from the proxy to avoid hijack attacks
+        // ERC1967 implementation slot: keccak256("eip1967.proxy.implementation") - 1
+        bytes32 implSlot = bytes32(uint256(keccak256("eip1967.proxy.implementation")) - 1);
+        address storedImplementation = address(uint160(uint256(vm.load(address(proxy), implSlot))));
+        console.log("Proxy Implementation (verified):", storedImplementation);
+        require(storedImplementation == address(implementation), "Implementation mismatch - possible hijack attack");
     }
 }
 

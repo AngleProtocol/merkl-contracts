@@ -1,0 +1,7 @@
+Warning: This is a nightly build of Foundry. It is recommended to use the latest stable version. To mute this warning set `FOUNDRY_DISABLE_NIGHTLY_WARNING` in your environment. 
+
+No files changed, compilation skipped
+Error: could not instantiate forked environment with provider sagaevm-archive.jsonrpc.sagarpc.io
+
+Context:
+- server returned an error response: error code -32000: rpc error: code = Unknown desc = codespace sdk code 26: invalid height: context did not contain latest block height in either check state or finalize block state (6593800)

@@ -1,0 +1,10 @@
+{
+  "_note": "Upgrade implementation deployment",
+  "chainId": 5064014,
+  "chainName": "ethereal",
+  "deployer": "0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701",
+  "distributionCreatorImplementation": "0x5F5de6338Bc78cB528e08ef6a8328956e5a68C5C",
+  "distributorImplementation": "0x5ba1FfB3585CC2389dC4EE010F36C81f3c83a078",
+  "status": "SUCCESS",
+  "timestamp": 1769508543
+}

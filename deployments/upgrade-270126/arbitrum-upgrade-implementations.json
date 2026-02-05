@@ -1,0 +1,10 @@
+{
+  "_note": "Upgrade implementation deployment",
+  "chainId": 42161,
+  "chainName": "arbitrum",
+  "deployer": "0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701",
+  "distributionCreatorImplementation": "0x03c7D5C55920Be7F641328aCdE652227B10b2968",
+  "distributorImplementation": "0xF3Ec8c6a306fB010ED8AE693A21481F639aa5119",
+  "status": "SUCCESS",
+  "timestamp": 1769506692
+}

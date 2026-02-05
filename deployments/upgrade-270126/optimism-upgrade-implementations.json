@@ -1,0 +1,10 @@
+{
+  "_note": "Upgrade implementation deployment",
+  "chainId": 10,
+  "chainName": "optimism",
+  "deployer": "0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701",
+  "distributionCreatorImplementation": "0x8fe0Eb54bD1CD9Cd32646Bee130D4A147b93B299",
+  "distributorImplementation": "0x10fb9a037a68D60730FB7FC2FE77BF8495223094",
+  "status": "SUCCESS",
+  "timestamp": 1769505025
+}

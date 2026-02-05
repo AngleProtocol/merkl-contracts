@@ -1,0 +1,10 @@
+{
+  "_note": "Upgrade implementation deployment",
+  "chainId": 196,
+  "chainName": "xlayer",
+  "deployer": "0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701",
+  "distributionCreatorImplementation": "0xA87D4F27F49D335ab1deEe6b9c43404414Bee214",
+  "distributorImplementation": "0xE23F6bEf0Abdd3C23B609e86d9fa5b3bF81CD25E",
+  "status": "SUCCESS",
+  "timestamp": 1769505384
+}

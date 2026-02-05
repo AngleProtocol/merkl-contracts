@@ -1,0 +1,78 @@
+Warning: This is a nightly build of Foundry. It is recommended to use the latest stable version. To mute this warning set `FOUNDRY_DISABLE_NIGHTLY_WARNING` in your environment. 
+
+No files changed, compilation skipped
+Script ran successfully.
+
+== Logs ==
+  ==========================================================
+  Deploying Upgrade Implementations
+  ==========================================================
+  Chain ID: 10
+  Deployer: 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701
+  
+  Deploying DistributionCreator implementation...
+  DistributionCreator Implementation: 0x8fe0Eb54bD1CD9Cd32646Bee130D4A147b93B299
+  Deploying Distributor implementation...
+  Distributor Implementation: 0x10fb9a037a68D60730FB7FC2FE77BF8495223094
+  Deployment data saved to: ./deployments/optimism-upgrade-implementations.json
+  
+  ==========================================================
+  Deployment Complete!
+  ==========================================================
+  Deployment file saved to: ./deployments/optimism-upgrade-implementations.json
+  
+  Next steps:
+  1. Verify the implementations on block explorer if not auto-verified
+  2. Use these addresses to create Gnosis Safe upgrade transactions
+  ==========================================================
+
+SKIPPING ON CHAIN SIMULATION.
+
+
+==========================
+
+ONCHAIN EXECUTION COMPLETE & SUCCESSFUL.
+##
+Start verification for (2) contracts
+Start verifying contract `0x8fe0Eb54bD1CD9Cd32646Bee130D4A147b93B299` deployed on optimism
+EVM version: cancun
+Compiler version: 0.8.25
+Optimizations:    100
+
+Submitting verification for [contracts/DistributionCreator.sol:DistributionCreator] 0x8fe0Eb54bD1CD9Cd32646Bee130D4A147b93B299.
+Submitted contract for verification:
+	Response: `OK`
+	GUID: `h3ynhewt4pfyq3m8zmr1apn4ceai6mkss9dy7fb2atpfrdqux7`
+	URL: https://optimistic.etherscan.io/address/0x8fe0eb54bd1cd9cd32646bee130d4a147b93b299
+Contract verification status:
+Response: `NOTOK`
+Details: `Pending in queue`
+Warning: Verification is still pending...; waiting 15 seconds before trying again (7 tries remaining)
+Contract verification status:
+Response: `OK`
+Details: `Pass - Verified`
+Contract successfully verified
+Start verifying contract `0x10fb9a037a68D60730FB7FC2FE77BF8495223094` deployed on optimism
+EVM version: cancun
+Compiler version: 0.8.25
+Optimizations:    100
+
+Submitting verification for [contracts/Distributor.sol:Distributor] 0x10fb9a037a68D60730FB7FC2FE77BF8495223094.
+Submitted contract for verification:
+	Response: `OK`
+	GUID: `3rfphtgvbtebmgepggpn1tlpqhahczp7lzktd3rkibw8pz7y2u`
+	URL: https://optimistic.etherscan.io/address/0x10fb9a037a68d60730fb7fc2fe77bf8495223094
+Contract verification status:
+Response: `NOTOK`
+Details: `Pending in queue`
+Warning: Verification is still pending...; waiting 15 seconds before trying again (7 tries remaining)
+Contract verification status:
+Response: `OK`
+Details: `Pass - Verified`
+Contract successfully verified
+All (2) contracts were verified!
+
+Transactions saved to: /Users/pabloveyrat/Documents/Angle/Dev/merkl-contracts/broadcast/deployUpgradeImplementationsSingle.s.sol/10/run-latest.json
+
+Sensitive values saved to: /Users/pabloveyrat/Documents/Angle/Dev/merkl-contracts/cache-forge/deployUpgradeImplementationsSingle.s.sol/10/run-latest.json
+

@@ -72,7 +72,6 @@ jobs:
         run: bun foundry:test
         env:
           FOUNDRY_FUZZ_RUNS: '5000'
-          OPTIMISM_NODE_URI: ${{ secrets.ETH_NODE_URI_OPTIMISM }}
           ARBITRUM_NODE_URI: ${{ secrets.ETH_NODE_URI_ARBITRUM }}
           BASE_NODE_URI: ${{ secrets.ETH_NODE_URI_MAINNET }}
 

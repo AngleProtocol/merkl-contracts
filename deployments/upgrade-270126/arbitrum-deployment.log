@@ -1,0 +1,69 @@
+Warning: This is a nightly build of Foundry. It is recommended to use the latest stable version. To mute this warning set `FOUNDRY_DISABLE_NIGHTLY_WARNING` in your environment. 
+
+No files changed, compilation skipped
+Script ran successfully.
+
+== Logs ==
+  ==========================================================
+  Deploying Upgrade Implementations
+  ==========================================================
+  Chain ID: 42161
+  Deployer: 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701
+  
+  Deploying DistributionCreator implementation...
+  DistributionCreator Implementation: 0x03c7D5C55920Be7F641328aCdE652227B10b2968
+  Deploying Distributor implementation...
+  Distributor Implementation: 0xF3Ec8c6a306fB010ED8AE693A21481F639aa5119
+  Deployment data saved to: ./deployments/arbitrum-upgrade-implementations.json
+  
+  ==========================================================
+  Deployment Complete!
+  ==========================================================
+  Deployment file saved to: ./deployments/arbitrum-upgrade-implementations.json
+  
+  Next steps:
+  1. Verify the implementations on block explorer if not auto-verified
+  2. Use these addresses to create Gnosis Safe upgrade transactions
+  ==========================================================
+
+SKIPPING ON CHAIN SIMULATION.
+
+
+==========================
+
+ONCHAIN EXECUTION COMPLETE & SUCCESSFUL.
+##
+Start verification for (2) contracts
+Start verifying contract `0x03c7D5C55920Be7F641328aCdE652227B10b2968` deployed on arbitrum
+EVM version: cancun
+Compiler version: 0.8.25
+Optimizations:    100
+
+Submitting verification for [contracts/DistributionCreator.sol:DistributionCreator] 0x03c7D5C55920Be7F641328aCdE652227B10b2968.
+Submitted contract for verification:
+	Response: `OK`
+	GUID: `mynknb9eig3ejpevqbat6ux932sv8virddct5hpk5dqxnekkeb`
+	URL: https://arbiscan.io/address/0x03c7d5c55920be7f641328acde652227b10b2968
+Contract verification status:
+Response: `NOTOK`
+Details: `Pending in queue`
+Warning: Verification is still pending...; waiting 15 seconds before trying again (7 tries remaining)
+Contract verification status:
+Response: `NOTOK`
+Details: `Other Exception - Please contact us for more information.`
+Error: Failed to verify contract: Checking verification result failed; Contract verification failed:
+Status: `0`
+Result: `Other Exception - Please contact us for more information.`
+Start verifying contract `0xF3Ec8c6a306fB010ED8AE693A21481F639aa5119` deployed on arbitrum
+EVM version: cancun
+Compiler version: 0.8.25
+Optimizations:    100
+
+Submitting verification for [contracts/Distributor.sol:Distributor] 0xF3Ec8c6a306fB010ED8AE693A21481F639aa5119.
+Contract source code already verified
+
+Transactions saved to: /Users/pabloveyrat/Documents/Angle/Dev/merkl-contracts/broadcast/deployUpgradeImplementationsSingle.s.sol/42161/run-latest.json
+
+Sensitive values saved to: /Users/pabloveyrat/Documents/Angle/Dev/merkl-contracts/cache-forge/deployUpgradeImplementationsSingle.s.sol/42161/run-latest.json
+
+Error: Not all (1 / 2) contracts were verified!

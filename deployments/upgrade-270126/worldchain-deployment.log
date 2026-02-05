@@ -1,0 +1,78 @@
+Warning: This is a nightly build of Foundry. It is recommended to use the latest stable version. To mute this warning set `FOUNDRY_DISABLE_NIGHTLY_WARNING` in your environment. 
+
+No files changed, compilation skipped
+Script ran successfully.
+
+== Logs ==
+  ==========================================================
+  Deploying Upgrade Implementations
+  ==========================================================
+  Chain ID: 480
+  Deployer: 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701
+  
+  Deploying DistributionCreator implementation...
+  DistributionCreator Implementation: 0x3ba1fbC4c3aEA775d335b31fb53778f46FD3a330
+  Deploying Distributor implementation...
+  Distributor Implementation: 0x1a23b27aC7775B6220dC4F816b5c6A629E371f19
+  Deployment data saved to: ./deployments/worldchain-upgrade-implementations.json
+  
+  ==========================================================
+  Deployment Complete!
+  ==========================================================
+  Deployment file saved to: ./deployments/worldchain-upgrade-implementations.json
+  
+  Next steps:
+  1. Verify the implementations on block explorer if not auto-verified
+  2. Use these addresses to create Gnosis Safe upgrade transactions
+  ==========================================================
+
+SKIPPING ON CHAIN SIMULATION.
+
+
+==========================
+
+ONCHAIN EXECUTION COMPLETE & SUCCESSFUL.
+##
+Start verification for (2) contracts
+Start verifying contract `0x3ba1fbC4c3aEA775d335b31fb53778f46FD3a330` deployed on world
+EVM version: cancun
+Compiler version: 0.8.25
+Optimizations:    100
+
+Submitting verification for [contracts/DistributionCreator.sol:DistributionCreator] 0x3ba1fbC4c3aEA775d335b31fb53778f46FD3a330.
+Submitted contract for verification:
+	Response: `OK`
+	GUID: `nh2y8qkfqgayau8kj1cwrhuhtzn1ddysbhx6m2fnkgvbqp6guj`
+	URL: https://worldscan.org/address/0x3ba1fbc4c3aea775d335b31fb53778f46fd3a330
+Contract verification status:
+Response: `NOTOK`
+Details: `Pending in queue`
+Warning: Verification is still pending...; waiting 15 seconds before trying again (7 tries remaining)
+Contract verification status:
+Response: `OK`
+Details: `Pass - Verified`
+Contract successfully verified
+Start verifying contract `0x1a23b27aC7775B6220dC4F816b5c6A629E371f19` deployed on world
+EVM version: cancun
+Compiler version: 0.8.25
+Optimizations:    100
+
+Submitting verification for [contracts/Distributor.sol:Distributor] 0x1a23b27aC7775B6220dC4F816b5c6A629E371f19.
+Submitted contract for verification:
+	Response: `OK`
+	GUID: `fzr5ufnjfacjdl88miw3ziknbaciiwu8ytyy17niitn5c24kug`
+	URL: https://worldscan.org/address/0x1a23b27ac7775b6220dc4f816b5c6a629e371f19
+Contract verification status:
+Response: `NOTOK`
+Details: `Pending in queue`
+Warning: Verification is still pending...; waiting 15 seconds before trying again (7 tries remaining)
+Contract verification status:
+Response: `OK`
+Details: `Pass - Verified`
+Contract successfully verified
+All (2) contracts were verified!
+
+Transactions saved to: /Users/pabloveyrat/Documents/Angle/Dev/merkl-contracts/broadcast/deployUpgradeImplementationsSingle.s.sol/480/run-latest.json
+
+Sensitive values saved to: /Users/pabloveyrat/Documents/Angle/Dev/merkl-contracts/cache-forge/deployUpgradeImplementationsSingle.s.sol/480/run-latest.json
+

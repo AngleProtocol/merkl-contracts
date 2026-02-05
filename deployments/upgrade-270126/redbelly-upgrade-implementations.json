@@ -1,0 +1,10 @@
+{
+  "_note": "Upgrade implementation deployment",
+  "chainId": 151,
+  "chainName": "redbelly",
+  "deployer": "0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701",
+  "distributionCreatorImplementation": "0x028e1f0DB25DAF4ce8C895215deAfbCE7A873b24",
+  "distributorImplementation": "0xc3ef7ed4F97450Ae8dA2473068375788BdeB5c5c",
+  "status": "SUCCESS",
+  "timestamp": 1769525280
+}

@@ -1,0 +1,114 @@
+Warning: This is a nightly build of Foundry. It is recommended to use the latest stable version. To mute this warning set `FOUNDRY_DISABLE_NIGHTLY_WARNING` in your environment. 
+
+No files changed, compilation skipped
+[2m2026-01-27T09:27:35.362872Z[0m [31mERROR[0m [2metherscan[0m[2m:[0m Failed to deserialize response: data did not match any variant of untagged enum ResponseData [3mres[0m[2m=[0m"{\"message\":\"OK\",\"result\":[{\"Address\":\"0x000000000000000000636f6e736f6c652e6c6f67\"}],\"status\":\"1\"}"
+[2m2026-01-27T09:27:35.362972Z[0m [31mERROR[0m [2metherscan[0m[2m:[0m Failed to deserialize response: data did not match any variant of untagged enum ResponseData [3mres[0m[2m=[0m"{\"message\":\"OK\",\"result\":[{\"Address\":\"0x000000000000000000636f6e736f6c652e6c6f67\"}],\"status\":\"1\"}"
+[2m2026-01-27T09:27:35.363002Z[0m [31mERROR[0m [2metherscan[0m[2m:[0m Failed to deserialize response: data did not match any variant of untagged enum ResponseData [3mres[0m[2m=[0m"{\"message\":\"OK\",\"result\":[{\"Address\":\"0x000000000000000000636f6e736f6c652e6c6f67\"}],\"status\":\"1\"}"
+[2m2026-01-27T09:27:35.363681Z[0m [31mERROR[0m [2metherscan[0m[2m:[0m Failed to deserialize response: data did not match any variant of untagged enum ResponseData [3mres[0m[2m=[0m"{\"message\":\"OK\",\"result\":[{\"Address\":\"0x000000000000000000636f6e736f6c652e6c6f67\"}],\"status\":\"1\"}"
+[2m2026-01-27T09:27:35.369050Z[0m [31mERROR[0m [2metherscan[0m[2m:[0m Failed to deserialize response: data did not match any variant of untagged enum ResponseData [3mres[0m[2m=[0m"{\"message\":\"OK\",\"result\":[{\"Address\":\"0x000000000000000000636f6e736f6c652e6c6f67\"}],\"status\":\"1\"}"
+[2m2026-01-27T09:27:35.411735Z[0m [31mERROR[0m [2metherscan[0m[2m:[0m Failed to deserialize response: data did not match any variant of untagged enum ResponseData [3mres[0m[2m=[0m"{\"message\":\"OK\",\"result\":[{\"Address\":\"0x000000000000000000636f6e736f6c652e6c6f67\"}],\"status\":\"1\"}"
+[2m2026-01-27T09:27:35.414815Z[0m [31mERROR[0m [2metherscan[0m[2m:[0m Failed to deserialize response: data did not match any variant of untagged enum ResponseData [3mres[0m[2m=[0m"{\"message\":\"OK\",\"result\":[{\"Address\":\"0x000000000000000000636f6e736f6c652e6c6f67\"}],\"status\":\"1\"}"
+[2m2026-01-27T09:27:35.419045Z[0m [31mERROR[0m [2metherscan[0m[2m:[0m Failed to deserialize response: data did not match any variant of untagged enum ResponseData [3mres[0m[2m=[0m"{\"message\":\"OK\",\"result\":[{\"Address\":\"0x000000000000000000636f6e736f6c652e6c6f67\"}],\"status\":\"1\"}"
+[2m2026-01-27T09:27:35.419073Z[0m [31mERROR[0m [2metherscan[0m[2m:[0m Failed to deserialize response: data did not match any variant of untagged enum ResponseData [3mres[0m[2m=[0m"{\"message\":\"OK\",\"result\":[{\"Address\":\"0x000000000000000000636f6e736f6c652e6c6f67\"}],\"status\":\"1\"}"
+[2m2026-01-27T09:27:35.439737Z[0m [31mERROR[0m [2metherscan[0m[2m:[0m Failed to deserialize response: data did not match any variant of untagged enum ResponseData [3mres[0m[2m=[0m"{\"message\":\"OK\",\"result\":[{\"Address\":\"0x7109709ecfa91a80626ff3989d68f67f5b1dd12d\"}],\"status\":\"1\"}"
+[2m2026-01-27T09:27:35.443654Z[0m [31mERROR[0m [2metherscan[0m[2m:[0m Failed to deserialize response: data did not match any variant of untagged enum ResponseData [3mres[0m[2m=[0m"{\"message\":\"OK\",\"result\":[{\"Address\":\"0x7109709ecfa91a80626ff3989d68f67f5b1dd12d\"}],\"status\":\"1\"}"
+[2m2026-01-27T09:27:35.445054Z[0m [31mERROR[0m [2metherscan[0m[2m:[0m Failed to deserialize response: data did not match any variant of untagged enum ResponseData [3mres[0m[2m=[0m"{\"message\":\"OK\",\"result\":[{\"Address\":\"0x000000000000000000636f6e736f6c652e6c6f67\"}],\"status\":\"1\"}"
+[2m2026-01-27T09:27:35.445084Z[0m [31mERROR[0m [2metherscan[0m[2m:[0m Failed to deserialize response: data did not match any variant of untagged enum ResponseData [3mres[0m[2m=[0m"{\"message\":\"OK\",\"result\":[{\"Address\":\"0x7109709ecfa91a80626ff3989d68f67f5b1dd12d\"}],\"status\":\"1\"}"
+[2m2026-01-27T09:27:35.464366Z[0m [31mERROR[0m [2metherscan[0m[2m:[0m Failed to deserialize response: data did not match any variant of untagged enum ResponseData [3mres[0m[2m=[0m"{\"message\":\"OK\",\"result\":[{\"Address\":\"0x7109709ecfa91a80626ff3989d68f67f5b1dd12d\"}],\"status\":\"1\"}"
+[2m2026-01-27T09:27:35.471987Z[0m [31mERROR[0m [2metherscan[0m[2m:[0m Failed to deserialize response: data did not match any variant of untagged enum ResponseData [3mres[0m[2m=[0m"{\"message\":\"OK\",\"result\":[{\"Address\":\"0x7109709ecfa91a80626ff3989d68f67f5b1dd12d\"}],\"status\":\"1\"}"
+[2m2026-01-27T09:27:35.472013Z[0m [31mERROR[0m [2metherscan[0m[2m:[0m Failed to deserialize response: data did not match any variant of untagged enum ResponseData [3mres[0m[2m=[0m"{\"message\":\"OK\",\"result\":[{\"Address\":\"0x7109709ecfa91a80626ff3989d68f67f5b1dd12d\"}],\"status\":\"1\"}"
+[2m2026-01-27T09:27:35.472032Z[0m [31mERROR[0m [2metherscan[0m[2m:[0m Failed to deserialize response: data did not match any variant of untagged enum ResponseData [3mres[0m[2m=[0m"{\"message\":\"OK\",\"result\":[{\"Address\":\"0x7109709ecfa91a80626ff3989d68f67f5b1dd12d\"}],\"status\":\"1\"}"
+[2m2026-01-27T09:27:35.477134Z[0m [31mERROR[0m [2metherscan[0m[2m:[0m Failed to deserialize response: data did not match any variant of untagged enum ResponseData [3mres[0m[2m=[0m"{\"message\":\"OK\",\"result\":[{\"Address\":\"0x000000000000000000636f6e736f6c652e6c6f67\"}],\"status\":\"1\"}"
+[2m2026-01-27T09:27:35.496367Z[0m [31mERROR[0m [2metherscan[0m[2m:[0m Failed to deserialize response: data did not match any variant of untagged enum ResponseData [3mres[0m[2m=[0m"{\"message\":\"OK\",\"result\":[{\"Address\":\"0x7109709ecfa91a80626ff3989d68f67f5b1dd12d\"}],\"status\":\"1\"}"
+[2m2026-01-27T09:27:35.497766Z[0m [31mERROR[0m [2metherscan[0m[2m:[0m Failed to deserialize response: data did not match any variant of untagged enum ResponseData [3mres[0m[2m=[0m"{\"message\":\"OK\",\"result\":[{\"Address\":\"0x7109709ecfa91a80626ff3989d68f67f5b1dd12d\"}],\"status\":\"1\"}"
+[2m2026-01-27T09:27:35.497819Z[0m [31mERROR[0m [2metherscan[0m[2m:[0m Failed to deserialize response: data did not match any variant of untagged enum ResponseData [3mres[0m[2m=[0m"{\"message\":\"OK\",\"result\":[{\"Address\":\"0x7109709ecfa91a80626ff3989d68f67f5b1dd12d\"}],\"status\":\"1\"}"
+[2m2026-01-27T09:27:35.499682Z[0m [31mERROR[0m [2metherscan[0m[2m:[0m Failed to deserialize response: data did not match any variant of untagged enum ResponseData [3mres[0m[2m=[0m"{\"message\":\"OK\",\"result\":[{\"Address\":\"0x954ec713a3915b504a6f288563e5218f597e1895\"}],\"status\":\"1\"}"
+[2m2026-01-27T09:27:35.518433Z[0m [31mERROR[0m [2metherscan[0m[2m:[0m Failed to deserialize response: data did not match any variant of untagged enum ResponseData [3mres[0m[2m=[0m"{\"message\":\"OK\",\"result\":[{\"Address\":\"0x000000000000000000636f6e736f6c652e6c6f67\"}],\"status\":\"1\"}"
+[2m2026-01-27T09:27:35.521937Z[0m [31mERROR[0m [2metherscan[0m[2m:[0m Failed to deserialize response: data did not match any variant of untagged enum ResponseData [3mres[0m[2m=[0m"{\"message\":\"OK\",\"result\":[{\"Address\":\"0xc3ef7ed4f97450ae8da2473068375788bdeb5c5c\"}],\"status\":\"1\"}"
+[2m2026-01-27T09:27:35.546632Z[0m [31mERROR[0m [2metherscan[0m[2m:[0m Failed to deserialize response: data did not match any variant of untagged enum ResponseData [3mres[0m[2m=[0m"{\"message\":\"OK\",\"result\":[{\"Address\":\"0x7109709ecfa91a80626ff3989d68f67f5b1dd12d\"}],\"status\":\"1\"}"
+[2m2026-01-27T09:27:35.562650Z[0m [31mERROR[0m [2metherscan[0m[2m:[0m Failed to deserialize response: data did not match any variant of untagged enum ResponseData [3mres[0m[2m=[0m"{\"message\":\"OK\",\"result\":[{\"Address\":\"0x000000000000000000636f6e736f6c652e6c6f67\"}],\"status\":\"1\"}"
+[2m2026-01-27T09:27:35.583200Z[0m [31mERROR[0m [2metherscan[0m[2m:[0m Failed to deserialize response: data did not match any variant of untagged enum ResponseData [3mres[0m[2m=[0m"{\"message\":\"OK\",\"result\":[{\"Address\":\"0x000000000000000000636f6e736f6c652e6c6f67\"}],\"status\":\"1\"}"
+[2m2026-01-27T09:27:35.639605Z[0m [31mERROR[0m [2metherscan[0m[2m:[0m Failed to deserialize response: data did not match any variant of untagged enum ResponseData [3mres[0m[2m=[0m"{\"message\":\"OK\",\"result\":[{\"Address\":\"0x000000000000000000636f6e736f6c652e6c6f67\"}],\"status\":\"1\"}"
+[2m2026-01-27T09:27:35.647378Z[0m [31mERROR[0m [2metherscan[0m[2m:[0m Failed to deserialize response: data did not match any variant of untagged enum ResponseData [3mres[0m[2m=[0m"{\"message\":\"OK\",\"result\":[{\"Address\":\"0x000000000000000000636f6e736f6c652e6c6f67\"}],\"status\":\"1\"}"
+[2m2026-01-27T09:27:35.661720Z[0m [31mERROR[0m [2metherscan[0m[2m:[0m Failed to deserialize response: data did not match any variant of untagged enum ResponseData [3mres[0m[2m=[0m"{\"message\":\"OK\",\"result\":[{\"Address\":\"0x000000000000000000636f6e736f6c652e6c6f67\"}],\"status\":\"1\"}"
+[2m2026-01-27T09:27:35.661781Z[0m [31mERROR[0m [2metherscan[0m[2m:[0m Failed to deserialize response: data did not match any variant of untagged enum ResponseData [3mres[0m[2m=[0m"{\"message\":\"OK\",\"result\":[{\"Address\":\"0x000000000000000000636f6e736f6c652e6c6f67\"}],\"status\":\"1\"}"
+[2m2026-01-27T09:27:35.662788Z[0m [31mERROR[0m [2metherscan[0m[2m:[0m Failed to deserialize response: data did not match any variant of untagged enum ResponseData [3mres[0m[2m=[0m"{\"message\":\"OK\",\"result\":[{\"Address\":\"0x000000000000000000636f6e736f6c652e6c6f67\"}],\"status\":\"1\"}"
+[2m2026-01-27T09:27:35.775473Z[0m [31mERROR[0m [2metherscan[0m[2m:[0m Failed to deserialize response: data did not match any variant of untagged enum ResponseData [3mres[0m[2m=[0m"{\"message\":\"OK\",\"result\":[{\"Address\":\"0x7109709ecfa91a80626ff3989d68f67f5b1dd12d\"}],\"status\":\"1\"}"
+[2m2026-01-27T09:27:35.775556Z[0m [31mERROR[0m [2metherscan[0m[2m:[0m Failed to deserialize response: data did not match any variant of untagged enum ResponseData [3mres[0m[2m=[0m"{\"message\":\"OK\",\"result\":[{\"Address\":\"0x000000000000000000636f6e736f6c652e6c6f67\"}],\"status\":\"1\"}"
+[2m2026-01-27T09:27:35.775593Z[0m [31mERROR[0m [2metherscan[0m[2m:[0m Failed to deserialize response: data did not match any variant of untagged enum ResponseData [3mres[0m[2m=[0m"{\"message\":\"OK\",\"result\":[{\"Address\":\"0x7109709ecfa91a80626ff3989d68f67f5b1dd12d\"}],\"status\":\"1\"}"
+[2m2026-01-27T09:27:35.775623Z[0m [31mERROR[0m [2metherscan[0m[2m:[0m Failed to deserialize response: data did not match any variant of untagged enum ResponseData [3mres[0m[2m=[0m"{\"message\":\"OK\",\"result\":[{\"Address\":\"0x000000000000000000636f6e736f6c652e6c6f67\"}],\"status\":\"1\"}"
+Script ran successfully.
+
+== Logs ==
+  ==========================================================
+  Deploying Upgrade Implementations
+  ==========================================================
+  Chain ID: 1868
+  Deployer: 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701
+  
+  Deploying DistributionCreator implementation...
+  DistributionCreator Implementation: 0xc3ef7ed4F97450Ae8dA2473068375788BdeB5c5c
+  Deploying Distributor implementation...
+  Distributor Implementation: 0x954eC713a3915B504a6F288563e5218F597e1895
+  Deployment data saved to: ./deployments/soneium-upgrade-implementations.json
+  
+  ==========================================================
+  Deployment Complete!
+  ==========================================================
+  Deployment file saved to: ./deployments/soneium-upgrade-implementations.json
+  
+  Next steps:
+  1. Verify the implementations on block explorer if not auto-verified
+  2. Use these addresses to create Gnosis Safe upgrade transactions
+  ==========================================================
+
+SKIPPING ON CHAIN SIMULATION.
+
+
+==========================
+
+ONCHAIN EXECUTION COMPLETE & SUCCESSFUL.
+##
+Start verification for (2) contracts
+Start verifying contract `0xc3ef7ed4F97450Ae8dA2473068375788BdeB5c5c` deployed on soneium
+EVM version: cancun
+Compiler version: 0.8.25
+Optimizations:    100
+
+Submitting verification for [contracts/DistributionCreator.sol:DistributionCreator] 0xc3ef7ed4F97450Ae8dA2473068375788BdeB5c5c.
+Submitted contract for verification:
+	Response: `OK`
+	GUID: `c3ef7ed4f97450ae8da2473068375788bdeb5c5c69788512`
+	URL: https://soneium.blockscout.com/address/0xc3ef7ed4f97450ae8da2473068375788bdeb5c5c
+Contract verification status:
+Response: `OK`
+Details: `Pending in queue`
+Warning: Verification is still pending...; waiting 15 seconds before trying again (7 tries remaining)
+Contract verification status:
+Response: `OK`
+Details: `Pass - Verified`
+Contract successfully verified
+Start verifying contract `0x954eC713a3915B504a6F288563e5218F597e1895` deployed on soneium
+EVM version: cancun
+Compiler version: 0.8.25
+Optimizations:    100
+
+Submitting verification for [contracts/Distributor.sol:Distributor] 0x954eC713a3915B504a6F288563e5218F597e1895.
+Submitted contract for verification:
+	Response: `OK`
+	GUID: `954ec713a3915b504a6f288563e5218f597e189569788522`
+	URL: https://soneium.blockscout.com/address/0x954ec713a3915b504a6f288563e5218f597e1895
+Contract verification status:
+Response: `OK`
+Details: `Pending in queue`
+Warning: Verification is still pending...; waiting 15 seconds before trying again (7 tries remaining)
+Contract verification status:
+Response: `OK`
+Details: `Pass - Verified`
+Contract successfully verified
+All (2) contracts were verified!
+
+Transactions saved to: /Users/pabloveyrat/Documents/Angle/Dev/merkl-contracts/broadcast/deployUpgradeImplementationsSingle.s.sol/1868/run-latest.json
+
+Sensitive values saved to: /Users/pabloveyrat/Documents/Angle/Dev/merkl-contracts/cache-forge/deployUpgradeImplementationsSingle.s.sol/1868/run-latest.json
+

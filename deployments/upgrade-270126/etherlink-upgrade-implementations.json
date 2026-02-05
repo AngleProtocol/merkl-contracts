@@ -1,0 +1,10 @@
+{
+  "_note": "Upgrade implementation deployment",
+  "chainId": 42793,
+  "chainName": "etherlink",
+  "deployer": "0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701",
+  "distributionCreatorImplementation": "0x5cb65728FF2C5aB9ae109FF4B02565a34E18c712",
+  "distributorImplementation": "0xB3c974B47E135C79C93bad7003fF07ccC7BC80Ac",
+  "status": "SUCCESS",
+  "timestamp": 1769506781
+}

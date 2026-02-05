@@ -1,0 +1,67 @@
+Warning: This is a nightly build of Foundry. It is recommended to use the latest stable version. To mute this warning set `FOUNDRY_DISABLE_NIGHTLY_WARNING` in your environment. 
+
+No files changed, compilation skipped
+Script ran successfully.
+
+== Logs ==
+  ==========================================================
+  Deploying Upgrade Implementations
+  ==========================================================
+  Chain ID: 534352
+  Deployer: 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701
+  
+  Deploying DistributionCreator implementation...
+  DistributionCreator Implementation: 0xfF9c33EdFbaB41eF66d60190926375227759b9a1
+  Deploying Distributor implementation...
+  Distributor Implementation: 0x00096F5e2f6942Eab8f3db1b74AcF83ff48f55dD
+  Deployment data saved to: ./deployments/scroll-upgrade-implementations.json
+  
+  ==========================================================
+  Deployment Complete!
+  ==========================================================
+  Deployment file saved to: ./deployments/scroll-upgrade-implementations.json
+  
+  Next steps:
+  1. Verify the implementations on block explorer if not auto-verified
+  2. Use these addresses to create Gnosis Safe upgrade transactions
+  ==========================================================
+
+SKIPPING ON CHAIN SIMULATION.
+
+
+==========================
+
+ONCHAIN EXECUTION COMPLETE & SUCCESSFUL.
+##
+Start verification for (2) contracts
+Start verifying contract `0xfF9c33EdFbaB41eF66d60190926375227759b9a1` deployed on scroll
+EVM version: cancun
+Compiler version: 0.8.25
+Optimizations:    100
+
+Submitting verification for [contracts/DistributionCreator.sol:DistributionCreator] 0xfF9c33EdFbaB41eF66d60190926375227759b9a1.
+Submitted contract for verification:
+	Response: `OK`
+	GUID: `7sxr1j2dlhq1gv6iwk3uinv8txigbuasygucjxazb289rvqfkf`
+	URL: https://scrollscan.com/address/0xff9c33edfbab41ef66d60190926375227759b9a1
+Contract verification status:
+Response: `NOTOK`
+Details: `Pending in queue`
+Warning: Verification is still pending...; waiting 15 seconds before trying again (7 tries remaining)
+Contract verification status:
+Response: `OK`
+Details: `Pass - Verified`
+Contract successfully verified
+Start verifying contract `0x00096F5e2f6942Eab8f3db1b74AcF83ff48f55dD` deployed on scroll
+EVM version: cancun
+Compiler version: 0.8.25
+Optimizations:    100
+
+Submitting verification for [contracts/Distributor.sol:Distributor] 0x00096F5e2f6942Eab8f3db1b74AcF83ff48f55dD.
+Contract source code already verified
+All (2) contracts were verified!
+
+Transactions saved to: /Users/pabloveyrat/Documents/Angle/Dev/merkl-contracts/broadcast/deployUpgradeImplementationsSingle.s.sol/534352/run-latest.json
+
+Sensitive values saved to: /Users/pabloveyrat/Documents/Angle/Dev/merkl-contracts/cache-forge/deployUpgradeImplementationsSingle.s.sol/534352/run-latest.json
+

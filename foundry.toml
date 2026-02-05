@@ -10,7 +10,8 @@ gas_reports = ["*"]
 optimizer_runs = 100
 fs_permissions = [
   { access = "read", path = "./node_modules/@merkl/registry/dist/src/registry.json" }, 
-  { access = "write", path = "./transactions" }, 
+  { access = "write", path = "./transactions" },
+  { access = "write", path = "./deployments" },
 ]
 solc = "0.8.25"
 
@@ -43,127 +44,123 @@ runs = 500
 via_ir = false
 
 [rpc_endpoints]
-localhost = "${LOCALHOST_NODE_URI}"
-mainnet = "${MAINNET_NODE_URI}"
-polygon = "${POLYGON_NODE_URI}"
-fantom = "${FANTOM_NODE_URI}"
-optimism = "${OPTIMISM_NODE_URI}"
-arbitrum = "${ARBITRUM_NODE_URI}"
-avalanche = "${AVALANCHE_NODE_URI}"
-bsc = "${BSC_NODE_URI}"
-gnosis = "${GNOSIS_NODE_URI}"
-polygonzkevm = "${POLYGONZKEVM_NODE_URI}"
-base = "${BASE_NODE_URI}"
-bob = "${BOB_NODE_URI}"
-linea = "${LINEA_NODE_URI}"
-zksync = "${ZKSYNC_NODE_URI}"
-mantle = "${MANTLE_NODE_URI}"
-blast = "${BLAST_NODE_URI}"
-mode = "${MODE_NODE_URI}"
-thundercore = "${THUNDERCORE_NODE_URI}"
-coredao = "${COREDAO_NODE_URI}"
-xlayer = "${XLAYER_NODE_URI}"
-taiko = "${TAIKO_NODE_URI}"
-fuse = "${FUSE_NODE_URI}"
-immutable = "${IMMUTABLE_NODE_URI}"
-scroll = "${SCROLL_NODE_URI}"
-manta = "${MANTA_NODE_URI}"
-sei = "${SEI_NODE_URI}"
-celo = "${CELO_NODE_URI}"
-fraxtal = "${FRAXTAL_NODE_URI}"
-astar = "${ASTAR_NODE_URI}"
-rootstock = "${ROOTSTOCK_NODE_URI}"
-moonbeam = "${MOONBEAM_NODE_URI}"
-skale = "${SKALE_NODE_URI}"
-worldchain = "${WORLDCHAIN_NODE_URI}"
-lisk = "${LISK_NODE_URI}"
-etherlink = "${ETHERLINK_NODE_URI}"
-swell = "${SWELL_NODE_URI}"
-fork = "${FORK_NODE_URI}"
-sonic = "${SONIC_NODE_URI}"
-corn = "${CORN_NODE_URI}"
-ink = "${INK_NODE_URI}"
-ronin = "${RONIN_NODE_URI}"
-flow = "${FLOW_NODE_URI}"
-berachain = "${BERACHAIN_NODE_URI}"
-nibiru = "${NIBIRU_NODE_URI}"
-zircuit = "${ZIRCUIT_NODE_URI}"
-apechain = "${APECHAIN_NODE_URI}"
-hyperevm = "${HYPEREVM_NODE_URI}"
-hemi="${HEMI_NODE_URI}"
-xdc="${XDC_NODE_URI}"
-katana="${KATANA_NODE_URI}"
-tac="${TAC_NODE_URI}"
-plasma="${PLASMA_NODE_URI}"
-mezo="${MEZO_NODE_URI}"
-redbelly="${REDBELLY_NODE_URI}"
-saga="${SAGA_NODE_URI}"
-ethereal="${ETHEREAL_NODE_URI}"
-monad="${MONAD_NODE_URI}"
-megaeth="${MEGAETH_NODE_URI}"
-citrea="${CITREA_NODE_URI}"
-stable="${STABLE_NODE_URI}"
-plume="${PLUME_NODE_URI}"
+localhost = "http://127.0.0.1:8545"
+mainnet = "${ETH_NODE_URI_1}"
+optimism = "${ETH_NODE_URI_10}"
+rootstock = "${ETH_NODE_URI_30}"
+xdc="${ETH_NODE_URI_50}"
+bsc = "${ETH_NODE_URI_56}"
+gnosis = "${ETH_NODE_URI_100}"
+fuse = "${ETH_NODE_URI_122}"
+unichain= "${ETH_NODE_URI_130}"
+polygon = "${ETH_NODE_URI_137}"
+monad="${ETH_NODE_URI_143}"
+sonic = "${ETH_NODE_URI_146}"
+redbelly="${ETH_NODE_URI_151}"
+manta = "${ETH_NODE_URI_169}"
+xlayer = "${ETH_NODE_URI_196}"
+tac="${ETH_NODE_URI_239}"
+fraxtal = "${ETH_NODE_URI_252}"
+zksync = "${ETH_NODE_URI_324}"
+worldchain = "${ETH_NODE_URI_480}"
+astar = "${ETH_NODE_URI_592}"
+flow = "${ETH_NODE_URI_747}"
+hyperevm = "${ETH_NODE_URI_999}"
+stable="${ETH_NODE_URI_988}"
+lisk = "${ETH_NODE_URI_1135}"
+moonbeam = "${ETH_NODE_URI_1284}"
+sei = "${ETH_NODE_URI_1329}"
+soneium="${ETH_NODE_URI_1868}"
+swell = "${ETH_NODE_URI_1923}"
+ronin = "${ETH_NODE_URI_2020}"
+citrea= "${ETH_NODE_URI_4114}"
+megaeth="${ETH_NODE_URI_4326}"
+mantle = "${ETH_NODE_URI_5000}"
+saga="${ETH_NODE_URI_5464}"
+nibiru = "${ETH_NODE_URI_6900}"
+base = "${ETH_NODE_URI_8453}"
+plasma="${ETH_NODE_URI_9745}"
+immutable = "${ETH_NODE_URI_13371}"
+0g= "${ETH_NODE_URI_16661}"
+corn = "${ETH_NODE_URI_21000000}"
+mezo="${ETH_NODE_URI_31612}"
+apechain = "${ETH_NODE_URI_33139}"
+mode = "${ETH_NODE_URI_34443}"
+arbitrum = "${ETH_NODE_URI_42161}"
+celo = "${ETH_NODE_URI_42220}"
+etherlink = "${ETH_NODE_URI_42793}"
+hemi="${ETH_NODE_URI_43111}"
+avalanche = "${ETH_NODE_URI_43114}"
+zircuit = "${ETH_NODE_URI_48900}"
+ink = "${ETH_NODE_URI_57073}"
+linea = "${ETH_NODE_URI_59144}"
+bob = "${ETH_NODE_URI_60808}"
+berachain = "${ETH_NODE_URI_80094}"
+blast = "${ETH_NODE_URI_81457}"
+plume="${ETH_NODE_URI_98866}"
+taiko = "${ETH_NODE_URI_167000}"
+scroll = "${ETH_NODE_URI_534352}"
+katana="${ETH_NODE_URI_747474}"
+skale = "${ETH_NODE_URI_2046399126}"
+ethereal="${ETH_NODE_URI_5064014}"
 
 [etherscan]
 localhost = { url = "http://localhost:4000", key = "none" }
-mainnet = { chainId = 1, key = "${ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_1}" }
-polygon = { chainId = 137, key = "${ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_137}" }
-fantom = { chainId = 250, key = "${FANTOM_ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_250}" }
-optimism = { chainId = 10, key = "${ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_10}" }
-arbitrum = { chainId = 42161, key = "${ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_42161}" }
-avalanche = { chainId = 43114, key = "${AVALANCHE_ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_43114}" }
-bsc = { chainId = 56, key = "${ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_56}" }
-gnosis = { chainId = 100, key = "${ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_100}" }
-polygonzkevm = { chainId = 1101, key = "${POLYGONZKEVM_ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_1101}" }
-base = { chainId = 8453, key = "${ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_8453}" }
-bob = { chainId = 60808, key = "${BOB_ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_60808}" }
-linea = { chainId = 59144, key = "${ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_59144}" }
-zksync = { chainId = 324, key = "${ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_324}" }
-mantle = { chainId = 5000, key = "${MANTLE_ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_5000}" }
-blast = { chainId = 81457, key = "${ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_81457}" }
-mode = { chainId = 34443, key = "${MODE_ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_34443}" }
-thundercore = { chainId = 108, key = "${THUNDERCORE_ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_108}" }
-coredao = { chainId = 1116, key = "${COREDAO_ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_1116}" }
-xlayer = { chainId = 196, key = "${XLAYER_ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_196}" }
-taiko = { chainId = 167000, key = "${TAIKO_ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_167000}" }
-fuse = { chainId = 122, key = "${FUSE_ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_122}" }
-immutable = { chainId = 13371, key = "${IMMUTABLE_ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_13371}" }
-scroll = { chainId = 534352, key = "${ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_534352}" }
-manta = { chainId = 169, key = "${MANTA_ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_169}" }
-sei = { chainId = 1329, key = "${SEI_ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_1329}" }
-celo = { chainId = 42220, key = "${CELO_ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_42220}" }
-fraxtal = { chainId = 252, key = "${FRAXTAL_ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_252}" }
-astar = { chainId = 592, key = "${ASTAR_ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_592}" }
-rootstock = { chainId = 30, key = "${ROOTSTOCK_ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_30}" }
-moonbeam = { chainId = 1284, key = "${MOONBEAM_ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_1284}" }
-skale = { chainId = 2046399126, key = "${SKALE_ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_2046399126}" }
-worldchain = { chainId = 480, key = "${ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_480}" }
-lisk = { chainId = 1135, key = "${LISK_ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_1135}" }
-etherlink = { chainId = 42793, key = "${ETHERLINK_ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_42793}" }
-swell = { chainId = 1923, key = "${ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_1923}" }
-sonic = { chainId = 146, key = "${ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_146}" }
-corn = { chainId = 21000000, key = "${ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_21000000}" }
-ink = { chainId = 57073, key = "${INK_ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_57073}" }
-ronin = { chainId = 2020, key = "${RONIN_ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_2020}" }
-flow = { chainId = 747, key = "${FLOW_ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_747}" }
-berachain = { chainId = 80094, key = "${ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_80094}" }
-nibiru = { chainId = 6900, key = "${NIBIRU_ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_6900}" }
-zircuit = { chainId = 48900, key = "${ZIRCUIT_ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_48900}" }
-apechain = { chainId = 33139, key = "${APECHAIN_ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_33139}" }
-hyperevm = { chainId = 999, key = "${ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_999}" }
-hemi = { chainId = 43111, key = "${HEMI_ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_43111}" }
-xdc = { chainId = 50, key = "${XDC_ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_50}" }
-katana = {chainId = 747474, key = "${ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_747474}" }
-tac = {chainId = 239, key = "${TAC_ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_239}" }
-plasma = {chainId = 9745, key = "${PLASMA_ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_9745}" }
-mezo = {chainId = 31612, key = "${MEZO_ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_31612}" }
-redbelly = {chainId = 151, key = "${REDBELLY_ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_151}" } 
-saga = {chainId = 5464, key = "${SAGA_ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_5464}" }
-ethereal = {chainId = 5064014, key = "none", url = "${VERIFIER_URL_5064014}" } 
-monad = {chaindId = 143, key = "${MONAD_ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_143}" }
-megaeth = {chainId = 4326, key = "${MEGAETH_ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_4326}" }
-citrea = {chainId = 4114, key = "${CITREA_ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_4114}" }
-stable = {chaindId = 988, key = "${ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_988}" }
-plume = {chaindId = 98866, key = "${PLUME_ETHERSCAN_API_KEY}", url = "${VERIFIER_URL_98866}" }
- 
+mainnet = {chainId = 1, key = "${ETHERSCAN_API_KEY}", url = "https://api.etherscan.io/v2/api?chainid=1" }
+optimism = {chainId = 10, key = "${ETHERSCAN_API_KEY}", url = "https://api.etherscan.io/v2/api?chainid=10" }
+rootstock = {chainId = 30, key = "none", url = "https://rootstock.blockscout.com/api/" }
+xdc = {chainId = 50, key = "${ETHERSCAN_API_KEY}", url = "https://api.etherscan.io/v2/api?chainid=50" }
+bsc = {chainId = 56, key = "${ETHERSCAN_API_KEY}", url = "https://api.etherscan.io/v2/api?chainid=56" }
+gnosis = {chainId = 100, key = "${ETHERSCAN_API_KEY}", url = "https://api.etherscan.io/v2/api?chainid=100" }
+fuse = {chainId = 122, key = "none", url = "https://explorer.fuse.io/api" }
+unichain = {chainId = 130, key = "${ETHERSCAN_API_KEY}", url = "https://api.etherscan.io/v2/api?chainid=130" }
+polygon = {chainId = 137, key = "${ETHERSCAN_API_KEY}", url = "https://api.etherscan.io/v2/api?chainid=137" }
+monad = {chainId = 143, key = "${ETHERSCAN_API_KEY}", url = "https://api.etherscan.io/v2/api?chainid=143" }
+sonic = {chainId = 146, key = "${ETHERSCAN_API_KEY}", url = "https://api.etherscan.io/v2/api?chainid=146" }
+redbelly = {chainId = 151, key = "none", url = "https://api.routescan.io/v2/network/mainnet/evm/151/etherscan" }
+manta = {chainId = 169, key = "none", url = "https://api.socialscan.io/manta/v1/explorer/command_api/contract" }
+xlayer = {chainId = 196, key = "none", url = "https://www.oklink.com/api/v5/explorer/contract/verify-source-code-plugin/XLAYER" }
+tac = {chainId = 239, key = "none", url = "https://explorer.tac.build/api" }
+fraxtal = {chainId = 252, key = "${ETHERSCAN_API_KEY}", url = "https://api.etherscan.io/v2/api?chainid=252" }
+zksync = {chainId = 324, key = "${ETHERSCAN_API_KEY}", url = "https://api.etherscan.io/v2/api?chainid=324" }
+worldchain = {chainId = 480, key = "${ETHERSCAN_API_KEY}", url = "https://api.etherscan.io/v2/api?chainid=480" }
+astar = {chainId = 592, key = "none", url = "https://astar.blockscout.com/api/" }
+flow = {chainId = 747, key = "none", url = "https://api.flowscan.io/api" }
+stable = {chainId = 988, key = "${ETHERSCAN_API_KEY}", url = "https://api.etherscan.io/v2/api?chainid=988" }
+hyperevm = {chainId = 999, key = "${ETHERSCAN_API_KEY}", url = "https://api.etherscan.io/v2/api?chainid=999" }
+lisk = {chainId = 1135, key = "none", url = "https://blockscout.lisk.com/api/" }
+moonbeam = {chainId = 1284, key = "${ETHERSCAN_API_KEY}", url = "https://api.etherscan.io/v2/api?chainid=1284" }
+sei = {chainId = 1329, key = "${ETHERSCAN_API_KEY}", url = "https://api.etherscan.io/v2/api?chainid=1329" }
+soneium = {chainId = 1868, key = "none", url = "https://soneium.blockscout.com/api" }
+swell = {chainId = 1923, key = "none", url = "https://explorer.swellnetwork.io:443/api/" }
+ronin = {chainId = 2020, key = "none", url = "https://sourcify.roninchain.com/server/" }
+citrea = {chainId = 4114, key = "none", url = "https://explorer.mainnet.citrea.xyz/api" }
+megaeth = {chainId = 4326, key = "${ETHERSCAN_API_KEY}", url = "https://api.etherscan.io/v2/api?chainid=4326" }
+mantle = {chainId = 5000, key = "none", url = "https://explorer.mantle.xyz/api/" }
+saga = {chainId = 5464, key = "none", url = "https://sagaevm.sagaexplorer.io/api" }
+nibiru = {chainId = 6900, key = "none", url = "https://api.routescan.io/v2/network/mainnet/evm/6900/etherscan" }
+base = {chainId = 8453, key = "${ETHERSCAN_API_KEY}", url = "https://api.etherscan.io/v2/api?chainid=8453" }
+plasma = {chainId = 9745, key = "${ETHERSCAN_API_KEY}", url = "https://api.etherscan.io/v2/api?chainid=9745" }
+immutable = {chainId = 13371, key = "none", url = "https://immutable-mainnet.blockscout.com/api" }
+0g = {chainId = 16661, key = "none", url = "https://chainscan-galileo.0g.ai/" }
+corn = {chainId = 21000000, key = "none", url = "https://api.routescan.io/v2/network/mainnet/evm/21000000/etherscan" }
+mezo = {chainId = 31612, key = "none", url = "https://explorer.mezo.org/api" }
+apechain = {chainId = 33139, key = "${ETHERSCAN_API_KEY}", url = "https://api.etherscan.io/v2/api?chainid=33139" }
+mode = {chainId = 34443, key = "none", url = "https://api.routescan.io/v2/network/mainnet/evm/34443/etherscan" }
+arbitrum = {chainId = 42161, key = "${ETHERSCAN_API_KEY}", url = "https://api.etherscan.io/v2/api?chainid=42161" }
+celo = {chainId = 42220, key = "${ETHERSCAN_API_KEY}", url = "https://api.etherscan.io/v2/api?chainid=42220" }
+etherlink = {chainId = 42793, key = "none", url = "https://explorer.etherlink.com/api" }
+hemi = {chainId = 43111, key = "none", url = "https://explorer.hemi.xyz/api" }
+avalanche = {chainId = 43114, key = "none", url = "https://api.routescan.io/v2/network/mainnet/evm/43114/etherscan" }
+zircuit = {chainId = 48900, key = "none", url = "https://explorer.zircuit.com/" }
+ink = {chainId = 57073, key = "none", url = "https://explorer.inkonchain.com/api" }
+linea = {chainId = 59144, key = "${ETHERSCAN_API_KEY}", url = "https://api.etherscan.io/v2/api?chainid=59144" }
+bob = {chainId = 60808, key = "none", url = "https://explorer.gobob.xyz/api" }
+berachain = {chainId = 80094, key = "${ETHERSCAN_API_KEY}", url = "https://api.etherscan.io/v2/api?chainid=80094" }
+blast = {chainId = 81457, key = "${ETHERSCAN_API_KEY}", url = "https://api.etherscan.io/v2/api?chainid=81457" }
+plume = {chainId = 98866, key = "none", url = "https://explorer.plume.org/api" }
+taiko = {chainId = 167000, key = "${ETHERSCAN_API_KEY}", url = "https://api.etherscan.io/v2/api?chainid=167000" }
+scroll = {chainId = 534352, key = "${ETHERSCAN_API_KEY}", url = "https://api.etherscan.io/v2/api?chainid=534352" }
+katana = {chainId = 747474, key = "${ETHERSCAN_API_KEY}", url = "https://api.etherscan.io/v2/api?chainid=747474" }
+skale = {chainId = 2046399126, key = "none", url = "https://internal-hubs.explorer.mainnet.skalenodes.com:10001/api" }
+ethereal = {chainId = 5064014, key = "none", url = "https://explorer.ethereal.trade/api" }

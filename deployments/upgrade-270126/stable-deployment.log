@@ -1,0 +1,78 @@
+Warning: This is a nightly build of Foundry. It is recommended to use the latest stable version. To mute this warning set `FOUNDRY_DISABLE_NIGHTLY_WARNING` in your environment. 
+
+No files changed, compilation skipped
+Script ran successfully.
+
+== Logs ==
+  ==========================================================
+  Deploying Upgrade Implementations
+  ==========================================================
+  Chain ID: 988
+  Deployer: 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701
+  
+  Deploying DistributionCreator implementation...
+  DistributionCreator Implementation: 0xc3ef7ed4F97450Ae8dA2473068375788BdeB5c5c
+  Deploying Distributor implementation...
+  Distributor Implementation: 0x954eC713a3915B504a6F288563e5218F597e1895
+  Deployment data saved to: ./deployments/stable-upgrade-implementations.json
+  
+  ==========================================================
+  Deployment Complete!
+  ==========================================================
+  Deployment file saved to: ./deployments/stable-upgrade-implementations.json
+  
+  Next steps:
+  1. Verify the implementations on block explorer if not auto-verified
+  2. Use these addresses to create Gnosis Safe upgrade transactions
+  ==========================================================
+
+SKIPPING ON CHAIN SIMULATION.
+
+
+==========================
+
+ONCHAIN EXECUTION COMPLETE & SUCCESSFUL.
+##
+Start verification for (2) contracts
+Start verifying contract `0xc3ef7ed4F97450Ae8dA2473068375788BdeB5c5c` deployed on stable-mainnet
+EVM version: cancun
+Compiler version: 0.8.25
+Optimizations:    100
+
+Submitting verification for [contracts/DistributionCreator.sol:DistributionCreator] 0xc3ef7ed4F97450Ae8dA2473068375788BdeB5c5c.
+Submitted contract for verification:
+	Response: `OK`
+	GUID: `1ampzxcsvpcdjwnqjbmuan3unghti1zppu7spn9a1c9y8pnvza`
+	URL: https://stablescan.xyz/address/0xc3ef7ed4f97450ae8da2473068375788bdeb5c5c
+Contract verification status:
+Response: `NOTOK`
+Details: `Pending in queue`
+Warning: Verification is still pending...; waiting 15 seconds before trying again (7 tries remaining)
+Contract verification status:
+Response: `OK`
+Details: `Pass - Verified`
+Contract successfully verified
+Start verifying contract `0x954eC713a3915B504a6F288563e5218F597e1895` deployed on stable-mainnet
+EVM version: cancun
+Compiler version: 0.8.25
+Optimizations:    100
+
+Submitting verification for [contracts/Distributor.sol:Distributor] 0x954eC713a3915B504a6F288563e5218F597e1895.
+Submitted contract for verification:
+	Response: `OK`
+	GUID: `bvzhvcxs2jpjjwfnfqpw2x3duyf4mqsljyrefhyvvxmpkgtejj`
+	URL: https://stablescan.xyz/address/0x954ec713a3915b504a6f288563e5218f597e1895
+Contract verification status:
+Response: `NOTOK`
+Details: `Pending in queue`
+Warning: Verification is still pending...; waiting 15 seconds before trying again (7 tries remaining)
+Contract verification status:
+Response: `OK`
+Details: `Pass - Verified`
+Contract successfully verified
+All (2) contracts were verified!
+
+Transactions saved to: /Users/pabloveyrat/Documents/Angle/Dev/merkl-contracts/broadcast/deployUpgradeImplementationsSingle.s.sol/988/run-latest.json
+
+Sensitive values saved to: /Users/pabloveyrat/Documents/Angle/Dev/merkl-contracts/cache-forge/deployUpgradeImplementationsSingle.s.sol/988/run-latest.json
+

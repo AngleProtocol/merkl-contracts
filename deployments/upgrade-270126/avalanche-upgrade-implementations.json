@@ -1,0 +1,10 @@
+{
+  "_note": "Upgrade implementation deployment",
+  "chainId": 43114,
+  "chainName": "avalanche",
+  "deployer": "0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701",
+  "distributionCreatorImplementation": "0x72BC7e2BbBdb1aC8f7ABDe4a3Ae4Ead595C1F424",
+  "distributorImplementation": "0x0D3FBEd505A8F7819c86c6E16E275E8F27996160",
+  "status": "SUCCESS",
+  "timestamp": 1769511071
+}

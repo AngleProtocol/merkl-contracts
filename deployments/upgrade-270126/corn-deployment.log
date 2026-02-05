@@ -1,0 +1,72 @@
+Warning: This is a nightly build of Foundry. It is recommended to use the latest stable version. To mute this warning set `FOUNDRY_DISABLE_NIGHTLY_WARNING` in your environment. 
+
+No files changed, compilation skipped
+Script ran successfully.
+
+== Logs ==
+  ==========================================================
+  Deploying Upgrade Implementations
+  ==========================================================
+  Chain ID: 21000000
+  Deployer: 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701
+  
+  Deploying DistributionCreator implementation...
+  DistributionCreator Implementation: 0x52b02b73c39998d869c2149a05DB03A8681f6AED
+  Deploying Distributor implementation...
+  Distributor Implementation: 0xfF9c33EdFbaB41eF66d60190926375227759b9a1
+  Deployment data saved to: ./deployments/corn-upgrade-implementations.json
+  
+  ==========================================================
+  Deployment Complete!
+  ==========================================================
+  Deployment file saved to: ./deployments/corn-upgrade-implementations.json
+  
+  Next steps:
+  1. Verify the implementations on block explorer if not auto-verified
+  2. Use these addresses to create Gnosis Safe upgrade transactions
+  ==========================================================
+
+SKIPPING ON CHAIN SIMULATION.
+
+
+==========================
+
+ONCHAIN EXECUTION COMPLETE & SUCCESSFUL.
+##
+Start verification for (2) contracts
+Start verifying contract `0x52b02b73c39998d869c2149a05DB03A8681f6AED` deployed on corn
+EVM version: cancun
+Compiler version: 0.8.25
+Optimizations:    100
+
+Submitting verification for [contracts/DistributionCreator.sol:DistributionCreator] 0x52b02b73c39998d869c2149a05DB03A8681f6AED.
+Submitted contract for verification:
+	Response: `OK`
+	GUID: `61e0c874-cf44-564c-a3ea-a98646743580`
+	URL: https://cornscan.io/address/0x52b02b73c39998d869c2149a05db03a8681f6aed
+Contract verification status:
+Response: `NOTOK`
+Details: `Error: contract does not exist 21000000 0x52b02b73c39998d869c2149a05DB03A8681f6AED`
+Start verifying contract `0xfF9c33EdFbaB41eF66d60190926375227759b9a1` deployed on corn
+EVM version: cancun
+Compiler version: 0.8.25
+Optimizations:    100
+
+Submitting verification for [contracts/Distributor.sol:Distributor] 0xfF9c33EdFbaB41eF66d60190926375227759b9a1.
+Submitted contract for verification:
+	Response: `OK`
+	GUID: `19367aec-1a3a-5f8a-8b59-1b1e93087c66`
+	URL: https://cornscan.io/address/0xff9c33edfbab41ef66d60190926375227759b9a1
+Contract verification status:
+Response: `NOTOK`
+Details: `Pending in queue`
+Warning: Verification is still pending...; waiting 15 seconds before trying again (7 tries remaining)
+Contract verification status:
+Response: `NOTOK`
+Details: `Error: contract does not exist 21000000 0xfF9c33EdFbaB41eF66d60190926375227759b9a1`
+All (2) contracts were verified!
+
+Transactions saved to: /Users/pabloveyrat/Documents/Angle/Dev/merkl-contracts/broadcast/deployUpgradeImplementationsSingle.s.sol/21000000/run-latest.json
+
+Sensitive values saved to: /Users/pabloveyrat/Documents/Angle/Dev/merkl-contracts/cache-forge/deployUpgradeImplementationsSingle.s.sol/21000000/run-latest.json
+
