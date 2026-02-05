@@ -16,19 +16,20 @@ import { IAccessControlManager } from "../contracts/interfaces/IAccessControlMan
 import { MockToken } from "../contracts/mock/MockToken.sol";
 
 contract DeployPullTokenWrapper is BaseScript {
-    // forge script scripts/deployPullTokenWrapper.s.sol --rpc-url ink --sender 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701 --broadcast --verify
+    // forge script scripts/deployPullTokenWrapper.s.sol --rpc-url gnosis --sender 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701 --broadcast --verify
     function run() public {
         uint256 deployerPrivateKey = vm.envUint("DEPLOYER_PRIVATE_KEY");
         vm.startBroadcast(deployerPrivateKey);
         address distributionCreator = 0x8BB4C975Ff3c250e0ceEA271728547f3802B36Fd;
         // ------------------------------------------------------------------------
         // TO EDIT
-        address underlying = 0x70A38B0c90441e991346B7A0Cd98C8528dD1c234;
-        address holder = 0xdef1FA4CEfe67365ba046a7C630D6B885298E210;
+        address underlying = 0x9C58BAcC331c9aa871AFD802DB6379a98e80CEdb;
+        address holder = 0x7Be579238a6a621601Eae2c346cDA54d68F7dfee;
 
         // Need to choose the implementation type and if implementation needs to be deployed
 
-        address implementation = address(new PullTokenWrapperAllow());
+        // address implementation = address(new PullTokenWrapperAllow());
+        address implementation = 0xD6b6ff88B42B7eCb09a2763dcd4fcd9742355691;
         // address implementation = address(new PullTokenWrapperWithdraw());
 
         // Ethereum implementation of PullTokenWrapperAllow

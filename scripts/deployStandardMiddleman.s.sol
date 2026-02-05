@@ -21,8 +21,6 @@ contract DeployStandardMiddleman is BaseScript {
 
         // Executors
         address executor1 = 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701;
-        address executor2 = 0x46606dc5183E6720077D5453D194f1593Fa5979A;
-        address executor3 = 0x70Be95681FA7a5c134c9C117C931D1Ec2AA4f415;
 
         // Default campaign parameters - TO EDIT
         // You can generate these using the Merkl campaign creation frontend
@@ -45,12 +43,6 @@ contract DeployStandardMiddleman is BaseScript {
         // Add executors
         middleman.setExecutor(executor1, 1);
         console.log("Executor added:", executor1);
-
-        middleman.setExecutor(executor2, 1);
-        console.log("Executor added:", executor2);
-
-        middleman.setExecutor(executor3, 1);
-        console.log("Executor added:", executor3);
 
         // Set default parameters if configured
         if (defaultParams.campaignData.length > 0) {

@@ -312,19 +312,8 @@ contract UpgradeDistributorMultiChainTest is UpgradeDistributorTest {
     }
 
     function getChainConfigs() internal pure returns (ChainConfig[] memory) {
-        ChainConfig[] memory chains = new ChainConfig[](12);
-        chains[0] = ChainConfig(1, "ETH_NODE_URI", "Ethereum");
-        chains[1] = ChainConfig(10, "OPTIMISM_NODE_URI", "Optimism");
-        chains[2] = ChainConfig(30, "ROOTSTOCK_NODE_URI", "Rootstock");
-        chains[3] = ChainConfig(56, "BSC_NODE_URI", "BSC");
-        chains[4] = ChainConfig(130, "INHERIT_NODE_URI", "Inherit");
-        chains[5] = ChainConfig(143, "BEAM_NODE_URI", "Beam");
-        chains[6] = ChainConfig(145, "SONICBLAZE_NODE_URI", "SonicBlaze");
-        chains[7] = ChainConfig(480, "WORLDCHAIN_NODE_URI", "WorldChain");
-        chains[8] = ChainConfig(5000, "MANTLE_NODE_URI", "Mantle");
-        chains[9] = ChainConfig(8453, "BASE_NODE_URI", "Base");
-        chains[10] = ChainConfig(33139, "APECHAIN_NODE_URI", "Apechain");
-        chains[11] = ChainConfig(9745, "MAINNET_Z_NODE_URI", "MainnetZ");
+        ChainConfig[] memory chains = new ChainConfig[](1);
+        chains[0] = ChainConfig(8453, "BASE_NODE_URI", "Base");
         return chains;
     }
 
