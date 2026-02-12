@@ -15,14 +15,14 @@ import { IAccessControlManager } from "../contracts/interfaces/IAccessControlMan
 import { MockToken } from "../contracts/mock/MockToken.sol";
 
 contract DeployTokenTGEWrapper is BaseScript {
-    // forge script scripts/deployTokenTGEWrapper.s.sol --rpc-url bsc --sender 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701 --broadcast --verify
+    // forge script scripts/deployTokenTGEWrapper.s.sol --rpc-url mainnet --sender 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701 --broadcast --verify
     function run() public {
         uint256 deployerPrivateKey = vm.envUint("DEPLOYER_PRIVATE_KEY");
         vm.startBroadcast(deployerPrivateKey);
         address distributionCreator = 0x8BB4C975Ff3c250e0ceEA271728547f3802B36Fd;
         // ------------------------------------------------------------------------
         // TO EDIT
-        address underlying = 0x499D35eBE6cEe9B2Ac35Fd003fcBbeeB9CFc7B32;
+        address underlying = 0x24A3D725C37A8D1a66Eb87f0E5D07fE67c120035;
         // ------------------------------------------------------------------------
 
         address implementation = address(new TokenTGEWrapper());
@@ -33,7 +33,7 @@ contract DeployTokenTGEWrapper is BaseScript {
         bytes memory initData = abi.encodeWithSelector(
             TokenTGEWrapper.initialize.selector,
             underlying,
-            1764068400,
+            1772146800,
             distributionCreator
         );
 
