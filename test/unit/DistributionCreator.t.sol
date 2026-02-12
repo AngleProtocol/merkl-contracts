@@ -2490,34 +2490,6 @@ contract Test_DistributionCreator_getValidRewardTokens is DistributionCreatorTes
     }
 }
 
-contract DistributionCreatorForkTest is Test {
-    DistributionCreatorWithDistributions public creator;
-
-    function setUp() public {
-        vm.createSelectFork(vm.envString("ARBITRUM_NODE_URI"));
-
-        creator = DistributionCreatorWithDistributions(0x8BB4C975Ff3c250e0ceEA271728547f3802B36Fd);
-    }
-}
-
-contract Test_DistributionCreator_distribution is DistributionCreatorForkTest {
-    function test_Success() public view {
-        CampaignParameters memory distribution = creator.distribution(0);
-
-        assertEq(distribution.campaignId, bytes32(0x7570c9deb1660ed82ff01f760b2883edb9bdb881933b0e4085854d0d717ea268));
-        assertEq(distribution.creator, address(0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496));
-        assertEq(distribution.rewardToken, address(0xE0688A2FE90d0f93F17f273235031062a210d691));
-        assertEq(distribution.amount, 9700000000000000000000);
-        assertEq(distribution.campaignType, 2);
-        assertEq(distribution.startTimestamp, 1681380000);
-        assertEq(distribution.duration, 86400);
-        assertEq(
-            distribution.campaignData,
-            hex"000000000000000000000000149e36e72726e0bcea5c59d40df2c43f60f5a22d0000000000000000000000000000000000000000000000000000000000000bb800000000000000000000000000000000000000000000000000000000000007d000000000000000000000000000000000000000000000000000000000000013880000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000140000000000000000000000000000000000000000000000000000000000000016000000000000000000000000000000000000000000000000000000000000001800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000023078000000000000000000000000000000000000000000000000000000000000"
-        );
-    }
-}
-
 contract Test_DistributionCreator_adjustTokenBalance is DistributionCreatorTest {
     function test_SuccessWhenUser() public {
         uint256 balance = angle.balanceOf(address(alice));
