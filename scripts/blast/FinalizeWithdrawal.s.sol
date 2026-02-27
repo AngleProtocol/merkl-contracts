@@ -18,10 +18,7 @@ interface IOptimismPortal {
 
     function finalizeWithdrawalTransaction(WithdrawalTransaction memory _tx) external;
 
-    function provenWithdrawals(bytes32 withdrawalHash)
-        external
-        view
-        returns (bytes32 outputRoot, uint128 timestamp, uint128 l2OutputIndex);
+    function provenWithdrawals(bytes32 withdrawalHash) external view returns (bytes32 outputRoot, uint128 timestamp, uint128 l2OutputIndex);
 
     function finalizedWithdrawals(bytes32 withdrawalHash) external view returns (bool);
 
@@ -89,7 +86,7 @@ contract FinalizeBlastWithdrawal is Script {
         // Step 1: Fetch withdrawal transaction data from L2
         console.log("Step 1: Fetching withdrawal data from Blast L2...");
         WithdrawalData memory withdrawal = fetchWithdrawalData(l2TxHash);
-        
+
         console.log("  Nonce:", withdrawal.nonce);
         console.log("  Sender:", withdrawal.sender);
         console.log("  Target:", withdrawal.target);
@@ -108,21 +105,21 @@ contract FinalizeBlastWithdrawal is Script {
         // Step 3: Check if already finalized
         console.log("Step 3: Checking finalization status...");
         bool isFinalized = portal.finalizedWithdrawals(withdrawalHash);
-        
+
         if (isFinalized) {
             console.log("  Status: ALREADY FINALIZED");
             console.log("");
             console.log("This withdrawal has already been finalized. No action needed.");
             return;
         }
-        
+
         console.log("  Status: Not yet finalized");
         console.log("");
 
         // Step 4: Check if proven
         console.log("Step 4: Checking proof status...");
         (bytes32 outputRoot, uint128 proofTimestamp, uint128 l2OutputIndex) = portal.provenWithdrawals(withdrawalHash);
-        
+
         if (outputRoot == bytes32(0)) {
             console.log("  Status: NOT PROVEN");
             console.log("");
@@ -130,7 +127,7 @@ contract FinalizeBlastWithdrawal is Script {
             console.log("You must run ProveWithdrawal.s.sol first.");
             revert("Withdrawal not proven");
         }
-        
+
         console.log("  Status: Proven");
         console.log("  Output Root:", vm.toString(outputRoot));
         console.log("  Proof Timestamp:", proofTimestamp);
@@ -142,12 +139,12 @@ contract FinalizeBlastWithdrawal is Script {
         uint256 finalizationPeriod = portal.FINALIZATION_PERIOD_SECONDS();
         uint256 currentTime = block.timestamp;
         uint256 canFinalizeAt = proofTimestamp + finalizationPeriod;
-        
+
         console.log("  Finalization Period:", finalizationPeriod, "seconds");
         console.log("  Proof Timestamp:", proofTimestamp);
         console.log("  Current Time:", currentTime);
         console.log("  Can Finalize At:", canFinalizeAt);
-        
+
         if (currentTime < canFinalizeAt) {
             uint256 timeRemaining = canFinalizeAt - currentTime;
             console.log("  Status: WAITING");
@@ -158,13 +155,13 @@ contract FinalizeBlastWithdrawal is Script {
             console.log("Time remaining:", timeRemaining / 86400, "days");
             revert("Challenge period not passed");
         }
-        
+
         console.log("  Status: Ready to finalize");
         console.log("");
 
         // Step 6: Finalize the withdrawal
         console.log("Step 6: Finalizing withdrawal transaction...");
-        
+
         IOptimismPortal.WithdrawalTransaction memory tx = IOptimismPortal.WithdrawalTransaction({
             nonce: withdrawal.nonce,
             sender: withdrawal.sender,
@@ -174,11 +171,11 @@ contract FinalizeBlastWithdrawal is Script {
             data: withdrawal.data
         });
 
-        vm.startBroadcast();
-        
+        vm.startBroadcast(vm.envUint("DEPLOYER_PRIVATE_KEY"));
+
         console.log("  Calling finalizeWithdrawalTransaction...");
         portal.finalizeWithdrawalTransaction(tx);
-        
+
         vm.stopBroadcast();
 
         console.log("  Status: SUCCESS");
@@ -191,7 +188,7 @@ contract FinalizeBlastWithdrawal is Script {
     /// @notice Fetch withdrawal transaction data from Blast L2
     function fetchWithdrawalData(bytes32 l2TxHash) internal returns (WithdrawalData memory withdrawal) {
         string memory l2RpcUrl = vm.envOr("ETH_NODE_URI_81457", string("https://rpc.blast.io"));
-        
+
         // Fetch transaction receipt
         string[] memory inputs = new string[](5);
         inputs[0] = "cast";
@@ -199,22 +196,22 @@ contract FinalizeBlastWithdrawal is Script {
         inputs[2] = vm.toString(l2TxHash);
         inputs[3] = "--json";
         inputs[4] = string.concat("--rpc-url=", l2RpcUrl);
-        
+
         string memory receiptJson = string(vm.ffi(inputs));
-        
+
         // Parse block number
         withdrawal.l2BlockNumber = vm.parseJsonUint(receiptJson, ".blockNumber");
-        
+
         // Parse logs to find MessagePassed event
         string memory logsJson = string(vm.parseJson(receiptJson, ".logs"));
-        
+
         // Try each log index until we find the MessagePassed event
         for (uint256 i = 0; i < 20; i++) {
             if (_tryParseLog(logsJson, i, withdrawal)) {
                 return withdrawal;
             }
         }
-        
+
         revert("MessagePassed event not found in transaction");
     }
 
@@ -222,19 +219,19 @@ contract FinalizeBlastWithdrawal is Script {
     function _tryParseLog(string memory logsJson, uint256 i, WithdrawalData memory withdrawal) internal returns (bool) {
         try vm.parseJsonAddress(logsJson, string.concat(".[", vm.toString(i), "].address")) returns (address logAddress) {
             if (logAddress != L2_TO_L1_MESSAGE_PASSER) return false;
-            
+
             bytes memory topicsData = vm.parseJson(logsJson, string.concat(".[", vm.toString(i), "].topics"));
             bytes32[] memory topics = abi.decode(topicsData, (bytes32[]));
-            
+
             if (topics.length > 0 && topics[0] == MESSAGE_PASSED_EVENT) {
                 bytes memory logData = vm.parseJsonBytes(logsJson, string.concat(".[", vm.toString(i), "].data"));
-                
+
                 withdrawal.nonce = uint256(topics[1]);
                 withdrawal.sender = address(uint160(uint256(topics[2])));
                 withdrawal.target = address(uint160(uint256(topics[3])));
-                
-                (withdrawal.value, withdrawal.gasLimit, withdrawal.data,) = abi.decode(logData, (uint256, uint256, bytes, bytes32));
-                
+
+                (withdrawal.value, withdrawal.gasLimit, withdrawal.data, ) = abi.decode(logData, (uint256, uint256, bytes, bytes32));
+
                 return true;
             }
         } catch {
@@ -245,15 +242,9 @@ contract FinalizeBlastWithdrawal is Script {
 
     /// @notice Compute the withdrawal hash
     function hashWithdrawal(WithdrawalData memory withdrawal) internal pure returns (bytes32) {
-        return keccak256(
-            abi.encode(
-                withdrawal.nonce,
-                withdrawal.sender,
-                withdrawal.target,
-                withdrawal.value,
-                withdrawal.gasLimit,
-                withdrawal.data
-            )
-        );
+        return
+            keccak256(
+                abi.encode(withdrawal.nonce, withdrawal.sender, withdrawal.target, withdrawal.value, withdrawal.gasLimit, withdrawal.data)
+            );
     }
 }
