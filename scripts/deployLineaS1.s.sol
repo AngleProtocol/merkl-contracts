@@ -37,8 +37,8 @@ contract DeployStandardMiddleman is BaseScript {
         // ------------------------------------------------------------------------
 
         // Deploy StandardMiddleman
-        // StandardMiddleman middleman = new StandardMiddleman(owner, distributionCreator);
-        StandardMiddleman middleman = 0xaaf4523EEa17159692eB8fA7DAd723c2972bE31b;
+        StandardMiddleman middleman = new StandardMiddleman(owner, distributionCreator);
+        // StandardMiddleman middleman = 0xaaf4523EEa17159692eB8fA7DAd723c2972bE31b;
         console.log("StandardMiddleman deployed at:", address(middleman));
 
         // Add executors
