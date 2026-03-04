@@ -44,7 +44,11 @@ contract DeploySafeScript is BaseScript {
     uint256 constant THRESHOLD  = 2;
     uint256 constant SALT_NONCE = 0;
 
-    function run() external broadcast {
+    uint256 private DEPLOYER_PRIVATE_KEY;
+
+    function run() external {
+        DEPLOYER_PRIVATE_KEY = vm.envUint("DEPLOYER_PRIVATE_KEY");
+
         require(OWNER_1 != address(0) && OWNER_2 != address(0) && OWNER_3 != address(0), "Set owners");
 
         address[] memory owners = new address[](3);
@@ -66,16 +70,20 @@ contract DeploySafeScript is BaseScript {
             )
         );
 
+        vm.startBroadcast(DEPLOYER_PRIVATE_KEY);
+
         address safe = IGnosisSafeProxyFactory(SAFE_FACTORY).createProxyWithNonce(
             SAFE_SINGLETON,
             initializer,
             SALT_NONCE
         );
 
+        vm.stopBroadcast();
+
         console.log("\n=== Safe Deployed ===");
         console.log("Address:", safe);
 
-        // Verify
+        // Verify (no broadcast needed — read-only calls)
         address[] memory deployedOwners = IGnosisSafe(safe).getOwners();
         uint256 threshold = IGnosisSafe(safe).getThreshold();
         string memory version = IGnosisSafe(safe).VERSION();
