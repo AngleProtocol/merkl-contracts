@@ -6,6 +6,7 @@ import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.s
 import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 
 import { DistributionCreator, CampaignParameters } from "../../DistributionCreator.sol";
+import { PullTokenWrapperAllow } from "../tokenWrappers/PullTokenWrapperAllow.sol";
 import { Errors } from "../../utils/Errors.sol";
 
 /// @title LineaS1
@@ -155,7 +156,13 @@ contract LineaS1 is Ownable {
         executors[executor] = status;
         emit ExecutorSet(executor, status);
     }
-
+    /// @notice Mints wrapper tokens by calling the wrapper token's mint function
+    /// @dev Only callable by owner. Used to mint wrapper tokens for distribution
+    /// @param wrapperToken Address of the wrapper token contract to mint from
+    /// @param amount Amount of tokens to mint
+    function mint(address wrapperToken, uint256 amount) external onlyOwner {
+        PullTokenWrapperAllow(wrapperToken).mint(amount);
+    }
     /*//////////////////////////////////////////////////////////////
                            INTERNAL FUNCTIONS
     //////////////////////////////////////////////////////////////*/

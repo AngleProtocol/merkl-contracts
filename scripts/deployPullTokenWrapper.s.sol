@@ -16,14 +16,14 @@ import { IAccessControlManager } from "../contracts/interfaces/IAccessControlMan
 import { MockToken } from "../contracts/mock/MockToken.sol";
 
 contract DeployPullTokenWrapper is BaseScript {
-    // forge script scripts/deployPullTokenWrapper.s.sol --rpc-url mantle --sender 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701 --broadcast --verify
+    // forge script scripts/deployPullTokenWrapper.s.sol --rpc-url ink --sender 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701 --broadcast --verify
     function run() public {
         uint256 deployerPrivateKey = vm.envUint("DEPLOYER_PRIVATE_KEY");
         vm.startBroadcast(deployerPrivateKey);
         address distributionCreator = 0x8BB4C975Ff3c250e0ceEA271728547f3802B36Fd;
         // ------------------------------------------------------------------------
         // TO EDIT
-        address underlying = 0xb9aCA933C9c0aa854a6DBb7b12f0CC3FdaC15ee7;
+        address underlying = 0x726D965F0D759A0489d178365f00b4c3c3207BB7;
         address holder = 0x8353D558114BCd3Fa3405BB374452BD42A780DB6;
 
         // Need to choose the implementation type and if implementation needs to be deployed
@@ -42,8 +42,8 @@ contract DeployPullTokenWrapper is BaseScript {
         string memory symbol = IERC20Metadata(underlying).symbol();
 
         // Names to override if deploying a PullTokenWrapperWithdraw implementation
-        // string memory name = "USDC (Angle wrapped)";
-        // string memory symbol = "USDC";
+        // string memory name = "USDT0 (wrapped)";
+        // string memory symbol = "USDT0";
 
         // ------------------------------------------------------------------------
 

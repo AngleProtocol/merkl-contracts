@@ -136,7 +136,7 @@ swell = {chainId = 1923, key = "none", url = "https://explorer.swellnetwork.io:4
 ronin = {chainId = 2020, key = "none", url = "https://sourcify.roninchain.com/server/" }
 citrea = {chainId = 4114, key = "none", url = "https://explorer.mainnet.citrea.xyz/api" }
 megaeth = {chainId = 4326, key = "${ETHERSCAN_API_KEY}", url = "https://api.etherscan.io/v2/api?chainid=4326" }
-mantle = {chainId = 5000, key = "none", url = "https://explorer.mantle.xyz/api/" }
+mantle = {chainId = 5000, key = "${ETHERSCAN_API_KEY}", url = "https://api.etherscan.io/v2/api?chainid=5000" }
 saga = {chainId = 5464, key = "none", url = "https://sagaevm.sagaexplorer.io/api" }
 nibiru = {chainId = 6900, key = "none", url = "https://api.routescan.io/v2/network/mainnet/evm/6900/etherscan" }
 base = {chainId = 8453, key = "${ETHERSCAN_API_KEY}", url = "https://api.etherscan.io/v2/api?chainid=8453" }
