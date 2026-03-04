@@ -103,6 +103,7 @@ scroll = "${ETH_NODE_URI_534352}"
 katana="${ETH_NODE_URI_747474}"
 skale = "${ETH_NODE_URI_2046399126}"
 ethereal="${ETH_NODE_URI_5064014}"
+gensyn="${ETH_NODE_URI_685689}"
 
 [etherscan]
 localhost = { url = "http://localhost:4000", key = "none" }
@@ -164,3 +165,4 @@ scroll = {chainId = 534352, key = "${ETHERSCAN_API_KEY}", url = "https://api.eth
 katana = {chainId = 747474, key = "${ETHERSCAN_API_KEY}", url = "https://api.etherscan.io/v2/api?chainid=747474" }
 skale = {chainId = 2046399126, key = "none", url = "https://internal-hubs.explorer.mainnet.skalenodes.com:10001/api" }
 ethereal = {chainId = 5064014, key = "none", url = "https://explorer.ethereal.trade/api" }
+gensyn = {chainId = 685689, key = "none", url = "https://gensyn-mainnet.explorer.alchemy.com/api" }
