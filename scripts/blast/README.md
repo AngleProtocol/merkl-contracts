@@ -50,11 +50,11 @@ forge script scripts/blast/FinalizeWithdrawal.s.sol:FinalizeBlastWithdrawal \
   --sig "run(bytes32)" 0x93fbcc9e6eb094ce6c5637f28a0ad0fd11ca95f0e728f53f162462df0e62fbb1 \
   --rpc-url mainnet
 
-# 2. Finalize (actual transaction)
+# 2. Finalize (actual transaction, with 5 times gas estimate)
 forge script scripts/blast/FinalizeWithdrawal.s.sol:FinalizeBlastWithdrawal \
   --sig "run(bytes32)" 0x93fbcc9e6eb094ce6c5637f28a0ad0fd11ca95f0e728f53f162462df0e62fbb1 \
   --rpc-url mainnet \
-  --broadcast
+  --broadcast --gas-estimate-multiplier 500 
 ```
 
 ### How It Works

@@ -5,7 +5,8 @@ import { Script } from "forge-std/Script.sol";
 import { console } from "forge-std/console.sol";
 import { stdJson } from "forge-std/StdJson.sol";
 
-/// @notice Optimism Portal interface for finalizing withdrawals
+/// @notice Blast OptimismPortal interface for finalizing withdrawals
+/// @dev Blast uses a modified OptimismPortal that requires a hintId parameter
 interface IOptimismPortal {
     struct WithdrawalTransaction {
         uint256 nonce;
@@ -16,13 +17,11 @@ interface IOptimismPortal {
         bytes data;
     }
 
-    function finalizeWithdrawalTransaction(WithdrawalTransaction memory _tx) external;
+    function finalizeWithdrawalTransaction(uint256 hintId, WithdrawalTransaction memory _tx) external;
 
     function provenWithdrawals(bytes32 withdrawalHash) external view returns (bytes32 outputRoot, uint128 timestamp, uint128 l2OutputIndex);
 
     function finalizedWithdrawals(bytes32 withdrawalHash) external view returns (bool);
-
-    function FINALIZATION_PERIOD_SECONDS() external view returns (uint256);
 }
 
 /// @notice L2OutputOracle interface for checking output finalization
@@ -136,11 +135,12 @@ contract FinalizeBlastWithdrawal is Script {
 
         // Step 5: Check if challenge period has passed
         console.log("Step 5: Checking challenge period...");
-        uint256 finalizationPeriod = portal.FINALIZATION_PERIOD_SECONDS();
+        // Blast uses 7 days (604800 seconds) finalization period
+        uint256 finalizationPeriod = 7 days;
         uint256 currentTime = block.timestamp;
         uint256 canFinalizeAt = proofTimestamp + finalizationPeriod;
 
-        console.log("  Finalization Period:", finalizationPeriod, "seconds");
+        console.log("  Finalization Period:", finalizationPeriod, "seconds (7 days)");
         console.log("  Proof Timestamp:", proofTimestamp);
         console.log("  Current Time:", currentTime);
         console.log("  Can Finalize At:", canFinalizeAt);
@@ -174,15 +174,32 @@ contract FinalizeBlastWithdrawal is Script {
         vm.startBroadcast(vm.envUint("DEPLOYER_PRIVATE_KEY"));
 
         console.log("  Calling finalizeWithdrawalTransaction...");
-        portal.finalizeWithdrawalTransaction(tx);
+        console.log("  Using hintId: 0 (default)");
+        
+        // Blast-specific: hintId parameter (use 0 for default/automatic hint)
+        uint256 hintId = 0;
+        
+        try portal.finalizeWithdrawalTransaction(hintId, tx) {
+            console.log("  Status: SUCCESS");
+            console.log("");
+            console.log("=== Withdrawal Finalized Successfully! ===");
+            console.log("");
+            console.log("The withdrawal has been completed and funds should now be available on L1.");
+        } catch Error(string memory reason) {
+            console.log("  Status: FAILED");
+            console.log("");
+            console.log("ERROR: Transaction reverted with reason:");
+            console.log(reason);
+            revert(reason);
+        } catch (bytes memory lowLevelData) {
+            console.log("  Status: FAILED");
+            console.log("");
+            console.log("ERROR: Transaction reverted with low-level error");
+            console.logBytes(lowLevelData);
+            revert("Finalization failed");
+        }
 
         vm.stopBroadcast();
-
-        console.log("  Status: SUCCESS");
-        console.log("");
-        console.log("=== Withdrawal Finalized Successfully! ===");
-        console.log("");
-        console.log("The withdrawal has been completed and funds should now be available on L1.");
     }
 
     /// @notice Fetch withdrawal transaction data from Blast L2
@@ -202,42 +219,42 @@ contract FinalizeBlastWithdrawal is Script {
         // Parse block number
         withdrawal.l2BlockNumber = vm.parseJsonUint(receiptJson, ".blockNumber");
 
-        // Parse logs to find MessagePassed event
-        string memory logsJson = string(vm.parseJson(receiptJson, ".logs"));
+        // Find the MessagePassed event log index
+        uint256 logIndex = _findMessagePassedLog(receiptJson);
+        string memory logPath = string.concat(".logs[", vm.toString(logIndex), "]");
 
-        // Try each log index until we find the MessagePassed event
+        // Parse topics (indexed parameters) - topics are bytes32, need to convert to address
+        withdrawal.nonce = uint256(vm.parseJsonBytes32(receiptJson, string.concat(logPath, ".topics[1]")));
+        withdrawal.sender = address(uint160(uint256(vm.parseJsonBytes32(receiptJson, string.concat(logPath, ".topics[2]")))));
+        withdrawal.target = address(uint160(uint256(vm.parseJsonBytes32(receiptJson, string.concat(logPath, ".topics[3]")))));
+
+        // Parse data (non-indexed parameters)
+        bytes memory logData = vm.parseJsonBytes(receiptJson, string.concat(logPath, ".data"));
+        (withdrawal.value, withdrawal.gasLimit, withdrawal.data,) = abi.decode(logData, (uint256, uint256, bytes, bytes32));
+    }
+
+    /// @notice Find the MessagePassed event log index
+    function _findMessagePassedLog(string memory receiptJson) internal view returns (uint256) {
+        // Try to find the log with MessagePassed event from L2ToL1MessagePasser
         for (uint256 i = 0; i < 20; i++) {
-            if (_tryParseLog(logsJson, i, withdrawal)) {
-                return withdrawal;
+            try vm.parseJsonBytes32(receiptJson, string.concat(".logs[", vm.toString(i), "].topics[0]")) returns (bytes32 topic0) {
+                if (topic0 == MESSAGE_PASSED_EVENT) {
+                    // Check if it's from the L2ToL1MessagePasser contract
+                    try vm.parseJsonAddress(receiptJson, string.concat(".logs[", vm.toString(i), "].address")) returns (address logAddress) {
+                        if (logAddress == L2_TO_L1_MESSAGE_PASSER) {
+                            return i;
+                        }
+                    } catch {
+                        continue;
+                    }
+                }
+            } catch {
+                // No more logs
+                break;
             }
         }
 
         revert("MessagePassed event not found in transaction");
-    }
-
-    /// @notice Try to parse a log at a specific index
-    function _tryParseLog(string memory logsJson, uint256 i, WithdrawalData memory withdrawal) internal returns (bool) {
-        try vm.parseJsonAddress(logsJson, string.concat(".[", vm.toString(i), "].address")) returns (address logAddress) {
-            if (logAddress != L2_TO_L1_MESSAGE_PASSER) return false;
-
-            bytes memory topicsData = vm.parseJson(logsJson, string.concat(".[", vm.toString(i), "].topics"));
-            bytes32[] memory topics = abi.decode(topicsData, (bytes32[]));
-
-            if (topics.length > 0 && topics[0] == MESSAGE_PASSED_EVENT) {
-                bytes memory logData = vm.parseJsonBytes(logsJson, string.concat(".[", vm.toString(i), "].data"));
-
-                withdrawal.nonce = uint256(topics[1]);
-                withdrawal.sender = address(uint160(uint256(topics[2])));
-                withdrawal.target = address(uint160(uint256(topics[3])));
-
-                (withdrawal.value, withdrawal.gasLimit, withdrawal.data, ) = abi.decode(logData, (uint256, uint256, bytes, bytes32));
-
-                return true;
-            }
-        } catch {
-            // No more logs or parse error
-        }
-        return false;
     }
 
     /// @notice Compute the withdrawal hash
