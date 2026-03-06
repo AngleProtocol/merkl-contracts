@@ -37,15 +37,9 @@ contract PullTokenWrapperAllowImmutable is ERC20 {
     constructor(
         address _token,
         address _distributionCreator,
-        address _holder,
-        string memory _name,
-        string memory _symbol,
-        uint256 _mintAmount
-    ) ERC20(_name, _symbol) {
+        address _holder
+    ) ERC20(string(abi.encodePacked(IERC20Metadata(_token).name(), " (wrapped)")), IERC20Metadata(_token).symbol()) {
         if (_holder == address(0) || _distributionCreator == address(0)) revert Errors.ZeroAddress();
-        // Sanity check that the token is a valid ERC20
-        IERC20(_token).balanceOf(_holder);
-
         DistributionCreator dc = DistributionCreator(_distributionCreator);
         accessControlManager = dc.accessControlManager();
         distributor = dc.distributor();
@@ -53,8 +47,6 @@ contract PullTokenWrapperAllowImmutable is ERC20 {
         token = _token;
         distributionCreator = _distributionCreator;
         holder = _holder;
-
-        _mint(_holder, _mintAmount);
     }
 
     // ================================= FUNCTIONS =================================
@@ -71,10 +63,6 @@ contract PullTokenWrapperAllowImmutable is ERC20 {
 
     function setHolder(address _newHolder) external onlyHolderOrGovernor {
         holder = _newHolder;
-    }
-
-    function mint(uint256 amount) external onlyHolderOrGovernor {
-        _mint(holder, amount);
     }
 
     function setFeeRecipient() external {

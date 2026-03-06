@@ -30,12 +30,7 @@ contract DeployTokenTGEWrapper is BaseScript {
         console.log("Wrapper Implementation:", address(implementation));
 
         // Encode initialization data
-        bytes memory initData = abi.encodeWithSelector(
-            TokenTGEWrapper.initialize.selector,
-            underlying,
-            1772146800,
-            distributionCreator
-        );
+        bytes memory initData = abi.encodeWithSelector(TokenTGEWrapper.initialize.selector, underlying, 1772146800, distributionCreator);
 
         // Deploy proxy with initialization data (atomically initializes in constructor)
         ERC1967Proxy proxy = new ERC1967Proxy(address(implementation), initData);

@@ -15,7 +15,7 @@ contract DeployDistributionCreatorImplementation is BaseScript {
 
         // Deploy the DistributionCreator implementation
         DistributionCreator implementation = new DistributionCreator();
-        
+
         console.log("DistributionCreator Implementation deployed at:", address(implementation));
 
         vm.stopBroadcast();

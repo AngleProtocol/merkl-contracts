@@ -22,6 +22,7 @@ interface IAavePool {
 /// @title PullTokenWrapperWithdrawImmutable
 /// @notice Non-upgradeable wrapper for a reward token on Merkl so campaigns do not have to be prefunded
 /// @dev Tokens are pulled from a holder address and withdrawn from Aave during claims
+//solhint-disable
 contract PullTokenWrapperWithdrawImmutable is ERC20 {
     using SafeERC20 for IERC20;
 
@@ -48,15 +49,14 @@ contract PullTokenWrapperWithdrawImmutable is ERC20 {
     constructor(
         address _token,
         address _distributionCreator,
-        address _holder,
-        string memory _name,
-        string memory _symbol,
-        uint256 _mintAmount
-    ) ERC20(_name, _symbol) {
+        address _holder
+    )
+        ERC20(
+            string(abi.encodePacked(IERC20Metadata(IAaveToken(_token).UNDERLYING_ASSET_ADDRESS()).name(), " (wrapped)")),
+            IERC20Metadata(IAaveToken(_token).UNDERLYING_ASSET_ADDRESS()).symbol()
+        )
+    {
         if (_holder == address(0) || _distributionCreator == address(0)) revert Errors.ZeroAddress();
-        // Sanity check that the token is a valid ERC20
-        IERC20(_token).balanceOf(_holder);
-
         DistributionCreator dc = DistributionCreator(_distributionCreator);
         accessControlManager = dc.accessControlManager();
         distributor = dc.distributor();
@@ -66,8 +66,6 @@ contract PullTokenWrapperWithdrawImmutable is ERC20 {
         holder = _holder;
         pool = IAaveToken(_token).POOL();
         underlying = IAaveToken(_token).UNDERLYING_ASSET_ADDRESS();
-
-        _mint(_holder, _mintAmount);
     }
 
     // ================================= FUNCTIONS =================================
@@ -87,10 +85,6 @@ contract PullTokenWrapperWithdrawImmutable is ERC20 {
 
     function setHolder(address _newHolder) external onlyHolderOrGovernor {
         holder = _newHolder;
-    }
-
-    function mint(uint256 amount) external onlyHolderOrGovernor {
-        _mint(holder, amount);
     }
 
     function setFeeRecipient() external {

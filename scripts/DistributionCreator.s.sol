@@ -147,7 +147,7 @@ contract SetRewardTokenMinAmounts is DistributionCreatorScript {
         address[] memory tokens = new address[](1);
         uint256[] memory amounts = new uint256[](1);
         tokens[0] = 0x7b7C000000000000000000000000000000000000;
-        amounts[0] = 1 * 10**14; // 1 token with 18 decimals
+        amounts[0] = 1 * 10 ** 14; // 1 token with 18 decimals
         _run(tokens, amounts);
     }
 
@@ -159,7 +159,7 @@ contract SetRewardTokenMinAmounts is DistributionCreatorScript {
 
         console.log("Fee recipient:", DistributionCreator(creatorAddress).feeRecipient());
         console.log("Default fees:", DistributionCreator(creatorAddress).defaultFees());
-        
+
         RewardTokenAmounts[] memory validRewardTokens = DistributionCreator(creatorAddress).getValidRewardTokens();
         console.log("Valid reward tokens count:", validRewardTokens.length);
         for (uint256 i = 0; i < validRewardTokens.length; i++) {
@@ -167,7 +167,7 @@ contract SetRewardTokenMinAmounts is DistributionCreatorScript {
             console.log("Min Amount:", validRewardTokens[i].minimumAmountPerEpoch);
         }
 
-        // 
+        //
 
         console.log("Minimum amounts updated for %s tokens", _tokens.length);
     }
