@@ -204,6 +204,12 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
         return _createCampaign(newCampaign);
     }
 
+    /// @notice Same as createCampaign but with an unused signature parameter for backward compatibility
+    /// @dev It is functionally equivalent to createCampaign() - the signature parameter is unused
+    function signAndCreateCampaign(CampaignParameters memory newCampaign, bytes calldata) external nonReentrant hasSigned returns (bytes32) {
+        return _createCampaign(newCampaign);
+    }
+
     /// @notice Creates multiple reward distribution campaigns in a single transaction
     /// @param campaigns Array of campaign parameters to create
     /// @return Array of campaign IDs for all newly created campaigns

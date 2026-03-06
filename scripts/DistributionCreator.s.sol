@@ -12,6 +12,7 @@ import { DistributionCreator } from "../contracts/DistributionCreator.sol";
 import { Distributor } from "../contracts/Distributor.sol";
 import { IAccessControlManager } from "../contracts/interfaces/IAccessControlManager.sol";
 import { CampaignParameters } from "../contracts/struct/CampaignParameters.sol";
+import { RewardTokenAmounts } from "../contracts/struct/RewardTokenAmounts.sol";
 import { MockToken } from "../contracts/mock/MockToken.sol";
 import { AccessControlEnumerableUpgradeable } from "@openzeppelin/contracts-upgradeable/access/AccessControlEnumerableUpgradeable.sol";
 
@@ -139,16 +140,14 @@ contract SetUserFeeRebate is DistributionCreatorScript {
 
 // SetRewardTokenMinAmounts script
 contract SetRewardTokenMinAmounts is DistributionCreatorScript {
-    // forge script scripts/DistributionCreator.s.sol:SetRewardTokenMinAmounts --rpc-url stable --sender 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701 --broadcast
+    // forge script scripts/DistributionCreator.s.sol:SetRewardTokenMinAmounts --rpc-url mezo --sender 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701 --broadcast
     function run() external {
         console.log("DEPLOYER_ADDRESS:", broadcaster);
         // MODIFY THESE VALUES TO SET YOUR DESIRED TOKENS AND AMOUNTS
-        address[] memory tokens = new address[](2);
-        uint256[] memory amounts = new uint256[](2);
-        tokens[0] = 0xA87D4F27F49D335ab1deEe6b9c43404414Bee214;
-        tokens[1] = 0x09f143d3Af1Af9af6AB6BCe1B53fc5a8dc1baA79;
-        amounts[0] = 0.1 ether; // 1 token with 18 decimals
-        amounts[1] = 0.1 ether; // 1 token with 18 decimals
+        address[] memory tokens = new address[](1);
+        uint256[] memory amounts = new uint256[](1);
+        tokens[0] = 0x7b7C000000000000000000000000000000000000;
+        amounts[0] = 1 * 10 ** 14; // 1 token with 18 decimals
         _run(tokens, amounts);
     }
 
@@ -156,8 +155,19 @@ contract SetRewardTokenMinAmounts is DistributionCreatorScript {
         uint256 chainId = block.chainid;
         // address creatorAddress = 0x8BB4C975Ff3c250e0ceEA271728547f3802B36Fd;
         address creatorAddress = 0x8BB4C975Ff3c250e0ceEA271728547f3802B36Fd;
-
         DistributionCreator(creatorAddress).setRewardTokenMinAmounts(_tokens, _amounts);
+
+        console.log("Fee recipient:", DistributionCreator(creatorAddress).feeRecipient());
+        console.log("Default fees:", DistributionCreator(creatorAddress).defaultFees());
+
+        RewardTokenAmounts[] memory validRewardTokens = DistributionCreator(creatorAddress).getValidRewardTokens();
+        console.log("Valid reward tokens count:", validRewardTokens.length);
+        for (uint256 i = 0; i < validRewardTokens.length; i++) {
+            console.log("  Token", i, "- Address:", validRewardTokens[i].token);
+            console.log("Min Amount:", validRewardTokens[i].minimumAmountPerEpoch);
+        }
+
+        //
 
         console.log("Minimum amounts updated for %s tokens", _tokens.length);
     }
@@ -658,8 +668,8 @@ contract SetRewardTokenMinAmountsDistributor is DistributionCreatorScript {
         // MODIFY THESE VALUES TO SET YOUR DESIRED CAMPAIGN PARAMETERS AND SIGNATURE
         address[] memory tokens = new address[](1);
         uint256[] memory minAmounts = new uint256[](1);
-        tokens[0] = 0x79385D4B4c531bBbDa25C4cFB749781Bd9E23039;
-        minAmounts[0] = 1e18;
+        tokens[0] = 0xdD468A1DDc392dcdbEf6db6e34E89AA338F9F186;
+        minAmounts[0] = 1e17;
 
         _run(tokens, minAmounts);
     }
