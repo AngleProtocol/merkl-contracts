@@ -5,11 +5,11 @@ import { console } from "forge-std/console.sol";
 
 import { BaseScript } from "./utils/Base.s.sol";
 
-import { LineaS1 } from "../contracts/partners/middleman/LineaS1.sol";
+import { StandardMiddleman } from "../contracts/partners/middleman/StandardMiddleman.sol";
 import { CampaignParameters } from "../contracts/DistributionCreator.sol";
 
-contract DeployLineaS1 is BaseScript {
-    // forge script scripts/deployLineaS1.s.sol --rpc-url linea --sender 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701 --broadcast --verify
+contract DeployStandardMiddleman is BaseScript {
+    // forge script scripts/deployStandardMiddleman.s.sol --rpc-url linea --sender 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701 --broadcast --verify
     function run() public {
         uint256 deployerPrivateKey = vm.envUint("DEPLOYER_PRIVATE_KEY");
         vm.startBroadcast(deployerPrivateKey);
@@ -27,21 +27,22 @@ contract DeployLineaS1 is BaseScript {
         CampaignParameters memory defaultParams = CampaignParameters({
             campaignId: bytes32(0),
             creator: address(0),
-            rewardToken: address(0xacA92E438df0B2401fF60dA7E4337B687a2435DA), // TO EDIT: Set reward token address
+            rewardToken: address(0xD53f905D140dA38FB6505756A5D1eD14599BcdE5), // TO EDIT: Set reward token address
             amount: 0,
-            campaignType: 134, // TO EDIT: Set campaign type
+            campaignType: 4, // TO EDIT: Set campaign type
             startTimestamp: 0,
-            duration: 3600 * 24, // TO EDIT: Set duration in seconds
-            campaignData: hex"4808c92f1174916ea328735884bd7eb547d7ffcad4cea871a82d58f38eec43b7" // TO EDIT: Set campaign data (encoded parameters)
+            duration: 3600, // TO EDIT: Set duration in seconds
+            campaignData: hex"cd7b313f6fb732723e6a48935f34d18fd944050bccc526494e54de4b94dc1474" // TO EDIT: Set campaign data (encoded parameters)
         });
         // ------------------------------------------------------------------------
 
-        // Deploy LineaS1
-        LineaS1 middleman = new LineaS1(owner, distributionCreator);
-        console.log("LineaS1 deployed at:", address(middleman));
+        // Deploy StandardMiddleman
+        StandardMiddleman middleman = new StandardMiddleman(owner, distributionCreator);
+        // StandardMiddleman middleman = 0xaaf4523EEa17159692eB8fA7DAd723c2972bE31b;
+        console.log("StandardMiddleman deployed at:", address(middleman));
 
         // Add executors
-        middleman.setExecutor(executor1, 1);
+        // middleman.setExecutor(executor1, 1);
         console.log("Executor added:", executor1);
 
         // Set default parameters if configured

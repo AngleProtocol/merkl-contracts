@@ -120,7 +120,7 @@ abstract contract UpgradeDeploymentBase is Script {
     /// @return distributorImpl The deployed Distributor implementation address
     function _deployImplementations() internal returns (address distributionCreatorImpl, address distributorImpl) {
         uint256 currentChainId = block.chainid;
-        
+
         // Deploy DistributionCreatorWithDistributions for Polygon (chainId 137)
         if (currentChainId == 137) {
             console.log("Deploying DistributionCreatorWithDistributions implementation (Polygon)...");

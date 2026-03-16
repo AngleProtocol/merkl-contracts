@@ -4,6 +4,7 @@ pragma solidity ^0.8.7;
 
 import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import { IAccessControlManager } from "../../interfaces/IAccessControlManager.sol";
+import { DistributionCreator } from "../../DistributionCreator.sol";
 import { Errors } from "../../utils/Errors.sol";
 
 /// @title PointToken
@@ -15,10 +16,27 @@ contract PointToken is ERC20 {
     IAccessControlManager public accessControlManager;
     uint8 public allowedTransfers;
 
-    constructor(string memory name_, string memory symbol_, address _minter, address _accessControlManager) ERC20(name_, symbol_) {
-        if (_accessControlManager == address(0) || _minter == address(0)) revert Errors.ZeroAddress();
-        accessControlManager = IAccessControlManager(_accessControlManager);
+    constructor(
+        string memory name_,
+        string memory symbol_,
+        address _minter,
+        address _distributionCreator,
+        uint256 _mintAmount
+    ) ERC20(name_, symbol_) {
+        if (_distributionCreator == address(0) || _minter == address(0)) revert Errors.ZeroAddress();
+
+        DistributionCreator dc = DistributionCreator(_distributionCreator);
+        accessControlManager = dc.accessControlManager();
+
+        // Enable minter and mint initial supply
         minters[_minter] = true;
+        _mint(_minter, _mintAmount);
+
+        // Whitelist Merkl contracts and minter
+        whitelistedRecipients[dc.distributor()] = true;
+        whitelistedRecipients[_distributionCreator] = true;
+        whitelistedRecipients[dc.feeRecipient()] = true;
+        whitelistedRecipients[_minter] = true;
     }
 
     modifier onlyGovernorOrGuardian() {
