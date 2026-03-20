@@ -6,9 +6,7 @@ import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import { IERC20, IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 
-import { IAccessControlManager } from "../../interfaces/IAccessControlManager.sol";
-import { DistributionCreator } from "../../DistributionCreator.sol";
-import { Errors } from "../../utils/Errors.sol";
+import { PullTokenWrapperImmutableBase } from "./PullTokenWrapperImmutableBase.sol";
 
 interface IAaveToken {
     function POOL() external view returns (address);
@@ -21,28 +19,21 @@ interface IAavePool {
 
 /// @title PullTokenWrapperWithdrawImmutable
 /// @notice Non-upgradeable wrapper for a reward token on Merkl so campaigns do not have to be prefunded
-/// @dev Tokens are pulled from a holder address and withdrawn from Aave during claims
+/// @dev In this version of the PullTokenWrapper, aTokens are pulled from a holder address and withdrawn from
+/// Aave during claims, so the recipient receives the underlying asset
+/// @dev Managers of such wrapper contracts must ensure that the holder address has enough allowance to the wrapper
+/// contract for the aToken pulled during claims
+/// @dev This is the non-upgradeable version of `PullTokenWrapperWithdraw`
 //solhint-disable
-contract PullTokenWrapperWithdrawImmutable is ERC20 {
+contract PullTokenWrapperWithdrawImmutable is PullTokenWrapperImmutableBase {
     using SafeERC20 for IERC20;
 
     // ================================= VARIABLES =================================
 
-    IAccessControlManager public immutable accessControlManager;
-    address public immutable token;
-    address public immutable distributor;
-    address public immutable distributionCreator;
+    /// @notice Address of the Aave lending pool used to withdraw the underlying asset
     address public immutable pool;
+    /// @notice Address of the underlying asset behind the aToken
     address public immutable underlying;
-    address public holder;
-    address public feeRecipient;
-
-    // ================================= MODIFIERS =================================
-
-    modifier onlyHolderOrGovernor() {
-        if (msg.sender != holder && !accessControlManager.isGovernor(msg.sender)) revert Errors.NotAllowed();
-        _;
-    }
 
     // ================================= CONSTRUCTOR =================================
 
@@ -55,43 +46,21 @@ contract PullTokenWrapperWithdrawImmutable is ERC20 {
             string(abi.encodePacked(IERC20Metadata(IAaveToken(_token).UNDERLYING_ASSET_ADDRESS()).name(), " (wrapped)")),
             IERC20Metadata(IAaveToken(_token).UNDERLYING_ASSET_ADDRESS()).symbol()
         )
+        PullTokenWrapperImmutableBase(_token, _distributionCreator, _holder)
     {
-        if (_holder == address(0) || _distributionCreator == address(0)) revert Errors.ZeroAddress();
-        DistributionCreator dc = DistributionCreator(_distributionCreator);
-        accessControlManager = dc.accessControlManager();
-        distributor = dc.distributor();
-        feeRecipient = dc.feeRecipient();
-        token = _token;
-        distributionCreator = _distributionCreator;
-        holder = _holder;
         pool = IAaveToken(_token).POOL();
         underlying = IAaveToken(_token).UNDERLYING_ASSET_ADDRESS();
     }
 
     // ================================= FUNCTIONS =================================
 
+    /// @notice Hook called before every transfer: pulls aTokens from the holder and withdraws the underlying
+    /// asset from Aave to the recipient when the transfer originates from the distributor (claim) or is
+    /// directed to the fee recipient
     function _beforeTokenTransfer(address from, address to, uint256 amount) internal override {
-        // During claim transactions, tokens are pulled from Aave and transferred to the `to` address
         if (from == distributor || to == feeRecipient) {
             IERC20(token).safeTransferFrom(holder, address(this), amount);
             IAavePool(pool).withdraw(underlying, amount, to);
         }
-    }
-
-    function _afterTokenTransfer(address, address to, uint256 amount) internal override {
-        // No leftover tokens can be kept except on the holder address
-        if (to != address(distributor) && to != holder && to != address(0)) _burn(to, amount);
-    }
-
-    function setHolder(address _newHolder) external onlyHolderOrGovernor {
-        holder = _newHolder;
-    }
-
-    function setFeeRecipient() external {
-        feeRecipient = DistributionCreator(distributionCreator).feeRecipient();
-    }
-
-    function decimals() public view override returns (uint8) {
-        return IERC20Metadata(token).decimals();
     }
 }

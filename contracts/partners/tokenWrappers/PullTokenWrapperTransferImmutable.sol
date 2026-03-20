@@ -8,13 +8,13 @@ import { IERC20, IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/exte
 
 import { PullTokenWrapperImmutableBase } from "./PullTokenWrapperImmutableBase.sol";
 
-/// @title PullTokenWrapperAllowImmutable
+/// @title PullTokenWrapperTransferImmutable
 /// @notice Non-upgradeable wrapper for a reward token on Merkl so campaigns do not have to be prefunded
-/// @dev In this version of the PullTokenWrapper, tokens are pulled from a holder address during claims
-/// @dev Managers of such wrapper contracts must ensure that the holder address has enough allowance to the wrapper
-/// contract for the token pulled during claims
-/// @dev This is the non-upgradeable version of `PullTokenWrapperAllow`
-contract PullTokenWrapperAllowImmutable is PullTokenWrapperImmutableBase {
+/// @dev In this version of the PullTokenWrapper, tokens are pulled directly from the wrapper contract during claims
+/// @dev Managers of such wrapper contracts must ensure to transfer enough tokens to the wrapper contract before
+/// claims happen
+/// @dev This is the non-upgradeable version of `PullTokenWrapperTransfer`
+contract PullTokenWrapperTransferImmutable is PullTokenWrapperImmutableBase {
     using SafeERC20 for IERC20;
 
     constructor(
@@ -26,9 +26,9 @@ contract PullTokenWrapperAllowImmutable is PullTokenWrapperImmutableBase {
         PullTokenWrapperImmutableBase(_token, _distributionCreator, _holder)
     {}
 
-    /// @notice Hook called before every transfer: pulls underlying tokens from the holder when the transfer
-    /// originates from the distributor (claim) or is directed to the fee recipient
+    /// @notice Hook called before every transfer: sends underlying tokens from the wrapper contract to the
+    /// recipient when the transfer originates from the distributor (claim) or is directed to the fee recipient
     function _beforeTokenTransfer(address from, address to, uint256 amount) internal override {
-        if (from == distributor || to == feeRecipient) IERC20(token).safeTransferFrom(holder, to, amount);
+        if (from == distributor || to == feeRecipient) IERC20(token).safeTransfer(to, amount);
     }
 }
