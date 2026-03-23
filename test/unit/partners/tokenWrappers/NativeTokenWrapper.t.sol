@@ -8,34 +8,7 @@ import { NativeTokenWrapper } from "../../../../contracts/partners/tokenWrappers
 import { Fixture } from "../../../Fixture.t.sol";
 import { IAccessControlManager } from "../../../../contracts/interfaces/IAccessControlManager.sol";
 import { Errors } from "../../../../contracts/utils/Errors.sol";
-
-/// @dev Mock contract to simulate the Distributor
-contract MockDistributor {
-    NativeTokenWrapper public wrapper;
-
-    function setWrapper(address _wrapper) external {
-        wrapper = NativeTokenWrapper(payable(_wrapper));
-    }
-
-    /// @dev Simulates a transfer from distributor (e.g., during claim)
-    function simulateClaim(address to, uint256 amount) external {
-        wrapper.transfer(to, amount);
-    }
-
-    /// @dev Allow receiving ETH
-    receive() external payable {}
-}
-
-/// @dev Mock contract to simulate fee recipient
-contract MockFeeRecipient {
-    /// @dev Allow receiving ETH
-    receive() external payable {}
-}
-
-/// @dev Mock contract that cannot receive ETH (no receive/fallback)
-contract MockNonPayable {
-    // Intentionally no receive or fallback function
-}
+import { MockDistributor, MockFeeRecipient, MockNonPayable } from "./TokenWrapperMocks.sol";
 
 contract NativeTokenWrapperTest is Fixture {
     NativeTokenWrapper public wrapper;
