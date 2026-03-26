@@ -43,7 +43,13 @@ contract NativeTokenUnwrapperImmutableTest is Fixture {
         vm.mockCall(address(creator), abi.encodeWithSignature("distributor()"), abi.encode(address(mockDistributor)));
         vm.mockCall(address(creator), abi.encodeWithSignature("feeRecipient()"), abi.encode(address(mockFeeRecipient)));
 
-        wrapper = new NativeTokenUnwrapperImmutable(address(weth), address(creator), alice, "Ether", "ETH");
+        wrapper = new NativeTokenUnwrapperImmutable(
+            address(weth),
+            address(creator),
+            alice,
+            "Ether",
+            "ETH"
+        );
 
         mockDistributor.setWrapper(address(wrapper));
     }
