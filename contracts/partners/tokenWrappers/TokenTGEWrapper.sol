@@ -26,7 +26,14 @@ contract TokenTGEWrapper is PublicWrapperBase {
         address _holder,
         uint256 _unlockTimestamp
     )
+<<<<<<< HEAD
         ERC20(string(abi.encodePacked(IERC20Metadata(_token).name(), " (wrapped)")), IERC20Metadata(_token).symbol())
+=======
+        ERC20(
+            string(abi.encodePacked(IERC20Metadata(_token).name(), " (wrapped)")),
+            IERC20Metadata(_token).symbol()
+        )
+>>>>>>> 26545ed (chore: new wrappers)
         PullTokenWrapperImmutableBase(_token, _distributionCreator, _holder)
     {
         unlockTimestamp = _unlockTimestamp;

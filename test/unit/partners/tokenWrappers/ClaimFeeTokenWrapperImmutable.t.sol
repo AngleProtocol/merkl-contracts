@@ -28,7 +28,17 @@ contract ClaimFeeTokenWrapperImmutableTest is Fixture {
         vm.mockCall(address(creator), abi.encodeWithSignature("distributor()"), abi.encode(address(mockDistributor)));
         vm.mockCall(address(creator), abi.encodeWithSignature("feeRecipient()"), abi.encode(address(mockFeeRecipient)));
 
+<<<<<<< HEAD
         wrapper = new ClaimFeeTokenWrapperImmutable(address(angle), address(creator), alice, CLAIM_FEE_RATE, claimFeeRecipient);
+=======
+        wrapper = new ClaimFeeTokenWrapperImmutable(
+            address(angle),
+            address(creator),
+            alice,
+            CLAIM_FEE_RATE,
+            claimFeeRecipient
+        );
+>>>>>>> 26545ed (chore: new wrappers)
 
         mockDistributor.setWrapper(address(wrapper));
     }
@@ -62,7 +72,17 @@ contract Test_ClaimFeeTokenWrapperImmutable_Constructor is ClaimFeeTokenWrapperI
 
     function test_RevertWhen_ZeroFeeRecipient() public {
         vm.expectRevert(Errors.ZeroAddress.selector);
+<<<<<<< HEAD
         new ClaimFeeTokenWrapperImmutable(address(angle), address(creator), alice, CLAIM_FEE_RATE, address(0));
+=======
+        new ClaimFeeTokenWrapperImmutable(
+            address(angle),
+            address(creator),
+            alice,
+            CLAIM_FEE_RATE,
+            address(0)
+        );
+>>>>>>> 26545ed (chore: new wrappers)
     }
 }
 

@@ -23,7 +23,10 @@ contract NativeTokenUnwrapperImmutable is PublicWrapperBase {
         address _holder,
         string memory _name,
         string memory _symbol
-    ) ERC20(_name, _symbol) PullTokenWrapperImmutableBase(_wrappedNative, _distributionCreator, _holder) {}
+    )
+        ERC20(_name, _symbol)
+        PullTokenWrapperImmutableBase(_wrappedNative, _distributionCreator, _holder)
+    {}
 
     /// @notice Allows the contract to receive native tokens when unwrapping wETH
     receive() external payable {}
