@@ -5,11 +5,7 @@ import { console } from "forge-std/console.sol";
 import { BaseScript } from "./utils/Base.s.sol";
 
 interface IGnosisSafeProxyFactory {
-    function createProxyWithNonce(
-        address _singleton,
-        bytes memory initializer,
-        uint256 saltNonce
-    ) external returns (address proxy);
+    function createProxyWithNonce(address _singleton, bytes memory initializer, uint256 saltNonce) external returns (address proxy);
 }
 
 interface IGnosisSafe {
@@ -32,8 +28,8 @@ interface IGnosisSafe {
 // forge script scripts/deploySafe.s.sol --rpc-url $RPC_URL --broadcast -vvvv
 contract DeploySafeScript is BaseScript {
     // Gensyn Safe contracts (v1.3.0)
-    address constant SAFE_SINGLETON   = 0xfb1bffC9d739B8D520DaF37dF666da4C687191EA;
-    address constant SAFE_FACTORY     = 0xa6B71E26C5e0845f74c812102Ca7114b6a896AB2;
+    address constant SAFE_SINGLETON = 0xfb1bffC9d739B8D520DaF37dF666da4C687191EA;
+    address constant SAFE_FACTORY = 0xa6B71E26C5e0845f74c812102Ca7114b6a896AB2;
     address constant FALLBACK_HANDLER = 0xf48f2B2d2a534e402487b3ee7C18c33Aec0Fe5e4;
 
     // TODO: set your 3 owners before running
@@ -41,7 +37,7 @@ contract DeploySafeScript is BaseScript {
     address constant OWNER_2 = address(0xf8b3b2aE2C97799249874A32f033b931e59fc349);
     address constant OWNER_3 = address(0x34Eb88EAD486A09CAcD8DaBe013682Dc5F1DC41D);
 
-    uint256 constant THRESHOLD  = 2;
+    uint256 constant THRESHOLD = 2;
     uint256 constant SALT_NONCE = 0;
 
     uint256 private DEPLOYER_PRIVATE_KEY;
@@ -61,22 +57,18 @@ contract DeploySafeScript is BaseScript {
             (
                 owners,
                 THRESHOLD,
-                address(0),         // no delegate call
-                new bytes(0),       // no delegate call data
+                address(0), // no delegate call
+                new bytes(0), // no delegate call data
                 FALLBACK_HANDLER,
-                address(0),         // no payment token
-                0,                  // no payment
+                address(0), // no payment token
+                0, // no payment
                 payable(address(0)) // no payment receiver
             )
         );
 
         vm.startBroadcast(DEPLOYER_PRIVATE_KEY);
 
-        address safe = IGnosisSafeProxyFactory(SAFE_FACTORY).createProxyWithNonce(
-            SAFE_SINGLETON,
-            initializer,
-            SALT_NONCE
-        );
+        address safe = IGnosisSafeProxyFactory(SAFE_FACTORY).createProxyWithNonce(SAFE_SINGLETON, initializer, SALT_NONCE);
 
         vm.stopBroadcast();
 

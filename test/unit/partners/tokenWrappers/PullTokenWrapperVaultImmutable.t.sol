@@ -13,9 +13,7 @@ import { ERC4626, ERC20, IERC20Metadata } from "@openzeppelin/contracts/token/ER
 
 /// @dev Simple ERC4626 vault for testing
 contract MockVault is ERC4626 {
-    constructor(
-        IERC20 asset_
-    ) ERC20("Mock Vault", "mVAULT") ERC4626(asset_) {}
+    constructor(IERC20 asset_) ERC20("Mock Vault", "mVAULT") ERC4626(asset_) {}
 }
 
 /// @dev Base contract tests (mint, setHolder, toggleAllowance, afterTokenTransfer, setFeeRecipient,
