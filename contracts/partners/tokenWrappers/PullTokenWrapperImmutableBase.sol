@@ -63,7 +63,7 @@ abstract contract PullTokenWrapperImmutableBase is ERC20 {
     // ================================= FUNCTIONS =================================
 
     /// @notice Hook called after every transfer: burns wrapper tokens for any recipient that is not allowed
-    function _afterTokenTransfer(address, address to, uint256 amount) internal override {
+    function _afterTokenTransfer(address, address to, uint256 amount) internal virtual override {
         if (isAllowed[to] == 0) _burn(to, amount);
     }
 
@@ -103,7 +103,7 @@ abstract contract PullTokenWrapperImmutableBase is ERC20 {
     }
 
     /// @notice Returns the number of decimals of the token
-    function decimals() public view override returns (uint8) {
+    function decimals() public view virtual override returns (uint8) {
         return IERC20Metadata(token).decimals();
     }
 }
