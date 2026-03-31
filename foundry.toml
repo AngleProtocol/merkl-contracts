@@ -73,7 +73,8 @@ sei = "${ETH_NODE_URI_1329}"
 soneium="${ETH_NODE_URI_1868}"
 swell = "${ETH_NODE_URI_1923}"
 ronin = "${ETH_NODE_URI_2020}"
-citrea= "${ETH_NODE_URI_4114}"
+citrea = "${ETH_NODE_URI_4114}"
+fluent = "${ETH_NODE_URI_25363}"
 megaeth="${ETH_NODE_URI_4326}"
 mantle = "${ETH_NODE_URI_5000}"
 saga="${ETH_NODE_URI_5464}"
@@ -136,6 +137,7 @@ soneium = {chainId = 1868, key = "none", url = "https://soneium.blockscout.com/a
 swell = {chainId = 1923, key = "none", url = "https://explorer.swellnetwork.io:443/api/" }
 ronin = {chainId = 2020, key = "none", url = "https://sourcify.roninchain.com/server/" }
 citrea = {chainId = 4114, key = "none", url = "https://explorer.mainnet.citrea.xyz/api" }
+fluent = {chainId = 25363, key = "none", url = "https://fluentscan.xyz/api" }
 megaeth = {chainId = 4326, key = "${ETHERSCAN_API_KEY}", url = "https://api.etherscan.io/v2/api?chainid=4326" }
 mantle = {chainId = 5000, key = "${ETHERSCAN_API_KEY}", url = "https://api.etherscan.io/v2/api?chainid=5000" }
 saga = {chainId = 5464, key = "none", url = "https://sagaevm.sagaexplorer.io/api" }
