@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.17;
 
 import {Script, console} from "forge-std/Script.sol";
 import {WETH9} from "../contracts/partners/tokenWrappers/weth9.sol";
 
-contract CounterScript is Script {
+contract DeployWETH9 is Script {
     WETH9 public weth9;
     uint256 private DEPLOYER_PRIVATE_KEY;
 
