@@ -32,7 +32,7 @@ contract PullTokenWrapperVaultImmutable is PullTokenWrapperImmutableBase {
         address _holder,
         address _vault
     )
-        ERC20(string(abi.encodePacked(IERC20Metadata(_token).name(), " (wrapped)")), IERC20Metadata(_token).symbol())
+        ERC20(string(abi.encodePacked(IERC20Metadata(_vault).name(), " (wrapped)")), IERC20Metadata(_token).symbol())
         PullTokenWrapperImmutableBase(_token, _distributionCreator, _holder)
     {
         if (_vault == address(0)) revert Errors.ZeroAddress();

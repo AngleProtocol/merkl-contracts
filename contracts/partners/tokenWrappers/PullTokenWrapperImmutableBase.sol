@@ -70,7 +70,7 @@ abstract contract PullTokenWrapperImmutableBase is ERC20 {
     /// @notice Mints wrapper tokens to a recipient and allows them to hold wrapper tokens
     /// @param recipient Address to receive the minted wrapper tokens
     /// @param amount Amount of wrapper tokens to mint
-    function mint(address recipient, uint256 amount) external onlyHolderOrGovernor {
+    function mint(address recipient, uint256 amount) external virtual onlyHolderOrGovernor {
         isAllowed[recipient] = 1;
         _mint(recipient, amount);
     }
