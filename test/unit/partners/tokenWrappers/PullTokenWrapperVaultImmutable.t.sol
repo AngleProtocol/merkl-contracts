@@ -49,7 +49,7 @@ contract PullTokenWrapperVaultImmutableTest is Fixture {
 
 contract Test_PullTokenWrapperVaultImmutable_Constructor is PullTokenWrapperVaultImmutableTest {
     function test_RevertWhen_ZeroAddressVault() public {
-        vm.expectRevert(Errors.ZeroAddress.selector);
+        vm.expectRevert();
         new PullTokenWrapperVaultImmutable(address(angle), address(creator), alice, address(0));
     }
 

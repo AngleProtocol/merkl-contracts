@@ -56,6 +56,9 @@ abstract contract PublicWrapperBase is PullTokenWrapperImmutableBase {
         if (_minting == 0 && isAllowed[to] == 0) _burn(to, amount);
     }
 
+    /// @notice Disabled: minting happens automatically in `_beforeTokenTransfer`
+    function mint(address, uint256) external override {}
+
     /// @notice Burns wrapper tokens from a given address
     function burn(address from, uint256 amount) external onlyHolderOrGovernor {
         _burn(from, amount);
