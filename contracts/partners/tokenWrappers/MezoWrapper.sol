@@ -6,7 +6,6 @@ import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import { IERC20, IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 
-import { PublicWrapperBase } from "./PublicWrapperBase.sol";
 import { PullTokenWrapperImmutableBase } from "./PullTokenWrapperImmutableBase.sol";
 import { Errors } from "../../utils/Errors.sol";
 
@@ -17,7 +16,7 @@ interface IMezoStaking {
 /// @title MezoWrapper
 /// @notice Non-upgradeable wrapper that creates Mezo locks for claimed tokens
 /// @dev On claim, underlying tokens are approved and locked via `createLockFor` on the Mezo staking contract
-contract MezoWrapper is PublicWrapperBase {
+contract MezoWrapper is PullTokenWrapperImmutableBase {
     using SafeERC20 for IERC20;
 
     /// @notice Mezo staking contract
@@ -42,9 +41,13 @@ contract MezoWrapper is PublicWrapperBase {
         IERC20(_token).safeApprove(_mezoStaking, type(uint256).max);
     }
 
-    /// @notice On claim: creates a Mezo lock for the recipient
-    function _onClaim(address to, uint256 amount) internal override {
-        IMezoStaking(mezoStaking).createLockFor(amount, lockDuration, to);
+    /// @notice Hook called before every transfer: on claim or fee transfer, pulls tokens from holder
+    /// and creates a Mezo lock for the recipient
+    function _beforeTokenTransfer(address from, address to, uint256 amount) internal override {
+        if (from == distributor || to == feeRecipient) {
+            IERC20(token).safeTransferFrom(holder, address(this), amount);
+            IMezoStaking(mezoStaking).createLockFor(amount, lockDuration, to);
+        }
     }
 
     // ================================= ADMIN =================================
