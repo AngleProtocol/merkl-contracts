@@ -128,20 +128,16 @@ contract Test_MezoWrapper_BeforeTokenTransfer is MezoWrapperTest {
         assertEq(wrapper.balanceOf(bob), 0);
     }
 
-    function test_Success_FeeTransferCreatesLock() public {
+    function test_Success_FeeTransferSendsDirectly() public {
         uint256 aliceAngleBefore = angle.balanceOf(alice);
 
         vm.prank(address(mockDistributor));
         wrapper.transfer(address(mockFeeRecipient), 10 ether);
 
+        // Tokens sent directly to fee recipient, not locked in Mezo
         assertEq(angle.balanceOf(alice), aliceAngleBefore - 10 ether);
-        assertEq(angle.balanceOf(address(mockMezoStaking)), 10 ether);
-
-        assertEq(mockMezoStaking.lockCallsLength(), 1);
-        (uint256 value, uint256 duration, address to) = mockMezoStaking.lockCalls(0);
-        assertEq(value, 10 ether);
-        assertEq(duration, LOCK_DURATION);
-        assertEq(to, address(mockFeeRecipient));
+        assertEq(angle.balanceOf(address(mockFeeRecipient)), 10 ether);
+        assertEq(mockMezoStaking.lockCallsLength(), 0);
     }
 
     function test_Success_NormalTransferDoesNotCreateLock() public {
@@ -299,15 +295,16 @@ contract Test_MezoWrapper_Integration is MezoWrapperTest {
         assertEq(angle.balanceOf(address(mockMezoStaking)), 30 ether);
         assertEq(wrapper.balanceOf(bob), 0);
 
-        // 4. Distributor sends fees — also locked in Mezo
+        // 4. Distributor sends fees — sent directly to fee recipient
         vm.prank(address(mockDistributor));
         wrapper.transfer(address(mockFeeRecipient), 10 ether);
 
-        assertEq(angle.balanceOf(address(mockMezoStaking)), 40 ether);
+        assertEq(angle.balanceOf(address(mockMezoStaking)), 30 ether);
+        assertEq(angle.balanceOf(address(mockFeeRecipient)), 10 ether);
         assertEq(wrapper.balanceOf(address(mockDistributor)), 40 ether);
 
-        // 5. Verify all locks
-        assertEq(mockMezoStaking.lockCallsLength(), 2);
+        // 5. Verify locks (only claim creates a lock, not fee transfer)
+        assertEq(mockMezoStaking.lockCallsLength(), 1);
 
         // 6. Owner changes lock duration for future claims
         vm.prank(alice);
@@ -316,8 +313,8 @@ contract Test_MezoWrapper_Integration is MezoWrapperTest {
         vm.prank(address(mockDistributor));
         wrapper.transfer(charlie, 15 ether);
 
-        (, uint256 duration, ) = mockMezoStaking.lockCalls(2);
+        (, uint256 duration, ) = mockMezoStaking.lockCalls(1);
         assertEq(duration, 90 days);
-        assertEq(mockMezoStaking.lockCallsLength(), 3);
+        assertEq(mockMezoStaking.lockCallsLength(), 2);
     }
 }
