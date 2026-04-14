@@ -13,14 +13,11 @@ contract MockTokenScript is BaseScript {}
 // Deploy script
 contract Deploy is MockTokenScript {
     function run() external broadcast {
+        // forge script scripts/MockToken.s.sol:Deploy --rpc-url avalanche --sender 0xA9DdD91249DFdd450E81E1c56Ab60E1A62651701 --broadcast
         // MODIFY THESE VALUES TO SET YOUR DESIRED TOKEN PARAMETERS
-        string memory name = "Mock Token";
-        string memory symbol = "MOCK";
+        string memory name = "USDe";
+        string memory symbol = "USDe";
         uint8 decimals = 18;
-        _run(name, symbol, decimals);
-    }
-
-    function run(string calldata name, string calldata symbol, uint8 decimals) external broadcast {
         _run(name, symbol, decimals);
     }
 
