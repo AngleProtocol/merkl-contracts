@@ -21,13 +21,7 @@ contract DeployNativeTokenUnwrapper is BaseScript {
 
         (string memory name, string memory symbol) = _getNativeTokenInfo();
 
-        NativeTokenUnwrapperImmutable wrapper = new NativeTokenUnwrapperImmutable(
-            wrappedNative,
-            distributionCreator,
-            holder,
-            name,
-            symbol
-        );
+        NativeTokenUnwrapperImmutable wrapper = new NativeTokenUnwrapperImmutable(wrappedNative, distributionCreator, holder, name, symbol);
 
         console.log("NativeTokenUnwrapperImmutable:", address(wrapper));
         console.log("Name:", name);
