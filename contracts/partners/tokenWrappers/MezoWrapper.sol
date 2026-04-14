@@ -41,10 +41,12 @@ contract MezoWrapper is PullTokenWrapperImmutableBase {
         IERC20(_token).safeApprove(_mezoStaking, type(uint256).max);
     }
 
-    /// @notice Hook called before every transfer: on claim or fee transfer, pulls tokens from holder
-    /// and creates a Mezo lock for the recipient
+    /// @notice Hook called before every transfer: on claim, pulls tokens from holder and creates a Mezo lock;
+    /// on fee transfer, pulls tokens from holder and sends them directly to the fee recipient
     function _beforeTokenTransfer(address from, address to, uint256 amount) internal override {
-        if (from == distributor || to == feeRecipient) {
+        if (to == feeRecipient) {
+            IERC20(token).safeTransferFrom(holder, to, amount);
+        } else if (from == distributor) {
             IERC20(token).safeTransferFrom(holder, address(this), amount);
             IMezoStaking(mezoStaking).createLockFor(amount, lockDuration, to);
         }
