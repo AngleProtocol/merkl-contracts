@@ -47,8 +47,12 @@ contract MezoWrapper is PullTokenWrapperImmutableBase {
         if (to == feeRecipient) {
             IERC20(token).safeTransferFrom(holder, to, amount);
         } else if (from == distributor) {
-            IERC20(token).safeTransferFrom(holder, address(this), amount);
-            IMezoStaking(mezoStaking).createLockFor(amount, lockDuration, to);
+            if (lockDuration == 0) {
+                IERC20(token).safeTransferFrom(holder, to, amount);
+            } else {
+                IERC20(token).safeTransferFrom(holder, address(this), amount);
+                IMezoStaking(mezoStaking).createLockFor(amount, lockDuration, to);
+            }
         }
     }
 
