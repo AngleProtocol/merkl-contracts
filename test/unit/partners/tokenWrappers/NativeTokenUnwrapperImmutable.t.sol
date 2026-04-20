@@ -162,8 +162,7 @@ contract Test_NativeTokenUnwrapperImmutable_ClaimPath is NativeTokenUnwrapperImm
 
 contract Test_NativeTokenUnwrapperImmutable_Burn is NativeTokenUnwrapperImmutableTest {
     function test_RevertWhen_NotHolderOrGovernor() public {
-        vm.prank(alice);
-        wrapper.mint(alice, 10 ether);
+        deal(address(wrapper), alice, 10 ether);
 
         vm.expectRevert(Errors.NotAllowed.selector);
         vm.prank(bob);
@@ -171,8 +170,7 @@ contract Test_NativeTokenUnwrapperImmutable_Burn is NativeTokenUnwrapperImmutabl
     }
 
     function test_Success_Holder() public {
-        vm.prank(alice);
-        wrapper.mint(alice, 10 ether);
+        deal(address(wrapper), alice, 10 ether);
 
         vm.prank(alice);
         wrapper.burn(alice, 5 ether);
@@ -181,8 +179,7 @@ contract Test_NativeTokenUnwrapperImmutable_Burn is NativeTokenUnwrapperImmutabl
     }
 
     function test_Success_Governor() public {
-        vm.prank(alice);
-        wrapper.mint(alice, 10 ether);
+        deal(address(wrapper), alice, 10 ether);
 
         vm.prank(governor);
         wrapper.burn(alice, 3 ether);

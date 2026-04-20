@@ -166,8 +166,7 @@ contract Test_ClaimFeeTokenWrapperImmutable_ClaimPath is ClaimFeeTokenWrapperImm
 
 contract Test_ClaimFeeTokenWrapperImmutable_Burn is ClaimFeeTokenWrapperImmutableTest {
     function test_RevertWhen_NotHolderOrGovernor() public {
-        vm.prank(alice);
-        wrapper.mint(alice, 10 ether);
+        deal(address(wrapper), alice, 10 ether);
 
         vm.expectRevert(Errors.NotAllowed.selector);
         vm.prank(bob);
@@ -175,8 +174,7 @@ contract Test_ClaimFeeTokenWrapperImmutable_Burn is ClaimFeeTokenWrapperImmutabl
     }
 
     function test_Success_Holder() public {
-        vm.prank(alice);
-        wrapper.mint(alice, 10 ether);
+        deal(address(wrapper), alice, 10 ether);
 
         vm.prank(alice);
         wrapper.burn(alice, 5 ether);
@@ -185,8 +183,7 @@ contract Test_ClaimFeeTokenWrapperImmutable_Burn is ClaimFeeTokenWrapperImmutabl
     }
 
     function test_Success_Governor() public {
-        vm.prank(alice);
-        wrapper.mint(alice, 10 ether);
+        deal(address(wrapper), alice, 10 ether);
 
         vm.prank(governor);
         wrapper.burn(alice, 3 ether);
