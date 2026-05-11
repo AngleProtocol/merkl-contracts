@@ -287,12 +287,11 @@ contract DistributionCreator is UUPSHelper, ReentrancyGuardUpgradeable {
     /// @param user Address whose balance will be increased
     /// @param rewardToken Token to deposit
     /// @param amount Amount to deposit
-    /// @dev When called by a governor, the user MUST have sent tokens to the contract beforehand
+    /// @dev Tokens are always transferred from msg.sender, including when called by a governor
     /// @dev Can be used to deposit on behalf of another user
     /// @dev WARNING: Do not use with any non strictly standard ERC20 (like rebasing tokens) as they will cause accounting issues
     function increaseTokenBalance(address user, address rewardToken, uint256 amount) external {
-        if (user == address(0)) revert Errors.ZeroAddress();
-        if (!accessControlManager.isGovernor(msg.sender)) IERC20(rewardToken).safeTransferFrom(msg.sender, address(this), amount);
+        IERC20(rewardToken).safeTransferFrom(msg.sender, address(this), amount);
         _updateBalance(user, rewardToken, creatorBalance[user][rewardToken] + amount);
     }
 
