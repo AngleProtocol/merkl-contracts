@@ -1582,7 +1582,7 @@ contract UpgradeDistributionCreatorTest is Test {
         assertEq(distributionCreator.defaultFees(), 0.03e9);
 
         // Verify message and hash
-        assertEq(distributionCreator.messageHash(), 0x08dabc24dcfcb230453d08bce47c730ed6f1cce205bc153680488959b503644e);
+        assertEq(distributionCreator.messageHash(), 0x229e20607dee64ebb81fc71bd4e50e29c264a0b894dbdcc3e8bd614f372cecb6);
 
         // Verify distribution list entries
 
