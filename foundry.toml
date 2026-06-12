@@ -173,4 +173,4 @@ ethereal = {chainId = 5064014, key = "none", url = "https://explorer.ethereal.tr
 gensyn = {chainId = 685689, key = "none", url = "https://gensyn-mainnet.explorer.alchemy.com/api" }
 flare = {chainId = 14, key = "none", url = "https://flare-explorer.flare.network/api" }
 pharos = {chainId = 1672, key = "none", url = "https://api.socialscan.io/pharos-mainnet/v1/explorer/command_api/contract" }
-kaia = {chainId = 8217, key = "1558a6f3-3c36-47c5-9c03-278efb90fcc6", url = "https://mainnet-oapi.kaiascan.io/api"}
+kaia = {chainId = 8217, key = "${KAIA_API_KEY}", url = "https://mainnet-oapi.kaiascan.io/api"}
