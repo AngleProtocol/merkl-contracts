@@ -193,13 +193,13 @@ contract Test_PullTokenWrapperVaultImmutable_Integration is PullTokenWrapperVaul
 
         uint256 aliceAngleBefore = angle.balanceOf(alice);
 
-        // Distributor sends back to holder — _beforeTokenTransfer fires (from == distributor),
-        // so tokens are pulled from alice and deposited into the vault for alice
+        // Distributor sends back to holder — the holder short-circuit means nothing is pulled from
+        // alice or deposited into the vault; the holder simply recovers the wrapper tokens
         vm.prank(address(mockDistributor));
         wrapper.transfer(alice, 30 ether);
 
         assertEq(wrapper.balanceOf(alice), 30 ether);
-        assertEq(angle.balanceOf(alice), aliceAngleBefore - 30 ether);
-        assertEq(vault.balanceOf(alice), 30 ether);
+        assertEq(angle.balanceOf(alice), aliceAngleBefore);
+        assertEq(vault.balanceOf(alice), 0);
     }
 }

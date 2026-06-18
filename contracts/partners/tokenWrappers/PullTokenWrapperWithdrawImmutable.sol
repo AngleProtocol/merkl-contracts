@@ -59,8 +59,11 @@ contract PullTokenWrapperWithdrawImmutable is PullTokenWrapperImmutableBase {
     /// directed to the fee recipient
     function _beforeTokenTransfer(address from, address to, uint256 amount) internal override {
         if (from == distributor || to == feeRecipient) {
-            IERC20(token).safeTransferFrom(holder, address(this), amount);
-            IAavePool(pool).withdraw(underlying, amount, to);
+            uint256 toTransfer = _underlyingToTransfer(to, amount);
+            if (toTransfer != 0) {
+                IERC20(token).safeTransferFrom(holder, address(this), toTransfer);
+                IAavePool(pool).withdraw(underlying, toTransfer, to);
+            }
         }
     }
 }

@@ -166,13 +166,13 @@ contract Test_PullTokenWrapperTransferImmutable_Integration is PullTokenWrapperT
 
         uint256 wrapperBalanceBefore = angle.balanceOf(address(wrapper));
 
-        // Distributor sends back to holder — _beforeTokenTransfer fires (from == distributor),
-        // so underlying tokens are sent from wrapper to alice
+        // Distributor sends back to holder — the holder short-circuit means no underlying leaves the
+        // wrapper; the holder simply recovers the wrapper tokens
         vm.prank(address(mockDistributor));
         wrapper.transfer(alice, 30 ether);
 
         assertEq(wrapper.balanceOf(alice), 30 ether);
-        assertEq(angle.balanceOf(alice), 30 ether);
-        assertEq(angle.balanceOf(address(wrapper)), wrapperBalanceBefore - 30 ether);
+        assertEq(angle.balanceOf(alice), 0);
+        assertEq(angle.balanceOf(address(wrapper)), wrapperBalanceBefore);
     }
 }

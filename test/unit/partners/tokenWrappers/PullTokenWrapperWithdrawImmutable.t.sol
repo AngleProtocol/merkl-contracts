@@ -164,13 +164,13 @@ contract Test_PullTokenWrapperWithdrawImmutable_Integration is PullTokenWrapperW
 
         uint256 aliceATokenBefore = aToken.balanceOf(alice);
 
-        // Distributor sends back to holder — _beforeTokenTransfer fires (from == distributor),
-        // so aTokens are pulled from alice and withdrawn to underlying
+        // Distributor sends back to holder — the holder short-circuit means no aTokens are pulled
+        // and nothing is withdrawn; the holder simply recovers the wrapper tokens
         vm.prank(address(mockDistributor));
         wrapper.transfer(alice, 30 ether);
 
         assertEq(wrapper.balanceOf(alice), 30 ether);
-        assertEq(aToken.balanceOf(alice), aliceATokenBefore - 30 ether);
-        assertEq(underlying.balanceOf(alice), 30 ether);
+        assertEq(aToken.balanceOf(alice), aliceATokenBefore);
+        assertEq(underlying.balanceOf(alice), 0);
     }
 }

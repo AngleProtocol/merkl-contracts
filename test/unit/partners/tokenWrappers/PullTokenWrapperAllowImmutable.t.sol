@@ -508,6 +508,109 @@ contract Test_PullTokenWrapperAllowImmutable_Recover is PullTokenWrapperAllowImm
     }
 }
 
+contract Test_PullTokenWrapperAllowImmutable_AmountToTransfer is PullTokenWrapperAllowImmutableTest {
+    function setUp() public override {
+        super.setUp();
+        // Fund the distributor with a large wrapper budget (minting wrapper pulls no underlying)
+        vm.prank(alice);
+        wrapper.mint(address(mockDistributor), 2_000_000 ether);
+    }
+
+    function test_Success_DefaultTransfersFullAmount() public {
+        uint256 aliceBefore = angle.balanceOf(alice);
+
+        vm.prank(address(mockDistributor));
+        mockDistributor.simulateClaim(bob, 20 ether);
+
+        // No override set -> full amount delivered
+        assertEq(angle.balanceOf(bob), 20 ether);
+        assertEq(angle.balanceOf(alice), aliceBefore - 20 ether);
+        assertEq(wrapper.balanceOf(bob), 0);
+    }
+
+    function test_Success_HolderReclaimPullsNothing() public {
+        // Cancelled campaign with a 1M virtual budget reclaimed by the holder: the holder only has
+        // 1000 underlying, so without the holder short-circuit the self-transfer would revert.
+        uint256 aliceUnderlyingBefore = angle.balanceOf(alice);
+
+        vm.prank(address(mockDistributor));
+        mockDistributor.simulateClaim(alice, 1_000_000 ether);
+
+        // No underlying moved, holder keeps the reclaimed wrapper tokens (holder is allowed)
+        assertEq(angle.balanceOf(alice), aliceUnderlyingBefore);
+        assertEq(wrapper.balanceOf(alice), 1_000_000 ether);
+    }
+
+    function test_Success_SelfServiceReducesClaim() public {
+        // Bob caps his own claim to 5 underlying
+        vm.prank(bob);
+        wrapper.setAmountToTransfer(5 ether);
+        assertEq(wrapper.amountToTransfer(bob), 5 ether);
+
+        uint256 aliceBefore = angle.balanceOf(alice);
+
+        vm.prank(address(mockDistributor));
+        mockDistributor.simulateClaim(bob, 20 ether);
+
+        // Bob only receives the capped amount, even though 20 wrapper tokens were claimed (and burned)
+        assertEq(angle.balanceOf(bob), 5 ether);
+        assertEq(angle.balanceOf(alice), aliceBefore - 5 ether);
+        assertEq(wrapper.balanceOf(bob), 0);
+    }
+
+    function test_Success_SentinelOneWeiPullsNothing() public {
+        // 1 wei sentinel -> deliver nothing while still consuming the claim
+        vm.prank(charlie);
+        wrapper.setAmountToTransfer(1);
+
+        uint256 aliceBefore = angle.balanceOf(alice);
+
+        vm.prank(address(mockDistributor));
+        mockDistributor.simulateClaim(charlie, 20 ether);
+
+        assertEq(angle.balanceOf(charlie), 0);
+        assertEq(angle.balanceOf(alice), aliceBefore);
+        assertEq(wrapper.balanceOf(charlie), 0);
+    }
+
+    function test_Success_CapClampedToClaimPreventsOverPull() public {
+        // Setting a cap above the claim must never pull more than the claimed amount (no drain vector)
+        vm.prank(bob);
+        wrapper.setAmountToTransfer(1000 ether);
+
+        uint256 aliceBefore = angle.balanceOf(alice);
+
+        vm.prank(address(mockDistributor));
+        mockDistributor.simulateClaim(bob, 20 ether);
+
+        assertEq(angle.balanceOf(bob), 20 ether);
+        assertEq(angle.balanceOf(alice), aliceBefore - 20 ether);
+    }
+
+    function test_Success_SetAmountToTransferIsSelfOnly() public {
+        vm.prank(bob);
+        wrapper.setAmountToTransfer(5 ether);
+
+        // Only the caller's own entry is affected
+        assertEq(wrapper.amountToTransfer(bob), 5 ether);
+        assertEq(wrapper.amountToTransfer(charlie), 0);
+    }
+
+    function test_Success_CapAppliesToFeeRecipient() public {
+        // Fee recipient can self-limit the underlying it receives on the fee leg
+        vm.prank(address(mockFeeRecipient));
+        wrapper.setAmountToTransfer(3 ether);
+
+        uint256 aliceBefore = angle.balanceOf(alice);
+
+        vm.prank(address(mockDistributor));
+        wrapper.transfer(address(mockFeeRecipient), 10 ether);
+
+        assertEq(angle.balanceOf(address(mockFeeRecipient)), 3 ether);
+        assertEq(angle.balanceOf(alice), aliceBefore - 3 ether);
+    }
+}
+
 contract Test_PullTokenWrapperAllowImmutable_EdgeCases is PullTokenWrapperAllowImmutableTest {
     function test_EdgeCase_TransferZeroAmount() public {
         vm.prank(alice);
