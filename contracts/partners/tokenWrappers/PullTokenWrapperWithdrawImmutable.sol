@@ -7,15 +7,8 @@ import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.s
 import { IERC20, IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 
 import { PullTokenWrapperImmutableBase } from "./PullTokenWrapperImmutableBase.sol";
-
-interface IAaveToken {
-    function POOL() external view returns (address);
-    function UNDERLYING_ASSET_ADDRESS() external view returns (address);
-}
-
-interface IAavePool {
-    function withdraw(address asset, uint256 amount, address to) external returns (uint256);
-}
+import { IAaveToken } from "../../interfaces/external/IAaveToken.sol";
+import { IAavePool } from "../../interfaces/external/IAavePool.sol";
 
 /// @title PullTokenWrapperWithdrawImmutable
 /// @notice Non-upgradeable wrapper for a reward token on Merkl so campaigns do not have to be prefunded

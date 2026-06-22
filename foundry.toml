@@ -17,6 +17,9 @@ solc = "0.8.25"
 
 ffi = true
 
+[profile.default.lint]
+exclude_lints = ["erc20-unchecked-transfer","unsafe-typecast"]
+
 [profile.deploy]
 auto_detect_solc = false
 src = 'contracts'
