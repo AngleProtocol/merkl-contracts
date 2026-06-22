@@ -2,7 +2,7 @@
 pragma solidity ^0.8.17;
 
 import { Script } from "forge-std/Script.sol";
-import { WETH9 } from "../contracts/partners/tokenWrappers/weth9.sol";
+import { WETH9 } from "../contracts/mock/weth9.sol";
 
 contract DeployWETH9 is Script {
     WETH9 public weth9;

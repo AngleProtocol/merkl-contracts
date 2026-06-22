@@ -9,7 +9,7 @@ import { ERC1967Proxy } from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy
 import { ITransparentUpgradeableProxy } from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-import { PullTokenWrapperTransfer } from "../contracts/partners/tokenWrappers/PullTokenWrapperTransfer.sol";
+import { PullTokenWrapperTransfer } from "../contracts/partners/tokenWrappers/deprecated/PullTokenWrapperTransfer.sol";
 import { DistributionCreator } from "../contracts/DistributionCreator.sol";
 import { IAccessControlManager } from "../contracts/interfaces/IAccessControlManager.sol";
 import { MockToken } from "../contracts/mock/MockToken.sol";

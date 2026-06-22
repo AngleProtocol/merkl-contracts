@@ -6,20 +6,17 @@ import { ERC20Upgradeable } from "@openzeppelin/contracts-upgradeable/token/ERC2
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import { IERC20, IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 
-import { DistributionCreator } from "../../DistributionCreator.sol";
-import { UUPSHelper } from "../../utils/UUPSHelper.sol";
-import { IAccessControlManager } from "../../interfaces/IAccessControlManager.sol";
-import { Errors } from "../../utils/Errors.sol";
+import { DistributionCreator } from "../../../DistributionCreator.sol";
+import { UUPSHelper } from "../../../utils/UUPSHelper.sol";
+import { IAccessControlManager } from "../../../interfaces/IAccessControlManager.sol";
+import { Errors } from "../../../utils/Errors.sol";
 
-interface IVestingContract {
-    function allocateReward(address beneficiary, uint256 grossAmount) external;
-}
-
-/// @title AlturaWrapper
-/// @notice Wrapper for a reward token on Merkl that allocates rewards through a vesting contract
-/// @dev During claims, this wrapper calls the vesting contract to allocate rewards to beneficiaries
-/// @dev No actual token transfers occur - the vesting contract handles reward distribution
-contract AlturaWrapper is UUPSHelper, ERC20Upgradeable {
+/// @title PullTokenWrapperAllow
+/// @notice Wrapper for a reward token on Merkl so campaigns do not have to be prefunded
+/// @dev In this version of the PullTokenWrapper, tokens are pulled from a holder address during claims
+/// @dev Managers of such wrapper contracts must ensure that the holder address has enough allowance to the wrapper contract
+/// for the token pulled during claims
+contract PullTokenWrapperAllow is UUPSHelper, ERC20Upgradeable {
     using SafeERC20 for IERC20;
 
     // ================================= VARIABLES =================================
@@ -28,7 +25,7 @@ contract AlturaWrapper is UUPSHelper, ERC20Upgradeable {
     IAccessControlManager public accessControlManager;
 
     // Could be put as immutable in a non upgradeable contract
-    address public vestingContract;
+    address public token;
     address public holder;
     address public feeRecipient;
     address public distributor;
@@ -45,7 +42,7 @@ contract AlturaWrapper is UUPSHelper, ERC20Upgradeable {
     // ================================= FUNCTIONS =================================
 
     function initialize(
-        address _vestingContract,
+        address _token,
         address _distributionCreator,
         address _holder,
         string memory _name,
@@ -53,20 +50,19 @@ contract AlturaWrapper is UUPSHelper, ERC20Upgradeable {
     ) public initializer {
         __ERC20_init(string.concat(_name), string.concat(_symbol));
         __UUPSUpgradeable_init();
-        if (_holder == address(0) || _vestingContract == address(0)) revert Errors.ZeroAddress();
+        if (_holder == address(0)) revert Errors.ZeroAddress();
+        IERC20(_token).balanceOf(_holder);
         distributor = DistributionCreator(_distributionCreator).distributor();
         accessControlManager = DistributionCreator(_distributionCreator).accessControlManager();
-        vestingContract = _vestingContract;
+        token = _token;
         distributionCreator = _distributionCreator;
         holder = _holder;
         _setFeeRecipient();
     }
 
     function _beforeTokenTransfer(address from, address to, uint256 amount) internal override {
-        // During claim transactions, allocate rewards through the vesting contract
-        if (from == distributor || to == feeRecipient) {
-            IVestingContract(vestingContract).allocateReward(to, amount);
-        }
+        // During claim transactions, tokens are pulled and transferred to the `to` address
+        if (from == distributor || to == feeRecipient) IERC20(token).safeTransferFrom(holder, to, amount);
     }
 
     function _afterTokenTransfer(address, address to, uint256 amount) internal override {
@@ -89,6 +85,10 @@ contract AlturaWrapper is UUPSHelper, ERC20Upgradeable {
     function _setFeeRecipient() internal {
         address _feeRecipient = DistributionCreator(distributionCreator).feeRecipient();
         feeRecipient = _feeRecipient;
+    }
+
+    function decimals() public view override returns (uint8) {
+        return IERC20Metadata(token).decimals();
     }
 
     /// @inheritdoc UUPSHelper
