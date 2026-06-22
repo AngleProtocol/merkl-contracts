@@ -3,15 +3,11 @@
 pragma solidity ^0.8.17;
 
 import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import { IERC20 } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 
 import { PublicWrapperBase } from "./PublicWrapperBase.sol";
 import { PullTokenWrapperImmutableBase } from "./PullTokenWrapperImmutableBase.sol";
 import { Errors } from "../../utils/Errors.sol";
-
-interface IWETH {
-    function withdraw(uint256 wad) external;
-}
+import { IWETH } from "../../interfaces/external/IWETH.sol";
 
 /// @title NativeTokenUnwrapperImmutable
 /// @notice Non-upgradeable wrapper that takes a wrapped native token (e.g. wETH) and unwraps it to the

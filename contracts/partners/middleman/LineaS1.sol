@@ -6,7 +6,7 @@ import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.s
 import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 
 import { DistributionCreator, CampaignParameters } from "../../DistributionCreator.sol";
-import { PullTokenWrapperAllow } from "../tokenWrappers/PullTokenWrapperAllow.sol";
+import { PullTokenWrapperAllow } from "../tokenWrappers/deprecated/PullTokenWrapperAllow.sol";
 import { Errors } from "../../utils/Errors.sol";
 
 /// @title LineaS1

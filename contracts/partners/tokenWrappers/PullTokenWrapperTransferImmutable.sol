@@ -29,6 +29,9 @@ contract PullTokenWrapperTransferImmutable is PullTokenWrapperImmutableBase {
     /// @notice Hook called before every transfer: sends underlying tokens from the wrapper contract to the
     /// recipient when the transfer originates from the distributor (claim) or is directed to the fee recipient
     function _beforeTokenTransfer(address from, address to, uint256 amount) internal override {
-        if (from == distributor || to == feeRecipient) IERC20(token).safeTransfer(to, amount);
+        if (from == distributor || to == feeRecipient) {
+            uint256 toTransfer = _underlyingToTransfer(to, amount);
+            if (toTransfer != 0) IERC20(token).safeTransfer(to, toTransfer);
+        }
     }
 }

@@ -4,7 +4,7 @@ pragma solidity ^0.8.17;
 import { Test } from "forge-std/Test.sol";
 import { console } from "forge-std/console.sol";
 
-import { PullTokenWrapperAllow } from "../../../../contracts/partners/tokenWrappers/PullTokenWrapperAllow.sol";
+import { PullTokenWrapperAllow } from "../../../../contracts/partners/tokenWrappers/deprecated/PullTokenWrapperAllow.sol";
 import { Fixture } from "../../../Fixture.t.sol";
 import { IAccessControlManager } from "../../../../contracts/interfaces/IAccessControlManager.sol";
 import { Errors } from "../../../../contracts/utils/Errors.sol";

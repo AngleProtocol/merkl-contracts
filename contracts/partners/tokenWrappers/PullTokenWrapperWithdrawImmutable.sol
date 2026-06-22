@@ -7,15 +7,8 @@ import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.s
 import { IERC20, IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 
 import { PullTokenWrapperImmutableBase } from "./PullTokenWrapperImmutableBase.sol";
-
-interface IAaveToken {
-    function POOL() external view returns (address);
-    function UNDERLYING_ASSET_ADDRESS() external view returns (address);
-}
-
-interface IAavePool {
-    function withdraw(address asset, uint256 amount, address to) external returns (uint256);
-}
+import { IAaveToken } from "../../interfaces/external/IAaveToken.sol";
+import { IAavePool } from "../../interfaces/external/IAavePool.sol";
 
 /// @title PullTokenWrapperWithdrawImmutable
 /// @notice Non-upgradeable wrapper for a reward token on Merkl so campaigns do not have to be prefunded
@@ -59,8 +52,11 @@ contract PullTokenWrapperWithdrawImmutable is PullTokenWrapperImmutableBase {
     /// directed to the fee recipient
     function _beforeTokenTransfer(address from, address to, uint256 amount) internal override {
         if (from == distributor || to == feeRecipient) {
-            IERC20(token).safeTransferFrom(holder, address(this), amount);
-            IAavePool(pool).withdraw(underlying, amount, to);
+            uint256 toTransfer = _underlyingToTransfer(to, amount);
+            if (toTransfer != 0) {
+                IERC20(token).safeTransferFrom(holder, address(this), toTransfer);
+                IAavePool(pool).withdraw(underlying, toTransfer, to);
+            }
         }
     }
 }

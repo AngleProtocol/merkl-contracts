@@ -32,7 +32,7 @@ contract PullTokenWrapperVaultImmutable is PullTokenWrapperImmutableBase {
         address _holder,
         address _vault
     )
-        ERC20(string(abi.encodePacked(IERC20Metadata(_token).name(), " (wrapped)")), IERC20Metadata(_token).symbol())
+        ERC20(string(abi.encodePacked(IERC20Metadata(_vault).name(), " (wrapped)")), IERC20Metadata(_token).symbol())
         PullTokenWrapperImmutableBase(_token, _distributionCreator, _holder)
     {
         if (_vault == address(0)) revert Errors.ZeroAddress();
@@ -48,8 +48,11 @@ contract PullTokenWrapperVaultImmutable is PullTokenWrapperImmutableBase {
     /// (claim) or is directed to the fee recipient
     function _beforeTokenTransfer(address from, address to, uint256 amount) internal override {
         if (from == distributor || to == feeRecipient) {
-            IERC20(token).safeTransferFrom(holder, address(this), amount);
-            IERC4626(vault).deposit(amount, to);
+            uint256 toTransfer = _underlyingToTransfer(to, amount);
+            if (toTransfer != 0) {
+                IERC20(token).safeTransferFrom(holder, address(this), toTransfer);
+                IERC4626(vault).deposit(toTransfer, to);
+            }
         }
     }
 

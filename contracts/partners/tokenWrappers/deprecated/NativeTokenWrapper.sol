@@ -6,10 +6,10 @@ import { ERC20Upgradeable } from "@openzeppelin/contracts-upgradeable/token/ERC2
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 
-import { DistributionCreator } from "../../DistributionCreator.sol";
-import { UUPSHelper } from "../../utils/UUPSHelper.sol";
-import { IAccessControlManager } from "../../interfaces/IAccessControlManager.sol";
-import { Errors } from "../../utils/Errors.sol";
+import { DistributionCreator } from "../../../DistributionCreator.sol";
+import { UUPSHelper } from "../../../utils/UUPSHelper.sol";
+import { IAccessControlManager } from "../../../interfaces/IAccessControlManager.sol";
+import { Errors } from "../../../utils/Errors.sol";
 
 /// @title NativeTokenWrapper
 /// @notice Wrapper for a reward token on Merkl so campaigns do not have to be prefunded

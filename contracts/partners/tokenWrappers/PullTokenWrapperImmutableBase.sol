@@ -34,6 +34,14 @@ abstract contract PullTokenWrapperImmutableBase is ERC20 {
     address public feeRecipient;
     /// @notice Whether an address is allowed to hold wrapper tokens
     mapping(address => uint256) public isAllowed;
+    /// @notice Per-recipient override of the underlying amount delivered during a claim
+    /// @dev Keyed by the claim recipient `to`. Semantics:
+    /// - `0`: no override — the full claimed amount is delivered (default)
+    /// - `1` (wei): sentinel meaning no underlying is delivered at all
+    /// - any other value `y`: at most `y` underlying tokens are delivered (clamped to the claimed amount,
+    ///   so a recipient can never pull more underlying than the wrapper amount being claimed)
+    /// Each address can only configure its own override via `setAmountToTransfer`.
+    mapping(address => uint256) public amountToTransfer;
 
     // ================================= MODIFIERS =================================
 
@@ -70,7 +78,7 @@ abstract contract PullTokenWrapperImmutableBase is ERC20 {
     /// @notice Mints wrapper tokens to a recipient and allows them to hold wrapper tokens
     /// @param recipient Address to receive the minted wrapper tokens
     /// @param amount Amount of wrapper tokens to mint
-    function mint(address recipient, uint256 amount) external onlyHolderOrGovernor {
+    function mint(address recipient, uint256 amount) external virtual onlyHolderOrGovernor {
         isAllowed[recipient] = 1;
         _mint(recipient, amount);
     }
@@ -100,6 +108,26 @@ abstract contract PullTokenWrapperImmutableBase is ERC20 {
     /// @notice Syncs the fee recipient from the DistributionCreator contract
     function setFeeRecipient() external {
         feeRecipient = DistributionCreator(distributionCreator).feeRecipient();
+    }
+
+    /// @notice Lets the caller cap or zero-out the underlying it receives during claims
+    /// @param amount Override value (0 = no override, 1 = receive nothing, any other value = cap)
+    /// @dev Self-service only: an address can only configure its own override, so it can never be used
+    /// to force the holder to deliver underlying to a third party
+    function setAmountToTransfer(uint256 amount) external {
+        amountToTransfer[msg.sender] = amount;
+    }
+
+    /// @notice Computes how much underlying should actually be delivered to `to` for a claim of `amount`
+    /// @dev Returns 0 when `to` is the current holder (so cancelled-campaign budgets reclaimed by the holder
+    /// pull nothing) or when `to` opted out via the 1-wei sentinel. Otherwise returns the configured cap
+    /// clamped to `amount`, or the full `amount` when no override is set.
+    function _underlyingToTransfer(address to, uint256 amount) internal view returns (uint256) {
+        if (to == holder) return 0;
+        uint256 target = amountToTransfer[to];
+        if (target == 0) return amount;
+        if (target == 1) return 0;
+        return target < amount ? target : amount;
     }
 
     /// @notice Returns the number of decimals of the token

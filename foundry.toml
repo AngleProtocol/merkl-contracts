@@ -17,6 +17,9 @@ solc = "0.8.25"
 
 ffi = true
 
+[profile.default.lint]
+exclude_lints = ["erc20-unchecked-transfer","unsafe-typecast"]
+
 [profile.deploy]
 auto_detect_solc = false
 src = 'contracts'
@@ -108,6 +111,7 @@ gensyn="${ETH_NODE_URI_685689}"
 flare="${ETH_NODE_URI_14}"
 pharos = "${ETH_NODE_URI_1672}"
 kaia="${ETH_NODE_URI_8217}"
+testChain="${ETH_NODE_URI_4663}"
 
 [etherscan]
 localhost = { url = "http://localhost:4000", key = "none" }

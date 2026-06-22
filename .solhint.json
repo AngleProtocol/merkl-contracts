@@ -18,6 +18,8 @@
     "reentrancy": "warn",
     "reason-string": "off",
     "func-visibility": ["warn", { "ignoreConstructors": true }],
-    "explicit-types": ["error", "explicit"]
+    "explicit-types": ["error", "explicit"],
+    "immutable-vars-naming": "off",
+    "func-name-mixedcase": "off"
   }
 }

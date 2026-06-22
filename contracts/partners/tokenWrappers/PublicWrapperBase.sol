@@ -2,7 +2,6 @@
 
 pragma solidity ^0.8.17;
 
-import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 
@@ -55,6 +54,9 @@ abstract contract PublicWrapperBase is PullTokenWrapperImmutableBase {
     function _afterTokenTransfer(address, address to, uint256 amount) internal override {
         if (_minting == 0 && isAllowed[to] == 0) _burn(to, amount);
     }
+
+    /// @notice Disabled: minting happens automatically in `_beforeTokenTransfer`
+    function mint(address, uint256) external override {}
 
     /// @notice Burns wrapper tokens from a given address
     function burn(address from, uint256 amount) external onlyHolderOrGovernor {
