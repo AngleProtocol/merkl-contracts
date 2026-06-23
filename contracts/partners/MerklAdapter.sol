@@ -33,12 +33,12 @@ contract MerklAdapter is Initializable, OwnableUpgradeable, ReentrancyGuardUpgra
     uint256 public constant BASE_18 = 1e18;
 
     /// @notice Number of seconds in a year, used to bound the per-second management fee rate.
-    uint256 internal constant SECONDS_PER_YEAR = 365 days;
+    uint256 internal constant _SECONDS_PER_YEAR = 365 days;
 
     /// @notice Upper bound for the management fee, expressed as a per-second rate in `BASE_18`.
     /// @dev Equivalent to a ~100%/year linear management fee. Performance fees are not bounded below
     /// 100% so that the recipient can capture all of the interest.
-    uint256 public constant MAX_MANAGEMENT_FEE = BASE_18 / SECONDS_PER_YEAR;
+    uint256 public constant MAX_MANAGEMENT_FEE = BASE_18 / _SECONDS_PER_YEAR;
 
     // =================================== STORAGE ===================================
 
@@ -100,12 +100,8 @@ contract MerklAdapter is Initializable, OwnableUpgradeable, ReentrancyGuardUpgra
         address _feeRecipient,
         address _owner
     ) external initializer {
-        if (
-            address(_asset) == address(0) ||
-            address(_underlyingVault) == address(0) ||
-            _feeRecipient == address(0) ||
-            _owner == address(0)
-        ) revert ZeroAddress();
+        if (address(_asset) == address(0) || address(_underlyingVault) == address(0) || _feeRecipient == address(0) || _owner == address(0))
+            revert ZeroAddress();
         // The adapter and its underlying vault must share the exact same asset.
         if (_underlyingVault.asset() != address(_asset)) revert InvalidAsset();
         if (_performanceFee > BASE_18) revert PerformanceFeeTooHigh();
@@ -134,9 +130,7 @@ contract MerklAdapter is Initializable, OwnableUpgradeable, ReentrancyGuardUpgra
     /// @dev Real assets recoverable from the underlying vault, plus any idle balance sitting on the
     /// adapter. This is the gross value: fees are accounted for through share dilution, not here.
     function totalAssets() public view override returns (uint256) {
-        return
-            underlyingVault.convertToAssets(underlyingVault.balanceOf(address(this))) +
-            IERC20Upgradeable(asset()).balanceOf(address(this));
+        return underlyingVault.convertToAssets(underlyingVault.balanceOf(address(this))) + IERC20Upgradeable(asset()).balanceOf(address(this));
     }
 
     function deposit(uint256 assets, address receiver) public override nonReentrant returns (uint256) {
@@ -174,13 +168,7 @@ contract MerklAdapter is Initializable, OwnableUpgradeable, ReentrancyGuardUpgra
     }
 
     /// @dev Burns `shares` and withdraws `assets` from the underlying vault straight to `receiver`.
-    function _withdraw(
-        address caller,
-        address receiver,
-        address owner,
-        uint256 assets,
-        uint256 shares
-    ) internal override {
+    function _withdraw(address caller, address receiver, address owner, uint256 assets, uint256 shares) internal override {
         if (caller != owner) _spendAllowance(owner, caller, shares);
         _burn(owner, shares);
 
@@ -216,11 +204,7 @@ contract MerklAdapter is Initializable, OwnableUpgradeable, ReentrancyGuardUpgra
             uint256 assetsAfterFees = newTotalAssets - feeAssets;
             // Mirrors ERC4626 `_convertToShares` but against the post-fee asset base, so that the minted
             // shares are worth `feeAssets` once they dilute the existing supply.
-            feeShares = feeAssets.mulDiv(
-                totalSupply() + 10 ** _decimalsOffset(),
-                assetsAfterFees + 1,
-                MathUpgradeable.Rounding.Down
-            );
+            feeShares = feeAssets.mulDiv(totalSupply() + 10 ** _decimalsOffset(), assetsAfterFees + 1, MathUpgradeable.Rounding.Down);
             if (feeShares != 0) _mint(feeRecipient, feeShares);
         }
 
