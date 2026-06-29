@@ -114,7 +114,6 @@ kaia="${ETH_NODE_URI_8217}"
 testChain="${ETH_NODE_URI_4663}"
 arc = "${ETH_NODE_URI_5042}"
 
-
 [etherscan]
 localhost = { url = "http://localhost:4000", key = "none" }
 mainnet = {chainId = 1, key = "${ETHERSCAN_API_KEY}", url = "https://api.etherscan.io/v2/api?chainid=1" }
