@@ -41,6 +41,9 @@ jobs:
       - name: Compile foundry
         run: forge build --sizes --skip scripts/utils/CreateXConstants.sol
 
+      - name: Gas Report
+        uses: saifyoussuf/foundry-gas-reporter-action@v1
+        if: always()
       - name: 'Cache the build so that it can be re-used by the other jobs'
         uses: 'actions/cache/save@v3'
         with:
