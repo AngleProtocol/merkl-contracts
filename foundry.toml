@@ -14,6 +14,9 @@ fs_permissions = [
   { access = "write", path = "./deployments" },
 ]
 solc = "0.8.25"
+# contracts/zama and scripts/zama need solc 0.8.27 (OZ's ERC7984 pragma) -- see [profile.zama]. Skipped here
+# so this profile's build stays byte-identical to before the Zama dependency was added.
+skip = ["contracts/zama/**", "scripts/zama/**"]
 
 ffi = true
 
@@ -36,6 +39,8 @@ fs_permissions = [
   { access = "write", path = "./transactions.json" }
 ]
 solc = "0.8.25"
+# See [profile.default] -- same reason.
+skip = ["contracts/zama/**", "scripts/zama/**"]
 
 [fuzz]
 runs = 500
@@ -45,6 +50,35 @@ runs = 500
 
 [profile.dev]
 via_ir = false
+
+[profile.zama]
+auto_detect_solc = false
+solc = "0.8.27"
+# Profiles inherit unset keys from [profile.default] -- without this, that profile's skip list (which
+# excludes this very directory) would apply here too and skip everything.
+skip = []
+src = 'contracts/zama'
+out = 'out-zama'
+test = 'test/zama'
+libs = ["node_modules"]
+script = 'scripts/zama'
+cache_path = 'cache-forge-zama'
+gas_reports = ["*"]
+optimizer_runs = 100
+fs_permissions = [
+  { access = "write", path = "./transactions" },
+  { access = "write", path = "./deployments" },
+]
+remappings = [
+  "@fhevm/solidity/=node_modules/@fhevm/solidity/",
+  "@openzeppelin/confidential-contracts/=node_modules/@openzeppelin/confidential-contracts/",
+  # Context-scoped: only files inside these two trees resolve `@openzeppelin/contracts/` to v5. Nothing
+  # else in the repo sees this remapping, so [profile.default]'s v4.9.6 resolution is never shadowed.
+  "node_modules/@openzeppelin/confidential-contracts/:@openzeppelin/contracts/=node_modules/@openzeppelin/contracts-v5/",
+  "contracts/zama/:@openzeppelin/contracts/=node_modules/@openzeppelin/contracts-v5/",
+  "forge-std/=node_modules/forge-std/src/",
+]
+ffi = true
 
 [rpc_endpoints]
 localhost = "http://127.0.0.1:8545"
