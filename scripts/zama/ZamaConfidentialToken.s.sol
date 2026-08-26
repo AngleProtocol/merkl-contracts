@@ -131,8 +131,11 @@ contract ZamaConfidentialTokenScript is BaseScript {
 
 /// @dev Deploys the token with the broadcaster as owner (so a follow-up {Mint} run by the same key succeeds).
 contract Deploy is ZamaConfidentialTokenScript {
+    /// @dev Mirrors the plaintext `aglaMerkl` test token from `merklDeploy.s.sol` (same name, same
+    /// symbol, and {ZamaConfidentialToken-decimals} is already 6 to match) — this is its confidential
+    /// counterpart, so the two are recognizable as the same test asset.
     function run() external broadcast returns (ZamaConfidentialToken token) {
-        return _run("Confidential USD", "cUSD");
+        return _run("Confidential aglaMerkl", "caglaMerkl");
     }
 
     function run(string calldata name, string calldata symbol) external broadcast returns (ZamaConfidentialToken token) {
