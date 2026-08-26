@@ -98,7 +98,7 @@ contract ZamaConfidentialTokenScript is BaseScript {
     /// the ACL, and the engine's `ZAMA_DELEGATE_PRIVATE_KEY` signs the relayer's permits as it. Required,
     /// not derived: an unset or wrong delegate makes the whole pre-delegation-decryption experiment
     /// meaningless, and on a real campaign it silently yields zero rewards.
-    /// @dev The canonical Merkl delegate is `0x957c66E97870e42301081217fBB1Aac45bc4eb4D`. Do NOT reuse an
+    /// @dev The canonical Merkl delegate is `0xCE320B9a35aBfD95602B8f272b2730e5633a7337`. Do NOT reuse an
     /// anvil default account here (e.g. `0xf39Fd6...92266`): its private key is public, so anyone could
     /// decrypt the balances of every holder who delegated to it. Those accounts are fine only as throwaway
     /// values on a disposable local fork.
