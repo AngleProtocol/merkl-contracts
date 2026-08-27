@@ -2,6 +2,7 @@
 pragma solidity >=0.8.19 <=0.9.0;
 
 import { Script } from "forge-std/Script.sol";
+import { console } from "forge-std/console.sol";
 
 abstract contract BaseScript is Script {
     /// @dev Included to enable compilation of the script without a $MNEMONIC environment variable.
@@ -32,19 +33,34 @@ abstract contract BaseScript is Script {
     /// - If $MNEMONIC is not defined, default to a test mnemonic.
     ///
     /// The use case for $PRIVATE_KEY or $DEPLOYER_ADDRESS is to specify the broadcaster key via environment variable or the command line respectively.
+    ///
+    /// @dev Announces which source won, because the precedence is otherwise invisible and has already
+    /// misled someone: `forge` auto-loads `.env` from the working directory, so a run that sets only
+    /// $DEPLOYER_ADDRESS (intending node-side impersonation) still signs with the $DEPLOYER_PRIVATE_KEY
+    /// that `.env` quietly supplied. That looks like impersonation and is not. When both are present the
+    /// key wins and this constructor says so loudly; to force the impersonation branch, set
+    /// `DEPLOYER_PRIVATE_KEY=0x0` explicitly alongside $DEPLOYER_ADDRESS.
     constructor() {
         uint256 privateKey = vm.envOr({ name: "DEPLOYER_PRIVATE_KEY", defaultValue: uint256(0) });
+        address from = vm.envOr({ name: "DEPLOYER_ADDRESS", defaultValue: address(0) });
+
         if (privateKey != 0) {
             broadcaster = vm.addr(privateKey);
             broadcasterPrivateKey = privateKey;
-        } else {
-            address from = vm.envOr({ name: "DEPLOYER_ADDRESS", defaultValue: address(0) });
             if (from != address(0)) {
-                broadcaster = from;
+                console.log("BaseScript: DEPLOYER_PRIVATE_KEY *and* DEPLOYER_ADDRESS are both set.");
+                console.log("  -> signing with the KEY; DEPLOYER_ADDRESS is IGNORED. Signer:", broadcaster);
+                console.log("  -> to impersonate instead, set DEPLOYER_PRIVATE_KEY=0x0");
             } else {
-                mnemonic = vm.envOr({ name: "MNEMONIC", defaultValue: TEST_MNEMONIC });
-                (broadcaster, ) = deriveRememberKey({ mnemonic: mnemonic, index: 0 });
+                console.log("BaseScript: signing with DEPLOYER_PRIVATE_KEY. Signer:", broadcaster);
             }
+        } else if (from != address(0)) {
+            broadcaster = from;
+            console.log("BaseScript: no key set - the node must sign (--unlocked). Sender:", broadcaster);
+        } else {
+            mnemonic = vm.envOr({ name: "MNEMONIC", defaultValue: TEST_MNEMONIC });
+            (broadcaster, ) = deriveRememberKey({ mnemonic: mnemonic, index: 0 });
+            console.log("BaseScript: signing with index 0 of $MNEMONIC. Signer:", broadcaster);
         }
     }
 

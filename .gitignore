@@ -47,6 +47,8 @@ bin
 
 # foundry
 /out
+/out-zama
 /zkout
 /cache-forge
+/cache-forge-zama
 /transactions
