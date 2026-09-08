@@ -1,4 +1,77 @@
 {
   "rewardToken": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
-  "rewards": {}
+  "rewards": {
+    "0x9F4c3a1fC5Eac94e3501B88E593734769237DE20": {
+      "cashback-epoch-1": {
+        "amount": "8438013",
+        "timestamp": "1788796800"
+      }
+    },
+    "0x781a75872916EEF3362b1408e73Eb8aFb739F998": {
+      "cashback-epoch-1": {
+        "amount": "8561888",
+        "timestamp": "1788796800"
+      }
+    },
+    "0x68Fc992f17fa306542498683C453673d8065fc50": {
+      "cashback-epoch-1": {
+        "amount": "335340",
+        "timestamp": "1788796800"
+      }
+    },
+    "0xe5BBEc3f0A1271Dad1696A20a5Cc5c08D7aa556E": {
+      "cashback-epoch-1": {
+        "amount": "5613",
+        "timestamp": "1788796800"
+      }
+    },
+    "0x04444a9DA03054f5F19a50C68E13edC6DE96C6Fb": {
+      "cashback-epoch-1": {
+        "amount": "124798",
+        "timestamp": "1788796800"
+      }
+    },
+    "0xd73cF0105bD1739fa20912E4B8798a8d1897bd95": {
+      "cashback-epoch-1": {
+        "amount": "149278",
+        "timestamp": "1788796800"
+      }
+    },
+    "0x392DccaD8B2020A32Fb2A2eb6B37733D0c6C1fEa": {
+      "cashback-epoch-1": {
+        "amount": "8023",
+        "timestamp": "1788796800"
+      }
+    },
+    "0xF1e96217FDc137937C94000f093d7F56a248696d": {
+      "cashback-epoch-1": {
+        "amount": "6489",
+        "timestamp": "1788796800"
+      }
+    },
+    "0x9a38B92c97100aE14eDf7C750CdE2F19b92A86f8": {
+      "cashback-epoch-1": {
+        "amount": "6642",
+        "timestamp": "1788796800"
+      }
+    },
+    "0xB04a1d714eA21EEf8469B07C561a3e89E500B3b8": {
+      "cashback-epoch-1": {
+        "amount": "475",
+        "timestamp": "1788796800"
+      }
+    },
+    "0xbC7DBA3885aD1A2f62c77E24AC985e9b7a5071ec": {
+      "cashback-epoch-1": {
+        "amount": "7034",
+        "timestamp": "1788796800"
+      }
+    },
+    "0x0400DBE6bf2A46e2F42f84843C4b9Cb42cB7beB4": {
+      "cashback-epoch-1": {
+        "amount": "7076",
+        "timestamp": "1788796800"
+      }
+    }
+  }
 }

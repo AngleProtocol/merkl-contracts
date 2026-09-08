@@ -1,4 +1,47 @@
 {
   "rewardToken": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
-  "rewards": {}
+  "rewards": {
+    "0x37BaE31Bd75020DF9C4A7EE86c9A53Ba2B27F10E": {
+      "cashback-epoch-1": {
+        "amount": "10000000",
+        "timestamp": "1788796800"
+      }
+    },
+    "0x74C7a77d07A9aECB5ADd1bF2Bd4FEe8BAEf96748": {
+      "cashback-epoch-1": {
+        "amount": "9698841",
+        "timestamp": "1788796800"
+      }
+    },
+    "0x417bAa420275D745035be2aD90e4465fBFC07C4e": {
+      "cashback-epoch-1": {
+        "amount": "9040524",
+        "timestamp": "1788796800"
+      }
+    },
+    "0xb2098e8bfa05Ef50af56A1da4aAf328B338B24B4": {
+      "cashback-epoch-1": {
+        "amount": "6497952",
+        "timestamp": "1788796800"
+      }
+    },
+    "0x53f08fA116F1507d69D2cdFdaAb6a4ED8d1De036": {
+      "cashback-epoch-1": {
+        "amount": "8270378",
+        "timestamp": "1788796800"
+      }
+    },
+    "0xEBa5c0e4d4BCa9ED4DC96160A183546BB17B086d": {
+      "cashback-epoch-1": {
+        "amount": "5991375",
+        "timestamp": "1788796800"
+      }
+    },
+    "0x4cb6739582E82151455a9A84B3aD97037585536C": {
+      "cashback-epoch-1": {
+        "amount": "228152",
+        "timestamp": "1788796800"
+      }
+    }
+  }
 }
