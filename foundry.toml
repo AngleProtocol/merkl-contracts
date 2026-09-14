@@ -76,6 +76,7 @@ sei = "${ETH_NODE_URI_1329}"
 soneium="${ETH_NODE_URI_1868}"
 swell = "${ETH_NODE_URI_1923}"
 ronin = "${ETH_NODE_URI_2020}"
+morph = "${ETH_NODE_URI_2818}"
 citrea = "${ETH_NODE_URI_4114}"
 fluent = "${ETH_NODE_URI_25363}"
 megaeth="${ETH_NODE_URI_4326}"
@@ -144,6 +145,7 @@ sei = {chainId = 1329, key = "${ETHERSCAN_API_KEY}", url = "https://api.ethersca
 soneium = {chainId = 1868, key = "none", url = "https://soneium.blockscout.com/api" }
 swell = {chainId = 1923, key = "none", url = "https://explorer.swellnetwork.io:443/api/" }
 ronin = {chainId = 2020, key = "none", url = "https://sourcify.roninchain.com/server/" }
+morph = {chainId = 2818, key = "none", url = "https://explorer-api.morph.network/api" }
 citrea = {chainId = 4114, key = "none", url = "https://explorer.mainnet.citrea.xyz/api" }
 fluent = {chainId = 25363, key = "none", url = "https://fluentscan.xyz/api" }
 megaeth = {chainId = 4326, key = "${ETHERSCAN_API_KEY}", url = "https://api.etherscan.io/v2/api?chainid=4326" }
