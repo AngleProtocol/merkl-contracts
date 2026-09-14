@@ -8,7 +8,7 @@ runs:
   steps:
     - uses: oven-sh/setup-bun@v1
       with:
-        bun-version: latest
+        bun-version: 1.4.2
 
     - uses: actions/cache@v3
       id: bun-cache
