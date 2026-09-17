@@ -54,12 +54,21 @@ contract MockAaveToken is MockTokenPermit {
 contract MockAavePool {
     /// @dev Variable debt token associated to an underlying asset
     mapping(address => address) public debtTokens;
+    /// @dev aToken associated to an underlying asset
+    mapping(address => address) public aTokens;
 
     function setDebtToken(address asset, address debtToken) external {
         debtTokens[asset] = debtToken;
     }
 
+    function setAToken(address asset, address aToken) external {
+        aTokens[asset] = aToken;
+    }
+
+    /// @dev Burns the aTokens of the caller when one is registered for the asset, and sends back the underlying
     function withdraw(address asset, uint256 amount, address to) external returns (uint256) {
+        address aToken = aTokens[asset];
+        if (aToken != address(0)) MockTokenPermit(aToken).burn(msg.sender, amount);
         IERC20(asset).transfer(to, amount);
         return amount;
     }
