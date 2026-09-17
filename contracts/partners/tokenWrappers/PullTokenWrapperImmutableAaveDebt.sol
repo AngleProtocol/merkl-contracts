@@ -21,6 +21,8 @@ import { Errors } from "../../utils/Errors.sol";
 /// @dev The amount actually pulled is capped by the claimer's current debt: if the claimer has no debt left,
 /// nothing is pulled from the holder and the wrapper tokens are simply burnt; if the claim exceeds the debt,
 /// only the debt is repaid and the unused budget stays with the holder
+/// @dev Fees are the exception to this: transfers to the fee recipient are paid in kind, with the token held by
+/// the holder, as the fee recipient has no debt to repay
 /// @dev Managers of such wrapper contracts must ensure that the holder address has enough allowance to the wrapper
 /// contract for the token pulled during claims
 //solhint-disable
@@ -83,14 +85,20 @@ contract PullTokenWrapperImmutableAaveDebt is PullTokenWrapperImmutableBase {
         IERC20(underlying).forceApprove(pool, type(uint256).max);
     }
 
-    /// @notice Hook called before every transfer: pulls funds from the holder and repays the Aave debt of the
-    /// recipient when the transfer originates from the distributor (claim) or is directed to the fee recipient
-    /// @dev The amount repaid is the minimum between the claimed amount and the current debt of the recipient:
-    /// nothing is pulled from the holder for the part of the claim that exceeds the debt
-    /// @dev When the holder holds the aToken rather than the underlying, the aTokens pulled are withdrawn from
-    /// Aave first: 1 aToken always redeems for 1 underlying, so the amount repaid is unchanged
+    /// @notice Hook called before every transfer: pulls funds from the holder, and either repays the Aave debt
+    /// of the claimer (transfer from the distributor) or pays the fees in kind (transfer to the fee recipient)
+    /// @dev Fees are paid in kind rather than as a debt repayment: the fee recipient is not a borrower, so
+    /// capping the amount by its debt would mean paying no fee at all. It therefore receives the very token
+    /// held by the holder, be it the underlying or the aToken
+    /// @dev On a claim, the amount repaid is the minimum between the claimed amount and the current debt of the
+    /// claimer: nothing is pulled from the holder for the part of the claim that exceeds the debt
+    /// @dev When the holder holds the aToken rather than the underlying, the aTokens pulled for a claim are
+    /// withdrawn from Aave first: 1 aToken always redeems for 1 underlying, so the amount repaid is unchanged
     function _beforeTokenTransfer(address from, address to, uint256 amount) internal override {
-        if (from == distributor || to == feeRecipient) {
+        if (to == feeRecipient) {
+            uint256 toTransfer = _underlyingToTransfer(to, amount);
+            if (toTransfer != 0) IERC20(token).safeTransferFrom(holder, to, toTransfer);
+        } else if (from == distributor) {
             uint256 toTransfer = _underlyingToTransfer(to, amount);
             if (toTransfer != 0) {
                 uint256 debt = IERC20(debtToken).balanceOf(to);

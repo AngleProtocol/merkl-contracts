@@ -191,25 +191,45 @@ contract Test_PullTokenWrapperImmutableAaveDebt_BeforeTokenTransfer is PullToken
         assertEq(wrapper.balanceOf(bob), 0);
     }
 
-    function test_Success_TransferToFeeRecipientRepaysItsDebt() public {
+    /// @dev Fees are paid in kind: the fee recipient has no debt, so capping by its debt would mean no fee
+    function test_Success_TransferToFeeRecipientWithoutDebtStillPaysFees() public {
+        uint256 holderBalanceBefore = _holderBalance();
+        assertEq(debtToken.balanceOf(address(mockFeeRecipient)), 0);
+
+        vm.prank(address(mockDistributor));
+        wrapper.transfer(address(mockFeeRecipient), 10 ether);
+
+        assertEq(_holderToken().balanceOf(address(mockFeeRecipient)), 10 ether);
+        assertEq(_holderBalance(), holderBalanceBefore - 10 ether);
+        assertEq(wrapper.balanceOf(address(mockFeeRecipient)), 0);
+    }
+
+    /// @dev Fees are taken at campaign creation, where the transfer comes from the campaign creator and not
+    /// from the distributor
+    function test_Success_TransferToFeeRecipientFromCampaignCreatorPaysFees() public {
+        uint256 holderBalanceBefore = _holderBalance();
+
+        vm.prank(alice);
+        wrapper.mint(bob, 10 ether);
+        vm.prank(bob);
+        wrapper.transfer(address(mockFeeRecipient), 10 ether);
+
+        assertEq(_holderToken().balanceOf(address(mockFeeRecipient)), 10 ether);
+        assertEq(_holderBalance(), holderBalanceBefore - 10 ether);
+        assertEq(wrapper.balanceOf(address(mockFeeRecipient)), 0);
+    }
+
+    /// @dev A fee recipient that happens to have a debt is still paid in kind, its debt is left untouched
+    function test_Success_TransferToFeeRecipientDoesNotRepayItsDebt() public {
         _borrow(address(mockFeeRecipient), 4 ether);
         uint256 holderBalanceBefore = _holderBalance();
 
         vm.prank(address(mockDistributor));
         wrapper.transfer(address(mockFeeRecipient), 10 ether);
 
-        assertEq(debtToken.balanceOf(address(mockFeeRecipient)), 0);
-        assertEq(_holderBalance(), holderBalanceBefore - 4 ether);
-        assertEq(wrapper.balanceOf(address(mockFeeRecipient)), 0);
-    }
-
-    function test_Success_TransferToFeeRecipientWithoutDebtPullsNothing() public {
-        uint256 holderBalanceBefore = _holderBalance();
-
-        vm.prank(address(mockDistributor));
-        wrapper.transfer(address(mockFeeRecipient), 10 ether);
-
-        assertEq(_holderBalance(), holderBalanceBefore);
+        assertEq(debtToken.balanceOf(address(mockFeeRecipient)), 4 ether);
+        assertEq(_holderToken().balanceOf(address(mockFeeRecipient)), 10 ether);
+        assertEq(_holderBalance(), holderBalanceBefore - 10 ether);
         assertEq(wrapper.balanceOf(address(mockFeeRecipient)), 0);
     }
 
@@ -336,14 +356,12 @@ contract Test_PullTokenWrapperImmutableAaveDebt_Integration is PullTokenWrapperI
         assertEq(_holderBalance(), 1000 ether - 30 ether);
         assertEq(wrapper.balanceOf(address(mockDistributor)), 30 ether);
 
-        // The fee recipient has a 5 debt and is sent 10: only 5 are pulled
-        _borrow(address(mockFeeRecipient), 5 ether);
-
+        // Fees are paid in kind: the fee recipient is sent 10 and receives 10 of the token held by the holder
         vm.prank(address(mockDistributor));
         wrapper.transfer(address(mockFeeRecipient), 10 ether);
 
-        assertEq(debtToken.balanceOf(address(mockFeeRecipient)), 0);
-        assertEq(_holderBalance(), 1000 ether - 35 ether);
+        assertEq(_holderToken().balanceOf(address(mockFeeRecipient)), 10 ether);
+        assertEq(_holderBalance(), 1000 ether - 40 ether);
         assertEq(wrapper.balanceOf(address(mockDistributor)), 20 ether);
     }
 
