@@ -49,10 +49,41 @@ contract MockAaveToken is MockTokenPermit {
     }
 }
 
-/// @dev Mock Aave Pool that handles withdraw by burning aTokens and sending underlying
+/// @dev Mock Aave Pool that handles withdraw by burning aTokens and sending underlying, and repay by
+/// pulling the underlying from the caller and burning the debt of the borrower
 contract MockAavePool {
+    /// @dev Variable debt token associated to an underlying asset
+    mapping(address => address) public debtTokens;
+    /// @dev aToken associated to an underlying asset
+    mapping(address => address) public aTokens;
+
+    function setDebtToken(address asset, address debtToken) external {
+        debtTokens[asset] = debtToken;
+    }
+
+    function setAToken(address asset, address aToken) external {
+        aTokens[asset] = aToken;
+    }
+
+    /// @dev Burns the aTokens of the caller when one is registered for the asset, and sends back the underlying
     function withdraw(address asset, uint256 amount, address to) external returns (uint256) {
+        address aToken = aTokens[asset];
+        if (aToken != address(0)) MockTokenPermit(aToken).burn(msg.sender, amount);
         IERC20(asset).transfer(to, amount);
         return amount;
+    }
+
+    /// @dev Mimics Aave's `repay`: reverts on a null amount or when the borrower has no debt, and caps the
+    /// amount repaid to the outstanding debt
+    function repay(address asset, uint256 amount, uint256 interestRateMode, address onBehalfOf) external returns (uint256) {
+        require(amount != 0, "INVALID_AMOUNT");
+        require(interestRateMode == 2, "INVALID_INTEREST_RATE_MODE");
+        MockTokenPermit debtToken = MockTokenPermit(debtTokens[asset]);
+        uint256 debt = debtToken.balanceOf(onBehalfOf);
+        require(debt != 0, "NO_DEBT_OF_SELECTED_TYPE");
+        uint256 repaid = amount < debt ? amount : debt;
+        IERC20(asset).transferFrom(msg.sender, address(this), repaid);
+        debtToken.burn(onBehalfOf, repaid);
+        return repaid;
     }
 }
