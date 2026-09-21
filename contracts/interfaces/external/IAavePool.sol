@@ -3,7 +3,9 @@
 pragma solidity ^0.8.17;
 
 /// @title IAavePool
-/// @notice Minimal interface for the Aave lending pool used to withdraw an underlying asset
+/// @notice Minimal interface for the Aave lending pool used to withdraw an underlying asset or repay a debt
 interface IAavePool {
     function withdraw(address asset, uint256 amount, address to) external returns (uint256);
+
+    function repay(address asset, uint256 amount, uint256 interestRateMode, address onBehalfOf) external returns (uint256);
 }
