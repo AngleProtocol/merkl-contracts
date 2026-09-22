@@ -1,4 +1,11 @@
 {
   "rewardToken": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
-  "rewards": {}
+  "rewards": {
+    "0xb1f3a7B816B0681188F54dFa400991B93ADf00ed": {
+      "cashback-epoch-2": {
+        "amount": "75586",
+        "timestamp": "1790006400"
+      }
+    }
+  }
 }
