@@ -5,30 +5,50 @@
       "cashback-epoch-1": {
         "amount": "10000000",
         "timestamp": "1788796800"
+      },
+      "cashback-epoch-2": {
+        "amount": "20000000",
+        "timestamp": "1790006400"
       }
     },
     "0x65168a2738161746F6ef0250b6E42aB198524Dab": {
       "cashback-epoch-1": {
         "amount": "10000000",
         "timestamp": "1788796800"
+      },
+      "cashback-epoch-2": {
+        "amount": "9935353",
+        "timestamp": "1790006400"
       }
     },
     "0x4a51443B67b17Cc678F124dBF2980dE351d77A5A": {
       "cashback-epoch-1": {
         "amount": "5552794",
         "timestamp": "1788796800"
+      },
+      "cashback-epoch-2": {
+        "amount": "20000000",
+        "timestamp": "1790006400"
       }
     },
     "0x534489f74fECac730515e145ad8747cA6065E450": {
       "cashback-epoch-1": {
         "amount": "790573",
         "timestamp": "1788796800"
+      },
+      "cashback-epoch-2": {
+        "amount": "6150337",
+        "timestamp": "1790006400"
       }
     },
     "0xa1Ed5e56cb06BEF87c05EebE2B471dC790E79943": {
       "cashback-epoch-1": {
         "amount": "10000000",
         "timestamp": "1788796800"
+      },
+      "cashback-epoch-2": {
+        "amount": "17894414",
+        "timestamp": "1790006400"
       }
     },
     "0x3bB5C8A00190Da68059F0f66C24794584Eb10D07": {
@@ -47,6 +67,10 @@
       "cashback-epoch-1": {
         "amount": "3277634",
         "timestamp": "1788796800"
+      },
+      "cashback-epoch-2": {
+        "amount": "20000000",
+        "timestamp": "1790006400"
       }
     },
     "0xFf3ba0cFe5e7ae558F271c7578f4A5ec559f240c": {
@@ -143,6 +167,10 @@
       "cashback-epoch-1": {
         "amount": "9204613",
         "timestamp": "1788796800"
+      },
+      "cashback-epoch-2": {
+        "amount": "366305",
+        "timestamp": "1790006400"
       }
     },
     "0xEfE34e5922cD8eAB835F45E49D2EB270e8472998": {
@@ -173,12 +201,20 @@
       "cashback-epoch-1": {
         "amount": "8003182",
         "timestamp": "1788796800"
+      },
+      "cashback-epoch-2": {
+        "amount": "319489",
+        "timestamp": "1790006400"
       }
     },
     "0xcF46bbaB1f7Bdd392be98EC08E653cb8Bb6cC94A": {
       "cashback-epoch-1": {
         "amount": "8257735",
         "timestamp": "1788796800"
+      },
+      "cashback-epoch-2": {
+        "amount": "329978",
+        "timestamp": "1790006400"
       }
     },
     "0x2dC600e8EeDE511Bce049cc642254dc426242255": {
@@ -191,66 +227,110 @@
       "cashback-epoch-1": {
         "amount": "5028786",
         "timestamp": "1788796800"
+      },
+      "cashback-epoch-2": {
+        "amount": "201580",
+        "timestamp": "1790006400"
       }
     },
     "0xF050CB63fbd1259f3a011EC6A927D56eC189F504": {
       "cashback-epoch-1": {
         "amount": "9292441",
         "timestamp": "1788796800"
+      },
+      "cashback-epoch-2": {
+        "amount": "371712",
+        "timestamp": "1790006400"
       }
     },
     "0xe898b45BcA2bd191A1AAe78EC0256E222e0150e9": {
       "cashback-epoch-1": {
         "amount": "7900127",
         "timestamp": "1788796800"
+      },
+      "cashback-epoch-2": {
+        "amount": "314799",
+        "timestamp": "1790006400"
       }
     },
     "0xf39E1Cf0616a1d72Bbb9c58aDcb546485f7956b3": {
       "cashback-epoch-1": {
         "amount": "7902003",
         "timestamp": "1788796800"
+      },
+      "cashback-epoch-2": {
+        "amount": "315625",
+        "timestamp": "1790006400"
       }
     },
     "0xd906e466326f2b76E77BCcD4563c7BC54DbBB2c5": {
       "cashback-epoch-1": {
         "amount": "7896439",
         "timestamp": "1788796800"
+      },
+      "cashback-epoch-2": {
+        "amount": "314523",
+        "timestamp": "1790006400"
       }
     },
     "0x677a025c8447F10DC9Ab301c31544964E12e40a9": {
       "cashback-epoch-1": {
         "amount": "7903168",
         "timestamp": "1788796800"
+      },
+      "cashback-epoch-2": {
+        "amount": "315371",
+        "timestamp": "1790006400"
       }
     },
     "0xC1Cb791b7088Fac8049500b70A22C1c513229FF5": {
       "cashback-epoch-1": {
         "amount": "7903791",
         "timestamp": "1788796800"
+      },
+      "cashback-epoch-2": {
+        "amount": "315815",
+        "timestamp": "1790006400"
       }
     },
     "0x7f9742C4C8c73A8d5486100E49d477A1037442Ee": {
       "cashback-epoch-1": {
         "amount": "7898018",
         "timestamp": "1788796800"
+      },
+      "cashback-epoch-2": {
+        "amount": "314828",
+        "timestamp": "1790006400"
       }
     },
     "0x39b63f0Da20846bE6414b301c4a4541721d78DE1": {
       "cashback-epoch-1": {
         "amount": "7896738",
         "timestamp": "1788796800"
+      },
+      "cashback-epoch-2": {
+        "amount": "314306",
+        "timestamp": "1790006400"
       }
     },
     "0x23aA27D7D926D503125a829C6a75BA96FDb5f6F1": {
       "cashback-epoch-1": {
         "amount": "7898208",
         "timestamp": "1788796800"
+      },
+      "cashback-epoch-2": {
+        "amount": "315169",
+        "timestamp": "1790006400"
       }
     },
     "0xaec1D62d1cf08F755F4E4C66797c918972Af9FD9": {
       "cashback-epoch-1": {
         "amount": "130238",
         "timestamp": "1788796800"
+      },
+      "cashback-epoch-2": {
+        "amount": "4114646",
+        "timestamp": "1790006400"
       }
     },
     "0x50877861fe70d8a2d7F249a4c498004113424c8c": {
@@ -263,12 +343,20 @@
       "cashback-epoch-1": {
         "amount": "6897431",
         "timestamp": "1788796800"
+      },
+      "cashback-epoch-2": {
+        "amount": "271575",
+        "timestamp": "1790006400"
       }
     },
     "0xDD678BDA6E7164e792Ddea37FeAEA8bCc2e5087D": {
       "cashback-epoch-1": {
         "amount": "10000000",
         "timestamp": "1788796800"
+      },
+      "cashback-epoch-2": {
+        "amount": "10003145",
+        "timestamp": "1790006400"
       }
     },
     "0x54C6c15083D7AaB0990319457b600510d685635E": {
@@ -281,6 +369,10 @@
       "cashback-epoch-1": {
         "amount": "8827595",
         "timestamp": "1788796800"
+      },
+      "cashback-epoch-2": {
+        "amount": "20000000",
+        "timestamp": "1790006400"
       }
     },
     "0x094B12A57FCF2C37E0b5898a50F372427812280f": {
@@ -299,66 +391,110 @@
       "cashback-epoch-1": {
         "amount": "890634",
         "timestamp": "1788796800"
+      },
+      "cashback-epoch-2": {
+        "amount": "19369588",
+        "timestamp": "1790006400"
       }
     },
     "0xCb22c55DC79d0E4c741A298996507b3852DC1c1d": {
       "cashback-epoch-1": {
         "amount": "586029",
         "timestamp": "1788796800"
+      },
+      "cashback-epoch-2": {
+        "amount": "20000000",
+        "timestamp": "1790006400"
       }
     },
     "0xA9821681fEF27Ed817DF77E476DDDAf0aDac4443": {
       "cashback-epoch-1": {
         "amount": "466652",
         "timestamp": "1788796800"
+      },
+      "cashback-epoch-2": {
+        "amount": "20000000",
+        "timestamp": "1790006400"
       }
     },
     "0xAb6Ed2602ea1C21c59EEA142141BA8221F9952DC": {
       "cashback-epoch-1": {
         "amount": "614334",
         "timestamp": "1788796800"
+      },
+      "cashback-epoch-2": {
+        "amount": "19361950",
+        "timestamp": "1790006400"
       }
     },
     "0xA30D8420E6D58645F21f846c303BD6a0aDcb1e37": {
       "cashback-epoch-1": {
         "amount": "581693",
         "timestamp": "1788796800"
+      },
+      "cashback-epoch-2": {
+        "amount": "19406158",
+        "timestamp": "1790006400"
       }
     },
     "0xA8BC4B4F00616deAe466bCe70C29336e5714b97c": {
       "cashback-epoch-1": {
         "amount": "578540",
         "timestamp": "1788796800"
+      },
+      "cashback-epoch-2": {
+        "amount": "19457070",
+        "timestamp": "1790006400"
       }
     },
     "0x0Ca3178bB0e4a1Fdb07a1AF972a408db7De549eF": {
       "cashback-epoch-1": {
         "amount": "584502",
         "timestamp": "1788796800"
+      },
+      "cashback-epoch-2": {
+        "amount": "18864278",
+        "timestamp": "1790006400"
       }
     },
     "0xC40e66F4deD2962E17E0dD77AA7Aee30eE6a704e": {
       "cashback-epoch-1": {
         "amount": "687198",
         "timestamp": "1788796800"
+      },
+      "cashback-epoch-2": {
+        "amount": "19318042",
+        "timestamp": "1790006400"
       }
     },
     "0x4C4294eCD8C058A818696cD7CD8b548bfCCE2938": {
       "cashback-epoch-1": {
         "amount": "20270",
         "timestamp": "1788796800"
+      },
+      "cashback-epoch-2": {
+        "amount": "92062",
+        "timestamp": "1790006400"
       }
     },
     "0x8A5BC74C221e8f9f0ab5b6CbB0Ff39A7620c8B0A": {
       "cashback-epoch-1": {
         "amount": "507440",
         "timestamp": "1788796800"
+      },
+      "cashback-epoch-2": {
+        "amount": "12917365",
+        "timestamp": "1790006400"
       }
     },
     "0xe4d60c0376a3629F053Bf46849733604832B87B5": {
       "cashback-epoch-1": {
         "amount": "5657",
         "timestamp": "1788796800"
+      },
+      "cashback-epoch-2": {
+        "amount": "784",
+        "timestamp": "1790006400"
       }
     },
     "0x5D3fe8e70B059d2d5be4fec4565A3393f9836fFe": {
@@ -425,6 +561,10 @@
       "cashback-epoch-1": {
         "amount": "35469",
         "timestamp": "1788796800"
+      },
+      "cashback-epoch-2": {
+        "amount": "110450",
+        "timestamp": "1790006400"
       }
     },
     "0x72413E52AE9885199E1C94Fb8Ce8182218F075b5": {
@@ -443,12 +583,532 @@
       "cashback-epoch-1": {
         "amount": "6980",
         "timestamp": "1788796800"
+      },
+      "cashback-epoch-2": {
+        "amount": "144840",
+        "timestamp": "1790006400"
       }
     },
     "0x164CBF2E2901959e4DAD03D3b66607676D79328b": {
       "cashback-epoch-1": {
         "amount": "9261",
         "timestamp": "1788796800"
+      }
+    },
+    "0x59f87f52D8252fa758159516410A1C0AFFE1816f": {
+      "cashback-epoch-2": {
+        "amount": "18338970",
+        "timestamp": "1790006400"
+      }
+    },
+    "0xBf2cE91DFE6E827CB0330A15cf54a4e01A4add0E": {
+      "cashback-epoch-2": {
+        "amount": "13708437",
+        "timestamp": "1790006400"
+      }
+    },
+    "0x4B400313b4355FBc2D553780A47738934A7CfCCC": {
+      "cashback-epoch-2": {
+        "amount": "18338567",
+        "timestamp": "1790006400"
+      }
+    },
+    "0xa93Cc41d1d903d3e41F3AB5d6D67107F0Eb5e570": {
+      "cashback-epoch-2": {
+        "amount": "12611950",
+        "timestamp": "1790006400"
+      }
+    },
+    "0x01fB4f60874b250324722dc3305773a4c5C172E8": {
+      "cashback-epoch-2": {
+        "amount": "18356125",
+        "timestamp": "1790006400"
+      }
+    },
+    "0x27B3552858Fe4264748821227ff5b5b52c98Cf8e": {
+      "cashback-epoch-2": {
+        "amount": "18347096",
+        "timestamp": "1790006400"
+      }
+    },
+    "0x7521f5F74467305188625409E9fEf6d9d257156a": {
+      "cashback-epoch-2": {
+        "amount": "20000000",
+        "timestamp": "1790006400"
+      }
+    },
+    "0xb32B84494df2B99Cae50683a4273cCE4a21429bf": {
+      "cashback-epoch-2": {
+        "amount": "19151793",
+        "timestamp": "1790006400"
+      }
+    },
+    "0x43Ab75BF3ceeEaad1a1ec983Ce744f70fF404af4": {
+      "cashback-epoch-2": {
+        "amount": "20000000",
+        "timestamp": "1790006400"
+      }
+    },
+    "0xe6A9E5129FfFD9155646C5902c2f9BDee8A78DcE": {
+      "cashback-epoch-2": {
+        "amount": "20000000",
+        "timestamp": "1790006400"
+      }
+    },
+    "0x86Ce2E3030264e2310EFBF1ec78FF4Abb6Def63C": {
+      "cashback-epoch-2": {
+        "amount": "19855",
+        "timestamp": "1790006400"
+      }
+    },
+    "0x12191315E24Df83F426Bd9991B6335058449b1cC": {
+      "cashback-epoch-2": {
+        "amount": "20000000",
+        "timestamp": "1790006400"
+      }
+    },
+    "0xB9b98205F564666f7B432b942642e45d23acd5D4": {
+      "cashback-epoch-2": {
+        "amount": "20000000",
+        "timestamp": "1790006400"
+      }
+    },
+    "0x3DDAf7C6f2e326741643A6699640c9aa8a91CbD4": {
+      "cashback-epoch-2": {
+        "amount": "19432264",
+        "timestamp": "1790006400"
+      }
+    },
+    "0x17F6Fddd500b5A8a3548Ab9ed885492232DB2547": {
+      "cashback-epoch-2": {
+        "amount": "12123215",
+        "timestamp": "1790006400"
+      }
+    },
+    "0xBacfF16C98A68E14cead59601CF66876F0e0d3C5": {
+      "cashback-epoch-2": {
+        "amount": "20000000",
+        "timestamp": "1790006400"
+      }
+    },
+    "0xdF6077e59FcDCe9386B07470C4E9756Ebcb45708": {
+      "cashback-epoch-2": {
+        "amount": "10463",
+        "timestamp": "1790006400"
+      }
+    },
+    "0x54739691f704649C041aCA4eFd22A3600eCE4178": {
+      "cashback-epoch-2": {
+        "amount": "9939454",
+        "timestamp": "1790006400"
+      }
+    },
+    "0xaA45d2Ba4Ab87F6fe2575434248A5b478BeD46db": {
+      "cashback-epoch-2": {
+        "amount": "9936624",
+        "timestamp": "1790006400"
+      }
+    },
+    "0x23CB5f48fa3F4502232F3442637f90E8e3355701": {
+      "cashback-epoch-2": {
+        "amount": "188666",
+        "timestamp": "1790006400"
+      }
+    },
+    "0x026c50c5e64f09c8738f2c199F2B1A4Bb5822cD9": {
+      "cashback-epoch-2": {
+        "amount": "20000000",
+        "timestamp": "1790006400"
+      }
+    },
+    "0x6A19c208f2071e35f78435729b9D9D4596D60298": {
+      "cashback-epoch-2": {
+        "amount": "19966176",
+        "timestamp": "1790006400"
+      }
+    },
+    "0x7b49031eFcc8c505dD84F8F07B6f0950AE63012B": {
+      "cashback-epoch-2": {
+        "amount": "18002",
+        "timestamp": "1790006400"
+      }
+    },
+    "0xe9c0DF9BD4607850d410C957FeC11eC209De5Ef6": {
+      "cashback-epoch-2": {
+        "amount": "193688",
+        "timestamp": "1790006400"
+      }
+    },
+    "0x7cA79A16836ade29a6b4d86D8EFbdfEd1075732f": {
+      "cashback-epoch-2": {
+        "amount": "57987",
+        "timestamp": "1790006400"
+      }
+    },
+    "0x638979B9Cd38b3841B5ecFc6559F2b19581B8793": {
+      "cashback-epoch-2": {
+        "amount": "1147801",
+        "timestamp": "1790006400"
+      }
+    },
+    "0x791f9bca248833Be404889319c14389c1Affb98F": {
+      "cashback-epoch-2": {
+        "amount": "35965",
+        "timestamp": "1790006400"
+      }
+    },
+    "0x718bE1c6c6751d7cF8f22921dad57057f890f6D5": {
+      "cashback-epoch-2": {
+        "amount": "13309823",
+        "timestamp": "1790006400"
+      }
+    },
+    "0xA5b9c63c5f9b5580A6c0f6A6Fb015065EFD3eB3B": {
+      "cashback-epoch-2": {
+        "amount": "1790",
+        "timestamp": "1790006400"
+      }
+    },
+    "0x55EE7CB220a7fa36A556482B6Fe0aebB20eB3042": {
+      "cashback-epoch-2": {
+        "amount": "13670116",
+        "timestamp": "1790006400"
+      }
+    },
+    "0x5f1D6C57614C1adEe21a20a3681A582C08fA47ed": {
+      "cashback-epoch-2": {
+        "amount": "153665",
+        "timestamp": "1790006400"
+      }
+    },
+    "0x9B981cc4efEf5186F4436a349005dAEA13959b56": {
+      "cashback-epoch-2": {
+        "amount": "2200",
+        "timestamp": "1790006400"
+      }
+    },
+    "0x2D646A9b7a1c4D7B06c5340BDa438a3d5A3bA722": {
+      "cashback-epoch-2": {
+        "amount": "11316",
+        "timestamp": "1790006400"
+      }
+    },
+    "0xF20349CC08ce0FD2f4D13b14346cbC000cDbc71E": {
+      "cashback-epoch-2": {
+        "amount": "19948093",
+        "timestamp": "1790006400"
+      }
+    },
+    "0x908bE8F5f1f59E725a0015477bee28945616c292": {
+      "cashback-epoch-2": {
+        "amount": "89792",
+        "timestamp": "1790006400"
+      }
+    },
+    "0xd02e7Dda8F4CCe77f4304f824A08c543Ac4D0027": {
+      "cashback-epoch-2": {
+        "amount": "8020195",
+        "timestamp": "1790006400"
+      }
+    },
+    "0x44C041869875eb941Bd2cf3BFd3245fD959b96C0": {
+      "cashback-epoch-2": {
+        "amount": "20000000",
+        "timestamp": "1790006400"
+      }
+    },
+    "0x513EAf4969d889D1c705324678b248ffC1843660": {
+      "cashback-epoch-2": {
+        "amount": "20000000",
+        "timestamp": "1790006400"
+      }
+    },
+    "0xb1Aa8EE3Bd8f1e1d73dcD0bb9caa839439Df2898": {
+      "cashback-epoch-2": {
+        "amount": "14993",
+        "timestamp": "1790006400"
+      }
+    },
+    "0xAE0e491B1c7d66D58F4274AB33F01a3806c06e44": {
+      "cashback-epoch-2": {
+        "amount": "1849602",
+        "timestamp": "1790006400"
+      }
+    },
+    "0x02E14815Db27725484FB15a4DECb6357a87EE335": {
+      "cashback-epoch-2": {
+        "amount": "8615585",
+        "timestamp": "1790006400"
+      }
+    },
+    "0xd2BEC781BBC43B63b636B0A07EEaF7A660aAbDc6": {
+      "cashback-epoch-2": {
+        "amount": "20000000",
+        "timestamp": "1790006400"
+      }
+    },
+    "0x5351f1CEFC06e3Ee03b5C600E612aDe7FC8a37A1": {
+      "cashback-epoch-2": {
+        "amount": "18357629",
+        "timestamp": "1790006400"
+      }
+    },
+    "0x612b56357A5D9F1De67F11C873517257dFFA32c3": {
+      "cashback-epoch-2": {
+        "amount": "8444022",
+        "timestamp": "1790006400"
+      }
+    },
+    "0x5eEFf671EF82A029C7cDC04264c845a89DC18f0b": {
+      "cashback-epoch-2": {
+        "amount": "11126",
+        "timestamp": "1790006400"
+      }
+    },
+    "0xF886f990F9e9B6313B9019394C209498079E6D36": {
+      "cashback-epoch-2": {
+        "amount": "13750031",
+        "timestamp": "1790006400"
+      }
+    },
+    "0x14d42a5ad9573325CD564f019fbE05896C108B45": {
+      "cashback-epoch-2": {
+        "amount": "4856433",
+        "timestamp": "1790006400"
+      }
+    },
+    "0xaa972F819D1848d6587829b1e0aD95339cC7DA78": {
+      "cashback-epoch-2": {
+        "amount": "17828805",
+        "timestamp": "1790006400"
+      }
+    },
+    "0x29a95A3f3A32Adb8bf4523c3aF3754B4a0f83Dfc": {
+      "cashback-epoch-2": {
+        "amount": "961",
+        "timestamp": "1790006400"
+      }
+    },
+    "0x73936899F72690844C84D5283e11ae3450390E1f": {
+      "cashback-epoch-2": {
+        "amount": "18339963",
+        "timestamp": "1790006400"
+      }
+    },
+    "0x3738fd227B242721bdf6Ac590552cb720895C138": {
+      "cashback-epoch-2": {
+        "amount": "13314330",
+        "timestamp": "1790006400"
+      }
+    },
+    "0x0c0D6410f5eE744262659a322F20f5F8E69abEB7": {
+      "cashback-epoch-2": {
+        "amount": "103158",
+        "timestamp": "1790006400"
+      }
+    },
+    "0x81f1B44C75b4d9a66349296cd1E034b86f4a5232": {
+      "cashback-epoch-2": {
+        "amount": "20000000",
+        "timestamp": "1790006400"
+      }
+    },
+    "0xD88d29861180a50e02652825eA9252E69fDc0b4a": {
+      "cashback-epoch-2": {
+        "amount": "18364740",
+        "timestamp": "1790006400"
+      }
+    },
+    "0x15569c5AF0beAa7c675c531378914C56e833c91d": {
+      "cashback-epoch-2": {
+        "amount": "18181",
+        "timestamp": "1790006400"
+      }
+    },
+    "0x9a67174eb59AD9Cb9e796Bb353d632dd71cd86d9": {
+      "cashback-epoch-2": {
+        "amount": "400548",
+        "timestamp": "1790006400"
+      }
+    },
+    "0x7002195cdD61135852FCae82A2519bFEf1Fa97A8": {
+      "cashback-epoch-2": {
+        "amount": "17974646",
+        "timestamp": "1790006400"
+      }
+    },
+    "0xF14C2D730757a276A589d2925AF35023e888b347": {
+      "cashback-epoch-2": {
+        "amount": "2086",
+        "timestamp": "1790006400"
+      }
+    },
+    "0x006E003bed9B89B81c7F91F7070Da579E886D6F7": {
+      "cashback-epoch-2": {
+        "amount": "14094918",
+        "timestamp": "1790006400"
+      }
+    },
+    "0x03E68599E198D85f207421F9Dd481787a3714D7C": {
+      "cashback-epoch-2": {
+        "amount": "18352032",
+        "timestamp": "1790006400"
+      }
+    },
+    "0x4F23a95D1a53A0196618cD1c8cA31796C16052f4": {
+      "cashback-epoch-2": {
+        "amount": "13185",
+        "timestamp": "1790006400"
+      }
+    },
+    "0x5B41B4723a1E4b51483f1F86AD1286c1E28643d0": {
+      "cashback-epoch-2": {
+        "amount": "13696318",
+        "timestamp": "1790006400"
+      }
+    },
+    "0xa360C4ED52e9E722C95c53Bee718e21F2caC02BA": {
+      "cashback-epoch-2": {
+        "amount": "20000000",
+        "timestamp": "1790006400"
+      }
+    },
+    "0xE1d1663892A1dFe82c2Cd11810C9188B8A9B505F": {
+      "cashback-epoch-2": {
+        "amount": "19199529",
+        "timestamp": "1790006400"
+      }
+    },
+    "0xfc93233Ac03580EFedDA4f31C173fEC58CDd7AeC": {
+      "cashback-epoch-2": {
+        "amount": "26974",
+        "timestamp": "1790006400"
+      }
+    },
+    "0xB84CC4f07D974a087277f511Cc0125d21bE00229": {
+      "cashback-epoch-2": {
+        "amount": "46456",
+        "timestamp": "1790006400"
+      }
+    },
+    "0x07cBDeADbA944cAA1059d8EfAEA4AF392844554c": {
+      "cashback-epoch-2": {
+        "amount": "2261",
+        "timestamp": "1790006400"
+      }
+    },
+    "0x40Db8941e90c5a540C52159D9f3b9Ad4417364B3": {
+      "cashback-epoch-2": {
+        "amount": "361019",
+        "timestamp": "1790006400"
+      }
+    },
+    "0xF2972c65F56867ECa2Ee41d464b3542A2D866092": {
+      "cashback-epoch-2": {
+        "amount": "422158",
+        "timestamp": "1790006400"
+      }
+    },
+    "0xec8466a79e32c7c93381F875Cf9fc8B898D25aE5": {
+      "cashback-epoch-2": {
+        "amount": "20000000",
+        "timestamp": "1790006400"
+      }
+    },
+    "0xf3b1723B68Bc00d437c5828043A792fe94E1035B": {
+      "cashback-epoch-2": {
+        "amount": "19948149",
+        "timestamp": "1790006400"
+      }
+    },
+    "0xF3B028F4cb27dD237D324563b6824F18f0585fe4": {
+      "cashback-epoch-2": {
+        "amount": "2425846",
+        "timestamp": "1790006400"
+      }
+    },
+    "0xef28f05c77B4d1a0087d04b6060c8F4b962bB4F4": {
+      "cashback-epoch-2": {
+        "amount": "13762722",
+        "timestamp": "1790006400"
+      }
+    },
+    "0x5079D5DA4728F0cCF1eC0C72D650ED2Af45f101e": {
+      "cashback-epoch-2": {
+        "amount": "13749260",
+        "timestamp": "1790006400"
+      }
+    },
+    "0x50a31ea4D53426A232eCCfA9ce95720A91918771": {
+      "cashback-epoch-2": {
+        "amount": "24615",
+        "timestamp": "1790006400"
+      }
+    },
+    "0x5a81BB563ecF34eb7306b08363b57d61B774fa90": {
+      "cashback-epoch-2": {
+        "amount": "19992548",
+        "timestamp": "1790006400"
+      }
+    },
+    "0x4570b1eb2F39b4c511C70a6f852ec13C93A14416": {
+      "cashback-epoch-2": {
+        "amount": "10035942",
+        "timestamp": "1790006400"
+      }
+    },
+    "0xa52AaF7da0156d2D30a310aFe6f084a0DA9cEE54": {
+      "cashback-epoch-2": {
+        "amount": "20000000",
+        "timestamp": "1790006400"
+      }
+    },
+    "0x56cdf2414d1aF5B3ad746658616E54D825d2e102": {
+      "cashback-epoch-2": {
+        "amount": "1894",
+        "timestamp": "1790006400"
+      }
+    },
+    "0xDe5bFd40Ed5Cc1207c6437CB9b2Cb5931BAA07E1": {
+      "cashback-epoch-2": {
+        "amount": "1184117",
+        "timestamp": "1790006400"
+      }
+    },
+    "0xf758d223be7830Ec98EB2508f1E1de5C15f644ce": {
+      "cashback-epoch-2": {
+        "amount": "14079798",
+        "timestamp": "1790006400"
+      }
+    },
+    "0x3D922Da7FE523b4E34E151a32e6f3EE2Ab6AB32B": {
+      "cashback-epoch-2": {
+        "amount": "5540",
+        "timestamp": "1790006400"
+      }
+    },
+    "0x97009e185907e3e6863258D4876B956440AfaA35": {
+      "cashback-epoch-2": {
+        "amount": "20000000",
+        "timestamp": "1790006400"
+      }
+    },
+    "0x5DddB56E52cDa0f2b165f113211cf50a92BF028d": {
+      "cashback-epoch-2": {
+        "amount": "18339815",
+        "timestamp": "1790006400"
+      }
+    },
+    "0xaa30eF2E0127E95DB7C7339f8f198eA2CC461038": {
+      "cashback-epoch-2": {
+        "amount": "18366688",
+        "timestamp": "1790006400"
+      }
+    },
+    "0xAC3bB3CB29498F8C7C969c4B6c61E00E400f2500": {
+      "cashback-epoch-2": {
+        "amount": "19941098",
+        "timestamp": "1790006400"
       }
     }
   }
