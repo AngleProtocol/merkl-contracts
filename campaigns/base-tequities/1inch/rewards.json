@@ -413,6 +413,12 @@
         "timestamp": "1788796800"
       }
     },
+    "0x5877c683253A22b704D49246553c4D56F454822B": {
+      "cashback-epoch-2-manual": {
+        "amount": "50000000",
+        "timestamp": "1790006401"
+      }
+    },
     "0xe9D4d024fCC722dc1e34e2A81eE25560aaE7669E": {
       "cashback-epoch-1": {
         "amount": "9319993",
