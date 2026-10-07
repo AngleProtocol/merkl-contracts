@@ -1,0 +1,1424 @@
+{
+  "rewardToken": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+  "rewards": {
+    "0x557b6510bFa59aa766d38629916A71a4d5FdbC3F": {
+      "cashback-epoch-3": "48897452"
+    },
+    "0xaA45d2Ba4Ab87F6fe2575434248A5b478BeD46db": {
+      "cashback-epoch-3": "34988730"
+    },
+    "0x2dE5E41FC61ce6a3AAd060F320A2Dda5Faa2f631": {
+      "cashback-epoch-3": "43573219"
+    },
+    "0x64e7E15b15928e10EA2a84f6fDf68aBc767D4f06": {
+      "cashback-epoch-3": "34755437"
+    },
+    "0x2914Aae64797e287a75C1735ba8A9b25Fe8C652B": {
+      "cashback-epoch-3": "32741027"
+    },
+    "0x859365e61AF7859c6BF0f7869558eB1233E69D02": {
+      "cashback-epoch-3": "49996465"
+    },
+    "0xb32B84494df2B99Cae50683a4273cCE4a21429bf": {
+      "cashback-epoch-3": "49968404"
+    },
+    "0x598dd37939E92A7FcAeBc1AC6b70E0fcBd1a9Fa9": {
+      "cashback-epoch-3": "39334384"
+    },
+    "0xF855c7D5f39579e7b405617f729831eE8d4a71aD": {
+      "cashback-epoch-3": "13990749"
+    },
+    "0x0D8Fb673cA60839d4E5d3F4acC0f887285Bef77D": {
+      "cashback-epoch-3": "44214294"
+    },
+    "0x9b87Fb7244aa71e367E600Ee4F77F2d0ECdD6Aba": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0x6971ab1c173D4934411FeA89a2401fa8E0709aaB": {
+      "cashback-epoch-3": "46947175"
+    },
+    "0x7bA099119C7b0E4df75eCbC7dc8005c8E62cE315": {
+      "cashback-epoch-3": "44581746"
+    },
+    "0xb59533C1e7D2475484ff41Cde08fd61330d9CEd2": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0x13A4599136447A0cde5608fC5Fe236bDA6Ff21D5": {
+      "cashback-epoch-3": "43600240"
+    },
+    "0xF0eBDF7783bd9a18d7b87De00fB28C6558931533": {
+      "cashback-epoch-3": "47923391"
+    },
+    "0x2A80A83bfc8Ad0B380307099475cEfbFB5B8a414": {
+      "cashback-epoch-3": "22326865"
+    },
+    "0x534dB7098944Cc20FB65C0753247333ED780c470": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0x327209a8c1B72923e0d95E5dDe7599531287df46": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0x3e5D853EdCa74Af147a5f3A96c836405bbeb179b": {
+      "cashback-epoch-3": "43370544"
+    },
+    "0x47388da13317E178A5a8A51C08cB6AFF313082BC": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0x5076154de08324404271Ad01739ddC3Ed62A4ee9": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0xa24100d325C44bfBED9F6CB51ce7a6869FDCC223": {
+      "cashback-epoch-3": "44148990"
+    },
+    "0x9aD74a0cafA0Bb97618f651d4E4A4404AD62BDDc": {
+      "cashback-epoch-3": "43612339"
+    },
+    "0xBf2cE91DFE6E827CB0330A15cf54a4e01A4add0E": {
+      "cashback-epoch-3": "24555810"
+    },
+    "0x208D8b9AA36C65Cdf789dDce7a3AcC38Ea4bEc2E": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0x797e486e7Fa619f6B9B3CE8c8D7836C579827fCd": {
+      "cashback-epoch-3": "47648070"
+    },
+    "0x26D595DdDbAd81Bf976eF6f24686a12A800b141F": {
+      "cashback-epoch-3": "3094626"
+    },
+    "0x81f1B44C75b4d9a66349296cd1E034b86f4a5232": {
+      "cashback-epoch-3": "29881512"
+    },
+    "0xEEa716a7287A401a3B7bD9b83C04a77d18424395": {
+      "cashback-epoch-3": "42855377"
+    },
+    "0x9E7AfBcD768c2aa46eC8e41bcB3A9c6DDF29334a": {
+      "cashback-epoch-3": "44604205"
+    },
+    "0x61702f225a3466D92Ffa934bdc8310499FB007b6": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0x024Cdd7bB49dBF00fB5e303c7843732E6bF84889": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0x4A4935a699E3F1aA25C2e62B94697e711378cDdb": {
+      "cashback-epoch-3": "58927"
+    },
+    "0x2dDbFB82f1c7EC4B0cb8113e4b22479c6Eb5C9cC": {
+      "cashback-epoch-3": "44331955"
+    },
+    "0x51095A5172F3653C0F544E2701F78837ddE0E40b": {
+      "cashback-epoch-3": "36761949"
+    },
+    "0x94Cca025C4F5EfFf4Ae40716053b49b51A8FfB84": {
+      "cashback-epoch-3": "26087629"
+    },
+    "0x34096f66490234A512024A256Ba923222d69CBa9": {
+      "cashback-epoch-3": "45128012"
+    },
+    "0x1002eF6B327f8811B2212893F7B03763EC65417a": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0x3c6311d1ef07aFF7EF82FC53a1E3A89E9A811aa6": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0x1169C8A73f06407805b78bDC954237B1858f4e5f": {
+      "cashback-epoch-3": "45026896"
+    },
+    "0xCC33fC758Cb887f32dbb67619148D5A5dE095213": {
+      "cashback-epoch-3": "15999757"
+    },
+    "0x8D6810a6965246F3e77085feBDf0e816ff6F23d7": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0x44bC5DCD35c61AF004EA0483d7B6e9FDb3810aEa": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0xA27a268b27D8a6e9B0aC93C68c3e0c8e4eecfE75": {
+      "cashback-epoch-3": "49996250"
+    },
+    "0x97C1792845390f41d7aF1768F5FAeb2641583855": {
+      "cashback-epoch-3": "40209435"
+    },
+    "0x6b9239F275c95Af38584B94581Af335Db023a300": {
+      "cashback-epoch-3": "44546073"
+    },
+    "0x667FEE549dFaB04b4c95D52F267FE9F0Ad59cD7d": {
+      "cashback-epoch-3": "30119736"
+    },
+    "0xCb22c55DC79d0E4c741A298996507b3852DC1c1d": {
+      "cashback-epoch-3": "24994300"
+    },
+    "0x718bE1c6c6751d7cF8f22921dad57057f890f6D5": {
+      "cashback-epoch-3": "24680319"
+    },
+    "0x9d67ddCaE8B818cC7d6d18AE903acf4D4aa27620": {
+      "cashback-epoch-3": "44351569"
+    },
+    "0x2e7D33eA39c7a46f75c28Bb3A955381135C68b45": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0x2E33277304685c3e5E64fB95935DcFfB79545068": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0x99eEAEAc06A3E64E15588f740d653504363Fc25C": {
+      "cashback-epoch-3": "49987050"
+    },
+    "0xDD678BDA6E7164e792Ddea37FeAEA8bCc2e5087D": {
+      "cashback-epoch-3": "49978746"
+    },
+    "0x17497CD5193B4D1b3D530B4Be7bc4DFd6CB8fcB4": {
+      "cashback-epoch-3": "49998350"
+    },
+    "0x6932Db71187F83Bc90D151B70EC79fD913bb6019": {
+      "cashback-epoch-3": "40934921"
+    },
+    "0x3f82710990fCc74E7194420e0bf660C06874D0AA": {
+      "cashback-epoch-3": "45900648"
+    },
+    "0x624227ae1d072D03Ae0361F6A71384DD92af80b4": {
+      "cashback-epoch-3": "49990049"
+    },
+    "0x8B8dC7Dd3CaF07de61aeEDdB8C437877a7a8B2d1": {
+      "cashback-epoch-3": "37119538"
+    },
+    "0x9c22F22B779E8e156219E510b8467Dc44021022B": {
+      "cashback-epoch-3": "41027768"
+    },
+    "0x14856B00A8bCDf901f1A6A0F7901de79D9cD70db": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0x8170b33127D803d3cd867f290c721cBf7AC43951": {
+      "cashback-epoch-3": "44584344"
+    },
+    "0x52576A85Ea70E69a895842d1c98e21296342c933": {
+      "cashback-epoch-3": "45038750"
+    },
+    "0xdef120833A314f238f1B6fd85b091bd7D15A9bb3": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0x4053E372c840be81C7345264C8e22725BEe0707f": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0x312895Ca1C5D1E33C511853892338Bd13DC046FE": {
+      "cashback-epoch-3": "48743693"
+    },
+    "0xec214B72f7C561bB12D669C9A65776Da8059389D": {
+      "cashback-epoch-3": "48142611"
+    },
+    "0xA87554f97fc805205CF067EFC515eF597Bd30dd9": {
+      "cashback-epoch-3": "25974419"
+    },
+    "0xba8c4A8d9a379049D4547D16C9f2007a75C1187d": {
+      "cashback-epoch-3": "45167316"
+    },
+    "0x63a4C705daB842c227B6347980a2Da8752BB3AD6": {
+      "cashback-epoch-3": "32805220"
+    },
+    "0x0c21e2163c8096eC2654ef5BDb76E38dCD13e756": {
+      "cashback-epoch-3": "36663442"
+    },
+    "0xB0c86aAb39C016cE83De7a484Ad23d62e69164c8": {
+      "cashback-epoch-3": "43935214"
+    },
+    "0x23baa358eFa2A1316ae2C573f89b98a59C3F48f1": {
+      "cashback-epoch-3": "46293734"
+    },
+    "0x285eD371867eBFfC159b9901670a2f16D84B1948": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0xb4247243bd9c8C9D0088d5eD4660d7536399D7B7": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0xc31502DF0B73b17679C61314C529DE11f2d8cCf8": {
+      "cashback-epoch-3": "46272933"
+    },
+    "0xe0D4113268DF7dd55cb6936c037b10C1de03c095": {
+      "cashback-epoch-3": "41221890"
+    },
+    "0x37c2FC415f85530aC4D7C182e6Cf9c31728e46f2": {
+      "cashback-epoch-3": "9212336"
+    },
+    "0x318A8dD957Bf7eB8B6A93d362DD865Fb51b7B472": {
+      "cashback-epoch-3": "34600965"
+    },
+    "0xcA164e7F78907d87f57D39CE4BBf994ad94Dc869": {
+      "cashback-epoch-3": "43824031"
+    },
+    "0x30DDB23BcFe0BAD321192fC6A5eA9e69df59799a": {
+      "cashback-epoch-3": "47380172"
+    },
+    "0xF4fc6D22cb6CE4E646902c0C26eF49Eb6D7b50BD": {
+      "cashback-epoch-3": "43982213"
+    },
+    "0x92cA5D11522dDFF06A38De10fa73f55ccf25f393": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0x5B5c0a830348b59564Ff2215bc517AC34F38AFE4": {
+      "cashback-epoch-3": "36035902"
+    },
+    "0x24Dec4390D02C1e6eE917105270f75bd03ccaB41": {
+      "cashback-epoch-3": "43611565"
+    },
+    "0x9E80dF997CF42E0BA7310c2b532c4abcfF5bF364": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0x7002195cdD61135852FCae82A2519bFEf1Fa97A8": {
+      "cashback-epoch-3": "49942157"
+    },
+    "0x316FE4eB56254F01d5468dBF6B32Ac2aCb31B352": {
+      "cashback-epoch-3": "44257276"
+    },
+    "0x3C225995eD2c32f92Be0b5859C027365506eF042": {
+      "cashback-epoch-3": "44191270"
+    },
+    "0x77e62C041968aE86fC00F7D0E4ac9Bb52981Ba0B": {
+      "cashback-epoch-3": "6438592"
+    },
+    "0xa360C4ED52e9E722C95c53Bee718e21F2caC02BA": {
+      "cashback-epoch-3": "26429480"
+    },
+    "0xd61c8DE2A5AB9c3Dbd1D1591956FdF555E03f033": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0x20026f35C6657452bC28b1f378FCbD2810C29B13": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0x32113fb63a8fF45e6F214e640A356692B3C1ca5A": {
+      "cashback-epoch-3": "49988450"
+    },
+    "0x780f93dCC269719E620BD8ADc749Dc66908E0611": {
+      "cashback-epoch-3": "43700049"
+    },
+    "0x1F708B0566dBbc50d82D5d251708b0ceF2241D38": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0x97BE5B2182E4b69E4412f1053335061337340E61": {
+      "cashback-epoch-3": "43196022"
+    },
+    "0x893764dceB14465a18981F6d633B0bD83623a042": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0x25700b0CA3d01b1e20Ede72d90F83ED18fe1466a": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0x88DE2AB47352779494547CaCCB31eE1A133dd334": {
+      "cashback-epoch-3": "16191"
+    },
+    "0x686A11468e9BDFb2001dB4AD89bAB4999eE784c1": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0xFE6075b3Ee5518DF4Ebd0C896A1514BF57506D81": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0x4Ea7809feF49eFf650DF3f05DC390Cb97c4ef2FC": {
+      "cashback-epoch-3": "43045191"
+    },
+    "0x6E5e3eD063CA0fb855aEE7a89D6166410690e617": {
+      "cashback-epoch-3": "44060494"
+    },
+    "0x0017CFd832401E54c490eC2eEcDa31E27B2d4D8e": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0x44d5e5381b624c5F943FdC0b3903d10397b95668": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0xd6A387D47EF8238A2B60aDcb30075b1d9424dAF8": {
+      "cashback-epoch-3": "44516476"
+    },
+    "0x29C0e2331E8b2075C26769C5aBAbDc0F017a9650": {
+      "cashback-epoch-3": "44174992"
+    },
+    "0x682A8858C9097a0D84Bb8087A82927514DbF33AC": {
+      "cashback-epoch-3": "9434455"
+    },
+    "0xc8E8FF0DEB12B6b183C927b070224c98ac56d3A7": {
+      "cashback-epoch-3": "49997200"
+    },
+    "0x82FAf458c2e2eB944De6189e5DB7E80823dB985D": {
+      "cashback-epoch-3": "43578621"
+    },
+    "0x16D563031E693fF4d0Ad9d7aaeDE7DBd80228aA8": {
+      "cashback-epoch-3": "46132791"
+    },
+    "0xCA53eA5fb05580e5daD6024dF74aB42b89eaafEe": {
+      "cashback-epoch-3": "27990940"
+    },
+    "0x278532717c251Bf493Ae0E8A31Ebd89d3E6e40CF": {
+      "cashback-epoch-3": "9379387"
+    },
+    "0x8691BC61Ed6DFfF5912Bf720f3E0d75D9F95EAc9": {
+      "cashback-epoch-3": "49984300"
+    },
+    "0x911a6c17F04a9AaDaB8990918FE5016c417626e6": {
+      "cashback-epoch-3": "34237023"
+    },
+    "0xe6A9E5129FfFD9155646C5902c2f9BDee8A78DcE": {
+      "cashback-epoch-3": "26175382"
+    },
+    "0xB62eA007e453e55B4b2F0D7136f2e1c1a517d914": {
+      "cashback-epoch-3": "49988450"
+    },
+    "0x9DB66D15E466B4eAB2E33b690569eAf50fd99f92": {
+      "cashback-epoch-3": "46224051"
+    },
+    "0x7FcC89Fb259Daf3BD1bd397aD211B4F1A13bbB31": {
+      "cashback-epoch-3": "44162174"
+    },
+    "0x36507C792c7292B403516bFa5296A1669e8b5a33": {
+      "cashback-epoch-3": "42828028"
+    },
+    "0xF9513831b12F79db4bD06Fcc4B07797AB6672d91": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0x0b6b3422bf9E12E95976B65A45CD713363f6F6eE": {
+      "cashback-epoch-3": "30777210"
+    },
+    "0x8A5BC74C221e8f9f0ab5b6CbB0Ff39A7620c8B0A": {
+      "cashback-epoch-3": "24688593"
+    },
+    "0x7d1Cba0F26fc67FDBA6EA0C241A601679A48Bc2F": {
+      "cashback-epoch-3": "41868789"
+    },
+    "0xc0E6ad7Cb91bAAd4f884ecc44dF7E3970d28a833": {
+      "cashback-epoch-3": "44363919"
+    },
+    "0xD3460dD3200CaDb1a010E1970Bd2A14a6AeF61D4": {
+      "cashback-epoch-3": "44529390"
+    },
+    "0x49584a49298760716C962CDdFE21F2C030ae4543": {
+      "cashback-epoch-3": "49547646"
+    },
+    "0x863AD6f4070a564D52403381Ab08ad04B423784C": {
+      "cashback-epoch-3": "42142633"
+    },
+    "0x11E895D3896dC7Fb73FFAc2C77eFE1944a9C766c": {
+      "cashback-epoch-3": "43749492"
+    },
+    "0x1970BC59A5B00dD50362806Af12e30f3e147FF0D": {
+      "cashback-epoch-3": "43847860"
+    },
+    "0x6A19c208f2071e35f78435729b9D9D4596D60298": {
+      "cashback-epoch-3": "4499364"
+    },
+    "0xA730f5bf040A585d4C520B7DE0191295578b3690": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0x59834d8Bf0382AE0FC371AB2579BA60dd7522aBc": {
+      "cashback-epoch-3": "36818067"
+    },
+    "0x4FD9615E87f260170ec189262D2eE81f6becf795": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0x30e85048885A68FD79551b7d7cF2b54d6481C9DA": {
+      "cashback-epoch-3": "37765240"
+    },
+    "0x5d186Acf8d964130a112682e053dc409A55D4dC2": {
+      "cashback-epoch-3": "49132578"
+    },
+    "0x218d3B05B008fd50AA40d197D73A5BB207B9C4e8": {
+      "cashback-epoch-3": "46492103"
+    },
+    "0xE07041972B131D195E7Da829F0Fed5F3F4115386": {
+      "cashback-epoch-3": "47105484"
+    },
+    "0x7654da82EAC7185F4c235BBF3B7311f60a25a2d2": {
+      "cashback-epoch-3": "39944102"
+    },
+    "0x0Ca3178bB0e4a1Fdb07a1AF972a408db7De549eF": {
+      "cashback-epoch-3": "24929173"
+    },
+    "0xF00D48F812EDE9e8005b78942BEC6BA1C8B565F8": {
+      "cashback-epoch-3": "32393592"
+    },
+    "0x6F7C44f3E80C444323b2740c1b4aD6D2Ff58B348": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0xb9a1194533F179c21AC7ff6Fc858303656C86111": {
+      "cashback-epoch-3": "42103"
+    },
+    "0x778d57c39bE5ac7B6A713eC699177569c5Cea7b7": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0xAC66189eaaaf599a37B6DF4CD8D839860FfF6C97": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0x653dCa2e0763710Bf139ebeA4650c286474B7BC5": {
+      "cashback-epoch-3": "42897263"
+    },
+    "0x13372025CD81abd863F685257cC1da755eB33eef": {
+      "cashback-epoch-3": "42158610"
+    },
+    "0xc58B2411D94A4A107290B76f9BA13AAD0ef81423": {
+      "cashback-epoch-3": "9306884"
+    },
+    "0x03509b6a6374a0cdA9853bBc51a335d0C7189AfF": {
+      "cashback-epoch-3": "1424"
+    },
+    "0xdf07b6980c38DeB7c810EEC102254Fd3f1322778": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0x7c9B708d5b601797E76eCe1b229CA1E3e36E44e5": {
+      "cashback-epoch-3": "49999950"
+    },
+    "0x1AAb65647fba784e91aC7D7ADFA4CF5744eFa831": {
+      "cashback-epoch-3": "44216963"
+    },
+    "0x3E830781f6921F97Bf6CB73bD24d7BbE2881943E": {
+      "cashback-epoch-3": "43600495"
+    },
+    "0x87eA46C6888EE264F34edd0869B1628E51B5E7FE": {
+      "cashback-epoch-3": "9751"
+    },
+    "0xAd6D8C81D57B9F7174995EF075f44E7AAB9fA764": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0x79592DEcdF65e69e052377A1F07b1Bee6C046b5E": {
+      "cashback-epoch-3": "49985900"
+    },
+    "0x05EBee4894c5b98B36c840DC7fc8F656450A6BdC": {
+      "cashback-epoch-3": "43388862"
+    },
+    "0x33fBAd9cCf14701159a90Db97d4DC0e1AdFcA187": {
+      "cashback-epoch-3": "33727780"
+    },
+    "0x2f927D006d414bFf79936408E5d5346bf1Fa3265": {
+      "cashback-epoch-3": "44063641"
+    },
+    "0x2370db45688e5DA5f18F7055Ca9FB9171aE79727": {
+      "cashback-epoch-3": "43937214"
+    },
+    "0xc7b8220B3745DFdC5d390098E8FD0Ad26CF169ad": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0xDC648B4183070D94A3b4790502Dec998b6016133": {
+      "cashback-epoch-3": "43828948"
+    },
+    "0x933F21594a9CdDD6b227d86de2459eEd0871502F": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0xdB54307Bac79313eb489ED4136A4dcD31dBAc122": {
+      "cashback-epoch-3": "49981650"
+    },
+    "0x68dad3E8919f8B8c1321d729570EDBe83d02aE84": {
+      "cashback-epoch-3": "44224103"
+    },
+    "0xA5fb01a750f2c9c7a192283eA9B38Fff1b2600c9": {
+      "cashback-epoch-3": "11953406"
+    },
+    "0xD3D191064d9e64081A1faE37c7473CAB2A9429a9": {
+      "cashback-epoch-3": "44278645"
+    },
+    "0xf96Cbe93955a994F4C19D83550cE76E8987CcE34": {
+      "cashback-epoch-3": "47651764"
+    },
+    "0xa3783DeF13371C58119996918150731Bb4957c0e": {
+      "cashback-epoch-3": "44820872"
+    },
+    "0x8eD6D1bdB63c1BD263F93d6A4Cd06093aF6F46E6": {
+      "cashback-epoch-3": "47685320"
+    },
+    "0xD9355600E1E0f62be61B0AFf48036E2594fB9993": {
+      "cashback-epoch-3": "39342288"
+    },
+    "0x5B41B4723a1E4b51483f1F86AD1286c1E28643d0": {
+      "cashback-epoch-3": "24679720"
+    },
+    "0x63F03A3ae990702FdA32F6e224E5C9775A7a59bc": {
+      "cashback-epoch-3": "43345385"
+    },
+    "0x6D4C03BBbc9E756a3f1999542Cd50A039e732C47": {
+      "cashback-epoch-3": "42928185"
+    },
+    "0xc18215e8289cF49c7D8455c43E10ee04597d95DE": {
+      "cashback-epoch-3": "42795638"
+    },
+    "0xE3e971C8F1Ed1741b133bE9028Eb756c1Ab61D70": {
+      "cashback-epoch-3": "45186566"
+    },
+    "0xC7354A5DfE8215f904aBc8717F84095472CBd856": {
+      "cashback-epoch-3": "44217043"
+    },
+    "0x2D6562E163990d7B6c7BA7e122628a3b91D99616": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0x005307958f0349201379F9D26c4ED63ae6CaBd7e": {
+      "cashback-epoch-3": "44363871"
+    },
+    "0xAe0fDB010C8dAA1eF252269b57D0d6A4a663d504": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0xb1e75372D689C122f5f0D2D1D3009aF0A3495E55": {
+      "cashback-epoch-3": "42928277"
+    },
+    "0x54d53E9A03B7a949486Ea5660Ec8C5482d08A027": {
+      "cashback-epoch-3": "37169015"
+    },
+    "0x01Fb419B558E497185A19fbDE5936B53AFAa7Bf0": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0xcf113661Bbe6D94C76f9eCEaFA6f57df2D51D6D0": {
+      "cashback-epoch-3": "43578115"
+    },
+    "0x5866728E307d13b4626D11BE159c429299dd8079": {
+      "cashback-epoch-3": "42070024"
+    },
+    "0x640C2dAC0e4618A3a4913e1A1C05d0a401Bede53": {
+      "cashback-epoch-3": "43964183"
+    },
+    "0x84886ef87cdf0B14a67bfB6ccc96C78d7A6af499": {
+      "cashback-epoch-3": "33137451"
+    },
+    "0xE24a2335fb330324614AC7A0CaE7C5F026897a1d": {
+      "cashback-epoch-3": "21229475"
+    },
+    "0xBECae9c50fB0dA014d97d5aF6b8a208D31506De4": {
+      "cashback-epoch-3": "46022741"
+    },
+    "0x9fB13e5c141e22A3F3f4b6119C4d70c6857a55A9": {
+      "cashback-epoch-3": "9416845"
+    },
+    "0x8e94F92241BA9772A6916BcF3e88364CF34152F6": {
+      "cashback-epoch-3": "9380246"
+    },
+    "0xde6eae7BC606a8b015F05526FB9aA83e8A74F7aA": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0xA702359B004C744F79Ea138F791Fd60fF0bBff5F": {
+      "cashback-epoch-3": "44013382"
+    },
+    "0x006ACcc19bE76BAaD0778326cB3b06De07E9E75a": {
+      "cashback-epoch-3": "18994006"
+    },
+    "0x8b7Aa2CAB6412eE52A418d7570dbcb38130aE1a2": {
+      "cashback-epoch-3": "46091064"
+    },
+    "0xd2320046B8B12067fE27ba0A79B2A765F65461Dd": {
+      "cashback-epoch-3": "42824052"
+    },
+    "0x78F9593B3BbD3226D17497Ae6592df802d568e3F": {
+      "cashback-epoch-3": "47219944"
+    },
+    "0x28e06dD9339A8D7deDeE75e9d71FAE63657D6b21": {
+      "cashback-epoch-3": "44461054"
+    },
+    "0x255E816bd0768FBaa139a1D52C0e95fFfF5d3A18": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0x8d6605f8453BFBf665A69F2eceDD056E1cfc6A91": {
+      "cashback-epoch-3": "43911580"
+    },
+    "0x158e4b66a5a611E2aD26F90609201bc114bf5F68": {
+      "cashback-epoch-3": "44169445"
+    },
+    "0xaD4dD21a746e83D282F9B322ea5f740eCdE2026E": {
+      "cashback-epoch-3": "46036781"
+    },
+    "0x0265b91dB88Fb84281995c8E2fDA7b54499EcC35": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0xA6E3a7b4Bf328C8511A9DDB17a06F693395F722A": {
+      "cashback-epoch-3": "49989728"
+    },
+    "0xA30D8420E6D58645F21f846c303BD6a0aDcb1e37": {
+      "cashback-epoch-3": "24953545"
+    },
+    "0x28b4Fa6e081A476209999b4B94236F055B24F72E": {
+      "cashback-epoch-3": "43675895"
+    },
+    "0x2FB2a46CebAabff3E8F12cC9a84b5A0c3D9A4076": {
+      "cashback-epoch-3": "28004340"
+    },
+    "0xc757280309228C9813Ec29aC788aE664b2ac869a": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0xc0546F6b3B46E3AC2510FA888295315731da7188": {
+      "cashback-epoch-3": "24993450"
+    },
+    "0xEd84fEf1F27958b56a404d4c99Ab8D352490B6fd": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0x6D182109eb4E54AF3c704374F6178A10f0d4C703": {
+      "cashback-epoch-3": "9316145"
+    },
+    "0xCCB68c5bA184656F6B78Df37234974D41CD7D2A4": {
+      "cashback-epoch-3": "49938811"
+    },
+    "0xeDb61d470B49BB24ca3E94C7DA7cf37De8F77345": {
+      "cashback-epoch-3": "49981801"
+    },
+    "0xAd5816dD78264B605bb1681bBA7bAf2513Bf525a": {
+      "cashback-epoch-3": "43595028"
+    },
+    "0xB8630996A47eb001490cdC54eaD5F72801bf9D5b": {
+      "cashback-epoch-3": "47025409"
+    },
+    "0x197BA89D69e353f76ad9712cC966642b0dcDFbab": {
+      "cashback-epoch-3": "41697487"
+    },
+    "0x101B2D71F1Dc19435eDC0C1b3355718Ed7F9D491": {
+      "cashback-epoch-3": "44450550"
+    },
+    "0x0E34B878B2ED1FE0bC123C189179Bd1E85194200": {
+      "cashback-epoch-3": "49985050"
+    },
+    "0xC98c3BB08Fc96a731f240594Cec1C712064208AB": {
+      "cashback-epoch-3": "45046648"
+    },
+    "0xD524F89850f58235091444f3B69006806304e742": {
+      "cashback-epoch-3": "45299615"
+    },
+    "0xE10d07b92C92C0D11F048Dd0ff0eBb3FCD623Db0": {
+      "cashback-epoch-3": "42882982"
+    },
+    "0xa8ec567d5384070cf1B52a79690fE8407aD18698": {
+      "cashback-epoch-3": "49987900"
+    },
+    "0xE8CcFC311F843F2C4ed37c1100F047e0358A64F8": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0xcdA486fbe85488418D363BaC3d35C99C1a8805Cd": {
+      "cashback-epoch-3": "46008954"
+    },
+    "0xCB3d4195855Dbe829e3135026Fe0e9074cb46376": {
+      "cashback-epoch-3": "44282414"
+    },
+    "0x718A1136b4E9fb9Cfc25eb1b13Db9344A8591da4": {
+      "cashback-epoch-3": "32649917"
+    },
+    "0xDe5bFd40Ed5Cc1207c6437CB9b2Cb5931BAA07E1": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0xef28f05c77B4d1a0087d04b6060c8F4b962bB4F4": {
+      "cashback-epoch-3": "24537095"
+    },
+    "0x3219A922f87B3D780F3FDF219a9022C2e75cf04A": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0x3FDa6e45e6BbEaAc8b8e7931388A3a3fE358c8AD": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0xb54eF06d6A6905b18F5dBEC45275687Ef91D4E69": {
+      "cashback-epoch-3": "24997700"
+    },
+    "0x325D75d82f56F51F1801c894A4A4b25D23d44997": {
+      "cashback-epoch-3": "9422937"
+    },
+    "0x28a2c3D4Cba853Fd0b956eC711763670686d09BE": {
+      "cashback-epoch-3": "9308819"
+    },
+    "0xC63E71f811B5606E90906bc67024193B43524A86": {
+      "cashback-epoch-3": "9284173"
+    },
+    "0xCD5d6cC8A5785120F73949AA200F2F5d1c88658f": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0x374ed6A4cc4771a2792d4AC5239042fC406537f6": {
+      "cashback-epoch-3": "44247268"
+    },
+    "0x046736F80098E33e0e0af7a298aE1b3Eb8b6979c": {
+      "cashback-epoch-3": "3975089"
+    },
+    "0x08f7bFB2D7E4eeFb5846D291dE1386Ce40450149": {
+      "cashback-epoch-3": "46393666"
+    },
+    "0x3dfFCBFaDD7feDd69Feb0ECEF45577EAb825E423": {
+      "cashback-epoch-3": "43630513"
+    },
+    "0x2C799bD13Cdc8d40285Fd366839B1e2d81bC9B9f": {
+      "cashback-epoch-3": "1221"
+    },
+    "0xda21869b05d06F001D2bbaF2CaE746d16D5FC280": {
+      "cashback-epoch-3": "30006608"
+    },
+    "0xF85882059A9e33D8A565Eb4159E01cd1b3Db1cD0": {
+      "cashback-epoch-3": "61621"
+    },
+    "0x99480A0Aa1deeefe41b9C930F237A60D17c9946C": {
+      "cashback-epoch-3": "44731878"
+    },
+    "0x5a81BB563ecF34eb7306b08363b57d61B774fa90": {
+      "cashback-epoch-3": "26323741"
+    },
+    "0x7A7567cA4905aE145a77fD2E5B6E5a0633dfce31": {
+      "cashback-epoch-3": "18997028"
+    },
+    "0xbdd92C25cCb46a1e5396eC02c49b4C05BaA8E248": {
+      "cashback-epoch-3": "42372601"
+    },
+    "0x321905F58c041A13e680688DB92A80F8bB67BcFc": {
+      "cashback-epoch-3": "9238342"
+    },
+    "0xAb6Ed2602ea1C21c59EEA142141BA8221F9952DC": {
+      "cashback-epoch-3": "24892952"
+    },
+    "0xf2894E6F84477B1DAe597aaf246c9A96C4DC48c9": {
+      "cashback-epoch-3": "42834606"
+    },
+    "0x54222d30C27e376f75A566144BF63ee262eE41E9": {
+      "cashback-epoch-3": "46091824"
+    },
+    "0x10742aB945E6dc1EC284d67b1a506A474788d1a9": {
+      "cashback-epoch-3": "44593677"
+    },
+    "0x55fB3D7fc832fAa91850a087d3a975047496cFa8": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0x6eFe4ce8984354f9942D5D23f61290E5d7c1e55D": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0xb41EF197ef59E0DB83B1736fa561579b8D762EDA": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0x8909Ad675C2ba9F791F4fE53E2dBCCaf6a478BAF": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0xdad2d8270fF252B6084F4878EC8dDF80c2f94d36": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0x475b3328C5134e67192df2CDc31bB4E2b5B59dd3": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0x16421f0D2436adD2bD74d0Cd53F0b6498fd478FF": {
+      "cashback-epoch-3": "43757850"
+    },
+    "0xF5113aD9d6cAA1A1337F8edf20A774c2b1765614": {
+      "cashback-epoch-3": "46762714"
+    },
+    "0xeb641b7734A86409d634d874761c8FbB131911C4": {
+      "cashback-epoch-3": "49983050"
+    },
+    "0x4864DB8a459b4F4ACC840A56ED60869752470Af7": {
+      "cashback-epoch-3": "27168884"
+    },
+    "0xE5908E66903c46CaE57521fD7ae0517aFbe3DD33": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0x528Af03eBF1852b174323a955ECB4B5bE64cCF62": {
+      "cashback-epoch-3": "44984785"
+    },
+    "0xBB1443c89BAC470351648F9c2231C6B45890a718": {
+      "cashback-epoch-3": "43986005"
+    },
+    "0x354B5c255DFA8b83A404af139b6Da4B72015e0AB": {
+      "cashback-epoch-3": "42913705"
+    },
+    "0xE67a83AA4fE3257be70372Dcad6cD1BB5E725cD4": {
+      "cashback-epoch-3": "37787571"
+    },
+    "0x55EE7CB220a7fa36A556482B6Fe0aebB20eB3042": {
+      "cashback-epoch-3": "25019344"
+    },
+    "0xF5a162dB06BA9f3Fcb11D954F2f2c1D6055c5990": {
+      "cashback-epoch-3": "49991350"
+    },
+    "0xF4a80Cd8d2888fF889Eb8F6ABf72Ad8d8d4D155D": {
+      "cashback-epoch-3": "44272952"
+    },
+    "0x0Ed1CB61D5D2bE87b6e1cbA3e26E89E86d4705A4": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0x32122584508392406dE2697153C70DFbe8CDf053": {
+      "cashback-epoch-3": "47462340"
+    },
+    "0x3EB184D5A3074480de12510f84446f0Ca7638a8C": {
+      "cashback-epoch-3": "19686"
+    },
+    "0xa050618CF06415e94A8498Df830CfEE215772bDC": {
+      "cashback-epoch-3": "44375570"
+    },
+    "0x3E61973fB48Cb64C899FCa1f4B355Ee71f745785": {
+      "cashback-epoch-3": "44110590"
+    },
+    "0xEa6934c7dF9085b2D3e31ECb4D25408Bd54bf681": {
+      "cashback-epoch-3": "46364303"
+    },
+    "0xa2e496a734488aA9d84C12198d8cfF7f1bFE94A1": {
+      "cashback-epoch-3": "44512162"
+    },
+    "0xCA50b0a77f1AFA2E1aB7Ed74c5C8A67fb84Af886": {
+      "cashback-epoch-3": "44159488"
+    },
+    "0x12191315E24Df83F426Bd9991B6335058449b1cC": {
+      "cashback-epoch-3": "49982650"
+    },
+    "0xA684Bc252ddA1659C5749358330d383a4f762C79": {
+      "cashback-epoch-3": "44069459"
+    },
+    "0x7318b3D25E1A4B4152824192E44Ace7099EbB937": {
+      "cashback-epoch-3": "43877626"
+    },
+    "0x693996d96883567C245612a157EC780192E612ba": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0xdE82168db02aD7FD046FDCDb484b8a100c6Fae29": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0x15bc3008aCb38320cB4B0Db6194461E8287334F6": {
+      "cashback-epoch-3": "34534051"
+    },
+    "0xeaB8567EA5c39eE7cA0E9c576eF19f5aEfF45Fe3": {
+      "cashback-epoch-3": "49995750"
+    },
+    "0x1A881FB0a310c63423231A42d641e6F739dd7379": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0xfBc42eEa476bF21Be58c7260f3e04CD35070e4AF": {
+      "cashback-epoch-3": "46379629"
+    },
+    "0x8D1c894CFE5a014d92d8B416Cc73BA63ECA36Dc1": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0xB9b98205F564666f7B432b942642e45d23acd5D4": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0x447f0cf804fd829E7A47Ff04A22833f38AeCb233": {
+      "cashback-epoch-3": "88545"
+    },
+    "0xF20349CC08ce0FD2f4D13b14346cbC000cDbc71E": {
+      "cashback-epoch-3": "29345771"
+    },
+    "0xA8BC4B4F00616deAe466bCe70C29336e5714b97c": {
+      "cashback-epoch-3": "24993850"
+    },
+    "0xb4A5e58bEf6579914ea23a2196061dD7Cf6A72E1": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0x95724298BF931758ac5597a7ac9692C8134Bc12A": {
+      "cashback-epoch-3": "48149596"
+    },
+    "0x05732E044ba0D911761b9E4a0381bDbb6997D851": {
+      "cashback-epoch-3": "43989491"
+    },
+    "0x07E3ae8E8c3f79a41D8425A8D05554bFEc457881": {
+      "cashback-epoch-3": "49056394"
+    },
+    "0x98A3499F5BbfdE362c905eF889bA80fD8926cA22": {
+      "cashback-epoch-3": "45862981"
+    },
+    "0xe4C049EF8DEa1467Ccc60eC84FaAB4719c81E70d": {
+      "cashback-epoch-3": "396354"
+    },
+    "0xCc8cF2Ce8C537ff643b3Cd79E1746648072b61c0": {
+      "cashback-epoch-3": "45391490"
+    },
+    "0xBbfd41bF48B86BC043F85301791B81a4bD07c01E": {
+      "cashback-epoch-3": "43536775"
+    },
+    "0x0363C7961C43C7cACc053AdCb3143838004fA095": {
+      "cashback-epoch-3": "44250408"
+    },
+    "0x13888588Ec76F5660E945f7f55662B79B49E3a8D": {
+      "cashback-epoch-3": "39366803"
+    },
+    "0x1031b8E8a7D8C29A2717D40CF7e4f394eCC9EA1B": {
+      "cashback-epoch-3": "43901451"
+    },
+    "0x11de124e1F55dE6F0A7aEdB1C729774EcF622600": {
+      "cashback-epoch-3": "149306"
+    },
+    "0xfD7D6D9b69fc4ad3c187d808778c37D1F99Ae4aC": {
+      "cashback-epoch-3": "45377546"
+    },
+    "0x6D539dbD4Bc64B39e15859D33e8Bd73f7086207a": {
+      "cashback-epoch-3": "49988750"
+    },
+    "0x006E003bed9B89B81c7F91F7070Da579E886D6F7": {
+      "cashback-epoch-3": "25023073"
+    },
+    "0x76F38b26d3917581282F5524a8eC4d7bFB95bD5D": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0x55d384a3B1146721895601F66899a0619c462D27": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0xcd9a731245932506a8c950AC15b5CAcaBC638b08": {
+      "cashback-epoch-3": "44913738"
+    },
+    "0xc5dd5001B8dB325966BeDa124cc26d93be0424ef": {
+      "cashback-epoch-3": "44249071"
+    },
+    "0xf36177449D822Abb6D0e874cEd3293bCEb7B09CC": {
+      "cashback-epoch-3": "44522699"
+    },
+    "0x66F1111e23b62DF101Cb4C48E57B106Fd122d518": {
+      "cashback-epoch-3": "16673535"
+    },
+    "0x39AFcb3693f558235c638D27860091ACaeaC37d8": {
+      "cashback-epoch-3": "44691006"
+    },
+    "0x841F3616538e8459B0A3bECb007FBB9b606272A8": {
+      "cashback-epoch-3": "49991700"
+    },
+    "0xea8F65D4dD71BC1bFeBb61b027A6905B265EfC5B": {
+      "cashback-epoch-3": "14312512"
+    },
+    "0x5764aBfbf9A623F7939e3B6f48865ABae341eC79": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0xB89581be4715Bd50a2B03D54aea5EE67A8b8Ec50": {
+      "cashback-epoch-3": "45125949"
+    },
+    "0xEe29c6dd443A8d7f39a6AF6A0639B481e299E0e4": {
+      "cashback-epoch-3": "46377285"
+    },
+    "0x0972aD081895f7CaEE3B6DfA37Fd2852a4F8A612": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0xD2274278CD5cFFE6C25A0Da3da0372b14DE0D1b8": {
+      "cashback-epoch-3": "43288911"
+    },
+    "0xAc5fa4cba220Be05974Ff3d0D6281bE00f898d1f": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0x56207c912Ac069136B9B60eA1B12D70a44ade22B": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0x99c2ebC900E2dB9BF159a4616Dd37c7187079764": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0x52996111874eb880e76Aa10486f51Baf20575BF4": {
+      "cashback-epoch-3": "9488789"
+    },
+    "0x7aAAC7e655e688EACC38a7E4E01400ED70D2795A": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0x96fB32f62974F603bC97bfcaFd6CfcE4De69c8ca": {
+      "cashback-epoch-3": "44718618"
+    },
+    "0x49E2ae75FD0d8D4281D65587424803DA73B40924": {
+      "cashback-epoch-3": "1674"
+    },
+    "0x9e3787f9f7f0fF7Eea9e36628BecA431B61AE647": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0xf23f68A50fea9Cb1268bf49f667a9c5953d042Dd": {
+      "cashback-epoch-3": "43782404"
+    },
+    "0xa146393D9E05DD7f51308F7715A6Fbfe200B308E": {
+      "cashback-epoch-3": "29191031"
+    },
+    "0x7C8E005C2F9BEeAad138F7d9463fa744a3D11f85": {
+      "cashback-epoch-3": "40384994"
+    },
+    "0x39681c42C27A3410b3E11fb147EA6C6C1c8c8C26": {
+      "cashback-epoch-3": "46317580"
+    },
+    "0xd2BEC781BBC43B63b636B0A07EEaF7A660aAbDc6": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0xE1d1663892A1dFe82c2Cd11810C9188B8A9B505F": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0x885EF1a145bBB22D4015aEbA599385929A6B2Fa8": {
+      "cashback-epoch-3": "45947063"
+    },
+    "0xC4f407b9E47A60a0E19bA75Ed384810b2cD35074": {
+      "cashback-epoch-3": "4595080"
+    },
+    "0xa73bCcd7C07A24E0770463E6fee79e2e11c4b328": {
+      "cashback-epoch-3": "46983397"
+    },
+    "0x01f0f866D3AdB73bC38A98101d1f5B515040b7F9": {
+      "cashback-epoch-3": "44994264"
+    },
+    "0xC115D39d64934958D6011B755eF09c7DeE257997": {
+      "cashback-epoch-3": "43585288"
+    },
+    "0xF239F572F51c0ca5f837318dF2aA3feB1bEBb756": {
+      "cashback-epoch-3": "43757606"
+    },
+    "0x99DdC6246733EC05D9009745c1EBdFDfEA67a292": {
+      "cashback-epoch-3": "45589368"
+    },
+    "0xB3Ad5adc6AeE45e95C2A2d27B8A8888915CAA8D6": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0xE7809cCa7CeAd281Ed5d6e6eBb26f6701eFe8343": {
+      "cashback-epoch-3": "44834315"
+    },
+    "0x990139cBe9E23cF8AF918729fcb3f05F35677Cf0": {
+      "cashback-epoch-3": "41180461"
+    },
+    "0x0Ef398552817025690A4d8bF783Dd834Da464f1E": {
+      "cashback-epoch-3": "44517008"
+    },
+    "0xC81659b0d5eaaEC4A92C5B7053e2361772AE2e56": {
+      "cashback-epoch-3": "46310795"
+    },
+    "0x629692E6500AAC71596a208aA9b20857bAc8a1E9": {
+      "cashback-epoch-3": "40360894"
+    },
+    "0x8320bd698D0C92C98279366388d3fbc032F5e235": {
+      "cashback-epoch-3": "44153837"
+    },
+    "0x49bDdc5f25E798c5778FB5C916E5D15acA5d572C": {
+      "cashback-epoch-3": "49945704"
+    },
+    "0x499F86bDf9BE0f4d3Ce7688C6660214d5A7DCee2": {
+      "cashback-epoch-3": "9218254"
+    },
+    "0x7b6061F993aF4935ff2D36fb6187a0F7dD112E32": {
+      "cashback-epoch-3": "47631268"
+    },
+    "0xC40e66F4deD2962E17E0dD77AA7Aee30eE6a704e": {
+      "cashback-epoch-3": "26672326"
+    },
+    "0x1ec834A50708F8a4ADb471d711905b762bafE00D": {
+      "cashback-epoch-3": "49993650"
+    },
+    "0xfa0F18BD45b456f03FA27ef8cf587BBDb6fe6b92": {
+      "cashback-epoch-3": "35470"
+    },
+    "0xbc0BeaDf557591B72C7e0410D7CB9EFED306dcB0": {
+      "cashback-epoch-3": "43581049"
+    },
+    "0x0eF4260DD92c9FD1E1475B1EBebC560B18FbAF54": {
+      "cashback-epoch-3": "44849337"
+    },
+    "0xBebf3f146D80d19f790c37b6Eb810d22AFff2103": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0xd48b5D40B2def8ABb601EE9fDa85e15fFed5C447": {
+      "cashback-epoch-3": "37004011"
+    },
+    "0x4706be615e4d62dE641C4Ad7522a6dc27DAEd04C": {
+      "cashback-epoch-3": "43589132"
+    },
+    "0xfFd6cDE5B1411De5B3CDbaf09a329146B1039420": {
+      "cashback-epoch-3": "46125622"
+    },
+    "0x86c1eBAB2Eee3c1CF18EF602180dDcE3f915A871": {
+      "cashback-epoch-3": "13258746"
+    },
+    "0xff723780E3E41bD4348294D8B8027776DCB6223E": {
+      "cashback-epoch-3": "46362586"
+    },
+    "0x9DeB94c32143D12507A187Df48B082FeC5B7Ac4e": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0x1313E385D2d3fb94084472Afe33B8775B16De8d8": {
+      "cashback-epoch-3": "14834358"
+    },
+    "0xb89FBc894cEa95bf9a8084D0a1c6301f94B76872": {
+      "cashback-epoch-3": "27963507"
+    },
+    "0x0fA8Dc77Edfb7423946a79615e8d44C3D3e00dCC": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0x603b8b50D88e7AFD0524eE481973669526616B5a": {
+      "cashback-epoch-3": "18264246"
+    },
+    "0xE2f016c0ba021E6F59d4C3C56A6e366323F541De": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0x16Ef70213804E2698fAbf2A488d6B681312ACdF6": {
+      "cashback-epoch-3": "43386088"
+    },
+    "0x87A71197d2Df55D6C6b8f8496CdC7358570521F7": {
+      "cashback-epoch-3": "49986100"
+    },
+    "0x4E2b8CaCB9c90A53Cad135bB1B134A69B50E2F2E": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0xB74ed2B5c3b98A8f620c18D0a4010dA0C04C3ba8": {
+      "cashback-epoch-3": "44454662"
+    },
+    "0x71b9946d677f260F32cdC22Fc5cAE2af83Fb101C": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0x6C80D78DCEb90b4Fe64dC3326c0759951dC2edD6": {
+      "cashback-epoch-3": "49996250"
+    },
+    "0xCc97689afa22Fcc259Ab0Ef03A788A749694a30e": {
+      "cashback-epoch-3": "45306007"
+    },
+    "0x737b6a5Ab641f527339C9435d5a38ae2266601CC": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0xbc2eaB05ccDf8AF218BcF6FD71f80ca27b96b588": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0xBe22D3193F1F51244fE65636eA69D815ceB9bDFc": {
+      "cashback-epoch-3": "44397817"
+    },
+    "0x79474bEAaa6764D4895678F608305EE1172cCcFF": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0x7F3dDba95A32D93693b047Aa09ff54c59A24CDAc": {
+      "cashback-epoch-3": "44205948"
+    },
+    "0x5D419012E99c22f695017EBE94Cfb8d2e2062662": {
+      "cashback-epoch-3": "24623708"
+    },
+    "0x865F98E15B0be7417Ef2b10a7748b0236cec5a37": {
+      "cashback-epoch-3": "43565241"
+    },
+    "0x62B417C5cDD62FC0C63a7abA7Ed9f4160A68069a": {
+      "cashback-epoch-3": "13733247"
+    },
+    "0x5a259eDC9BEF4bA8Ce5C60D930b8BB333c4Df018": {
+      "cashback-epoch-3": "44217884"
+    },
+    "0x136445BaD76b1Ac84AE4E6A1bEb2C4CF4c341608": {
+      "cashback-epoch-3": "47655002"
+    },
+    "0x8207249e7cb0AA98b58cB517782de1A29ce690cd": {
+      "cashback-epoch-3": "39348285"
+    },
+    "0x7889314faf1944C01979Cf7Df346789Ead911B52": {
+      "cashback-epoch-3": "42833191"
+    },
+    "0x541641D7F7793d82cd441b7303211519fD3466a7": {
+      "cashback-epoch-3": "43558131"
+    },
+    "0x8ee0649A6f193F83a3763fba9BfEc601C86a9301": {
+      "cashback-epoch-3": "175558"
+    },
+    "0x68e6cbC1D757327E46702d3B04A769Cee75352F4": {
+      "cashback-epoch-3": "7024411"
+    },
+    "0x4Ea2025b31c0C729C839C64f70D7CBD85C17A1D7": {
+      "cashback-epoch-3": "44297478"
+    },
+    "0x2145c2B4dC3f98d92A9e66318Ad1066bB763Edc0": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0xbe57FE71D8E5e31BD4a30277BCC5860AC0ec79B9": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0x469eE7EDC788b4721Eed4cfa10417E90f264A2D1": {
+      "cashback-epoch-3": "47133821"
+    },
+    "0x32FC6486139FA5F46250E3D1831C0F9b1ea1Fb5b": {
+      "cashback-epoch-3": "2945598"
+    },
+    "0xF5203F3203E1e235a2454150d370202ecD24f274": {
+      "cashback-epoch-3": "36082343"
+    },
+    "0x4446Adc0B8136Ffc55DdB7a488Ba5509Ace2A5ef": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0x794c34A550D3a0ad486Cf82d81358fbE42ac60eD": {
+      "cashback-epoch-3": "26151987"
+    },
+    "0x6d833be822E4175E99183861790ad04046e7ba1f": {
+      "cashback-epoch-3": "49991700"
+    },
+    "0x9635255f9500a37fDdEc36c6A4CE15aa36CD28d1": {
+      "cashback-epoch-3": "45134224"
+    },
+    "0xE2940a9f3a6bCa0512812e00eb20f408080f2dcF": {
+      "cashback-epoch-3": "23012773"
+    },
+    "0x3F4Ffb89A76868Cf56fa6606ed43E507E95212d6": {
+      "cashback-epoch-3": "44563556"
+    },
+    "0xf9bF07B9B59b67D83322a68cbf2A0570Fc1d1329": {
+      "cashback-epoch-3": "45986910"
+    },
+    "0x54739691f704649C041aCA4eFd22A3600eCE4178": {
+      "cashback-epoch-3": "49985950"
+    },
+    "0x8880eEA190F7Ab504799bE6D0f7359a189Ca896E": {
+      "cashback-epoch-3": "195670"
+    },
+    "0x8DEc71BabBFE50d9FFaf7294Df84119427D744cd": {
+      "cashback-epoch-3": "46418825"
+    },
+    "0x6Fb35Ee95e71a9C94518cbE0C4e23eA077005eE1": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0x2a568c9e23A5Fd6d283a6Dc5884B872960c4509F": {
+      "cashback-epoch-3": "47668467"
+    },
+    "0x30adb26984A7Aea67fE38373cE3f032efa152B22": {
+      "cashback-epoch-3": "39332665"
+    },
+    "0x43Ab75BF3ceeEaad1a1ec983Ce744f70fF404af4": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0xaE6F0cb8976170a3E198847ca362F49846c75D29": {
+      "cashback-epoch-3": "45623804"
+    },
+    "0x6ef907AC62172DC324337C1F18664c5F5542Ad4F": {
+      "cashback-epoch-3": "44008278"
+    },
+    "0xB81B51e2B168FFb6A62a1a90EE57C705C7dE4570": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0xc1DE4391ABEf20f576CD7522551E1ff2CAe80023": {
+      "cashback-epoch-3": "43937835"
+    },
+    "0x755E27ECa163344b5173d3005AA9147C666251d2": {
+      "cashback-epoch-3": "36798603"
+    },
+    "0x98d7338fa9dd761a66E346F384B8A3646C739cEF": {
+      "cashback-epoch-3": "43289852"
+    },
+    "0x9c4c28C1D2e703759A2b6d7B4c01a5865431697a": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0x02E49D3AE11d4413d780cb764CD97688D7D547a8": {
+      "cashback-epoch-3": "44236505"
+    },
+    "0xf758d223be7830Ec98EB2508f1E1de5C15f644ce": {
+      "cashback-epoch-3": "25012248"
+    },
+    "0x5079D5DA4728F0cCF1eC0C72D650ED2Af45f101e": {
+      "cashback-epoch-3": "24581710"
+    },
+    "0xF755B33B1b6D8917893Ee27243A3FC4aea529548": {
+      "cashback-epoch-3": "43951508"
+    },
+    "0x0acddC9d12dCd9826EDd97EC2Dd179f34cA47325": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0x05Fa8d8534ABb0Ed17907A8ab1357f45Ab4898ED": {
+      "cashback-epoch-3": "32793623"
+    },
+    "0xe0E7628AF1D9F77EA8CFC2fE97875296b1B495D5": {
+      "cashback-epoch-3": "14683761"
+    },
+    "0x298C1EAC6cEb66a2e91A0d4a1c03eEFCAcD8c91F": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0x66EAbC4C46010f4195179566a11117e7dde516e3": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0x8B0aD360268178a9e68C24B8d341C93DB091D846": {
+      "cashback-epoch-3": "49971512"
+    },
+    "0xbcDAEeC4eaa1D1F93b037b0fA3150B4Ed4A1885e": {
+      "cashback-epoch-3": "49995650"
+    },
+    "0x13a8B46A6FE0739e84D336a9321FEC57c428B2ee": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0x8C4ADCD4420dA675F43c426Fb174D0CfEF314b9E": {
+      "cashback-epoch-3": "44730569"
+    },
+    "0xa6ce6da5Dcd27AcBfAfCa82E24e7367aEb7B307f": {
+      "cashback-epoch-3": "43849396"
+    },
+    "0x53F40769B5AFCD8fAD5a9DC0134A45777B7E3027": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0x9769214ae8dFAE9d4586B26f507c828350479fEc": {
+      "cashback-epoch-3": "44367262"
+    },
+    "0xfbea74F5F1373f07Bc51E675CC3681dF1EDf8577": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0xbbab94E4b2Af9f8d6F9F7606B3a5DEb0c18262ca": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0x5042D8756739aB480a244FcE2B99A60cB8Ad5CFb": {
+      "cashback-epoch-3": "47564806"
+    },
+    "0x3DDAf7C6f2e326741643A6699640c9aa8a91CbD4": {
+      "cashback-epoch-3": "25001325"
+    },
+    "0x6c61C986dDA3B9f25D5984C1193041184DCbe18d": {
+      "cashback-epoch-3": "370645"
+    },
+    "0xD9fFdfe96406F3A8BF66A75c65829e41C27A9A5D": {
+      "cashback-epoch-3": "46951296"
+    },
+    "0xd943721C5D40069d622b58F55F63517340B39B8E": {
+      "cashback-epoch-3": "47660648"
+    },
+    "0x3a3693c90dAc7AEa35304cB6A67b90B8e376C8B8": {
+      "cashback-epoch-3": "11251074"
+    },
+    "0x3738fd227B242721bdf6Ac590552cb720895C138": {
+      "cashback-epoch-3": "24651080"
+    },
+    "0x88DA6E3B5d188D69ca093e3Fa4415978acEbeBCf": {
+      "cashback-epoch-3": "47617612"
+    },
+    "0x577fAd12066982E5AD0aC13C7d713ff3702a1e11": {
+      "cashback-epoch-3": "43587635"
+    },
+    "0x22d0195885519Ea9c97374E7257AdEb4B18670Cb": {
+      "cashback-epoch-3": "3006265"
+    },
+    "0x0bD40A0A8d2a2c182F9E710374267Dd42E333E14": {
+      "cashback-epoch-3": "49988850"
+    },
+    "0xC3Fd0E6f8C208C3C2E5c6d55A4c08cb7a016456D": {
+      "cashback-epoch-3": "42796465"
+    },
+    "0x3D082868D37124Ded6A46E0Eb0872Eb350190671": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0x923F6604345ACdEF31f8FFAf390645C105Ca6d20": {
+      "cashback-epoch-3": "43875221"
+    },
+    "0x8bf5E187E8895A413B830Ce52ba62D91eF878CaD": {
+      "cashback-epoch-3": "34069034"
+    },
+    "0x473d1B1aC38be3BA64Feff39D86903668058967A": {
+      "cashback-epoch-3": "43542219"
+    },
+    "0xF886f990F9e9B6313B9019394C209498079E6D36": {
+      "cashback-epoch-3": "24541416"
+    },
+    "0xa52AaF7da0156d2D30a310aFe6f084a0DA9cEE54": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0xE3d0dfd7DBc6D24F65f55CDC7F54d4Cc72b6Ec02": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0xDA8ed708a0E9C6E10b6D1a82046012663069D8A2": {
+      "cashback-epoch-3": "41709885"
+    },
+    "0x3DD19F42DF0Ec2c0A4930644B26A3d4A7a7040Ef": {
+      "cashback-epoch-3": "43394702"
+    },
+    "0x991e472bbedb7Eb496bD4F06464CD462b5b49Ab3": {
+      "cashback-epoch-3": "43258603"
+    },
+    "0xbc982ed63e7938C22155306a7dF1324891dcDC2A": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0xF38Cf885d8389b876592cC73f5370991Ad0Cdd67": {
+      "cashback-epoch-3": "9211956"
+    },
+    "0x175a68282F5FD79e74b7b5fe6d56B73f8C34c6C2": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0x09AFdAccDe26cC200D181ee466Cd8d027a89D206": {
+      "cashback-epoch-3": "32933074"
+    },
+    "0xA0F17E901d4ac21192555eDC403269f6A02E4e6a": {
+      "cashback-epoch-3": "42792135"
+    },
+    "0x2fD7a48940fdD7eB7De12A1B730b1Ef3E2086C2e": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0xB104EbB0dD3D9B43F3B589efCcD90d93A35C6aFa": {
+      "cashback-epoch-3": "39251202"
+    },
+    "0xD7f954ce2F70E00C5d5D958fCDeB27D8551498D3": {
+      "cashback-epoch-3": "19322"
+    },
+    "0xec8466a79e32c7c93381F875Cf9fc8B898D25aE5": {
+      "cashback-epoch-3": "34290223"
+    },
+    "0x206d2Bf102A0531B09aC55c43a4dd5d16487e8eE": {
+      "cashback-epoch-3": "44242903"
+    },
+    "0x86f3189E371b0befF8877aFa36f3Ff334EfF7821": {
+      "cashback-epoch-3": "3025701"
+    },
+    "0xFCBBa5B4A5C727E4E76286Bc4f350255Ca29A065": {
+      "cashback-epoch-3": "24948745"
+    },
+    "0xd07Db5561c54ABE85043071FAb9e2e50e2D548f6": {
+      "cashback-epoch-3": "50000000"
+    },
+    "0x509F91f0dFD3E4E68D14E8B7309a5b03Dd90A2BC": {
+      "cashback-epoch-3": "47785181"
+    }
+  }
+}

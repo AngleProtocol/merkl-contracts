@@ -5,6 +5,22 @@
       "cashback-epoch-2": {
         "amount": "75586",
         "timestamp": "1790006400"
+      },
+      "cashback-epoch-3": {
+        "amount": "811653",
+        "timestamp": "1791216000"
+      }
+    },
+    "0xb32B84494df2B99Cae50683a4273cCE4a21429bf": {
+      "cashback-epoch-3": {
+        "amount": "19997428",
+        "timestamp": "1791216000"
+      }
+    },
+    "0x557b6510bFa59aa766d38629916A71a4d5FdbC3F": {
+      "cashback-epoch-3": {
+        "amount": "19996840",
+        "timestamp": "1791216000"
       }
     }
   }
