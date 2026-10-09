@@ -126,12 +126,8 @@ contract MainDeployScript is Script, TokensUtils, CreateXConstants {
         // 2. Deploy using MERKL_DEPLOYER_PRIVATE_KEY
         vm.startBroadcast(MERKL_DEPLOYER_PRIVATE_KEY);
 
-        verifyMerklNonces();
-
-        // Deploy Distributor
-        DeploymentAddresses memory distributor = deployDistributor(accessControlManager.proxy);
-        // Deploy DistributionCreator
-        DeploymentAddresses memory creator = deployDistributionCreator(accessControlManager.proxy, distributor.proxy);
+        // Deploy Distributor and DistributionCreator
+        (DeploymentAddresses memory distributor, DeploymentAddresses memory creator) = deployMerklContracts(accessControlManager.proxy);
 
         vm.stopBroadcast();
 
@@ -222,6 +218,22 @@ contract MainDeployScript is Script, TokensUtils, CreateXConstants {
         return DeploymentAddresses(address(proxy), address(implementation));
     }
 
+    // Must be called while broadcasting from MERKL_DEPLOYER_ADDRESS at nonce 0
+    function deployMerklContracts(
+        address accessControlManager
+    ) public returns (DeploymentAddresses memory distributor, DeploymentAddresses memory creator) {
+        verifyMerklNonces();
+
+        // Deploy Distributor
+        distributor = deployDistributor(accessControlManager);
+        // The Distributor proxy is initialized in its constructor, burn the nonce of the former initialize transaction
+        // with a 1 wei self transfer to keep the canonical DistributionCreator addresses (see verifyMerklNonces)
+        // (non-zero value, forge prompts for confirmation on 0 value transactions to addresses without code)
+        transferNativeTokens(MERKL_DEPLOYER_ADDRESS, 1);
+        // Deploy DistributionCreator
+        creator = deployDistributionCreator(accessControlManager, distributor.proxy);
+    }
+
     function deployDistributor(address accessControlManager) public returns (DeploymentAddresses memory) {
         console.log("\n=== Deploying Distributor ===");
 
@@ -229,12 +241,12 @@ contract MainDeployScript is Script, TokensUtils, CreateXConstants {
         Distributor implementation = new Distributor();
         console.log("Distributor Implementation:", address(implementation));
 
-        // Deploy proxy
-        ERC1967Proxy proxy = new ERC1967Proxy(address(implementation), "");
+        // Deploy and initialize proxy in the same transaction so it is never left uninitialized
+        ERC1967Proxy proxy = new ERC1967Proxy(
+            address(implementation),
+            abi.encodeCall(Distributor.initialize, (IAccessControlManager(accessControlManager)))
+        );
         console.log("Distributor Proxy:", address(proxy));
-
-        // Initialize
-        Distributor(address(proxy)).initialize(IAccessControlManager(accessControlManager));
 
         // Read and log the implementation address from the proxy to avoid hijack attacks
         // ERC1967 implementation slot: keccak256("eip1967.proxy.implementation") - 1
@@ -253,16 +265,19 @@ contract MainDeployScript is Script, TokensUtils, CreateXConstants {
         DistributionCreator implementation = new DistributionCreator();
         console.log("DistributionCreator Implementation:", address(implementation));
 
-        // Deploy proxy
-        ERC1967Proxy proxy = new ERC1967Proxy(address(implementation), "");
-        console.log("DistributionCreator Proxy:", address(proxy));
-
-        // Initialize
-        DistributionCreator(address(proxy)).initialize(
-            IAccessControlManager(accessControlManager),
-            distributor,
-            0.03 gwei // 0.03 gwei
+        // Deploy and initialize proxy in the same transaction so it is never left uninitialized
+        ERC1967Proxy proxy = new ERC1967Proxy(
+            address(implementation),
+            abi.encodeCall(
+                DistributionCreator.initialize,
+                (
+                    IAccessControlManager(accessControlManager),
+                    distributor,
+                    0.03 gwei // 0.03 gwei
+                )
+            )
         );
+        console.log("DistributionCreator Proxy:", address(proxy));
 
         // Read and log the implementation address from the proxy to avoid hijack attacks
         // ERC1967 implementation slot: keccak256("eip1967.proxy.implementation") - 1
@@ -423,11 +438,10 @@ contract MainDeployScript is Script, TokensUtils, CreateXConstants {
         address EXPECTED_DISTRIBUTION_CREATOR_PROXY_ADDRESS = 0x8BB4C975Ff3c250e0ceEA271728547f3802B36Fd;
 
         // deploy DISTRIBUTOR implementation nonce 0
-        // deploy DISTRIBUTOR proxy nonce 1
-        // initialize DISTRIBUTOR nonce 2
+        // deploy and initialize DISTRIBUTOR proxy nonce 1
+        // burn nonce 2 (formerly the separate DISTRIBUTOR initialize transaction)
         // deploy DISTRIBUTION_CREATOR implementation nonce 3
-        // deploy DISTRIBUTION_CREATOR proxy nonce 4
-        // initialize DISTRIBUTION_CREATOR nonce 5
+        // deploy and initialize DISTRIBUTION_CREATOR proxy nonce 4
         if (EXPECTED_DISTRIBUTOR_IMPLEMENTATION_ADDRESS != vm.computeCreateAddress(MERKL_DEPLOYER_ADDRESS, 0))
             revert("DISTRIBUTOR_IMPLEMENTATION_ADDRESS_MISMATCH");
         if (EXPECTED_DISTRIBUTOR_PROXY_ADDRESS != vm.computeCreateAddress(MERKL_DEPLOYER_ADDRESS, 1))
