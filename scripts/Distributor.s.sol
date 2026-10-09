@@ -28,12 +28,12 @@ contract Deploy is DistributorScript {
         Distributor implementation = new Distributor();
         console.log("Distributor Implementation:", address(implementation));
 
-        // Deploy proxy
-        ERC1967Proxy proxy = new ERC1967Proxy(address(implementation), "");
+        // Deploy and initialize proxy in the same transaction so it is never left uninitialized
+        ERC1967Proxy proxy = new ERC1967Proxy(
+            address(implementation),
+            abi.encodeCall(Distributor.initialize, (IAccessControlManager(accessControlManager)))
+        );
         console.log("Distributor Proxy:", address(proxy));
-
-        // Initialize
-        Distributor(address(proxy)).initialize(IAccessControlManager(accessControlManager));
 
         // Read and log the implementation address from the proxy to avoid hijack attacks
         // ERC1967 implementation slot: keccak256("eip1967.proxy.implementation") - 1
