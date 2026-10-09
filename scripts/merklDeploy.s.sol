@@ -126,16 +126,8 @@ contract MainDeployScript is Script, TokensUtils, CreateXConstants {
         // 2. Deploy using MERKL_DEPLOYER_PRIVATE_KEY
         vm.startBroadcast(MERKL_DEPLOYER_PRIVATE_KEY);
 
-        verifyMerklNonces();
-
-        // Deploy Distributor
-        DeploymentAddresses memory distributor = deployDistributor(accessControlManager.proxy);
-        // The Distributor proxy is initialized in its constructor, burn the nonce of the former initialize transaction
-        // with a 1 wei self transfer to keep the canonical DistributionCreator addresses (see verifyMerklNonces)
-        // (non-zero value, forge prompts for confirmation on 0 value transactions to addresses without code)
-        transferNativeTokens(MERKL_DEPLOYER_ADDRESS, 1);
-        // Deploy DistributionCreator
-        DeploymentAddresses memory creator = deployDistributionCreator(accessControlManager.proxy, distributor.proxy);
+        // Deploy Distributor and DistributionCreator
+        (DeploymentAddresses memory distributor, DeploymentAddresses memory creator) = deployMerklContracts(accessControlManager.proxy);
 
         vm.stopBroadcast();
 
@@ -224,6 +216,22 @@ contract MainDeployScript is Script, TokensUtils, CreateXConstants {
 
         AccessControlManager(address(proxy)).addGovernor(ANGLE_LABS);
         return DeploymentAddresses(address(proxy), address(implementation));
+    }
+
+    // Must be called while broadcasting from MERKL_DEPLOYER_ADDRESS at nonce 0
+    function deployMerklContracts(
+        address accessControlManager
+    ) public returns (DeploymentAddresses memory distributor, DeploymentAddresses memory creator) {
+        verifyMerklNonces();
+
+        // Deploy Distributor
+        distributor = deployDistributor(accessControlManager);
+        // The Distributor proxy is initialized in its constructor, burn the nonce of the former initialize transaction
+        // with a 1 wei self transfer to keep the canonical DistributionCreator addresses (see verifyMerklNonces)
+        // (non-zero value, forge prompts for confirmation on 0 value transactions to addresses without code)
+        transferNativeTokens(MERKL_DEPLOYER_ADDRESS, 1);
+        // Deploy DistributionCreator
+        creator = deployDistributionCreator(accessControlManager, distributor.proxy);
     }
 
     function deployDistributor(address accessControlManager) public returns (DeploymentAddresses memory) {
