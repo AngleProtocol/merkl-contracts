@@ -114,6 +114,7 @@ pharos = "${ETH_NODE_URI_1672}"
 kaia="${ETH_NODE_URI_8217}"
 testChain="${ETH_NODE_URI_4663}"
 arc = "${ETH_NODE_URI_5042}"
+cronos = "${ETH_NODE_URI_25}"
 
 [etherscan]
 localhost = { url = "http://localhost:4000", key = "none" }
@@ -182,3 +183,4 @@ flare = {chainId = 14, key = "none", url = "https://flare-explorer.flare.network
 pharos = {chainId = 1672, key = "none", url = "https://api.socialscan.io/pharos-mainnet/v1/explorer/command_api/contract" }
 kaia = {chainId = 8217, key = "${KAIA_API_KEY}", url = "https://mainnet-oapi.kaiascan.io/api"}
 arc = {chainId = 5042, key = "none", url = "https://arc.blockscout.com/api/"}
+cronos = {chainId = 25, key = "${CRONOS_API_KEY}", url = "https://explorer-api.cronos.org/mainnet/api/v1/hardhat/contract"}
