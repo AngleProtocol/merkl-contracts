@@ -4345,6 +4345,10 @@
       "cashback-epoch-2": {
         "amount": "34480732",
         "timestamp": "1790006400"
+      },
+      "cashback-epoch-3": {
+        "amount": "50000000",
+        "timestamp": "1790006400"
       }
     },
     "0xB3Ad5adc6AeE45e95C2A2d27B8A8888915CAA8D6": {
