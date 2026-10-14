@@ -44,12 +44,12 @@ contract Deploy is DistributionCreatorScript {
         DistributionCreator implementation = new DistributionCreator();
         console.log("DistributionCreator Implementation:", address(implementation));
 
-        // Deploy proxy
-        ERC1967Proxy proxy = new ERC1967Proxy(address(implementation), "");
+        // Deploy and initialize proxy in the same transaction so it is never left uninitialized
+        ERC1967Proxy proxy = new ERC1967Proxy(
+            address(implementation),
+            abi.encodeCall(DistributionCreator.initialize, (IAccessControlManager(accessControlManager), distributor, defaultFees))
+        );
         console.log("DistributionCreator Proxy:", address(proxy));
-
-        // Initialize
-        DistributionCreator(address(proxy)).initialize(IAccessControlManager(accessControlManager), distributor, defaultFees);
 
         // Read and log the implementation address from the proxy to avoid hijack attacks
         // ERC1967 implementation slot: keccak256("eip1967.proxy.implementation") - 1
