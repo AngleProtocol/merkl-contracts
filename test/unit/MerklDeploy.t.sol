@@ -13,9 +13,14 @@ contract MerklDeployHarness is MainDeployScript {
         address accessControlManager
     ) external returns (DeploymentAddresses memory distributor, DeploymentAddresses memory creator) {
         MERKL_DEPLOYER_ADDRESS = EXPECTED_MERKL_DEPLOYER_ADDRESS;
+        MERKL_DEPLOYER_START_NONCE = vm.getNonce(MERKL_DEPLOYER_ADDRESS);
         vm.startBroadcast(MERKL_DEPLOYER_ADDRESS);
         (distributor, creator) = deployMerklContracts(accessControlManager);
         vm.stopBroadcast();
+    }
+
+    function setAllowNonCanonicalMerklAddresses(bool allow) external {
+        ALLOW_NON_CANONICAL_MERKL_ADDRESSES = allow;
     }
 }
 
@@ -63,5 +68,43 @@ contract MerklDeployTest is Test {
         vm.expectRevert("Initializable: contract is already initialized");
         DistributionCreator(DISTRIBUTION_CREATOR_PROXY).initialize(IAccessControlManager(attacker), attacker, 0);
         vm.stopPrank();
+    }
+}
+
+contract MerklDeployNonCanonicalTest is Test {
+    uint64 constant START_NONCE = 7;
+
+    MerklDeployHarness harness;
+    address merklDeployer;
+    address accessControlManager;
+
+    function setUp() public {
+        harness = new MerklDeployHarness();
+        merklDeployer = harness.EXPECTED_MERKL_DEPLOYER_ADDRESS();
+        accessControlManager = makeAddr("accessControlManager");
+        vm.deal(merklDeployer, 1 ether);
+        vm.setNonce(merklDeployer, START_NONCE);
+    }
+
+    function test_deployMerklContracts_revertsOnUsedNonceWithoutOptIn() public {
+        vm.expectRevert(
+            bytes("MERKL_DEPLOYER_ADDRESS nonce is not 0, set ALLOW_NON_CANONICAL_MERKL_ADDRESSES=true to deploy at non-canonical addresses")
+        );
+        harness.deployMerklContractsFromMerklDeployer(accessControlManager);
+    }
+
+    function test_deployMerklContracts_deploysAtNonCanonicalAddressesWithOptIn() public {
+        harness.setAllowNonCanonicalMerklAddresses(true);
+        (MainDeployScript.DeploymentAddresses memory distributor, MainDeployScript.DeploymentAddresses memory creator) = harness
+            .deployMerklContractsFromMerklDeployer(accessControlManager);
+
+        assertEq(distributor.implementation, vm.computeCreateAddress(merklDeployer, START_NONCE));
+        assertEq(distributor.proxy, vm.computeCreateAddress(merklDeployer, START_NONCE + 1));
+        assertEq(creator.implementation, vm.computeCreateAddress(merklDeployer, START_NONCE + 3));
+        assertEq(creator.proxy, vm.computeCreateAddress(merklDeployer, START_NONCE + 4));
+        assertEq(vm.getNonce(merklDeployer), START_NONCE + 5);
+
+        assertEq(address(Distributor(distributor.proxy).accessControlManager()), accessControlManager);
+        assertEq(DistributionCreator(creator.proxy).distributor(), distributor.proxy);
     }
 }
