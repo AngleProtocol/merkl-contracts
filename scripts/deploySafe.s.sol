@@ -3,27 +3,7 @@ pragma solidity ^0.8.17;
 
 import { console } from "forge-std/console.sol";
 import { BaseScript } from "./utils/Base.s.sol";
-
-interface IGnosisSafeProxyFactory {
-    function createProxyWithNonce(address _singleton, bytes memory initializer, uint256 saltNonce) external returns (address proxy);
-}
-
-interface IGnosisSafe {
-    function setup(
-        address[] calldata _owners,
-        uint256 _threshold,
-        address to,
-        bytes calldata data,
-        address fallbackHandler,
-        address paymentToken,
-        uint256 payment,
-        address payable paymentReceiver
-    ) external;
-
-    function getOwners() external view returns (address[] memory);
-    function getThreshold() external view returns (uint256);
-    function VERSION() external view returns (string memory);
-}
+import { IGnosisSafe, IGnosisSafeProxyFactory } from "./utils/ISafe.sol";
 
 // forge script scripts/deploySafe.s.sol --rpc-url $RPC_URL --broadcast -vvvv
 contract DeploySafeScript is BaseScript {
