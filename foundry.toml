@@ -103,6 +103,7 @@ bob = "${ETH_NODE_URI_60808}"
 berachain = "${ETH_NODE_URI_80094}"
 blast = "${ETH_NODE_URI_81457}"
 plume="${ETH_NODE_URI_98866}"
+elysium = "${ETH_NODE_URI_99901}"
 taiko = "${ETH_NODE_URI_167000}"
 scroll = "${ETH_NODE_URI_534352}"
 katana="${ETH_NODE_URI_747474}"
@@ -172,6 +173,8 @@ bob = {chainId = 60808, key = "none", url = "https://explorer.gobob.xyz/api" }
 berachain = {chainId = 80094, key = "${ETHERSCAN_API_KEY}", url = "https://api.etherscan.io/v2/api?chainid=80094" }
 blast = {chainId = 81457, key = "${ETHERSCAN_API_KEY}", url = "https://api.etherscan.io/v2/api?chainid=81457" }
 plume = {chainId = 98866, key = "none", url = "https://explorer.plume.org/api" }
+# Elysium's verification-only gateway requires the partner code in the URL query.
+elysium = {chainId = 99901, key = "${ELYSIUM_ACCESS_CODE}", url = "https://elysium.kinetiq.xyz/api/verify?apikey=${ELYSIUM_ACCESS_CODE}" }
 taiko = {chainId = 167000, key = "${ETHERSCAN_API_KEY}", url = "https://api.etherscan.io/v2/api?chainid=167000" }
 scroll = {chainId = 534352, key = "${ETHERSCAN_API_KEY}", url = "https://api.etherscan.io/v2/api?chainid=534352" }
 katana = {chainId = 747474, key = "${ETHERSCAN_API_KEY}", url = "https://api.etherscan.io/v2/api?chainid=747474" }
