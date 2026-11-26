@@ -1,4 +1,983 @@
 {
   "rewardToken": "0x7dF3ad1ECC10DBF0296D05F91a697e4A059771c2",
-  "rewards": {}
+  "rewards": {
+    "0x55237b6be31904f82da11195139A1B7fbc4309f4": {
+      "epoch-1-wtSGOV": {
+        "amount": "1580300600000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x1D0429CdE9ec24e438D49c6EE40b6A69D9ee8D98": {
+      "epoch-1-wtSPYM": {
+        "amount": "526545753000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0xcCdDcC9869456aFBdEE89d302e064d63e4132406": {
+      "epoch-1-wtHOOD": {
+        "amount": "6907006453000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x3295Cb24cAF286a5cCC2410e4e7376A7A22Ef1e9": {
+      "epoch-1-wtHOOD": {
+        "amount": "7034332605000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0xE8b384917Ed2650f06406E7c7f87dD9dF0080fd7": {
+      "epoch-1-wtSPYM": {
+        "amount": "203029857825000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x18b3c24FCb9886A1720aA87e9661a844ca837a2D": {
+      "epoch-1-wtSPYM": {
+        "amount": "3251147625000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x96893e42d8f7B705834185Bf6529deBd0083dCcf": {
+      "epoch-1-wtSPYM": {
+        "amount": "3258306250000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0xf40E5743D423272c61b7247823dCB83E28aD2124": {
+      "epoch-1-wtSPYM": {
+        "amount": "3265291222000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x6B11868a35f9E1F61755C4023219d102e8a7Ff35": {
+      "epoch-1-wtHOOD": {
+        "amount": "220953012687000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0xdCD4EA21bb684d2283C177595fCEcA61167A357F": {
+      "epoch-1-wtSPYM": {
+        "amount": "35648818487000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0xC929Ccb5E214D55Bd8cec88E2b83709c2aDaEeed": {
+      "epoch-1-wtSPYM": {
+        "amount": "88778229164000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x71F5D41910079f33976Fcd32bff7b091A960963b": {
+      "epoch-1-wtSPYM": {
+        "amount": "84706970945000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x75B22B2B58C2E60FEa17e4833dc4a2d56bC35B9E": {
+      "epoch-1-wtSPYM": {
+        "amount": "93879963902000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0xd5dBb9e213545a4d8248d671BfCf6E5fa6E72fAF": {
+      "epoch-1-wtSGOV": {
+        "amount": "75135403670000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x4D90cd83c0Aac70628607a3b808aC452a06c155C": {
+      "epoch-1-wtSGOV": {
+        "amount": "48786509446000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x6adF6f753e0f668702aa260B4679e0c9a2C84a71": {
+      "epoch-1-wtSGOV": {
+        "amount": "52964904328000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x3B2fF08B1E2dfA50267cCD34f1d846eF0482b5bc": {
+      "epoch-1-wtHOOD": {
+        "amount": "4933900500000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0xfb07899adb82676956440d8EFdb39F97a131c3f8": {
+      "epoch-1-wtHOOD": {
+        "amount": "32844762374000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x52BA20988E48Aa8550B80C861982B98F36a8C117": {
+      "epoch-1-wtHOOD": {
+        "amount": "54976010916000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x848BF3059857d96295AEC0CB3d9B41815BA035B3": {
+      "epoch-1-wtSPYM": {
+        "amount": "58012982876000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x95B0cB330519DB2bCaf74B90C1BDe3D62f673718": {
+      "epoch-1-wtSGOV": {
+        "amount": "58940232846000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x2B76d89318b1c674BD1fE49491b2674326089CEa": {
+      "epoch-1-wtHOOD": {
+        "amount": "56837357801000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x7372f04b824F4d5Ea82115E032CB4CC9e89D9510": {
+      "epoch-1-wtSGOV": {
+        "amount": "141816299657000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x0D2349e291A9e0Bb755bFFA4097E6D378A72330B": {
+      "epoch-1-wtHOOD": {
+        "amount": "59551188551000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x8E055A7cCDce910C256a36585f5f929d2C889a1a": {
+      "epoch-1-wtHOOD": {
+        "amount": "73939910230000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x8B50D512d2F95D9babb88e3407f06233A7624421": {
+      "epoch-1-wtSGOV": {
+        "amount": "81830866408000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0xA847D484A8fd25E3960e48D4ea43bEb6da52f21D": {
+      "epoch-1-wtHOOD": {
+        "amount": "13134047602000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0xcbe78790E211d77a71389050aCd9332F12821911": {
+      "epoch-1-wtHOOD": {
+        "amount": "4254750840000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x567f6367897FF7CE696843A2199948E51CC2e62c": {
+      "epoch-1-wtHOOD": {
+        "amount": "70729012066000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0xB83d057B00ef7CBDd507AbefcEEDCcCE89B24774": {
+      "epoch-1-wtSPYM": {
+        "amount": "69215112059000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0xf89ff24045cD61d3939A01cae293Fd6Ba4b912A6": {
+      "epoch-1-wtSGOV": {
+        "amount": "69566423916000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x1Fc46d86890cB931432ba21E0fA05C70fF9b0FF0": {
+      "epoch-1-wtSGOV": {
+        "amount": "69629184237000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x11fF733783e63f040Fc158D414ad45f5F2870D7a": {
+      "epoch-1-wtSGOV": {
+        "amount": "69692501148000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x30d8277f61C6C04c599Bce5b05FaCE06CdB63268": {
+      "epoch-1-wtSGOV": {
+        "amount": "69761948838000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0xb7444947543A9c1B6AF548FC58CA14A262a110db": {
+      "epoch-1-wtSPYM": {
+        "amount": "70364064513000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x8d4Ad8f4333e66Cd131d2ad68a4ed13d768547ab": {
+      "epoch-1-wtSGOV": {
+        "amount": "17204309910000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x731D708BBf736cC6dB71578ae78711161eC58D88": {
+      "epoch-1-wtHOOD": {
+        "amount": "73095612480000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x0315E72804c8d53fc15f41c603773E28AD8A4395": {
+      "epoch-1-wtSPYM": {
+        "amount": "73369416144000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x07854877f8A6ea542A29a963bF040CCF63d3a893": {
+      "epoch-1-wtSGOV": {
+        "amount": "73985420048000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x4ea945F298bF313FCA21d688df5f19a28a21E2b8": {
+      "epoch-1-wtHOOD": {
+        "amount": "79873205041000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0xccD917241ae046CEE7E56559Dd195D35AeA5946e": {
+      "epoch-1-wtSPYM": {
+        "amount": "79826104346000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x567f382fd818E4495EEf5F397a064A370b3A53A4": {
+      "epoch-1-wtSPYM": {
+        "amount": "83334392126000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x933D16eec58781A1Dbc649468cE4Ec34F84EB244": {
+      "epoch-1-wtHOOD": {
+        "amount": "5839553713000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x66911f0d4C73A9189Ed29ecAFC1514236F51dD45": {
+      "epoch-1-wtHOOD": {
+        "amount": "94251863947000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0xd0793C144c7E09c3D7e0da7a8384c31D0577f838": {
+      "epoch-1-wtHOOD": {
+        "amount": "105215411142000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x6c8c8fdEA76833eA70618f2e3F4176d85A967B21": {
+      "epoch-1-wtHOOD": {
+        "amount": "7768657440000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x67E3301839d2a8988598572E79076CdcB0f6fdd8": {
+      "epoch-1-wtSGOV": {
+        "amount": "176056318661000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x67e96b3B0Ee6f33eb90d26C2D8C1C69CfC5c5e58": {
+      "epoch-1-wtSPYM": {
+        "amount": "190699391820000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x500cCFbf4ecFc9cd8fBcb323Ca0c5153c28a02Bd": {
+      "epoch-1-wtSGOV": {
+        "amount": "188207278390000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0xBC2E26deD32A96911B65EE2283a1E30F077BbC59": {
+      "epoch-1-wtSPYM": {
+        "amount": "19521008136000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x2E8fBA7125cFad75B8Bc750832B06aCae9729B16": {
+      "epoch-1-wtHOOD": {
+        "amount": "2010000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x619c5eAA964784823547b558740291Bd0E09EfDA": {
+      "epoch-1-wtHOOD": {
+        "amount": "187270778067000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x837cba7EFCdb43497d0438E63FF7F75a02C0fbCe": {
+      "epoch-1-wtSGOV": {
+        "amount": "199270847850000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x3BFA437F9d5c0318cA78668836a15F528497d76f": {
+      "epoch-1-wtSGOV": {
+        "amount": "127067914379000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0xD4408dC67E85b229Af48da4ce56D8892e76deD2e": {
+      "epoch-1-wtSGOV": {
+        "amount": "102668439111000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x461BEd1c0962CbCC4484Be93030a0ea54BE6D733": {
+      "epoch-1-wtSGOV": {
+        "amount": "102731445668000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0xac206Dfe89fAf2F394af56Df6407ebB9053dB240": {
+      "epoch-1-wtSGOV": {
+        "amount": "102790022299000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0xBC3e9e4264f8AFE4913c50CB9B11F71Ef28C691c": {
+      "epoch-1-wtSGOV": {
+        "amount": "231109685481000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0xb25024c421D4F8BEbE468d3dC353e07868C99901": {
+      "epoch-1-wtSPYM": {
+        "amount": "198057254181000000",
+        "timestamp": "1795010400"
+      },
+      "epoch-1-wtSGOV": {
+        "amount": "231109685481000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x282c8d5CAD767a93e1E042E33E7A15877A8E6A1b": {
+      "epoch-1-wtSPYM": {
+        "amount": "119784478721000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x941D795F9c3A947C67e2402450eab0B6cd92d422": {
+      "epoch-1-wtSGOV": {
+        "amount": "104278259943000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0xC32b7438b3dF7844c9eE799930a2224Fe6E26426": {
+      "epoch-1-wtSGOV": {
+        "amount": "104310517132000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0xfe860A31A128c7d1FC4Db25D0d67905970124652": {
+      "epoch-1-wtHOOD": {
+        "amount": "20319168100000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x111044e003a57A33a638Ecb781834893D691E383": {
+      "epoch-1-wtSPYM": {
+        "amount": "28599269602000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x18E9E47dAb0148027E2657F7F4D1a195C9Bb0C57": {
+      "epoch-1-wtHOOD": {
+        "amount": "20895586083000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0xb326Ef34068E80c36E4cF9f43fDA326ba6d21a7c": {
+      "epoch-1-wtSPYM": {
+        "amount": "25083239162000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x424798bBF4D0CA4E527086C40BdeDD392aC396DE": {
+      "epoch-1-wtSPYM": {
+        "amount": "22987214510000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0xe72544FE12930AfcA5a4a18D48ec390ddcc94Bc5": {
+      "epoch-1-wtSPYM": {
+        "amount": "21355413703000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x1A2923D39F11f4b0A47BcdEC29B30eC273dA0932": {
+      "epoch-1-wtHOOD": {
+        "amount": "32533518560000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0xa1F62DAf42d8BcD3669DEC72271B3F658b9C3891": {
+      "epoch-1-wtSPYM": {
+        "amount": "21369984098000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0xB91f6bE9406Eb427fAC3fC5E2AF0404C97A3319f": {
+      "epoch-1-wtSPYM": {
+        "amount": "21385544741000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x48019379238191bE0d8043580B232b35020688A1": {
+      "epoch-1-wtSPYM": {
+        "amount": "21399060415000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x1bEEc52c592bFE478D973d24AcD9b65bB856c977": {
+      "epoch-1-wtSPYM": {
+        "amount": "21506801231000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x507CaA2ec2AaB51fdF568b11Fcfd46A9D722cbc1": {
+      "epoch-1-wtSPYM": {
+        "amount": "21520408291000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x29293Ec0d90D1116D5010a0C59381582033326B5": {
+      "epoch-1-wtSPYM": {
+        "amount": "21536087401000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0xA4D3dc37BC68b9921b81e59BD10E0854ad1f82A0": {
+      "epoch-1-wtSPYM": {
+        "amount": "21553644974000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x8Cf7BaAE1bB4662b82564B1b8d8b2A88f90c2150": {
+      "epoch-1-wtSPYM": {
+        "amount": "21569840666000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0xA254c254b8aEa700eb3BA692524D6289bE162142": {
+      "epoch-1-wtSPYM": {
+        "amount": "21585105177000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x58Fbd4Eb6247564A73ca83e6a50e19EFb1c0cBB1": {
+      "epoch-1-wtSGOV": {
+        "amount": "208752861395000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0xb754115c01657294f76E28E090e95Ca98D74457B": {
+      "epoch-1-wtSGOV": {
+        "amount": "210424525230000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x28DA3DdE285D8F1f87B2D858f89961Bb8B9Af180": {
+      "epoch-1-wtSPYM": {
+        "amount": "25368911513000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x991b10Da496102F6260e8679F7202C8BFB89aA5E": {
+      "epoch-1-wtHOOD": {
+        "amount": "25735366476000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0xEaF78Dac99ef40f241D720A420078F39AFA49a77": {
+      "epoch-1-wtHOOD": {
+        "amount": "34386096393000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x6533B5FcB6C16E0753BFD50A0114DF72499944a4": {
+      "epoch-1-wtSGOV": {
+        "amount": "231109685481000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0xe1b0B6Dc8d5E216622f2115d5A61BC243d607467": {
+      "epoch-1-wtSPYM": {
+        "amount": "42526066754000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x7190D8c4E0334D1aDe311A77D20c418c8d9E2648": {
+      "epoch-1-wtSGOV": {
+        "amount": "218104133565000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x52a3c466Ed969Fa157bDc3B90156476859c30131": {
+      "epoch-1-wtSGOV": {
+        "amount": "218119682168000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x6e0Fc55BC87c4b715A65BCD09fF8E63c04F9321C": {
+      "epoch-1-wtSGOV": {
+        "amount": "218122729158000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0xbF73C2AA05161DcEc4abA0F0276b9143a688c982": {
+      "epoch-1-wtSGOV": {
+        "amount": "218130149753000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0xb22e7CD2546087446814Ba2001CA47F186e04149": {
+      "epoch-1-wtSGOV": {
+        "amount": "218132590309000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x0a167B282a34D5a1Aca111345a12c10b0b0D02b7": {
+      "epoch-1-wtSGOV": {
+        "amount": "218144109151000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x892E0abF9D222D1690fB03fCcA45693696B21459": {
+      "epoch-1-wtSGOV": {
+        "amount": "218146434548000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0xDc1B2ff7f720aA1bC3D36b7A7A07A159b487563D": {
+      "epoch-1-wtSGOV": {
+        "amount": "218150778789000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0xc06101Ed990F130F71Ed450De4766B85435Ccb07": {
+      "epoch-1-wtSGOV": {
+        "amount": "218163342069000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x9A8063586dfAaF596A582070d850993fbc5d10d1": {
+      "epoch-1-wtSGOV": {
+        "amount": "218264512172000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0xB9b98205F564666f7B432b942642e45d23acd5D4": {
+      "epoch-1-wtSGOV": {
+        "amount": "231109685481000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x3C5501066f049bf00d4C851FAD3EE345c8961484": {
+      "epoch-1-wtHOOD": {
+        "amount": "22276937937000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x9AB1433913C1014e2166B3c7F039D9528B1Fc540": {
+      "epoch-1-wtSPYM": {
+        "amount": "24882674214000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0xD950C3bf6EFEE6b3b9cE5cf626fA383993F3d76b": {
+      "epoch-1-wtSGOV": {
+        "amount": "26547987267000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x20aE6a32bcd5334cB5cB1B98AA6DDEbF43E55e58": {
+      "epoch-1-wtSGOV": {
+        "amount": "25382393929000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x59734b9ae4211Bbd8035F97Ed3e2A5Aac0A697A5": {
+      "epoch-1-wtSPYM": {
+        "amount": "207712868131000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x25847cdd8463b5094f9a227ba0F7F0F0DE65b3EA": {
+      "epoch-1-wtHOOD": {
+        "amount": "19801807918000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x9D837774EfB22C42d975fd86A8642cE97462f848": {
+      "epoch-1-wtSPYM": {
+        "amount": "213991171852000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x854FFaBe6F403eA62fF60BC6f970a330bF42B3DB": {
+      "epoch-1-wtSGOV": {
+        "amount": "30423081231000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0xD4F83A8Ea914B70b4037A5D4FeA0B2Aee530bA5c": {
+      "epoch-1-wtSGOV": {
+        "amount": "27591053588000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0xFAC219Be81D0236e4167163111298934B53a6D95": {
+      "epoch-1-wtSPYM": {
+        "amount": "21215907862000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x00409fC839a2Ec2e6d12305423d37Cd011279C09": {
+      "epoch-1-wtSGOV": {
+        "amount": "24048126912000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0xE9ABa57724fad07c6Db49501B4674fA67411D201": {
+      "epoch-1-wtSGOV": {
+        "amount": "227340020379000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x5a79C8A0C7D544993A2Bbfe9BD903f7e76523Ad5": {
+      "epoch-1-wtSGOV": {
+        "amount": "28800927301000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x064B9deCe956d8F2C72418430Ff7c51d180a95e7": {
+      "epoch-1-wtSGOV": {
+        "amount": "32510016452000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x5Cb58BfA6916c501cD3D0839Df2318A6e288d05f": {
+      "epoch-1-wtSPYM": {
+        "amount": "190437977907000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0xa8837CB619aEEeC9A07Be495283590ad653662BD": {
+      "epoch-1-wtSGOV": {
+        "amount": "28581421793000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x454fe9D4Bb17A2825B534541Fb913fe858faB4b6": {
+      "epoch-1-wtSGOV": {
+        "amount": "26078077211000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x4523E721C2240F462b72c7f2668fEeAF1944e962": {
+      "epoch-1-wtSPYM": {
+        "amount": "24802022699000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x66fDF1615164bC54917Ae221c8A28F494B90c023": {
+      "epoch-1-wtSGOV": {
+        "amount": "228793651915000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x1EBDbd592D8a7757Ec9b18ADa3fe5293a980A13b": {
+      "epoch-1-wtSGOV": {
+        "amount": "223138500650000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x7a9449C965362591beC135C66EfCd6971cde7a30": {
+      "epoch-1-wtSGOV": {
+        "amount": "22556033149000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x5257Db95825482B123d83de29c5ca1377955D0FB": {
+      "epoch-1-wtSPYM": {
+        "amount": "85854442303000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x4FCE4ebD24aED2390DFe8D7b0c0679D12Dd0Ff9a": {
+      "epoch-1-wtHOOD": {
+        "amount": "22072509795000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x314174310c3934c6924EC451754064923840aa99": {
+      "epoch-1-wtSPYM": {
+        "amount": "42651327831000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x2aF10415D05E06082a4d687021a4a2Ffe9B3b0cE": {
+      "epoch-1-wtHOOD": {
+        "amount": "20307298108000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0xB7fE52d2Ec69C04e38381145b58046E35aF54d6C": {
+      "epoch-1-wtSPYM": {
+        "amount": "23520435972000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0xeaC3D06097Fc94956FC1eEE65d503Ff9a739A7C6": {
+      "epoch-1-wtSGOV": {
+        "amount": "24824961325000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x8d1509e0240EbA23CCCD58941Fa2b5D7fF1fc70f": {
+      "epoch-1-wtSPYM": {
+        "amount": "22268751400000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0xf7555E15FA0Eee406e7A960546caE5B9a99d953f": {
+      "epoch-1-wtHOOD": {
+        "amount": "21143344393000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0xcB15649D7B7a1eb01fb1ACD14809de6cF82Aa1A0": {
+      "epoch-1-wtHOOD": {
+        "amount": "3560111000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x3804a8BD792D0D6c6a0bA1Bb12e13fFA06640360": {
+      "epoch-1-wtSGOV": {
+        "amount": "25234492402000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x378773b8C6B4155482CFd7eA46B3429E0753b88a": {
+      "epoch-1-wtHOOD": {
+        "amount": "41227423627000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0xAC82362174A32fBBAd61Efcb0f02b9016B20C768": {
+      "epoch-1-wtSPYM": {
+        "amount": "220250902998000000",
+        "timestamp": "1795010400"
+      },
+      "epoch-1-wtHOOD": {
+        "amount": "204330766028000000",
+        "timestamp": "1795010400"
+      },
+      "epoch-1-wtSGOV": {
+        "amount": "229675326329000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x0BC91FF303F4e483557A1Ce8836Fb18eeA84326c": {
+      "epoch-1-wtSGOV": {
+        "amount": "184773718866000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x97B73b8Eaa8662381383A67e0dbCaB67f78337dD": {
+      "epoch-1-wtSGOV": {
+        "amount": "231109685481000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x1291589C8F6be8F6BA25c5e5131C26F880f25744": {
+      "epoch-1-wtSGOV": {
+        "amount": "23754382944000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0xa6D51779B45bDf1C5b6BD0Fe86Be2C2d9481e69d": {
+      "epoch-1-wtSPYM": {
+        "amount": "22651018953000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0xeDBD6E1F8E221BF5755EBD3f9A5E6B8368850666": {
+      "epoch-1-wtSGOV": {
+        "amount": "23401944263000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0xc0c8C6C1A5ad0a2DA87225aF6516065fd35b8dA7": {
+      "epoch-1-wtSGOV": {
+        "amount": "23359171545000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0xD636E39d99571A56D783c2b8a99676Be25695B6e": {
+      "epoch-1-wtSPYM": {
+        "amount": "111695412535000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0xfd22dDE4BD14e5f23c66fFbabc6Cfa4490BE0267": {
+      "epoch-1-wtSGOV": {
+        "amount": "23337426816000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0xE0E216283eef00895b6ABAa73848448596B85724": {
+      "epoch-1-wtSGOV": {
+        "amount": "23304789330000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0xe228C34252bD874C489c2A99e03476162d74Db02": {
+      "epoch-1-wtHOOD": {
+        "amount": "52523496669000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x92b52e6441A9e2E03d080E951249d93dF222f855": {
+      "epoch-1-wtHOOD": {
+        "amount": "95577692778000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x0E4b04D0Fb9E6191E6401f1F3cF10917c12e2F53": {
+      "epoch-1-wtSGOV": {
+        "amount": "231109685481000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0xAf1c383ce06debbf9f3C91349FD03CF651221121": {
+      "epoch-1-wtSGOV": {
+        "amount": "25335399270000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x22072c5bb327D004c5419f8e0746a70121735FBC": {
+      "epoch-1-wtHOOD": {
+        "amount": "21922390162000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x62A5BAf92203E39741171094D5d4795d3209FAF9": {
+      "epoch-1-wtSGOV": {
+        "amount": "23474134307000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0xC6961aEEeE35122594AdB81396F5D1e4d4ff0e4b": {
+      "epoch-1-wtSPYM": {
+        "amount": "231109685481000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x6Ecb9EEaFAAb393d37Fec0700210C3860338D9cB": {
+      "epoch-1-wtSGOV": {
+        "amount": "23500434590000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x3217E61195bdf15b19C0F8657f6651485684c218": {
+      "epoch-1-wtSPYM": {
+        "amount": "24579302511000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0xf24c2aacdD817B9DC752880b0Fc52f78619bf9B8": {
+      "epoch-1-wtHOOD": {
+        "amount": "21532603893000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0xD9848348bf244f436DC8339993c0eFc3774817a8": {
+      "epoch-1-wtSPYM": {
+        "amount": "24599178446000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x3b7c43a9Db544B8247DB9F28ca709509AC4CDbbE": {
+      "epoch-1-wtHOOD": {
+        "amount": "23720127457000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0xB5311B189Ea1EbdDf12ae6F14322cD048CA00775": {
+      "epoch-1-wtSPYM": {
+        "amount": "24692009402000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x2434A54c54aa6B6d02a03cE931cC407695be61E8": {
+      "epoch-1-wtSGOV": {
+        "amount": "24762986801000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x4c77173c87CAAeAaFA1089B99f3483c82278279A": {
+      "epoch-1-wtSPYM": {
+        "amount": "25016529898000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x0B2B3483a5cedB08839e098d3D9F02D1893a20DC": {
+      "epoch-1-wtSGOV": {
+        "amount": "25304985236000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x46dcD6E6F34848BF62C8B5749BDA984dd0015b29": {
+      "epoch-1-wtHOOD": {
+        "amount": "216458661183000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x02AA319B5cE28294B7207bDCE3bbcf4Bf514c05B": {
+      "epoch-1-wtSPYM": {
+        "amount": "23121526514000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x5a38f942B5A593652ec1EB844CAe8865cdf99412": {
+      "epoch-1-wtSGOV": {
+        "amount": "24842534755000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x01004bEa6919b67C1475756EA75019F3Bdc40679": {
+      "epoch-1-wtHOOD": {
+        "amount": "22529205718000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x2Df49b9d241b36ABd7Ea8496BA07f6D01CAf166C": {
+      "epoch-1-wtSPYM": {
+        "amount": "23197113794000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0x5367109B8Ab57A5b5Fc4D3021A769bC2688Ce573": {
+      "epoch-1-wtHOOD": {
+        "amount": "23605755548000000",
+        "timestamp": "1795010400"
+      }
+    },
+    "0xB055600E0Da3f2d629B8874f1Be95c2568524591": {
+      "epoch-1-wtSPYM": {
+        "amount": "29099117019000000",
+        "timestamp": "1795010400"
+      }
+    }
+  }
 }
